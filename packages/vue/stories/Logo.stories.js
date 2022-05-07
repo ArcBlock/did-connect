@@ -1,9 +1,7 @@
 import Logo from '../src/components/logo';
-import 'uno.css';
 
-// More on default export: https://storybook.js.org/docs/vue/writing-stories/introduction#default-export
 export default {
-  title: 'Example/Logo',
+  title: 'Components/Logo',
   component: Logo,
   argTypes: {
     size: {
@@ -14,7 +12,6 @@ export default {
   },
 };
 
-// More on component templates: https://storybook.js.org/docs/vue/writing-stories/introduction#using-args
 const Template = (args) => ({
   components: { Logo },
   setup: () => ({ args }),
@@ -97,9 +94,8 @@ export const ComposeUse = (args) => ({
       alignItems: 'center',
       padding: '32px',
       borderRadius: '128px',
-      width: '192px',
-      height: '192px',
-      lineHeight: '192px',
+      width: '256px',
+      height: '256px',
       background: '#4E6AF6',
       color: '#ffffff',
       margin: '32px',

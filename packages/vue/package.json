@@ -28,8 +28,10 @@
     "@unocss/preset-uno": "^0.32.13",
     "@vitejs/plugin-vue": "^2.3.2",
     "babel-loader": "^8.2.5",
+    "storybook-addon-vuetify3": "^2.0.1",
     "vite": "^2.9.8",
     "vite-svg-loader": "^3.3.0",
-    "vue-loader": "^17.0.0"
+    "vue-loader": "^17.0.0",
+    "vuetify": "3.0.0-beta.1"
   }
 }
