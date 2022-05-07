@@ -34,7 +34,7 @@ const Template = (args) => ({
 });
 
 export const Primary = Template.bind({});
-Primary.storyName = 'ConnectButton';
+Primary.storyName = 'Connect Button';
 Primary.args = {
   color: 'did',
   size: 'default',
