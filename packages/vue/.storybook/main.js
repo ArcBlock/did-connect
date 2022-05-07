@@ -1,13 +1,16 @@
 const { mergeConfig } = require('vite');
-const svgLoader = require('vite-svg-loader');
 const { default: Unocss } = require('unocss/vite');
 const { default: presetUno } = require('@unocss/preset-uno');
 const { default: presetIcons } = require('@unocss/preset-icons');
+const svgLoader = require('../src/plugins/svg-loader');
 
 module.exports = {
   async viteFinal(config, { configType }) {
     // return the customized config
     return mergeConfig(config, {
+      build: {
+        sourcemap: false,
+      },
       plugins: [
         Unocss({
           presets: [
