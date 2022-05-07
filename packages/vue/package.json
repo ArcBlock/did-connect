@@ -1,0 +1,35 @@
+{
+  "name": "@did-connect/vue",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "dependencies": {
+    "@vueuse/core": "^8.4.2",
+    "unocss": "^0.32.13",
+    "vue": "^3.2.33"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.10",
+    "@fontsource/ubuntu-mono": "^4.5.9",
+    "@iconify-json/mdi": "^1.1.11",
+    "@storybook/addon-actions": "^6.5.0-beta.6",
+    "@storybook/addon-essentials": "^6.5.0-beta.6",
+    "@storybook/addon-interactions": "^6.5.0-beta.6",
+    "@storybook/addon-links": "^6.5.0-beta.6",
+    "@storybook/builder-vite": "^0.1.33",
+    "@storybook/testing-library": "^0.0.11",
+    "@storybook/vue3": "^6.5.0-beta.6",
+    "@unocss/preset-icons": "^0.32.13",
+    "@unocss/preset-uno": "^0.32.13",
+    "@vitejs/plugin-vue": "^2.3.2",
+    "babel-loader": "^8.2.5",
+    "vite": "^2.9.8",
+    "vite-svg-loader": "^3.3.0",
+    "vue-loader": "^17.0.0"
+  }
+}

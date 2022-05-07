@@ -1,0 +1,15 @@
+{
+  "name": "did-connect",
+  "version": "0.1.0",
+  "private": "true",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "storybook:vue": "pnpm -C packages/vue storybook",
+    "storybook:react": "pnpm -C packages/react storybook",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
