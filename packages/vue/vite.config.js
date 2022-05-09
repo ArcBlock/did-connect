@@ -4,12 +4,15 @@ import vue from '@vitejs/plugin-vue';
 import Unocss from 'unocss/vite';
 import presetUno from '@unocss/preset-uno';
 import presetIcons from '@unocss/preset-icons';
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
+
 import svgLoader from './src/plugins/svg-loader';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
+    cssInjectedByJsPlugin(),
     Unocss({
       presets: [
         presetUno(),

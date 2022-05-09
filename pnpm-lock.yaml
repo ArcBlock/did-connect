@@ -24,6 +24,7 @@ importers:
       svgo: ^2.8.0
       unocss: ^0.32.13
       vite: ^2.9.8
+      vite-plugin-css-injected-by-js: ^1.5.0
       vue: ^3.2.33
       vue-loader: ^17.0.0
     dependencies:
@@ -49,6 +50,7 @@ importers:
       babel-loader: 8.2.5_@babel+core@7.17.10
       naive-ui: 2.28.2_vue@3.2.33
       vite: 2.9.8
+      vite-plugin-css-injected-by-js: 1.5.0_vite@2.9.8
       vue-loader: 17.0.0
 
 packages:
@@ -11828,6 +11830,14 @@ packages:
 
   /vfonts/0.0.3:
     resolution: {integrity: sha512-nguyw8L6Un8eelg1vQ31vIU2ESxqid7EYmy8V+MDeMaHBqaRSkg3dTBToC1PR00D89UzS/SLkfYPnx0Wf23IQQ==}
+    dev: true
+
+  /vite-plugin-css-injected-by-js/1.5.0_vite@2.9.8:
+    resolution: {integrity: sha512-xvsTmVLE8hI3UJyBRgXkyiNZ6K2runzNWIKwah152H8LRaOS8MZYcF9kBaKzZe/WOZs54qnyOsV/okbHKnkc+Q==}
+    peerDependencies:
+      vite: '>2.0.0-0'
+    dependencies:
+      vite: 2.9.8
     dev: true
 
   /vite-plugin-mdx/3.5.10_hosdkpnkblewjzedi6mueonkau:
