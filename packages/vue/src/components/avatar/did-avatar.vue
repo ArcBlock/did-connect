@@ -1,6 +1,7 @@
 <script setup>
 import { ref, unref, computed } from 'vue';
 import { Shape } from '@arcblock/did-motif';
+import { NAvatar } from 'naive-ui';
 
 import DIDMotif from './did-motif.vue';
 import { isEthereumDid } from './utils';
@@ -66,30 +67,36 @@ console.log({ src: props.src });
 </script>
 
 <template>
-  <v-avatar
+  <NAvatar
     v-if="props.src && !loadImgError"
+    color="transparent"
     :size="props.size"
     :rounded="avatarRounded"
     :title="props.did"
+    :src="props.src"
     :style="{
       'border-radius': props.variant === 'rounded' ? '4px' : '',
     }"
-  >
-    <img :src="props.src" :alt="props.did" @error="loadImgError = true" class="w-full" />
-  </v-avatar>
+    :on-error="
+      () => {
+        loadImgError = true;
+      }
+    "
+  />
 
   <div
     v-else-if="blockyIcon"
     class="blocky-icon__container"
     :style="{
       width: `${props.size / 0.7}px`,
-      height: `${props.size + 4}px`,
+      height: `${props.size}px`,
       'border-radius': `${Math.min(10, Math.floor(0.1 * props.size + 2))}px`,
     }"
   >
-    <v-avatar
+    <NAvatar
+      color="transparent"
       :size="props.size"
-      :image="blockyIcon"
+      :src="blockyIcon"
       :rounded="avatarRounded"
       :title="props.did"
       :style="{

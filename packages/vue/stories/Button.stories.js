@@ -14,8 +14,8 @@ export default {
     size: {
       control: {
         type: 'select',
-        options: ['x-small', 'small', 'default', 'large', 'x-large'],
-        defaultValue: 'default',
+        options: ['tiny', 'small', 'medium', 'large'],
+        defaultValue: 'medium',
       },
     },
     default: {
@@ -37,6 +37,6 @@ export const Primary = Template.bind({});
 Primary.storyName = 'Connect Button';
 Primary.args = {
   color: 'did',
-  size: 'default',
+  size: 'medium',
   default: 'Continue With',
 };
