@@ -31,7 +31,7 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/index.js'),
+      entry: path.resolve(__dirname, 'src/components/index.js'),
       name: 'DIDConnect',
       fileName: (format) => `did-connect.${format}.js`,
     },
