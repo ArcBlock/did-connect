@@ -4,4 +4,4 @@ import Avatar from './avatar';
 import Button from './button';
 import Logo from './logo';
 
-export { Avatar, Button, Logo };
+export { Address, Avatar, Button, Logo };
