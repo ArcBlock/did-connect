@@ -30,6 +30,7 @@ importers:
       vite-plugin-css-injected-by-js: ^1.5.0
       vue: ^3.2.33
       vue-loader: ^17.0.0
+      vue-router: ^4.0.15
     dependencies:
       '@arcblock/did-motif': 1.1.5
       '@vueuse/core': 8.4.2_vue@3.2.33
@@ -55,6 +56,7 @@ importers:
       vite: 2.9.8
       vite-plugin-css-injected-by-js: 1.5.0_vite@2.9.8
       vue-loader: 17.0.0
+      vue-router: 4.0.15_vue@3.2.33
 
 packages:
 
@@ -3986,6 +3988,10 @@ packages:
     dependencies:
       '@vue/compiler-dom': 3.2.33
       '@vue/shared': 3.2.33
+
+  /@vue/devtools-api/6.1.4:
+    resolution: {integrity: sha512-IiA0SvDrJEgXvVxjNkHPFfDx6SXw0b/TUkqMcDZWNg9fnCAHbTpoo59YfJ9QLFkwa3raau5vSlRVzMSLDnfdtQ==}
+    dev: true
 
   /@vue/reactivity-transform/3.2.33:
     resolution: {integrity: sha512-4UL5KOIvSQb254aqenW4q34qMXbfZcmEsV/yVidLUgvwYQQ/D21bGX3DlgPUGI3c4C+iOnNmDCkIxkILoX/Pyw==}
@@ -11995,6 +12001,15 @@ packages:
       chalk: 4.1.2
       hash-sum: 2.0.0
       loader-utils: 2.0.2
+    dev: true
+
+  /vue-router/4.0.15_vue@3.2.33:
+    resolution: {integrity: sha512-xa+pIN9ZqORdIW1MkN2+d9Ui2pCM1b/UMgwYUCZOiFYHAvz/slKKBDha8DLrh5aCG/RibtrpyhKjKOZ85tYyWg==}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      '@vue/devtools-api': 6.1.4
+      vue: 3.2.33
     dev: true
 
   /vue/3.2.33:

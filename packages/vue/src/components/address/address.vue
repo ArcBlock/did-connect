@@ -112,8 +112,7 @@ const getFontSize = (size) => {
     <slot name="prepend"></slot>
 
     <div class="did-address__text did-address__truncate" ref="textRef">
-      <!-- 需要改成处理 content 的省略 -->
-      <slot>{{ computedContent }}</slot>
+      <slot :showContent="computedContent">{{ computedContent }}</slot>
     </div>
     <span v-if="copyable" class="did-address__copy-wrapper">
       <i
@@ -142,6 +141,9 @@ const getFontSize = (size) => {
 .did-address__text {
   font-family: 'Ubuntu Mono', monospace;
   color: #666;
+}
+.did-address__text :deep(a) {
+  color: inherit;
 }
 .did-address__copy-wrapper {
   margin-left: 8px;

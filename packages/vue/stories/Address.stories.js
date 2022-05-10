@@ -23,27 +23,21 @@ export default {
     },
     responsive: {
       control: 'boolean',
-      defaultValue: true,
     },
     copyable: {
       control: 'boolean',
-      defaultValue: true,
     },
     inline: {
       control: 'boolean',
-      defaultValue: true,
     },
     size: {
       control: 'number',
-      defaultValue: 0,
     },
     startChars: {
       control: 'number',
-      defaultValue: 6,
     },
     endChars: {
       control: 'number',
-      defaultValue: 6,
     },
     content: {
       control: 'text',
@@ -52,7 +46,6 @@ export default {
     locale: {
       control: 'inline-radio',
       options: ['en', 'zh'],
-      defaultValue: 'en',
     },
   },
 };
@@ -82,7 +75,42 @@ const Template = (args) => ({
 });
 
 export const DidAddress = Template.bind({});
+DidAddress.parameters = { controls: { exclude: ['default'] } };
 DidAddress.args = {
   content: 'abcdefghijklmnopqrstuvwxyz',
   responsive: true,
+};
+
+export const LinkAddress = (args) => ({
+  components: { Address },
+  setup() {
+    return {
+      args,
+    };
+  },
+  template: `<div
+  :style="{
+    width: '300px',
+    height: '120px',
+    border: '1px solid #eee',
+    overflow: 'auto',
+    resize: 'both',
+    padding: '10px'
+  }">
+  <Address v-bind="args">
+    <template v-slot="{showContent}">
+      <a :href="args.link">{{showContent}}</a>
+    </template>
+  </Address>
+</div>`,
+});
+LinkAddress.parameters = { controls: { exclude: ['default', 'prepend', 'append'] } };
+
+LinkAddress.args = {
+  link: 'https://www.arcblock.io',
+  content: 'abcdefghijklmnopqrstuvwxyz',
+  responsive: true,
+  compact: false,
+  inline: true,
+  copyable: true,
 };

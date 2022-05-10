@@ -10,11 +10,13 @@ const initialWidth = computed(() => {
 });
 
 function getCompact(containerWidth = 0) {
-  console.log(unref(initialWidth));
   return containerWidth - unref(initialWidth) < 0;
 }
 
 export default defineComponent({
+  props: {
+    compact: Boolean,
+  },
   setup(props, { attrs, slots }) {
     return () =>
       h(
@@ -29,7 +31,7 @@ export default defineComponent({
             {
               ...attrs,
               ref: addressRef,
-              compact: attrs.compact || getCompact(slotProps.width),
+              compact: props.compact || getCompact(slotProps.width),
             },
             slots,
           );

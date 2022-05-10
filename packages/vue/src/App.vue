@@ -3,9 +3,10 @@ import { Address, Avatar, Button, Logo } from './components';
 </script>
 
 <template>
-  <Address content="abcdefghijklmnopqrstuvwxyz" :inline="false" :responsive="false">
+  <Address :inline="false" :responsive="false">
     <!-- <template #prepend> prepend:: </template>
     <template #append> ::append </template> -->
+    <router-link to="https://www.arcblock.io">abcdefghijklmnopqrstuvwxyz</router-link>
   </Address>
   <!-- <div style="display: flex; justify-content: center">
     <Avatar did="zysiVRb5pSUPGcitPepiz4Pm5SpQ2EtgejMV" />
