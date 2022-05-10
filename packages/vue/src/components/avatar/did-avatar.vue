@@ -53,17 +53,16 @@ const blockyIcon = computed(() => {
   }
   return null;
 });
-const avatarRounded = computed(() => {
+const avatarRound = computed(() => {
   if (props.variant === 'rounded') {
-    return true;
+    return false;
   }
   if (props.variant === 'circle') {
-    return false;
+    return true;
   }
   return 0;
 });
 const loadImgError = ref(false);
-console.log({ src: props.src });
 </script>
 
 <template>
@@ -71,7 +70,7 @@ console.log({ src: props.src });
     v-if="props.src && !loadImgError"
     color="transparent"
     :size="props.size"
-    :rounded="avatarRounded"
+    :round="avatarRound"
     :title="props.did"
     :src="props.src"
     :style="{
@@ -97,10 +96,10 @@ console.log({ src: props.src });
       color="transparent"
       :size="props.size"
       :src="blockyIcon"
-      :rounded="avatarRounded"
+      :round="avatarRound"
       :title="props.did"
       :style="{
-        'border-radius': props.variant === 'rounded' ? '4px' : '',
+        'border-radius': props.variant === 'round' ? '4px' : '',
       }"
     />
   </div>

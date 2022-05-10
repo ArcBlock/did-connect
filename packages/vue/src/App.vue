@@ -1,13 +1,44 @@
 <script setup>
-import { Address, Avatar, Button, Logo } from './components';
+import { Address, Avatar, Button, Logo, SessionManager } from './components';
+
+const session = {
+  user: {
+    did: 'zysiVRb5pSUPGcitPepiz4Pm5SpQ2EtgejMV',
+    avatar: '/favicon.svg',
+    fullName: 'zhanghan',
+    role: 'Admin',
+  },
+  login: (cb) => {
+    cb();
+  },
+  logout: (cb) => {
+    cb();
+  },
+};
+
+function onLogin() {
+  alert('after login');
+}
+function onLogout(...args) {
+  alert('after logout');
+}
 </script>
 
 <template>
-  <Address :inline="false" :responsive="false">
-    <!-- <template #prepend> prepend:: </template>
-    <template #append> ::append </template> -->
+  <SessionManager
+    :session="session"
+    show-role
+    :show-text="false"
+    @login="onLogin"
+    @logout="onLogout"
+    dark
+    disableLogout
+  />
+  <!-- <Address :inline="false" :responsive="false">
+    <template #prepend> prepend:: </template>
+    <template #append> ::append </template>
     <router-link to="https://www.arcblock.io">abcdefghijklmnopqrstuvwxyz</router-link>
-  </Address>
+  </Address> -->
   <!-- <div style="display: flex; justify-content: center">
     <Avatar did="zysiVRb5pSUPGcitPepiz4Pm5SpQ2EtgejMV" />
     <Avatar did="0x8d75FD337071AdcC22B9c7D7C0ccff2e5aaCB112" />

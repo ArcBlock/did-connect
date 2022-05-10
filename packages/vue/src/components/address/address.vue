@@ -2,8 +2,11 @@
 import { ref, computed, onMounted, unref } from 'vue';
 import { useClipboard } from '@vueuse/core';
 import { NTooltip } from 'naive-ui';
+
 import '@fontsource/ubuntu-mono/400.css';
+
 import useLoadFont from '../../hooks/use-load-font';
+import COLORS from '../../constants/colors';
 
 const translations = {
   en: {
@@ -34,6 +37,7 @@ const props = defineProps({
     default: true,
   },
   compact: Boolean,
+  dark: Boolean,
   startChars: {
     type: Number,
     default: 6,
@@ -121,9 +125,25 @@ const getFontSize = (size) => {
         @click="onCopy"
         :title="translations[computedLocale].copy"
       />
-      <NTooltip v-else :show="true" size="small" style="padding: 5px 12px; line-height: 1.35; font-size: 14px">
+      <NTooltip
+        v-else
+        :show="true"
+        size="small"
+        :style="{
+          padding: '5px 12px',
+          'line-height': 1.35,
+          'font-size': '14px',
+          '--n-text-color': props.dark ? 'rgb(255 255 255 / 82%)' : '#fff',
+          '--n-color': props.dark ? '#48484e' : '#6d6d6d',
+        }"
+      >
         <template #trigger>
-          <i class="did-address__copy !text-green i-mdi:check" />
+          <i
+            class="did-address__copy i-mdi:check"
+            :style="{
+              color: COLORS.SUCCESS,
+            }"
+          />
         </template>
         {{ translations[computedLocale].copied }}
       </NTooltip>

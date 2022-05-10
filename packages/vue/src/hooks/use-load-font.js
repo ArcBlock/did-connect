@@ -3,7 +3,6 @@ export default function useLoadFont(font, callback = () => {}, { delay = 1000 } 
   function run() {
     requestAnimationFrame(() => {
       const now = +new Date();
-      console.count('requestAnimationFrame');
       if (now - start <= delay && document?.fonts?.check) {
         if (document.fonts.check(`1rem ${font}`)) {
           callback();

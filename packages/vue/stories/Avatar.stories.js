@@ -88,5 +88,5 @@ AvatarImg.args = {
   did: '0x8d75FD337071AdcC22B9c7D7C0ccff2e5aaCB112',
   src: '/favicon.svg',
   size: 60,
-  variant: 'default',
+  variant: 'circle',
 };
