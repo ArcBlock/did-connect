@@ -1,4 +1,4 @@
-import { defineComponent, h } from 'vue';
+import { computed, defineComponent, h, unref } from 'vue';
 import SessionManager from './session-manager.vue';
 import SessionManagerLogin from './session-manager-login.vue';
 
@@ -10,10 +10,10 @@ export default defineComponent({
     },
   },
   setup(props, { attrs, slots }) {
-    const Com = props.session?.user ? SessionManager : SessionManagerLogin;
+    const Com = computed(() => (props.session?.user ? SessionManager : SessionManagerLogin));
     return () =>
       h(
-        Com,
+        unref(Com),
         {
           ...attrs,
           session: props.session,

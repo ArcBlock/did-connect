@@ -12,7 +12,10 @@ import svgLoader from './src/plugins/svg-loader';
 export default defineConfig({
   plugins: [
     vue(),
-    cssInjectedByJsPlugin(),
+    svgLoader({
+      defaultImport: 'url', // or 'raw'
+      svgo: false,
+    }),
     Unocss({
       presets: [
         presetUno(),
@@ -24,24 +27,30 @@ export default defineConfig({
         }),
       ],
     }),
-    svgLoader({
-      defaultImport: 'url', // or 'raw'
-      svgo: false,
+    cssInjectedByJsPlugin({
+      // topExecutionPriority: false,
     }),
   ],
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/components/index.js'),
+      entry: path.resolve(__dirname, 'build/build-lib.js'),
       name: 'DIDConnect',
+      // formats: ['cjs', 'es', 'iife'],
       fileName: (format) => `did-connect.${format}.js`,
     },
     rollupOptions: {
       // 确保外部化处理那些你不想打包进库的依赖
-      external: ['vue', '@fontsource/ubuntu-mono/400.css'],
+      external: [
+        'vue',
+        '@fontsource/ubuntu-mono/400.css',
+        // 'naive-ui',
+        // 'axios',
+      ],
       output: {
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
           vue: 'Vue',
+          // 'naive-ui': 'NaiveUI',
         },
       },
     },

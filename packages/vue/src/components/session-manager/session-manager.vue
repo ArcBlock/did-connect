@@ -209,7 +209,7 @@ const computedRole = computed(() => {
           </template>
         </NTag>
       </div>
-      <Address :dark="props.dark" :responsive="true" :locale="props.locale" :content="props.session.user.did" />
+      <Address :dark="props.dark" :responsive="false" :locale="props.locale" :content="props.session.user.did" />
     </div>
     <NMenu :root-indent="12" :icon-size="24" :options="computedMenu" @update:value="handleUpdateValue" />
   </NPopover>

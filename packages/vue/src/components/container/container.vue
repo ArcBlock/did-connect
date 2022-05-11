@@ -1,13 +1,10 @@
 <script setup>
 import { ref } from 'vue';
-import { useResizeObserver } from '@vueuse/core';
+import { useElementSize } from '@vueuse/core';
 
 const containerRef = ref(null);
-const width = ref(0);
 
-useResizeObserver(containerRef, ([entry]) => {
-  width.value = entry.contentRect.width;
-});
+const { width } = useElementSize(containerRef);
 </script>
 
 <template>

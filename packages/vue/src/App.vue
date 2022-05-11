@@ -1,39 +1,10 @@
 <script setup>
-import { Address, Avatar, Button, Logo, SessionManager } from './components';
-
-const session = {
-  user: {
-    did: 'zysiVRb5pSUPGcitPepiz4Pm5SpQ2EtgejMV',
-    avatar: '/favicon.svg',
-    fullName: 'zhanghan',
-    role: 'Admin',
-  },
-  login: (cb) => {
-    cb();
-  },
-  logout: (cb) => {
-    cb();
-  },
-};
-
-function onLogin() {
-  alert('after login');
-}
-function onLogout(...args) {
-  alert('after logout');
-}
+// import { Address, Avatar, Button, Logo } from './components';
+import SessionTest from './example/session-test.vue';
 </script>
 
 <template>
-  <SessionManager
-    :session="session"
-    show-role
-    :show-text="false"
-    @login="onLogin"
-    @logout="onLogout"
-    dark
-    disableLogout
-  />
+  <SessionTest />
   <!-- <Address :inline="false" :responsive="false">
     <template #prepend> prepend:: </template>
     <template #append> ::append </template>
