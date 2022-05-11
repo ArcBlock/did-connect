@@ -1,10 +1,10 @@
 <script setup>
 // import { Address, Avatar, Button, Logo } from './components';
-import SessionTest from './example/session-test.vue';
+import UseCookies from './example/use-cookies.vue';
 </script>
 
 <template>
-  <SessionTest />
+  <UseCookies />
   <!-- <Address :inline="false" :responsive="false">
     <template #prepend> prepend:: </template>
     <template #append> ::append </template>

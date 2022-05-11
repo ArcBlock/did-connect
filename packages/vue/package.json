@@ -1,6 +1,17 @@
 {
   "name": "@did-connect/vue",
   "version": "0.1.0",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/did-connect.umd.js",
+  "module": "./dist/did-connect.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/did-connect.es.js",
+      "require": "./dist/did-connect.umd.js"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -10,7 +21,9 @@
   },
   "dependencies": {
     "@arcblock/did-motif": "^1.1.5",
+    "@arcblock/ux": "^1.17.18",
     "@vueuse/core": "^8.4.2",
+    "js-cookie": "^3.0.1",
     "svgo": "^2.8.0",
     "unocss": "^0.33.2",
     "vue": "^3.2.33"
@@ -19,19 +32,19 @@
     "@babel/core": "^7.17.10",
     "@fontsource/ubuntu-mono": "^4.5.9",
     "@iconify-json/mdi": "^1.1.12",
-    "@storybook/addon-actions": "^6.5.0-beta.7",
-    "@storybook/addon-essentials": "^6.5.0-beta.7",
-    "@storybook/addon-interactions": "^6.5.0-beta.7",
-    "@storybook/addon-links": "^6.5.0-beta.7",
+    "@storybook/addon-actions": "^6.5.0-beta.8",
+    "@storybook/addon-essentials": "^6.5.0-beta.8",
+    "@storybook/addon-interactions": "^6.5.0-beta.8",
+    "@storybook/addon-links": "^6.5.0-beta.8",
     "@storybook/builder-vite": "^0.1.33",
     "@storybook/testing-library": "^0.0.11",
-    "@storybook/vue3": "^6.5.0-beta.7",
+    "@storybook/vue3": "^6.5.0-beta.8",
     "@unocss/preset-icons": "^0.33.2",
     "@unocss/preset-uno": "^0.33.2",
-    "@vitejs/plugin-vue": "^2.3.2",
+    "@vitejs/plugin-vue": "^2.3.3",
     "babel-loader": "^8.2.5",
-    "naive-ui": "^2.28.2",
-    "vite": "^2.9.8",
+    "naive-ui": "^2.28.4",
+    "vite": "^2.9.9",
     "vite-plugin-css-injected-by-js": "^1.5.0",
     "vue-loader": "^17.0.0",
     "vue-router": "^4.0.15"
