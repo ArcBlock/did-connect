@@ -209,7 +209,7 @@ const computedRole = computed(() => {
           </template>
         </NTag>
       </div>
-      <Address :dark="props.dark" :responsive="true" :locale="props.locale">{{ props.session.user.did }}</Address>
+      <Address :dark="props.dark" :responsive="true" :locale="props.locale" :content="props.session.user.did" />
     </div>
     <NMenu :root-indent="12" :icon-size="24" :options="computedMenu" @update:value="handleUpdateValue" />
   </NPopover>
@@ -230,6 +230,7 @@ const computedRole = computed(() => {
 }
 .n-popover.did-session-manager.dark {
   background-color: #27282c;
+  border: none;
 }
 .n-popover.did-session-manager.dark .did-session-manager__role-tag {
   color: #aaa;
