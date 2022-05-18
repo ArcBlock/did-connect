@@ -33,7 +33,7 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'build/build-lib.js'),
+      entry: path.resolve(__dirname, 'build-config/build-lib.js'),
       name: 'DIDConnect',
       // formats: ['cjs', 'es', 'iife'],
       fileName: (format) => `did-connect.${format}.js`,
