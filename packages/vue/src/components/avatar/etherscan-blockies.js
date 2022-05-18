@@ -1,5 +1,3 @@
-/* eslint-disable prefer-destructuring */
-/* eslint-disable no-bitwise */
 // copy from https://etherscan.io/jss/blockies.js
 const randseed = new Array(4);
 function seedrand(seed) {
@@ -48,7 +46,6 @@ function createImageData(size) {
 function createCanvas(imageData, color, scale, bgcolor, spotcolor) {
   const c = document.createElement('canvas');
   const width = Math.sqrt(imageData.length);
-  // eslint-disable-next-line no-multi-assign
   c.width = c.height = width * scale;
   const cc = c.getContext('2d');
   cc.fillStyle = bgcolor;
@@ -65,7 +62,6 @@ function createCanvas(imageData, color, scale, bgcolor, spotcolor) {
   return c;
 }
 function createIcon(opts) {
-  // eslint-disable-next-line no-param-reassign
   opts = opts || {};
   const size = opts.size || 8;
   const scale = opts.scale || 4;

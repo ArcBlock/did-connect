@@ -1,6 +1,6 @@
-import { ref, unref } from 'vue';
+import { ref, shallowRef, unref } from 'vue';
 import Cookie from 'js-cookie';
-import { getCookieOptions } from '@arcblock/ux/lib/Util';
+import { getCookieOptions } from '@arcblock/ux/src/Util';
 import { pausableWatch } from '@vueuse/core';
 
 function guessSerializerType(rawInit) {

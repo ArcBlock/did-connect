@@ -2,15 +2,8 @@ import { defineComponent, h, mergeProps } from 'vue';
 import Address from './address.vue';
 import ResponsiveAddress from './responsive-address.vue';
 
-// export default function DidAddress(props, { slots, attrs }) {
-//   const Com = props.responsive ? ResponsiveAddress : Address;
-//   return h(Com, attrs, slots);
-// }
-// DidAddress.props = {
-//   responsive: Boolean,
-// };
-
 export default defineComponent({
+  name: 'AddressWrapper',
   props: {
     responsive: {
       type: Boolean,
@@ -18,11 +11,11 @@ export default defineComponent({
     },
   },
   setup(props, { attrs, slots }) {
-    if (props.responsive) {
-      return () => h(ResponsiveAddress, attrs, slots);
-    }
-    return () =>
-      h(
+    return () => {
+      if (props.responsive) {
+        return h(ResponsiveAddress, attrs, slots);
+      }
+      return h(
         Address,
         mergeProps(
           attrs,
@@ -30,9 +23,10 @@ export default defineComponent({
             ? {
                 style: 'max-width: 100%',
               }
-            : {},
+            : {}
         ),
-        slots,
+        slots
       );
+    };
   },
 });

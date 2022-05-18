@@ -43,14 +43,25 @@ export default defineConfig({
       external: [
         'vue',
         '@fontsource/ubuntu-mono/400.css',
-        // 'naive-ui',
         // 'axios',
+        // 'buffer',
+        // 'tweetnacl',
+        // 'naive-ui',
+        // '@arcblock/did-motif',
+        // '@arcblock/event-client',
+        // 'tweetnacl-sealedbox-js',
       ],
       output: {
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
           vue: 'Vue',
+          // axios: 'Axios',
+          // buffer: 'Buffer',
           // 'naive-ui': 'NaiveUI',
+          // tweetnacl: 'TweetNacl',
+          // '@arcblock/did-motif': 'DidMotif',
+          // '@arcblock/event-client': 'EventClient',
+          // 'tweetnacl-sealedbox-js': 'TweetNaclSealedBox',
         },
       },
     },

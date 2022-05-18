@@ -60,7 +60,7 @@ const avatarRound = computed(() => {
   if (props.variant === 'circle') {
     return true;
   }
-  return 0;
+  return false;
 });
 const loadImgError = ref(false);
 </script>

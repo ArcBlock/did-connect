@@ -10,15 +10,17 @@ export default defineComponent({
     },
   },
   setup(props, { attrs, slots }) {
-    const Com = computed(() => (props.session?.user ? SessionManager : SessionManagerLogin));
-    return () =>
-      h(
+    return () => {
+      const Com = computed(() => (props.session?.user ? SessionManager : SessionManagerLogin));
+
+      return h(
         unref(Com),
         {
           ...attrs,
           session: props.session,
         },
-        slots,
+        slots
       );
+    };
   },
 });

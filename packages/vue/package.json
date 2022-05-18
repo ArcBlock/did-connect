@@ -13,19 +13,26 @@
     }
   },
   "scripts": {
-    "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "lint": "eslint src --ext .mjs,.js,.vue"
   },
   "dependencies": {
     "@arcblock/did-motif": "^1.1.5",
-    "@arcblock/ux": "^1.17.18",
+    "@arcblock/event-client": "^1.6.3",
+    "@arcblock/ux": "^1.17.21",
+    "@solana/qr-code-styling": "1.6.0-beta.0",
     "@vueuse/core": "^8.4.2",
+    "buffer": "^6.0.3",
+    "dsbridge": "^3.1.4",
     "js-cookie": "^3.0.1",
+    "lodash-es": "^4.17.21",
+    "naive-ui": "^2.28.4",
     "svgo": "^2.8.0",
-    "unocss": "^0.33.2",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-sealedbox-js": "^1.2.0",
+    "unocss": "^0.33.4",
     "vue": "^3.2.33"
   },
   "devDependencies": {
@@ -39,14 +46,31 @@
     "@storybook/builder-vite": "^0.1.33",
     "@storybook/testing-library": "^0.0.11",
     "@storybook/vue3": "^6.5.0-beta.8",
-    "@unocss/preset-icons": "^0.33.2",
-    "@unocss/preset-uno": "^0.33.2",
+    "@unocss/preset-icons": "^0.33.4",
+    "@unocss/preset-uno": "^0.33.4",
     "@vitejs/plugin-vue": "^2.3.3",
     "babel-loader": "^8.2.5",
-    "naive-ui": "^2.28.4",
+    "eslint": "^8.15.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^8.7.1",
+    "husky": "^8.0.1",
+    "less": "^4.1.2",
+    "lint-staged": "^12.4.1",
+    "prettier": "^2.6.2",
     "vite": "^2.9.9",
+    "vite-plugin-blocklet": "^0.1.2",
     "vite-plugin-css-injected-by-js": "^1.5.0",
     "vue-loader": "^17.0.0",
     "vue-router": "^4.0.15"
+  },
+  "lint-staged": {
+    "*.{mjs,js,vue}": [
+      "prettier --write",
+      "eslint --ext .js,.vue,.mjs"
+    ],
+    "*.{css,less,scss,json,graphql}": [
+      "prettier --write"
+    ]
   }
 }

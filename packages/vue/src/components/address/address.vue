@@ -75,7 +75,7 @@ const computedContent = computed(() => {
   if (props.compact) {
     if (props.content.length > props.startChars + props.endChars + 3) {
       return `${props.content.slice(0, props.startChars)}...${props.content.slice(
-        props.content.length - props.endChars,
+        props.content.length - props.endChars
       )}`;
     }
   }

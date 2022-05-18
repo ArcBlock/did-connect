@@ -7,7 +7,8 @@
   "scripts": {
     "storybook:vue": "pnpm -C packages/vue storybook",
     "storybook:react": "pnpm -C packages/react storybook",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",

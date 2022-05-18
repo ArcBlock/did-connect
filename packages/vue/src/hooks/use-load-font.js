@@ -1,4 +1,4 @@
-export default function useLoadFont(font, callback = () => {}, { delay = 1000 } = {}) {
+export default function useLoadFont(font, callback = () => {}, { delay = 3000 } = {}) {
   const start = +new Date();
   function run() {
     requestAnimationFrame(() => {
