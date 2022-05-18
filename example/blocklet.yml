@@ -1,0 +1,60 @@
+name: did-connect-vue
+description: DID Connect vue example
+keywords:
+  - blocklet
+  - example
+  - vue
+author:
+  name: Arcblock
+  email: blocklet@arcblock.io
+repository:
+  type: git
+  url: https://github.com/ArcBlock/did-connect/tree/master/packages/vue
+version: 0.1.0
+license: Apache-2.0
+title: DID Connect Vue
+files:
+  - dist
+  - logo.png
+  - README.md
+  - blocklet.md
+  - screenshots
+  - api/hooks/pre-start.js
+group: dapp
+main: api/index.js
+logo: logo.png
+community: https://community.arcblockio.cn
+support: support@arcblock.io
+documentation: https://docs.arcblock.io
+homepage: https://github.com/blocklet/blocklet-store
+interfaces:
+  - type: web
+    name: publicUrl
+    path: /
+    prefix: '*'
+    port: BLOCKLET_PORT
+    protocol: http
+screenshots: []
+environments:
+  - name: CHAIN_HOST
+    description: Please provide endpoint of the chain where NFT factory are stored
+    required: true
+    default: https://beta.abtnetwork.io/api/
+    secure: false
+    shared: true
+scripts:
+  preStart: node api/hooks/pre-start.js
+  dev: npm run start
+specVersion: 1.2.4
+timeout:
+  start: 60
+requirements:
+  server: '>=1.7.4'
+  os: '*'
+  cpu: '*'
+capabilities:
+  clusterMode: false
+  component: false
+payment:
+  price: []
+  share: []
