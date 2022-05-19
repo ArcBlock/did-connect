@@ -53,15 +53,14 @@ const props = defineProps({
 
 <style lang="less" scoped>
 .spinner__wrapper--fullscreen {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  min-width: 160px;
+  min-height: 160px;
+  height: 100%;
+  width: 100%;
 }
 .did-connect__spinner :deep(.n-spin) {
   --n-color: inherit !important;

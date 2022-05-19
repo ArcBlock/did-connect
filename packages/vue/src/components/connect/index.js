@@ -26,3 +26,5 @@ export default defineComponent({
     };
   },
 });
+
+export { default as BasicConnect } from './basic-connect.vue';

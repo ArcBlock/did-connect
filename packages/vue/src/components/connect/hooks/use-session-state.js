@@ -123,7 +123,22 @@ export default ({
   });
 
   // 需要改成监听组件变化
-  watch(() => state.status, reCheck, { immediate: true });
+  watch(
+    [
+      () => state.checkCount,
+      () => state.status,
+      () => state.token,
+      () => state.store,
+      () => state.loading,
+      () => state.error,
+      () => state.saveConnect,
+      () => state.store?.did,
+    ],
+    reCheck,
+    {
+      immediate: true,
+    }
+  );
 
   useIntervalFn(() => {
     if (unref(computedCheckInterval) !== null) {
@@ -135,7 +150,6 @@ export default ({
     state,
     generate,
     cancelWhenScanned,
-    cancelWhenScannedCounter,
   };
 
   function reCheck() {
