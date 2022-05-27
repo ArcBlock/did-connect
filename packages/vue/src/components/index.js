@@ -1,8 +1,9 @@
-import 'uno.css';
-import Address from './address';
-import Avatar from './avatar';
-import Button from './button';
-import Logo from './logo';
-import SessionManager from './session-manager';
-
-export { Address, Avatar, Button, Logo, SessionManager };
+export * from './session';
+export { default as SessionProvider } from './session';
+export { default as Logo } from './logo';
+export { default as Avatar } from './avatar';
+export { default as Button } from './button';
+export { default as Address } from './address';
+export { default as Connect } from './connect';
+export * from './connect';
+export { default as SessionManager } from './session-manager';

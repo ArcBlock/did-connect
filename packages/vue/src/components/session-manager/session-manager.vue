@@ -9,16 +9,14 @@ import Avatar from '../avatar';
 import Address from '../address';
 import COLORS from '../../constants/colors';
 import locales from './locales';
+import { localeProp } from '../../libs/props';
 
 const props = defineProps({
   session: {
     type: Object,
     required: true,
   },
-  locale: {
-    type: String,
-    default: 'en',
-  },
+  locale: localeProp,
   showText: Boolean,
   showRole: Boolean,
   showSwitchDid: Boolean,
@@ -85,7 +83,7 @@ const computedMenu = computed(() => {
           target: '_blank',
           rel: 'noopenner noreferrer',
         },
-        locales[props.locale].openInWallet,
+        locales[props.locale].openInWallet
       ),
     key: 'open-in-wallet',
     icon: renderIcon(OpenInIcon),
@@ -209,7 +207,7 @@ const computedRole = computed(() => {
           </template>
         </NTag>
       </div>
-      <Address :dark="props.dark" :responsive="true" :locale="props.locale" :content="props.session.user.did" />
+      <Address :dark="props.dark" :responsive="false" :locale="props.locale" :content="props.session.user.did" />
     </div>
     <NMenu :root-indent="12" :icon-size="24" :options="computedMenu" @update:value="handleUpdateValue" />
   </NPopover>
