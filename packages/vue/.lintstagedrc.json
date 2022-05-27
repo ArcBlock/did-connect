@@ -1,4 +1,0 @@
-{
-  "*.{mjs,js,vue}": ["prettier --write", "eslint --ext .js,.vue,.mjs"],
-  "*.{css,less,scss,json,graphql}": ["prettier --write"]
-}

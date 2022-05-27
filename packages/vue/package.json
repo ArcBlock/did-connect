@@ -64,5 +64,14 @@
     "vite-plugin-css-injected-by-js": "^1.5.0",
     "vue-loader": "^17.0.0",
     "vue-router": "^4.0.15"
+  },
+  "lint-staged": {
+    "*.{mjs,js,vue}": [
+      "prettier --write",
+      "eslint --ext .js,.vue,.mjs"
+    ],
+    "*.{css,less,scss,json,graphql}": [
+      "prettier --write"
+    ]
   }
 }
