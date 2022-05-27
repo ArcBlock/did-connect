@@ -223,7 +223,7 @@ function onGoWebWallet(url) {
           </template>
 
           <!-- 显示连接提示 -->
-          <template v-if="(!showStatus && connectedDid) || shouldAutoLogin">
+          <template v-if="!showStatus && shouldAutoLogin">
             <div class="flex items-center justify-center flex-wrap text-[#999] leading-[24px]">
               <Spinner :size="12" />
               <div class="flex items-center ml-3 leading-1">

@@ -9,7 +9,7 @@ export const STATUS = Object.freeze({
 export const TOKEN_KEY = 'login_token';
 export const CONNECTED_PK_KEY = 'connected_pk';
 export const CONNECTED_DID_KEY = 'connected_did';
-export const CONNECTED_APP_KEY = 'connected_did';
+export const CONNECTED_APP_KEY = 'connected_app';
 export const CONNECTED_WALLET_OS_KEY = 'connected_wallet_os';
 
 export const AUTH_SERVICE_PREFIX = '/.well-known/service';
