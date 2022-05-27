@@ -19,7 +19,7 @@ const session = {
 function onLogin() {
   alert('after login');
 }
-function onLogout(...args) {
+function onLogout() {
   alert('after logout');
 }
 </script>

@@ -5,6 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lint": "pnpm -r lint",
+    "lint:fix": "pnpm -r lint:fix",
     "storybook:vue": "pnpm -C packages/vue storybook",
     "storybook:react": "pnpm -C packages/react storybook",
     "build:vue": "pnpm -C packages/vue build",

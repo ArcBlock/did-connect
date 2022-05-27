@@ -16,7 +16,8 @@
     "build": "vite build",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "lint": "eslint src --ext .mjs,.js,.vue"
+    "lint": "eslint src --ext .mjs,.js,.vue",
+    "lint:fix": "eslint src --ext .mjs,.js,.vue --fix"
   },
   "dependencies": {
     "@arcblock/did-motif": "^1.1.5",
