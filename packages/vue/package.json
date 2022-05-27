@@ -17,7 +17,8 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "lint": "eslint src --ext .mjs,.js,.vue",
-    "lint:fix": "eslint src --ext .mjs,.js,.vue --fix"
+    "lint:fix": "eslint src --ext .mjs,.js,.vue --fix",
+    "lint-staged": "lint-staged"
   },
   "dependencies": {
     "@arcblock/did-motif": "^1.1.5",
@@ -57,21 +58,11 @@
     "eslint-plugin-vue": "^9.0.1",
     "husky": "^8.0.1",
     "less": "^4.1.2",
-    "lint-staged": "^12.4.1",
     "prettier": "^2.6.2",
     "vite": "^2.9.9",
     "vite-plugin-blocklet": "^0.1.2",
     "vite-plugin-css-injected-by-js": "^1.5.0",
     "vue-loader": "^17.0.0",
     "vue-router": "^4.0.15"
-  },
-  "lint-staged": {
-    "*.{mjs,js,vue}": [
-      "prettier --write",
-      "eslint --ext .js,.vue,.mjs"
-    ],
-    "*.{css,less,scss,json,graphql}": [
-      "prettier --write"
-    ]
   }
 }
