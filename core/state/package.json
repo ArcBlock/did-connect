@@ -18,6 +18,7 @@
     "access": "public"
   },
   "dependencies": {
+    "xstate": "^4.32.1"
   },
   "devDependencies": {
     "jest": "^27.3.1",
