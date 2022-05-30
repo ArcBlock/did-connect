@@ -1,5 +1,5 @@
+/* eslint-disable no-promise-executor-return */
 /* eslint-disable no-param-reassign */
-/* eslint-disable no-underscore-dangle */
 const MongoClient = require('mongodb');
 const StorageInterface = require('@did-connect/storage');
 
@@ -54,8 +54,8 @@ module.exports = class MongoSessionStorage extends StorageInterface {
       this.handleNewConnectionAsync(options.client);
     } else if (options.clientPromise) {
       options.clientPromise
-        .then(client => this.handleNewConnectionAsync(client))
-        .catch(err => this.connectionFailed(err));
+        .then((client) => this.handleNewConnectionAsync(client))
+        .catch((err) => this.connectionFailed(err));
     } else {
       throw new Error('Connection strategy not found');
     }
@@ -107,7 +107,7 @@ module.exports = class MongoSessionStorage extends StorageInterface {
   }
 
   read(token) {
-    return this.collectionReady().then(collection => collection.findOne({ token }));
+    return this.collectionReady().then((collection) => collection.findOne({ token }));
   }
 
   create(token, status = 'created') {
@@ -122,8 +122,8 @@ module.exports = class MongoSessionStorage extends StorageInterface {
     debug('update', { token, updates });
 
     return this.collectionReady()
-      .then(collection => collection.updateOne({ token }, { $set: updates }, { upsert }))
-      .then(rawResponse => {
+      .then((collection) => collection.updateOne({ token }, { $set: updates }, { upsert }))
+      .then((rawResponse) => {
         if (rawResponse.result) {
           rawResponse = rawResponse.result;
         }
@@ -143,16 +143,16 @@ module.exports = class MongoSessionStorage extends StorageInterface {
 
   delete(token) {
     return this.collectionReady()
-      .then(collection => collection.deleteOne({ token }))
+      .then((collection) => collection.deleteOne({ token }))
       .then(() => this.emit('destroy', token));
   }
 
   exist(token, did) {
-    return this.collectionReady().then(collection => collection.findOne({ token, did }));
+    return this.collectionReady().then((collection) => collection.findOne({ token, did }));
   }
 
   clear() {
-    return this.collectionReady().then(collection => collection.drop());
+    return this.collectionReady().then((collection) => collection.drop());
   }
 
   close() {

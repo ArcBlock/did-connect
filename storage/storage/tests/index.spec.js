@@ -12,7 +12,7 @@ describe('#Storage', () => {
   });
 
   const methods = ['create', 'update', 'delete', 'read', 'exist'];
-  methods.forEach(x => {
+  methods.forEach((x) => {
     test(`should have ${x} method`, () => {
       const storage = new Storage();
       expect(typeof storage[x]).toEqual('function');

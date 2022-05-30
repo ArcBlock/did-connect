@@ -53,7 +53,7 @@ module.exports = class FirebaseStorage extends StorageInterface {
     return new Promise((resolve, reject) => {
       this.cleanRef(token)
         .once('value')
-        .then(snapshot => {
+        .then((snapshot) => {
           if (!snapshot.exists()) {
             return resolve(null);
           }
@@ -90,7 +90,7 @@ module.exports = class FirebaseStorage extends StorageInterface {
     return new Promise((resolve, reject) => {
       this.cleanRef(token)
         .once('value')
-        .then(snapshot => {
+        .then((snapshot) => {
           if (!snapshot.exists()) {
             return resolve(false);
           }
