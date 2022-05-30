@@ -3,7 +3,10 @@ lockfileVersion: 5.4
 importers:
 
   .:
-    specifiers: {}
+    specifiers:
+      lint-staged: ^12.4.2
+    devDependencies:
+      lint-staged: 12.4.2
 
   example:
     specifiers:
@@ -80,7 +83,6 @@ importers:
       husky: ^8.0.1
       js-cookie: ^3.0.1
       less: ^4.1.2
-      lint-staged: ^12.4.1
       lodash-es: ^4.17.21
       naive-ui: ^2.29.0
       prettier: ^2.6.2
@@ -131,7 +133,6 @@ importers:
       eslint-plugin-vue: 9.0.1_eslint@8.16.0
       husky: 8.0.1
       less: 4.1.2
-      lint-staged: 12.4.2
       prettier: 2.6.2
       vite: 2.9.9_less@4.1.2
       vite-plugin-blocklet: 0.1.2
@@ -7886,7 +7887,7 @@ packages:
     engines: {node: '>=0.10.0'}
 
   /default-browser-id/1.0.4:
-    resolution: {integrity: sha1-5Z0JpdFXuCi4dsJoFuYcPSosIDo=}
+    resolution: {integrity: sha512-qPy925qewwul9Hifs+3sx1ZYn14obHxpkX+mPD369w4Rzg+YkJBgi3SOvwUq81nWSjqGUegIgEPwD8u+HUnxlw==}
     engines: {node: '>=0.10.0'}
     hasBin: true
     requiresBuild: true
@@ -10491,7 +10492,7 @@ packages:
     dev: true
 
   /image-size/0.5.5:
-    resolution: {integrity: sha1-Cd/Uq50g4p6xw+gLiZA3jfnjy5w=}
+    resolution: {integrity: sha512-6TDAlDPZxUFCv+fuOkIoXT/V/f3Qbq8e37p+YOiYrUv3v9cc3/6x78VdfPgFVaB9dZYeLUfKgHRebpkm/oP2VQ==}
     engines: {node: '>=0.10.0'}
     hasBin: true
     requiresBuild: true
