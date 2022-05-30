@@ -1,0 +1,84 @@
+{
+  "name": "@did-connect/authenticator",
+  "description": "Helper function to setup DID authentication support on a node.js web server",
+  "version": "1.16.15",
+  "author": {
+    "name": "wangshijun",
+    "email": "shijun@arcblock.io",
+    "url": "https://github.com/wangshijun"
+  },
+  "contributors": [
+    "wangshijun <shijun@arcblock.io> (https://github.com/wangshijun)"
+  ],
+  "bugs": {
+    "url": "https://github.com/ArcBlock/asset-chain/issues",
+    "email": "shijun@arcblock.io"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@arcblock/did": "1.16.15",
+    "@arcblock/jwt": "1.16.15",
+    "@arcblock/validator": "1.16.15",
+    "@ocap/client": "1.16.15",
+    "@ocap/mcrypto": "1.16.15",
+    "@ocap/util": "1.16.15",
+    "@ocap/wallet": "1.16.15",
+    "debug": "^4.3.3",
+    "json-stable-stringify": "^1.0.1",
+    "lodash": "^4.17.21",
+    "semver": "^7.3.4",
+    "tweetnacl-sealedbox-js": "^1.2.0"
+  },
+  "devDependencies": {
+    "@arcblock/did-agent-storage-memory": "^1.6.3",
+    "@arcblock/did-auth-storage-memory": "^1.6.3",
+    "axios": "^0.25.0",
+    "jest": "^27.3.1",
+    "remark-cli": "^10.0.1",
+    "remark-preset-github": "^4.0.1",
+    "tweetnacl": "^1.0.3"
+  },
+  "remarkConfig": {
+    "plugins": [
+      "preset-github",
+      [
+        {
+          "repository": "ArcBlock/asset-chain"
+        }
+      ]
+    ]
+  },
+  "homepage": "https://github.com/ArcBlock/asset-chain/tree/master/did/did-auth",
+  "keywords": [
+    "blockchain",
+    "arcblock",
+    "sdk",
+    "nodejs"
+  ],
+  "license": "Apache-2.0",
+  "main": "./lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArcBlock/asset-chain/tree/master/did/did-auth"
+  },
+  "scripts": {
+    "lint": "eslint lib tests",
+    "lint:fix": "eslint --fix lib tests",
+    "docs": "yarn gen-dts && yarn gen-docs && yarn cleanup-docs && yarn format-docs",
+    "cleanup-docs": "node ../../scripts/cleanup-docs.js docs/README.md $npm_package_name",
+    "gen-docs": "jsdoc2md lib/**/*.js lib/**/**/*.js > docs/README.md",
+    "gen-dts": "j2d lib/index.js",
+    "format-docs": "remark . -o",
+    "test": "jest --forceExit --detectOpenHandles",
+    "coverage": "yarn test -- --coverage"
+  },
+  "resolutions": {
+    "tweetnacl": "1.0.3"
+  },
+  "gitHead": "87990c8b5e215107fc587c1ced0d6b3e2cd2483e"
+}
