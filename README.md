@@ -15,3 +15,8 @@ Because we use pnpm's workspace function, so this repo is only support with pnpm
 or
 
 `cd packages/vue && pnpm storybook`
+
+## View Example (@did-connect/vue)
+
+1. `pnpm build:vue`
+2. `pnpm example:vue`
