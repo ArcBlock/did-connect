@@ -5,8 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "pnpm -r lint",
-    "lint:fix": "pnpm -r lint:fix",
+    "lint": "pnpm -r --parallel lint",
+    "lint:fix": "pnpm -r --parallel lint:fix",
     "storybook:vue": "pnpm -C packages/vue storybook",
     "storybook:react": "pnpm -C packages/react storybook",
     "build:vue": "pnpm -C packages/vue build",
@@ -18,6 +18,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "lint-staged": "^12.4.2"
+    "@arcblock/eslint-config-base": "^0.2.1",
+    "eslint": "^8.16.0",
+    "lint-staged": "^12.4.3",
+    "prettier": "^2.6.2"
   }
 }
