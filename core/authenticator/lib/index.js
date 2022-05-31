@@ -1,7 +1,3 @@
-const WalletAuthenticator = require('./authenticator/wallet');
-const WalletHandlers = require('./handlers/wallet');
+const WalletAuthenticator = require('./wallet');
 
-module.exports = {
-  WalletAuthenticator,
-  WalletHandlers,
-};
+module.exports = WalletAuthenticator;

@@ -15,9 +15,9 @@
 **Extends**: `EventEmitter`
 **See**
 
-* [**@did-connect/storage-firebase**](https://github.com/arcblock/did-auth-storage-firebase)
-* [**@did-connect/storage-mongo**](https://github.com/arcblock/did-auth-storage-mongo)
-* [**@did-connect/storage-keystone**](https://github.com/arcblock/did-auth-storage-keystone)
+* [**@did-connect/relay-storage-firebase**](https://github.com/arcblock/did-auth-storage-firebase)
+* [**@did-connect/relay-storage-mongo**](https://github.com/arcblock/did-auth-storage-mongo)
+* [**@did-connect/relay-storage-keystone**](https://github.com/arcblock/did-auth-storage-keystone)
 
 
 * [SessionStorage](#SessionStorage) ⇐ `EventEmitter`

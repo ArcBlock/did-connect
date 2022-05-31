@@ -13,7 +13,7 @@ const { toAddress } = require('@arcblock/did');
 const BaseAuthenticator = require('./base');
 
 // eslint-disable-next-line
-const debug = require('debug')(`${require('../../package.json').name}:authenticator:wallet`);
+const debug = require('debug')(`${require('../package.json').name}:authenticator:wallet`);
 
 const { DEFAULT_CHAIN_INFO } = BaseAuthenticator;
 const DEFAULT_TIMEOUT = 8000;

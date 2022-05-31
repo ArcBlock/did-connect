@@ -1,5 +1,5 @@
 {
-  "name": "@did-connect/storage",
+  "name": "@did-connect/relay-storage",
   "description": "Storage interface for did-auth",
   "version": "2.0.0",
   "author": "wangshijun <shijun@arcblock.io> (https://ocap.arcblock.io)",
@@ -15,7 +15,7 @@
   ],
   "devDependencies": {
     "j2d": "^1.0.3-dev",
-    "jest": "^23.5.0",
+    "jest": "^28.1.0",
     "remark-cli": "^5.0.0",
     "remark-preset-github": "^0.0.9"
   },
@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/ArcBlock/did-connect/tree/master/packagesstorage",
   "keywords": [
-    "forge",
+
     "blockchain",
     "arcblock",
     "sdk",

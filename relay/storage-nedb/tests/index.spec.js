@@ -24,23 +24,23 @@ describe('#Storage', () => {
   });
 
   test('should have complete workflow', async () => {
-    const token = 'abcd';
-    await storage.create(token);
+    const sessionId = 'abcd';
+    await storage.create(sessionId);
 
-    let record = await storage.read(token);
-    expect(record.token).toEqual(token);
+    let record = await storage.read(sessionId);
+    expect(record.sessionId).toEqual(sessionId);
     expect(record.status).toEqual('created');
     expect(record.createdAt).toBeTruthy();
     expect(record.updatedAt).toBeTruthy();
 
-    record = await storage.update(token, { status: 'complete', key: 'value' });
-    expect(record.token).toEqual(token);
+    record = await storage.update(sessionId, { status: 'complete', key: 'value' });
+    expect(record.sessionId).toEqual(sessionId);
     expect(record.status).toEqual('complete');
     expect(record.key).toEqual('value');
     expect(record.createdAt).toBeTruthy();
     expect(record.updatedAt).toBeTruthy();
 
-    const numRemoved = await storage.delete(token);
+    const numRemoved = await storage.delete(sessionId);
     expect(numRemoved).toEqual(1);
   });
 

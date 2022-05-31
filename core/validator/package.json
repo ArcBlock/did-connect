@@ -1,7 +1,7 @@
 {
   "name": "@did-connect/validator",
   "description": "Joi schema definition for did-connect protocol",
-  "version": "1.16.15",
+  "version": "2.0.0",
   "author": {
     "name": "wangshijun",
     "email": "shijun@arcblock.io",
@@ -22,7 +22,7 @@
     "@ocap/mcrypto": "1.16.15"
   },
   "devDependencies": {
-    "jest": "^27.3.1",
+    "jest": "^28.1.0",
     "remark-cli": "^10.0.1",
     "remark-preset-github": "^4.0.1"
   },

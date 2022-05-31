@@ -1,6 +1,6 @@
 {
-  "name": "@did-connect/authenticator",
-  "description": "Helper function to setup DID Connect support on a node.js web server",
+  "name": "@did-connect/relay-adapter-express",
+  "description": "Helper function to setup DID authentication support on a node.js web server",
   "version": "2.0.0",
   "author": {
     "name": "wangshijun",
@@ -18,25 +18,15 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/did": "1.16.15",
-    "@arcblock/jwt": "1.16.15",
-    "@arcblock/validator": "1.16.15",
-    "@ocap/client": "1.16.15",
-    "@ocap/mcrypto": "1.16.15",
-    "@ocap/util": "1.16.15",
-    "@ocap/wallet": "1.16.15",
-    "debug": "^4.3.3",
-    "json-stable-stringify": "^1.0.1",
     "lodash": "^4.17.21",
-    "semver": "^7.3.4",
-    "tweetnacl-sealedbox-js": "^1.2.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "axios": "^0.25.0",
-    "jest": "^28.1.0",
+    "@did-connect/relay-storage-memory": "^2.0.0",
+    "axios": "^0.27.2",
+    "jest": "^27.3.1",
     "remark-cli": "^10.0.1",
-    "remark-preset-github": "^4.0.1",
-    "tweetnacl": "^1.0.3"
+    "remark-preset-github": "^4.0.1"
   },
   "remarkConfig": {
     "plugins": [

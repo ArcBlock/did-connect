@@ -2,7 +2,7 @@
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-> Storage engine that uses [nedb](https://www.npmjs.com/package/nedb) to store data, implements interfaces defined in `@did-connect/storage`.
+> Storage engine that uses [nedb](https://www.npmjs.com/package/nedb) to store data, implements interfaces defined in `@did-connect/relay-storage`.
 
 
 ## Table of Contents
@@ -15,16 +15,16 @@
 ## Install
 
 ```sh
-npm install @did-connect/storage-nedb
+npm install @did-connect/relay-storage-nedb
 // or
-yarn add @did-connect/storage-nedb
+yarn add @did-connect/relay-storage-nedb
 ```
 
 
 ## Usage
 
 ```js
-const DiskStorage = require('@did-connect/storage-nedb');
+const DiskStorage = require('@did-connect/relay-storage-nedb');
 
 const storage = new DiskStorage({
   dbPath: '/path/to/db',

@@ -1,4 +1,4 @@
-# [**@did-connect/storage**](https://github.com/ArcBlock/did-connect)
+# [**@did-connect/relay-storage**](https://github.com/ArcBlock/did-connect)
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
@@ -6,7 +6,7 @@
 
 ## Table of Contents
 
-- [**@did-connect/storage**](#did-connectstorage)
+- [**@did-connect/relay-storage**](#did-connectrelay-storage)
   - [Table of Contents](#table-of-contents)
   - [Motivation & Spec](#motivation--spec)
   - [Install](#install)
@@ -30,15 +30,15 @@ Basic APIs that a token storage should support:
 ## Install
 
 ```sh
-npm install @did-connect/storage
+npm install @did-connect/relay-storage
 // or
-yarn add @did-connect/storage
+yarn add @did-connect/relay-storage
 ```
 
 ## Usage
 
 ```js
-const StorageInterface = require('@did-connect/storage');
+const StorageInterface = require('@did-connect/relay-storage');
 const keystone = require('keystone');
 
 module.exports = class KeystoneStorage extends StorageInterface {

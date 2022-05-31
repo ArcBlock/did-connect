@@ -1,7 +1,7 @@
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable no-param-reassign */
 const MongoClient = require('mongodb');
-const StorageInterface = require('@did-connect/storage');
+const StorageInterface = require('@did-connect/relay-storage');
 
 const debug = require('debug')(require('../package.json').name);
 
@@ -106,49 +106,49 @@ module.exports = class MongoSessionStorage extends StorageInterface {
     return promise;
   }
 
-  read(token) {
-    return this.collectionReady().then((collection) => collection.findOne({ token }));
+  read(sessionId) {
+    return this.collectionReady().then((collection) => collection.findOne({ sessionId }));
   }
 
-  create(token, status = 'created') {
-    return this.update(token, { status }, true);
+  create(sessionId, attrs = { status: 'created' }) {
+    return this.update(sessionId, { ...attrs }, true);
   }
 
-  update(token, updates, upsert = false) {
+  update(sessionId, updates, upsert = false) {
     if (!updates.updatedAt) {
       updates.updatedAt = new Date();
     }
 
-    debug('update', { token, updates });
+    debug('update', { sessionId, updates });
 
     return this.collectionReady()
-      .then((collection) => collection.updateOne({ token }, { $set: updates }, { upsert }))
+      .then((collection) => collection.updateOne({ sessionId }, { $set: updates }, { upsert }))
       .then((rawResponse) => {
         if (rawResponse.result) {
           rawResponse = rawResponse.result;
         }
-        const data = Object.assign({ token }, updates);
+        const data = Object.assign({ sessionId }, updates);
 
         if (rawResponse && rawResponse.upserted) {
           this.emit('create', data);
-          debug('emit.create', { token, updates });
+          debug('emit.create', { sessionId, updates });
         } else {
           this.emit('update', data);
-          debug('emit.update', { token, updates });
+          debug('emit.update', { sessionId, updates });
         }
 
         return data;
       });
   }
 
-  delete(token) {
+  delete(sessionId) {
     return this.collectionReady()
-      .then((collection) => collection.deleteOne({ token }))
-      .then(() => this.emit('destroy', token));
+      .then((collection) => collection.deleteOne({ sessionId }))
+      .then(() => this.emit('destroy', sessionId));
   }
 
-  exist(token, did) {
-    return this.collectionReady().then((collection) => collection.findOne({ token, did }));
+  exist(sessionId, did) {
+    return this.collectionReady().then((collection) => collection.findOne({ sessionId, did }));
   }
 
   clear() {

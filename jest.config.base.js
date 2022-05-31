@@ -1,0 +1,44 @@
+const path = require('path');
+
+const cwd = process.cwd();
+const folder = path.basename(cwd);
+const parent = path.basename(path.dirname(cwd));
+
+// eslint-disable-next-line import/no-dynamic-require
+const { name } = require(`${cwd}/package.json`);
+
+const rootDir = path.resolve(__dirname);
+
+// For a detailed explanation regarding each configuration property, visit:
+// https://jestjs.io/docs/en/configuration.html
+module.exports = {
+  name,
+  rootDir,
+  displayName: name,
+  verbose: true,
+  clearMocks: true,
+  forceExit: true,
+  testEnvironment: 'node',
+  testMatch: [`<rootDir>/${parent}/${folder}/**/*.spec.js`],
+  coverageDirectory: path.join(cwd, 'coverage'),
+  coverageReporters: ['json', 'lcov', 'text', 'clover'],
+  coverageProvider: 'v8',
+  collectCoverage: process.argv.indexOf('--coverage') > 0,
+  collectCoverageFrom: [
+    `<rootDir>/${parent}/${folder}/lib/*.js`,
+    `<rootDir>/${parent}/${folder}/lib/**/*.js`,
+    `!<rootDir>/${parent}/${folder}/**/*.spec.js`,
+    '!**/gen/**',
+    '!**/coverage/**',
+    '!**/node_modules/**',
+    '!apps/**',
+    '!examples/**',
+    '!tools/**',
+    '!scripts/**',
+    '!jest.config.base.js',
+    '!jest.config.js',
+    '!babel.config.js',
+    '!webpack.config.js',
+    '!eslintrc.js',
+  ],
+};

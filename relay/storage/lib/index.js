@@ -3,13 +3,13 @@
 const { EventEmitter } = require('events');
 
 /**
- * Defines the interface of DID-Auth Token Storage
- * Which is used to persist state during the DID-Auth process in a dApp
+ * Defines the interface of DID Connect Session Storage
+ * Which is used to persist state during the DID Connect process between dApp and wallet
  *
  * @class SessionStorage
- * @see @did-connect/storage-firebase
- * @see @did-connect/storage-mongo
- * @see @did-connect/storage-keystone
+ * @see @did-connect/relay-storage-firebase
+ * @see @did-connect/relay-storage-mongo
+ * @see @did-connect/relay-storage-keystone
  * @extends {EventEmitter}
  */
 class SessionStorage extends EventEmitter {
@@ -23,23 +23,23 @@ class SessionStorage extends EventEmitter {
     super(options);
   }
 
-  create(token, status = 'created') {
+  create(sessionId, attributes) {
     throw new Error('SessionStorage.create must be implemented in child class');
   }
 
-  read(token) {
+  read(sessionId) {
     throw new Error('SessionStorage.read must be implemented in child class');
   }
 
-  update(token, updates) {
+  update(sessionId, updates) {
     throw new Error('SessionStorage.update must be implemented in child class');
   }
 
-  delete(token) {
+  delete(sessionId) {
     throw new Error('SessionStorage.delete must be implemented in child class');
   }
 
-  exist(token, did) {
+  exist(sessionId, did) {
     throw new Error('SessionStorage.exist must be implemented in child class');
   }
 }

@@ -1,32 +1,32 @@
-const StorageInterface = require('@did-connect/storage');
+const StorageInterface = require('@did-connect/relay-storage');
 
 let storage = {};
 
 module.exports = class MemorySessionStorage extends StorageInterface {
-  read(token) {
-    return storage[token];
+  read(sessionId) {
+    return storage[sessionId];
   }
 
-  create(token, status = 'created') {
-    storage[token] = { token, status };
-    this.emit('create', storage[token]);
-    return this.read(token);
+  create(sessionId, attributes = { status: 'created' }) {
+    storage[sessionId] = { sessionId, ...attributes };
+    this.emit('create', storage[sessionId]);
+    return this.read(sessionId);
   }
 
-  update(token, updates) {
-    delete updates.token;
-    storage[token] = Object.assign(storage[token], updates);
-    this.emit('update', storage[token]);
-    return storage[token];
+  update(sessionId, updates) {
+    delete updates.sessionId;
+    storage[sessionId] = Object.assign(storage[sessionId], updates);
+    this.emit('update', storage[sessionId]);
+    return storage[sessionId];
   }
 
-  delete(token) {
-    this.emit('destroy', storage[token]);
-    delete storage[token];
+  delete(sessionId) {
+    this.emit('destroy', storage[sessionId]);
+    delete storage[sessionId];
   }
 
-  exist(token, did) {
-    return storage[token] && storage[token].did === did;
+  exist(sessionId, did) {
+    return storage[sessionId] && storage[sessionId].did === did;
   }
 
   clear() {

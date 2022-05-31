@@ -1,8 +1,8 @@
-# [**@did-connect/storage-memory**](https://github.com/ArcBlock/did-connect)
+# [**@did-connect/relay-storage-memory**](https://github.com/ArcBlock/did-connect)
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-> Storage engine that uses mongo to store data, implements interfaces defined in `@did-connect/storage`.
+> Storage engine that uses mongo to store data, implements interfaces defined in `@did-connect/relay-storage`.
 
 
 ## Table of Contents
@@ -15,16 +15,16 @@
 ## Install
 
 ```sh
-npm install @did-connect/storage-memory
+npm install @did-connect/relay-storage-memory
 // or
-yarn add @did-connect/storage-memory
+yarn add @did-connect/relay-storage-memory
 ```
 
 
 ## Usage
 
 ```js
-const MemoryStorage = require('@did-connect/storage-memory');
+const MemoryStorage = require('@did-connect/relay-storage-memory');
 
 const storage = new MemoryStorage();
 

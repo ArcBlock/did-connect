@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const Nedb = require('@nedb/core');
 const NedbMulti = require('@nedb/multi');
-const StorageInterface = require('@did-connect/storage');
+const StorageInterface = require('@did-connect/relay-storage');
 
 const debug = require('debug')(require('../package.json').name);
 
@@ -44,13 +44,13 @@ module.exports = class DiskSessionStorage extends StorageInterface {
     // TODO: we may need a ready state if the database file is too large
   }
 
-  read(token) {
+  read(sessionId) {
     return new Promise((resolve, reject) => {
-      if (!token) {
-        reject(new Error('token is required to read auth record'));
+      if (!sessionId) {
+        reject(new Error('sessionId is required to read auth record'));
         return;
       }
-      this.db.findOne({ token }, (err, doc) => {
+      this.db.findOne({ sessionId }, (err, doc) => {
         if (err) {
           reject(err);
         } else {
@@ -60,32 +60,32 @@ module.exports = class DiskSessionStorage extends StorageInterface {
     });
   }
 
-  create(token, status = 'created') {
+  create(sessionId, attributes = { status: 'created' }) {
     return new Promise((resolve, reject) => {
-      if (!token) {
-        reject(new Error('token is required to create auth record'));
+      if (!sessionId) {
+        reject(new Error('sessionId is required to create auth record'));
         return;
       }
-      this.db.insert({ token, status }, (err, doc) => {
+      this.db.insert({ sessionId, ...attributes }, (err, doc) => {
         if (err) {
           reject(err);
         } else {
           this.emit('create', doc);
-          debug('emit.create', { token, status });
+          debug('emit.create', { sessionId, ...attributes });
           resolve(doc);
         }
       });
     });
   }
 
-  update(token, updates = {}) {
+  update(sessionId, updates = {}) {
     return new Promise((resolve, reject) => {
-      if (!token) {
-        reject(new Error('token is required to update auth record'));
+      if (!sessionId) {
+        reject(new Error('sessionId is required to update auth record'));
         return;
       }
       this.db.update(
-        { token },
+        { sessionId },
         { $set: updates },
         { multi: false, upsert: false, returnUpdatedDocs: true },
         (err, numAffected, doc) => {
@@ -93,7 +93,7 @@ module.exports = class DiskSessionStorage extends StorageInterface {
             reject(err);
           } else {
             this.emit('update', doc);
-            debug('emit.update', { token, updates });
+            debug('emit.update', { sessionId, updates });
             resolve(doc);
           }
         }
@@ -101,30 +101,30 @@ module.exports = class DiskSessionStorage extends StorageInterface {
     });
   }
 
-  delete(token) {
+  delete(sessionId) {
     return new Promise((resolve, reject) => {
-      if (!token) {
-        reject(new Error('token is required to delete auth record'));
+      if (!sessionId) {
+        reject(new Error('sessionId is required to delete auth record'));
         return;
       }
-      this.db.remove({ token }, { multi: true }, (err, numRemoved) => {
+      this.db.remove({ sessionId }, { multi: true }, (err, numRemoved) => {
         if (err) {
           reject(err);
         } else {
-          this.emit('destroy', token);
+          this.emit('destroy', sessionId);
           resolve(numRemoved);
         }
       });
     });
   }
 
-  exist(token, did) {
+  exist(sessionId, did) {
     return new Promise((resolve, reject) => {
-      if (!token) {
-        reject(new Error('token is required to check auth record'));
+      if (!sessionId) {
+        reject(new Error('sessionId is required to check auth record'));
         return;
       }
-      this.db.findOne({ token, did }, (err, doc) => {
+      this.db.findOne({ sessionId, did }, (err, doc) => {
         if (err) {
           resolve(false);
         } else {

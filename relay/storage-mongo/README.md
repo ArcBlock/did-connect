@@ -2,7 +2,7 @@
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-> Storage engine that uses mongo to store data, implements interfaces defined in `@did-connect/storage`.
+> Storage engine that uses mongo to store data, implements interfaces defined in `@did-connect/relay-storage`.
 
 
 ## Table of Contents
@@ -15,16 +15,16 @@
 ## Install
 
 ```sh
-npm install @did-connect/storage-mongo
+npm install @did-connect/relay-storage-mongo
 // or
-yarn add @did-connect/storage-mongo
+yarn add @did-connect/relay-storage-mongo
 ```
 
 
 ## Usage
 
 ```js
-const MongoStorage = require('@did-connect/storage-mongo');
+const MongoStorage = require('@did-connect/relay-storage-mongo');
 
 const storage = new MongoStorage({
   url: 'mongodb://localhost/forge-web-starter',
