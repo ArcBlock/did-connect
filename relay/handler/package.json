@@ -33,7 +33,7 @@
     "@arcblock/did-agent-storage-memory": "^1.6.3",
     "@arcblock/did-auth-storage-memory": "^1.6.3",
     "axios": "^0.27.2",
-    "jest": "^27.3.1",
+    "jest": "^28.1.0",
     "remark-cli": "^10.0.1",
     "remark-preset-github": "^4.0.1",
     "tweetnacl": "^1.0.3"
