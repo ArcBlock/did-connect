@@ -1,5 +1,5 @@
 {
-  "name": "@did-connect/relay-handler",
+  "name": "@did-connect/handler",
   "description": "Abstract handler for did-connect relay server",
   "version": "2.0.0",
   "author": {
@@ -30,8 +30,6 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@arcblock/did-agent-storage-memory": "^1.6.3",
-    "@arcblock/did-auth-storage-memory": "^1.6.3",
     "axios": "^0.27.2",
     "jest": "^28.1.0",
     "remark-cli": "^10.0.1",

@@ -28,30 +28,6 @@
   resolved "https://registry.yarnpkg.com/@antfu/utils/-/utils-0.5.2.tgz#8c2d931ff927be0ebe740169874a3d4004ab414b"
   integrity sha512-CQkeV+oJxUazwjlHD0/3ZD08QWKuGQkhnrKo3e6ly5pd48VUpXbb77q0xMU4+vc2CkJnDS02Eq/M9ugyX20XZA==
 
-"@arcblock/did-agent-storage-memory@^1.6.3":
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/@arcblock/did-agent-storage-memory/-/did-agent-storage-memory-1.6.3.tgz#341f0e958c356738f301047017bba37b9d2420aa"
-  integrity sha512-LJvvRP6ZQD7APfQ/ff1bx10C/fyI8i+rOBzARs+4SfcWz9nVERQKNUATmoTCsTqurDxv92AzN5ch2E3Kf34uBA==
-  dependencies:
-    "@arcblock/did-agent-storage" "^1.6.3"
-
-"@arcblock/did-agent-storage@^1.6.3":
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/@arcblock/did-agent-storage/-/did-agent-storage-1.6.3.tgz#29564ecf86602ed07238e463ad9e63821fe65643"
-  integrity sha512-8nOuKAJnLBfb/hEh75hD87zj5U0jsVTwYxZzWc84BpBzaJkilsi7dCdwwPSRno+urcjV4NJXGTuCNmmRSWG9AQ==
-
-"@arcblock/did-auth-storage-memory@^1.6.3":
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/@arcblock/did-auth-storage-memory/-/did-auth-storage-memory-1.6.3.tgz#19b560a60115f1f2288f8900a213c73640a36305"
-  integrity sha512-s04Sap6XX8LOiHkXPOVAfBk3u1j64UGgmYXv4u0jUsYbOJaAvbV/PlJHgr/Kt81cEBw5VP/oBzT1PhjvnYHo4Q==
-  dependencies:
-    "@arcblock/did-auth-storage" "^1.6.3"
-
-"@arcblock/did-auth-storage@^1.6.3":
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/@arcblock/did-auth-storage/-/did-auth-storage-1.6.3.tgz#74b4f29471b3381a393d58eb5bfe4c3f11ad57fa"
-  integrity sha512-tKzoPR9MHXyiVoz98fJnDyPzyfkAZ1eFxZil/gDQIGJyP+yfpV8bPgLfe2W0ig8XceizbogBlhn5EqWnXreV8g==
-
 "@arcblock/did-motif@^1.1.8":
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/@arcblock/did-motif/-/did-motif-1.1.8.tgz#72a138646809b19bd4849df93a7d985ab733f697"
