@@ -10,8 +10,9 @@ const MemoryAuthStorage = require('@did-connect/storage-memory');
 const { fromRandom, WalletType } = require('@ocap/wallet');
 const { toBase58 } = require('@ocap/util');
 
-const createTestServer = require('../../../../scripts/create-test-server');
-const { WalletHandlers, Authenticator: Authenticator } = require('../../lib');
+const Authenticator = require('@did-connect/authenticator');
+const createTestServer = require('../../../scripts/create-test-server');
+const { createHandlers } = require('..');
 
 const type = WalletType({
   role: Mcrypto.types.RoleType.ROLE_APPLICATION,
