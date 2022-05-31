@@ -1,3 +1,4 @@
+/* eslint-disable no-promise-executor-return */
 const Jwt = require('@arcblock/jwt');
 const { isValid } = require('@ocap/wallet');
 

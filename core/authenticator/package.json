@@ -11,7 +11,7 @@
     "wangshijun <shijun@arcblock.io> (https://github.com/wangshijun)"
   ],
   "bugs": {
-    "url": "https://github.com/ArcBlock/asset-chain/issues",
+    "url": "https://github.com/ArcBlock/did-connect/issues",
     "email": "shijun@arcblock.io"
   },
   "publishConfig": {
@@ -20,16 +20,11 @@
   "dependencies": {
     "@arcblock/did": "1.16.15",
     "@arcblock/jwt": "1.16.15",
-    "@arcblock/validator": "1.16.15",
-    "@ocap/client": "1.16.15",
-    "@ocap/mcrypto": "1.16.15",
+    "@did-connect/validator": "2.0.0",
     "@ocap/util": "1.16.15",
     "@ocap/wallet": "1.16.15",
     "debug": "^4.3.3",
-    "json-stable-stringify": "^1.0.1",
-    "lodash": "^4.17.21",
-    "semver": "^7.3.4",
-    "tweetnacl-sealedbox-js": "^1.2.0"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "axios": "^0.25.0",
@@ -43,12 +38,12 @@
       "preset-github",
       [
         {
-          "repository": "ArcBlock/asset-chain"
+          "repository": "ArcBlock/did-connect"
         }
       ]
     ]
   },
-  "homepage": "https://github.com/ArcBlock/asset-chain/tree/master/did/did-auth",
+  "homepage": "https://github.com/ArcBlock/did-connect",
   "keywords": [
     "blockchain",
     "arcblock",
@@ -62,7 +57,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ArcBlock/asset-chain/tree/master/did/did-auth"
+    "url": "https://github.com/ArcBlock/did-connect"
   },
   "scripts": {
     "lint": "eslint lib tests",

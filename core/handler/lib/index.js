@@ -84,83 +84,13 @@ function createSocketServer(logger, pathname) {
   return new WsServer({ logger, pathname });
 }
 
-function createHandlers({
-  wallet,
-  authenticator,
-  sessionStorage,
-  logger = console,
-  socketPathname = '/connect/relay/websocket',
-}) {
+function createHandlers({ storage, authenticator, logger = console, socketPathname = '/connect/relay/websocket' }) {
   const wsServer = createSocketServer(logger, socketPathname);
 
   const isSessionFinalized = (x) => ['error', 'timeout', 'canceled', 'rejected'].includes(x.status);
   const isValidContext = (x) => !!x;
 
-  const signJson = (data, context) => {
-    const final = data.response ? { response: data.response } : { response: data };
-
-    // Attach protocol fields to the root
-    if (data.error || data.errorMessage) {
-      final.errorMessage = data.error || data.errorMessage;
-    }
-    if (data.successMessage) {
-      final.successMessage = data.successMessage;
-    }
-    if (data.nextWorkflow) {
-      final.nextWorkflow = data.nextWorkflow;
-    }
-
-    // Remove protocol fields from the response
-    const fields = ['error', 'errorMessage', 'successMessage', 'nextWorkflow'];
-    if (typeof data.response === 'object') {
-      final.response = omit(data.response, fields);
-    }
-
-    const { response = {}, errorMessage = '', successMessage = '', nextWorkflow = '' } = final;
-    const { didwallet, session } = context;
-
-    return {
-      appPk: toBase58(wallet.publicKey),
-      authInfo: Jwt.sign(
-        wallet.address,
-        wallet.secretKey,
-        {
-          appInfo: session.appInfo,
-          status: errorMessage ? 'error' : 'ok',
-          errorMessage: errorMessage || '',
-          successMessage: successMessage || '',
-          nextWorkflow: nextWorkflow || '',
-          response,
-        },
-        true,
-        didwallet ? didwallet.jwt : undefined
-      ),
-    };
-  };
-
-  const signClaims = (claims, context) => {
-    const { sessionId, session, didwallet } = context;
-    const { authUrl, challenge, appInfo } = session;
-
-    const tmp = new URL(authUrl);
-    tmp.searchParams.set('sid', sessionId);
-    const nextUrl = tmp.href;
-
-    const payload = {
-      action: 'responseAuth',
-      challenge,
-      appInfo,
-      chainInfo: { host: 'none', id: 'none' }, // FIXME: get chainInfo from claim
-      requestedClaims: claims, // FIXME: validate using schema?
-      url: nextUrl,
-    };
-
-    return {
-      appPk: toBase58(wallet.publicKey),
-      authInfo: Jwt.sign(wallet.address, wallet.secretKey, payload, true, didwallet.jwt),
-      signed: true,
-    };
-  };
+  const { signJson, signClaims } = authenticator;
 
   const handleSessionCreate = async (context) => {
     if (isValidContext(context)) {
@@ -176,7 +106,7 @@ function createHandlers({
       return { error: 'Invalid session updater', code: 400 };
     }
 
-    return sessionStorage.create(sessionId, {
+    return storage.create(sessionId, {
       status: 'created',
       updaterPk,
       strategy,
@@ -197,7 +127,7 @@ function createHandlers({
 
   const handleSessionRead = async (sessionId) => {
     // TODO: remove the session after complete/expire/canceled/rejected
-    return sessionStorage.read(sessionId);
+    return storage.read(sessionId);
   };
 
   const handleSessionUpdate = (context) => {
@@ -247,7 +177,7 @@ function createHandlers({
     }
 
     logger.info('update session', context.sessionId, body, updates);
-    return sessionStorage.update(context.sessionId, updates);
+    return storage.update(context.sessionId, updates);
   };
 
   const handleClaimRequest = async (context) => {
@@ -266,10 +196,10 @@ function createHandlers({
       if (session.status === 'created') {
         // If our claims are populated already, move to appConnected
         if (requestedClaims.length > 0) {
-          await sessionStorage.update(sessionId, { status: 'appConnected' });
+          await storage.update(sessionId, { status: 'appConnected' });
         } else {
           wsServer.broadcast(sessionId, { status: 'walletScanned', didwallet });
-          await sessionStorage.update(sessionId, { status: 'walletScanned' });
+          await storage.update(sessionId, { status: 'walletScanned' });
         }
 
         return signClaims(
@@ -290,7 +220,7 @@ function createHandlers({
     } catch (err) {
       logger.error(err);
       wsServer.broadcast(sessionId, { status: 'error', error: err.message });
-      await sessionStorage.update(sessionId, { status: 'error', error: err.message });
+      await storage.update(sessionId, { status: 'error', error: err.message });
       return signJson({ error: err.message }, context);
     }
   };
@@ -310,15 +240,15 @@ function createHandlers({
       const waitForSession = (fn) =>
         waitFor(
           async () => {
-            const newSession = await sessionStorage.read(sessionId);
+            const newSession = await storage.read(sessionId);
             return fn(newSession);
           },
           { interval: 200, timeout: 20 * 1000, before: false }
-        ).then(() => sessionStorage.read(sessionId));
+        ).then(() => storage.read(sessionId));
 
       // Ensure user approval
       if (action === 'declineAuth') {
-        await sessionStorage.update(sessionId, {
+        await storage.update(sessionId, {
           status: 'rejected',
           error: errors.userDeclined[locale],
           currentStep: Math.max(session.currentStep - 1, 0),
@@ -339,7 +269,7 @@ function createHandlers({
       // move to walletConnected and wait for appConnected
       // once appConnected we return the first claim
       if (session.status === 'walletScanned') {
-        await sessionStorage.update(sessionId, {
+        await storage.update(sessionId, {
           status: 'walletConnected',
           currentConnected: { userDid, userPk },
         });
@@ -351,14 +281,14 @@ function createHandlers({
           return signJson({ error: newSession.error }, context);
         }
 
-        await sessionStorage.update(sessionId, { status: 'appConnected' });
+        await storage.update(sessionId, { status: 'appConnected' });
         return signClaims(newSession.requestedClaims[session.currentStep], { ...context, session: newSession });
       }
 
       // FIXME: authPrincipal only connect is not supported yet.
 
       // Move to walletApproved state and wait for appApproved
-      await sessionStorage.update(sessionId, {
+      await storage.update(sessionId, {
         status: 'walletApproved',
         responseClaims: [...session.responseClaims, claims],
       });
@@ -367,7 +297,7 @@ function createHandlers({
         (s) => s.status === 'error' || typeof s.approveResults[session.currentStep] !== 'undefined'
       );
       if (newSession.status !== 'error') {
-        await sessionStorage.update(sessionId, { status: 'appApproved' });
+        await storage.update(sessionId, { status: 'appApproved' });
       }
 
       // Return result if we've done
@@ -378,7 +308,7 @@ function createHandlers({
           return signJson({ error: newSession.error }, context);
         }
 
-        await sessionStorage.update(sessionId, { status: 'completed' });
+        await storage.update(sessionId, { status: 'completed' });
         wsServer.broadcast(sessionId, { status: 'completed' });
         return signJson(newSession.approveResults[session.currentStep], context);
       }
@@ -386,11 +316,11 @@ function createHandlers({
       // Move on to next step if we are not the last step
       const nextStep = session.currentStep + 1;
       const nextChallenge = getStepChallenge();
-      newSession = await sessionStorage.update(sessionId, { currentStep: nextStep, challenge: nextChallenge });
+      newSession = await storage.update(sessionId, { currentStep: nextStep, challenge: nextChallenge });
       return signClaims(session.requestedClaims[nextStep], { ...context, session: newSession });
     } catch (err) {
       logger.error(err);
-      await sessionStorage.update(sessionId, { status: 'error', error: err.message });
+      await storage.update(sessionId, { status: 'error', error: err.message });
       wsServer.broadcast(sessionId, { status: 'error', error: err.message });
       return signJson({ error: err.message }, context);
     }

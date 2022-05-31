@@ -11,7 +11,7 @@
     "wangshijun <shijun@arcblock.io> (https://github.com/wangshijun)"
   ],
   "bugs": {
-    "url": "https://github.com/ArcBlock/asset-chain/issues",
+    "url": "https://github.com/ArcBlock/did-connect/issues",
     "email": "shijun@arcblock.io"
   },
   "publishConfig": {
@@ -31,12 +31,12 @@
       "preset-github",
       [
         {
-          "repository": "ArcBlock/asset-chain"
+          "repository": "ArcBlock/did-connect"
         }
       ]
     ]
   },
-  "homepage": "https://github.com/ArcBlock/asset-chain/tree/master/did/did-auth",
+  "homepage": "https://github.com/ArcBlock/did-connect",
   "keywords": [
     "blockchain",
     "arcblock",
@@ -50,7 +50,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ArcBlock/asset-chain/tree/master/did/did-auth"
+    "url": "https://github.com/ArcBlock/did-connect"
   },
   "scripts": {
     "lint": "eslint lib tests",

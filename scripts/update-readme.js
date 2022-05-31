@@ -31,7 +31,7 @@ const readmeContent = `![asset-chain](https://www.arcblock.io/.netlify/functions
 
 ## Introduction
 
-[![codecov](https://codecov.io/gh/ArcBlock/asset-chain/branch/master/graph/badge.svg?token=AJ512UHZ48)](https://codecov.io/gh/ArcBlock/asset-chain)
+[![codecov](https://codecov.io/gh/ArcBlock/did-connect/branch/master/graph/badge.svg?token=AJ512UHZ48)](https://codecov.io/gh/ArcBlock/did-connect)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
 [![docs](https://img.shields.io/badge/powered%20by-arcblock-green.svg)](https://docs.arcblock.io)
 [![Gitter](https://badges.gitter.im/ArcBlock/community.svg)](https://gitter.im/ArcBlock/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
@@ -50,7 +50,7 @@ Checkout examples folder
 
 ## Contribution
 
-Checkout [CONTRIBUTION.md](https://github.com/ArcBlock/asset-chain/blob/master/CONTRIBUTION.md)
+Checkout [CONTRIBUTION.md](https://github.com/ArcBlock/did-connect/blob/master/CONTRIBUTION.md)
 
 ## Compatibility
 
@@ -58,7 +58,7 @@ OCAP SDK works with node.js v10.x or above, checkout github actions for build st
 
 ## Report a Bug?
 
-Bugs and feature requests please create new issues [here](https://github.com/ArcBlock/asset-chain/issues)
+Bugs and feature requests please create new issues [here](https://github.com/ArcBlock/did-connect/issues)
 
 ## License
 
