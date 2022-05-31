@@ -73,7 +73,7 @@
     "gen-dts": "j2d lib/index.js",
     "format-docs": "remark . -o",
     "test": "jest --forceExit --detectOpenHandles",
-    "coverage": "yarn test -- --coverage"
+    "coverage": "yarn test --coverage"
   },
   "resolutions": {
     "tweetnacl": "1.0.3"
