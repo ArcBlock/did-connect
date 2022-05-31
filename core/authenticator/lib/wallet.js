@@ -13,29 +13,6 @@ const debug = require('debug')(`${require('../package.json').name}:authenticator
 const { DEFAULT_CHAIN_INFO } = BaseAuthenticator;
 const DEFAULT_TIMEOUT = 8000;
 
-const formatDisplay = (display) => {
-  // empty
-  if (!display) {
-    return '';
-  }
-
-  // object like
-  if (display && display.type && display.content) {
-    return JSON.stringify(pick(display, ['type', 'content']));
-  }
-
-  // string like
-  try {
-    const parsed = JSON.parse(display);
-    if (parsed && parsed.type && parsed.content) {
-      return display;
-    }
-    return '';
-  } catch (err) {
-    return '';
-  }
-};
-
 class WalletAuthenticator extends BaseAuthenticator {
   /**
    * @typedef ApplicationInfo
@@ -329,4 +306,3 @@ class WalletAuthenticator extends BaseAuthenticator {
 }
 
 module.exports = WalletAuthenticator;
-module.exports.formatDisplay = formatDisplay;

@@ -61,7 +61,7 @@
   "gitHead": "570a366418890ded86422e168417bae0c9967e35",
   "dependencies": {
     "@did-connect/relay-storage": "^2.0.0",
-    "debug": "^4.3.1",
+    "debug": "^4.3.4",
     "mongodb": "3.1.13"
   }
 }

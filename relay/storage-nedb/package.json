@@ -63,6 +63,6 @@
     "@did-connect/relay-storage": "^2.0.0",
     "@nedb/core": "1.x",
     "@nedb/multi": "1.x",
-    "debug": "^4.3.1"
+    "debug": "^4.3.4"
   }
 }
