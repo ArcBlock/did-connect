@@ -46,6 +46,7 @@ module.exports = (router, handlers, prefix = '/connect/relay') => {
     req.context = {
       didwallet,
       body: req.body,
+      headers: req.headers,
       sessionId,
       session,
       locale,

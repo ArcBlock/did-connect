@@ -1,4 +1,3 @@
-const pick = require('lodash/pick');
 const omit = require('lodash/omit');
 const Jwt = require('@arcblock/jwt');
 const { toBase58 } = require('@ocap/util');
@@ -8,10 +7,10 @@ const schema = require('@did-connect/validator');
 const BaseAuthenticator = require('./base');
 
 // eslint-disable-next-line
-const debug = require('debug')(`${require('../package.json').name}:authenticator:wallet`);
+const debug = require('debug')(`${require('../package.json').name}`);
 
-const { DEFAULT_CHAIN_INFO } = BaseAuthenticator;
 const DEFAULT_TIMEOUT = 8000;
+const DEFAULT_CHAIN_INFO = { host: 'none' };
 
 class WalletAuthenticator extends BaseAuthenticator {
   /**
@@ -61,13 +60,12 @@ class WalletAuthenticator extends BaseAuthenticator {
    *   timeout: 8000,
    * });
    */
-  constructor({ wallet, appInfo, timeout = DEFAULT_TIMEOUT, chainInfo = DEFAULT_CHAIN_INFO }) {
+  constructor({ wallet, appInfo, chainInfo = DEFAULT_CHAIN_INFO, timeout = DEFAULT_TIMEOUT }) {
     super();
 
     this.wallet = this._validateWallet(wallet);
     this.appInfo = this._validateAppInfo(appInfo);
     this.chainInfo = chainInfo;
-
     this.timeout = timeout;
   }
 
@@ -75,12 +73,12 @@ class WalletAuthenticator extends BaseAuthenticator {
    * Sign a plain response, usually on auth success or error
    *
    * @method
-   * @param {object} params
-   * @param {object} params.response - response
-   * @param {string} params.errorMessage - error message, default to empty
-   * @param {string} params.successMessage - success message, default to empty
-   * @param {string} params.nextWorkflow - https://github.com/ArcBlock/ABT-DID-Protocol#concatenate-multiple-workflow
-   * @param {object} request
+   * @param {object} data
+   * @param {object} data.response - response
+   * @param {string} data.errorMessage - error message, default to empty
+   * @param {string} data.successMessage - success message, default to empty
+   * @param {string} data.nextWorkflow - https://github.com/ArcBlock/ABT-DID-Protocol#concatenate-multiple-workflow
+   * @param {object} context
    * @returns {object} { appPk, authInfo }
    */
   signJson(data, context) {
@@ -107,10 +105,10 @@ class WalletAuthenticator extends BaseAuthenticator {
     const { didwallet, session } = context;
 
     return {
-      appPk: toBase58(wallet.publicKey),
+      appPk: toBase58(this.wallet.publicKey),
       authInfo: Jwt.sign(
-        wallet.address,
-        wallet.secretKey,
+        this.wallet.address,
+        this.wallet.secretKey,
         {
           appInfo: session.appInfo,
           status: errorMessage ? 'error' : 'ok',
@@ -152,14 +150,14 @@ class WalletAuthenticator extends BaseAuthenticator {
       action: 'responseAuth',
       challenge,
       appInfo,
-      chainInfo: { host: 'none', id: 'none' }, // FIXME: get chainInfo from claim
+      chainInfo: DEFAULT_CHAIN_INFO, // FIXME: get chainInfo from claim
       requestedClaims: claims, // FIXME: validate using schema?
       url: nextUrl,
     };
 
     return {
-      appPk: toBase58(wallet.publicKey),
-      authInfo: Jwt.sign(wallet.address, wallet.secretKey, payload, true, didwallet.jwt),
+      appPk: toBase58(this.wallet.publicKey),
+      authInfo: Jwt.sign(this.wallet.address, this.wallet.secretKey, payload, true, didwallet.jwt),
       signed: true,
     };
   }
@@ -210,21 +208,8 @@ class WalletAuthenticator extends BaseAuthenticator {
     return this.appInfo;
   }
 
-  async getWalletInfo(params) {
-    if (typeof this.wallet === 'function') {
-      const result = await this.tryWithTimeout(() => this.wallet(params));
-      if (this._validateWallet(result)) {
-        return result;
-      }
-
-      throw new Error('Invalid wallet function provided');
-    }
-
-    return this.wallet;
-  }
-
   /**
-   * Verify a DID auth response sent from DID Wallet
+   * Verify a DID connect response sent from DID Wallet
    *
    * @method
    * @param {object} data
@@ -266,7 +251,7 @@ class WalletAuthenticator extends BaseAuthenticator {
     }
 
     if (!info) {
-      throw new Error('Wallet authenticator can not work with invalid appInfo: empty');
+      throw new Error('Wallet authenticator can not work with appInfo');
     }
 
     const { value, error } = schema.appInfo.validate(info);

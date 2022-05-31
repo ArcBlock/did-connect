@@ -5,6 +5,7 @@ const Jwt = require('@arcblock/jwt');
 const objectHash = require('object-hash');
 const { WsServer } = require('@arcblock/ws');
 const { isValid } = require('@arcblock/did');
+const { context: contextSchema, session: sessionSchema } = require('@did-connect/validator');
 
 const { getStepChallenge, parseWalletUA, formatDisplay } = require('./util');
 
@@ -51,7 +52,7 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
   const wsServer = createSocketServer(logger, socketPathname);
 
   const isSessionFinalized = (x) => ['error', 'timeout', 'canceled', 'rejected'].includes(x.status);
-  const isValidContext = (x) => !!x;
+  const isValidContext = (x) => !contextSchema.validate(x).error;
 
   const { signJson, signClaims } = authenticator;
 
@@ -69,15 +70,14 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
       return { error: 'Invalid session updater', code: 400 };
     }
 
-    return storage.create(sessionId, {
+    const session = {
       status: 'created',
       updaterPk,
       strategy,
       // the client shall compose the deep-link by itself, since the rules are simple enough
       authUrl,
       challenge: getStepChallenge(),
-      // FIXME: fix this in most cases
-      appInfo: await authenticator.getAppInfo({ request: context.req, baseUrl: new URL(authUrl).origin, wallet }),
+      appInfo: await authenticator.getAppInfo({ ...context, baseUrl: new URL(authUrl).origin }),
       previousConnected: context.previousConnected,
       currentConnected: null,
       currentStep: 0,
@@ -85,7 +85,14 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
       responseClaims: [], // wallet submitted claims
       approveResults: [],
       error: '',
-    });
+    };
+
+    const { value, error } = sessionSchema.validate(session);
+    if (error) {
+      return { error: `Invalid session: ${error.details.map((x) => x.message).join(', ')}`, code: 400 };
+    }
+
+    return storage.create(sessionId, value);
   };
 
   const handleSessionRead = async (sessionId) => {
@@ -140,6 +147,12 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
     }
 
     logger.info('update session', context.sessionId, body, updates);
+
+    const { error } = sessionSchema.validate({ ...session, ...updates });
+    if (error) {
+      return { error: `Invalid session: ${error.details.map((x) => x.message).join(', ')}`, code: 400 };
+    }
+
     return storage.update(context.sessionId, updates);
   };
 

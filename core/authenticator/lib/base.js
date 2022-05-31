@@ -3,7 +3,7 @@ const Jwt = require('@arcblock/jwt');
 const { isValid } = require('@ocap/wallet');
 
 // eslint-disable-next-line
-const debug = require('debug')(`${require('../../package.json').name}:authenticator:base`);
+const debug = require('debug')(`${require('../../package.json').name}`);
 
 class BaseAuthenticator {
   _validateWallet(wallet) {
@@ -11,25 +11,11 @@ class BaseAuthenticator {
       throw new Error('WalletAuthenticator cannot work without wallet');
     }
 
-    if (typeof wallet === 'function') {
+    if (isValid(wallet)) {
       return wallet;
     }
 
-    if (isValid(wallet)) {
-      return { sk: wallet.secretKey, pk: wallet.publicKey, address: wallet.address };
-    }
-
-    if (!wallet.sk) {
-      throw new Error('WalletAuthenticator cannot work without wallet.sk');
-    }
-    if (!wallet.pk) {
-      throw new Error('WalletAuthenticator cannot work without wallet.pk');
-    }
-    if (!wallet.address) {
-      throw new Error('WalletAuthenticator cannot work without wallet.address');
-    }
-
-    return wallet;
+    throw new Error('WalletAuthenticator cannot work without valid wallet');
   }
 
   /**
@@ -97,4 +83,3 @@ class BaseAuthenticator {
 }
 
 module.exports = BaseAuthenticator;
-module.exports.DEFAULT_CHAIN_INFO = { id: 'none', host: 'none' };

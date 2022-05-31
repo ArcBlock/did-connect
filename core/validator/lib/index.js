@@ -28,8 +28,50 @@ const appInfo = Joi.object({
   nodeDid: Joi.DID().optional(),
 }).options({ stripUnknown: false, noDefaults: false });
 
+const claims = createClaimsSchema(chainInfo);
+
+const session = Joi.object({
+  status: Joi.string().required(), // TODO: whitelist
+  updaterPk: Joi.string().required(),
+  strategy: Joi.alternatives().try(Joi.DID(), Joi.string().valid('default')),
+  challenge: Joi.string().required(),
+  appInfo,
+  previousConnected: Joi.object({
+    userDid: Joi.DID().required(),
+    userPk: Joi.string().required(),
+    wallet: Joi.any().required(),
+  })
+    .optional()
+    .default(null),
+  currentConnected: Joi.object({
+    userDid: Joi.DID().required(),
+    userPk: Joi.string().required(),
+  })
+    .optional()
+    .default(null),
+  currentStep: Joi.number().integer().min(0),
+  requestedClaims: Joi.array()
+    .items(...Object.values(claims))
+    .default([]),
+  responseClaims: Joi.array().items(Joi.any()).default([]),
+  approveResults: Joi.array().items(Joi.any()).default([]),
+  error: Joi.string().optional().default(''),
+}).options({ stripUnknown: true, noDefaults: false });
+
+const context = Joi.object({
+  didwallet: Joi.object().optional(),
+  body: Joi.object().optional().default({}),
+  headers: Joi.object().required(),
+  sessionId: Joi.string().guid().required(),
+  session: session.optional().default(null),
+  locale: Joi.string().required(),
+  previousConnected: Joi.object().optional(),
+}).options({ stripUnknown: true, noDefaults: false });
+
 module.exports = Object.freeze({
+  session,
+  context,
+  claims,
   chainInfo,
   appInfo,
-  claims: createClaimsSchema(chainInfo),
 });
