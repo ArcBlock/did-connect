@@ -12,7 +12,6 @@ const rootDir = path.resolve(__dirname);
 // For a detailed explanation regarding each configuration property, visit:
 // https://jestjs.io/docs/en/configuration.html
 module.exports = {
-  name,
   rootDir,
   displayName: name,
   verbose: true,

@@ -1,9 +1,5 @@
-// For a detailed explanation regarding each configuration property, visit:
-// https://jestjs.io/docs/en/configuration.html
+const base = require('../../jest.config.base');
+
 module.exports = {
-  browser: false,
-  clearMocks: true,
-  coverageDirectory: 'coverage',
-  testEnvironment: 'node',
-  testMatch: ['**/__tests__/**/*.js?(x)', '**/?(*.)+(spec).js?(x)'],
+  ...base,
 };
