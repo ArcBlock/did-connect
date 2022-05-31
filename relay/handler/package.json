@@ -25,6 +25,7 @@
     "@ocap/util": "1.16.15",
     "lodash": "^4.17.21",
     "object-hash": "^3.0.0",
+    "p-wait-for": "3.x",
     "semver": "^7.3.4",
     "uuid": "^8.3.2"
   },

@@ -10,8 +10,8 @@ const MemoryAuthStorage = require('@arcblock/did-auth-storage-memory');
 const { fromRandom, WalletType } = require('@ocap/wallet');
 const { toBase58 } = require('@ocap/util');
 
-const createTestServer = require('../../../../scripts/create-test-server');
-const { WalletHandlers, WalletAuthenticator: Authenticator } = require('../../lib');
+const createTestServer = require('../../../scripts/create-test-server');
+const { createHandlers } = require('..');
 
 const type = WalletType({
   role: Mcrypto.types.RoleType.ROLE_APPLICATION,

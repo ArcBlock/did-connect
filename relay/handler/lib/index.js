@@ -406,4 +406,4 @@ function createHandlers({
   };
 }
 
-module.exports = { createHandlers, parseWalletUA };
+module.exports = { createHandlers, parseWalletUA, getStepChallenge };

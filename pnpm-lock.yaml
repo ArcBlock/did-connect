@@ -168,6 +168,7 @@ importers:
       jest: ^27.3.1
       lodash: ^4.17.21
       object-hash: ^3.0.0
+      p-wait-for: 3.x
       remark-cli: ^10.0.1
       remark-preset-github: ^4.0.1
       semver: ^7.3.4
@@ -181,6 +182,7 @@ importers:
       '@ocap/util': 1.16.15
       lodash: 4.17.21
       object-hash: 3.0.0
+      p-wait-for: 3.2.0
       semver: 7.3.7
       uuid: 8.3.2
     devDependencies:
@@ -14654,6 +14656,13 @@ packages:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
     engines: {node: '>=6'}
     dev: true
+
+  /p-wait-for/3.2.0:
+    resolution: {integrity: sha512-wpgERjNkLrBiFmkMEjuZJEWKKDrNfHCKA1OhyN1wg1FrLkULbviEy6py1AyJUgZ72YWFbZ38FIpnqvVqAlDUwA==}
+    engines: {node: '>=8'}
+    dependencies:
+      p-timeout: 3.2.0
+    dev: false
 
   /pako/1.0.11:
     resolution: {integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==}
