@@ -1,14 +1,7 @@
-const { claims } = require('../lib/schema');
+const createStateMachine = require('..');
 
-describe('Schema', () => {
-  test('should trusted issuers work', () => {
-    const { error } = claims.verifiableCredential.validate({
-      description: 'xxx',
-      filters: [
-        { trustedIssuers: ['z1Tp3bGid5Kwc1NygaBPdVVg6BuhJagF2G4'] },
-        { trustedIssuers: [{ did: 'z1nUziGm98Rigq2ZoRQNyHd4Xw1KkVKCWE6', endpoint: 'https://arcblock.io' }] },
-      ],
-    });
-    expect(error).toBeFalsy();
+describe('State', () => {
+  test('should be a function', () => {
+    expect(typeof createStateMachine).toBe('function');
   });
 });
