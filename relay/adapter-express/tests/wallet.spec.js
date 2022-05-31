@@ -11,7 +11,7 @@ const { fromRandom, WalletType } = require('@ocap/wallet');
 const { toBase58 } = require('@ocap/util');
 
 const createTestServer = require('../../../../scripts/create-test-server');
-const { WalletHandlers, WalletAuthenticator: Authenticator } = require('../../lib');
+const { WalletHandlers, Authenticator: Authenticator } = require('../../lib');
 
 const type = WalletType({
   role: Mcrypto.types.RoleType.ROLE_APPLICATION,

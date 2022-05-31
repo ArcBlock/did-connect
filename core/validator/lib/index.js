@@ -34,6 +34,9 @@ const session = Joi.object({
   status: Joi.string().required(), // TODO: whitelist
   updaterPk: Joi.string().required(),
   strategy: Joi.alternatives().try(Joi.DID(), Joi.string().valid('default')),
+  authUrl: Joi.string()
+    .uri({ scheme: ['http', 'https'] })
+    .required(),
   challenge: Joi.string().required(),
   appInfo,
   previousConnected: Joi.object({
@@ -42,20 +45,20 @@ const session = Joi.object({
     wallet: Joi.any().required(),
   })
     .optional()
-    .default(null),
+    .allow(null),
   currentConnected: Joi.object({
     userDid: Joi.DID().required(),
     userPk: Joi.string().required(),
   })
     .optional()
-    .default(null),
+    .allow(null),
   currentStep: Joi.number().integer().min(0),
   requestedClaims: Joi.array()
     .items(...Object.values(claims))
     .default([]),
   responseClaims: Joi.array().items(Joi.any()).default([]),
   approveResults: Joi.array().items(Joi.any()).default([]),
-  error: Joi.string().optional().default(''),
+  error: Joi.string().optional().allow(''),
 }).options({ stripUnknown: true, noDefaults: false });
 
 const context = Joi.object({
@@ -65,7 +68,7 @@ const context = Joi.object({
   sessionId: Joi.string().guid().required(),
   session: session.optional().default(null),
   locale: Joi.string().required(),
-  previousConnected: Joi.object().optional(),
+  previousConnected: Joi.object().optional().allow(null),
 }).options({ stripUnknown: true, noDefaults: false });
 
 module.exports = Object.freeze({
@@ -74,4 +77,5 @@ module.exports = Object.freeze({
   claims,
   chainInfo,
   appInfo,
+  Joi,
 });

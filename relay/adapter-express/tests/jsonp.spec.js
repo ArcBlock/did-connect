@@ -9,7 +9,7 @@ const MemoryAuthStorage = require('@arcblock/did-auth-storage-memory');
 const { fromRandom, WalletType } = require('@ocap/wallet');
 const { toBase58 } = require('@ocap/util');
 
-const { WalletHandlers, WalletAuthenticator: Authenticator } = require('@arcblock/did-auth');
+const { WalletHandlers, Authenticator: Authenticator } = require('@arcblock/did-auth');
 const Jwt = require('@arcblock/jwt');
 
 const createTestServer = require('../../../../scripts/create-test-server');

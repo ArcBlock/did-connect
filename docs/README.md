@@ -1,9 +1,9 @@
 ## Classes
 
 <dl>
-<dt><a href="#AgentAuthenticator">AgentAuthenticator</a> ⇐ `<a href="#WalletAuthenticator">WalletAuthenticator</a>`</dt>
+<dt><a href="#AgentAuthenticator">AgentAuthenticator</a> ⇐ `<a href="#Authenticator">Authenticator</a>`</dt>
 <dd></dd>
-<dt><a href="#WalletAuthenticator">WalletAuthenticator</a></dt>
+<dt><a href="#Authenticator">Authenticator</a></dt>
 <dd></dd>
 <dt><a href="#BaseHandler">BaseHandler</a></dt>
 <dd></dd>
@@ -15,7 +15,6 @@
 <dd></dd>
 </dl>
 
-
 ## Typedefs
 
 <dl>
@@ -25,21 +24,20 @@
 <dd></dd>
 </dl>
 
-
-## AgentAuthenticator ⇐ [`WalletAuthenticator`](#WalletAuthenticator)
+## AgentAuthenticator ⇐ [`Authenticator`](#Authenticator)
 
 **Kind**: global class\
-**Extends**: [`WalletAuthenticator`](#WalletAuthenticator)
+**Extends**: [`Authenticator`](#Authenticator)
 
-* [AgentAuthenticator](#AgentAuthenticator) ⇐ [`WalletAuthenticator`](#WalletAuthenticator)
-  * [new AgentAuthenticator()](#new_AgentAuthenticator_new)
-  * [sign(params)](#AgentAuthenticator+sign) ⇒ `object`
-  * [uri(params)](#WalletAuthenticator+uri) ⇒ `string`
-  * [getPublicUrl(pathname, params)](#WalletAuthenticator+getPublicUrl) ⇒ `string`
-  * [signResponse(params, baseUrl, request)](#WalletAuthenticator+signResponse) ⇒ `object`
-  * [getChainInfo(params, info)](#WalletAuthenticator+getChainInfo) ⇒ [`ChainInfo`](#ChainInfo)
-  * [getAppInfo(params, info)](#WalletAuthenticator+getAppInfo) ⇒ [`ApplicationInfo`](#ApplicationInfo)
-  * [verify(data, \[locale\], \[enforceTimestamp\])](#WalletAuthenticator+verify) ⇒
+- [AgentAuthenticator](#AgentAuthenticator) ⇐ [`Authenticator`](#Authenticator)
+  - [new AgentAuthenticator()](#new_AgentAuthenticator_new)
+  - [sign(params)](#AgentAuthenticator+sign) ⇒ `object`
+  - [uri(params)](#Authenticator+uri) ⇒ `string`
+  - [getPublicUrl(pathname, params)](#Authenticator+getPublicUrl) ⇒ `string`
+  - [signResponse(params, baseUrl, request)](#Authenticator+signResponse) ⇒ `object`
+  - [getChainInfo(params, info)](#Authenticator+getChainInfo) ⇒ [`ChainInfo`](#ChainInfo)
+  - [getAppInfo(params, info)](#Authenticator+getAppInfo) ⇒ [`ApplicationInfo`](#ApplicationInfo)
+  - [verify(data, \[locale\], \[enforceTimestamp\])](#Authenticator+verify) ⇒
 
 ### new AgentAuthenticator()
 
@@ -51,7 +49,7 @@ Can be used to build centralized platform services that aims to ease the life of
 Sign a auth response that returned to wallet: tell the wallet the appInfo/chainInfo
 
 **Kind**: instance method of [`AgentAuthenticator`](#AgentAuthenticator)\
-**Overrides**: [`sign`](#WalletAuthenticator+sign)\
+**Overrides**: [`sign`](#Authenticator+sign)\
 **Returns**: `object` - { appPk, authInfo }
 
 | Param                     | Type     | Description                                                 |
@@ -145,22 +143,21 @@ Verify a DID auth response sent from DID Wallet
 | [locale]           | `string`  | `&quot;en&quot;` |
 | [enforceTimestamp] | `boolean` | `true`           |
 
-
-## WalletAuthenticator
+## Authenticator
 
 **Kind**: global class
 
-* [WalletAuthenticator](#WalletAuthenticator)
-  * [new WalletAuthenticator(config)](#new_WalletAuthenticator_new)
-  * [uri(params)](#WalletAuthenticator+uri) ⇒ `string`
-  * [getPublicUrl(pathname, params)](#WalletAuthenticator+getPublicUrl) ⇒ `string`
-  * [signResponse(params, baseUrl, request)](#WalletAuthenticator+signResponse) ⇒ `object`
-  * [sign(params)](#WalletAuthenticator+sign) ⇒ `object`
-  * [getChainInfo(params, info)](#WalletAuthenticator+getChainInfo) ⇒ [`ChainInfo`](#ChainInfo)
-  * [getAppInfo(params, info)](#WalletAuthenticator+getAppInfo) ⇒ [`ApplicationInfo`](#ApplicationInfo)
-  * [verify(data, \[locale\], \[enforceTimestamp\])](#WalletAuthenticator+verify) ⇒
+- [Authenticator](#Authenticator)
+  - [new Authenticator(config)](#new_Authenticator_new)
+  - [uri(params)](#Authenticator+uri) ⇒ `string`
+  - [getPublicUrl(pathname, params)](#Authenticator+getPublicUrl) ⇒ `string`
+  - [signResponse(params, baseUrl, request)](#Authenticator+signResponse) ⇒ `object`
+  - [sign(params)](#Authenticator+sign) ⇒ `object`
+  - [getChainInfo(params, info)](#Authenticator+getChainInfo) ⇒ [`ChainInfo`](#ChainInfo)
+  - [getAppInfo(params, info)](#Authenticator+getAppInfo) ⇒ [`ApplicationInfo`](#ApplicationInfo)
+  - [verify(data, \[locale\], \[enforceTimestamp\])](#Authenticator+verify) ⇒
 
-### new WalletAuthenticator(config)
+### new Authenticator(config)
 
 Creates an instance of DID Authenticator.
 
@@ -198,11 +195,11 @@ const auth = new Authenticator({
 });
 ```
 
-### walletAuthenticator.uri(params) ⇒ `string`
+### Authenticator.uri(params) ⇒ `string`
 
 Generate a deep link url that can be displayed as QRCode for DID Wallet to consume
 
-**Kind**: instance method of [`WalletAuthenticator`](#WalletAuthenticator)
+**Kind**: instance method of [`Authenticator`](#Authenticator)
 
 | Param           | Type     | Description                                            |
 | --------------- | -------- | ------------------------------------------------------ |
@@ -212,22 +209,22 @@ Generate a deep link url that can be displayed as QRCode for DID Wallet to consu
 | params.pathname | `string` | wallet callback pathname                               |
 | params.query    | `object` | params that should be persisted in wallet callback url |
 
-### walletAuthenticator.getPublicUrl(pathname, params) ⇒ `string`
+### Authenticator.getPublicUrl(pathname, params) ⇒ `string`
 
 Compute public url to return to wallet
 
-**Kind**: instance method of [`WalletAuthenticator`](#WalletAuthenticator)
+**Kind**: instance method of [`Authenticator`](#Authenticator)
 
 | Param    | Type     |
 | -------- | -------- |
 | pathname | `string` |
 | params   | `object` |
 
-### walletAuthenticator.signResponse(params, baseUrl, request) ⇒ `object`
+### Authenticator.signResponse(params, baseUrl, request) ⇒ `object`
 
 Sign a plain response, usually on auth success or error
 
-**Kind**: instance method of [`WalletAuthenticator`](#WalletAuthenticator)\
+**Kind**: instance method of [`Authenticator`](#Authenticator)\
 **Returns**: `object` - { appPk, authInfo }
 
 | Param                 | Type     | Description                                                                  |
@@ -240,11 +237,11 @@ Sign a plain response, usually on auth success or error
 | baseUrl               | `string` |                                                                              |
 | request               | `object` |                                                                              |
 
-### walletAuthenticator.sign(params) ⇒ `object`
+### Authenticator.sign(params) ⇒ `object`
 
 Sign a auth response that returned to wallet: tell the wallet the appInfo/chainInfo
 
-**Kind**: instance method of [`WalletAuthenticator`](#WalletAuthenticator)\
+**Kind**: instance method of [`Authenticator`](#Authenticator)\
 **Returns**: `object` - { appPk, authInfo }
 
 | Param                    | Type     | Description                                       |
@@ -259,33 +256,33 @@ Sign a auth response that returned to wallet: tell the wallet the appInfo/chainI
 | params.context.userPk    | `string` | decoded from req.query, base58                    |
 | params.context.didwallet | `string` | DID Wallet os and version                         |
 
-### walletAuthenticator.getChainInfo(params, info) ⇒ [`ChainInfo`](#ChainInfo)
+### Authenticator.getChainInfo(params, info) ⇒ [`ChainInfo`](#ChainInfo)
 
 Determine chainInfo on the fly
 
-**Kind**: instance method of [`WalletAuthenticator`](#WalletAuthenticator)
+**Kind**: instance method of [`Authenticator`](#Authenticator)
 
 | Param  | Type                    | Description                          |
 | ------ | ----------------------- | ------------------------------------ |
 | params | `object`                | contains the context of this request |
 | info   | `object` \| `undefined` | chain info object or function        |
 
-### walletAuthenticator.getAppInfo(params, info) ⇒ [`ApplicationInfo`](#ApplicationInfo)
+### Authenticator.getAppInfo(params, info) ⇒ [`ApplicationInfo`](#ApplicationInfo)
 
 Determine appInfo on the fly
 
-**Kind**: instance method of [`WalletAuthenticator`](#WalletAuthenticator)
+**Kind**: instance method of [`Authenticator`](#Authenticator)
 
 | Param  | Type                    | Description                          |
 | ------ | ----------------------- | ------------------------------------ |
 | params | `object`                | contains the context of this request |
 | info   | `object` \| `undefined` | app info object or function          |
 
-### walletAuthenticator.verify(data, \[locale], \[enforceTimestamp]) ⇒
+### Authenticator.verify(data, \[locale], \[enforceTimestamp]) ⇒
 
 Verify a DID auth response sent from DID Wallet
 
-**Kind**: instance method of [`WalletAuthenticator`](#WalletAuthenticator)\
+**Kind**: instance method of [`Authenticator`](#Authenticator)\
 **Returns**: Promise<boolean>
 
 | Param              | Type      | Default          |
@@ -293,7 +290,6 @@ Verify a DID auth response sent from DID Wallet
 | data               | `object`  |                  |
 | [locale]           | `string`  | `&quot;en&quot;` |
 | [enforceTimestamp] | `boolean` | `true`           |
-
 
 ## BaseHandler
 
@@ -311,24 +307,23 @@ Creates an instance of DID Auth Handlers.
 | config.authenticator   | `object`   |         | Authenticator instance that can to jwt sign/verify |
 | [config.onConnect]     | `function` | `noop`  | function called when wallet selected did           |
 
-
 ## WalletHandlers ⇐ `EventEmitter`
 
 **Kind**: global class\
 **Extends**: `EventEmitter`
 
-* [WalletHandlers](#WalletHandlers) ⇐ `EventEmitter`
-  * [new WalletHandlers()](#new_WalletHandlers_new)
-  * [new WalletHandlers(config)](#new_WalletHandlers_new)
-  * [attach(config)](#WalletHandlers+attach) ⇒
+- [WalletHandlers](#WalletHandlers) ⇐ `EventEmitter`
+  - [new WalletHandlers()](#new_WalletHandlers_new)
+  - [new WalletHandlers(config)](#new_WalletHandlers_new)
+  - [attach(config)](#WalletHandlers+attach) ⇒
 
 ### new WalletHandlers()
 
 Events that are emitted during an did-auth process
 
-* scanned: when the qrcode is scanned by wallet
-* succeed: when authentication complete
-* error: when something goes wrong
+- scanned: when the qrcode is scanned by wallet
+- succeed: when authentication complete
+- error: when something goes wrong
 
 ### new WalletHandlers(config)
 
@@ -352,11 +347,11 @@ Creates an instance of DID Auth Handlers.
 Attach routes and handlers for authenticator
 Now express app have route handlers attached to the following url
 
-* `GET /api/did/{action}/token` create new token
-* `GET /api/did/{action}/status` check for token status
-* `GET /api/did/{action}/timeout` expire a token
-* `GET /api/did/{action}/auth` create auth response
-* `POST /api/did/{action}/auth` process payment request
+- `GET /api/did/{action}/token` create new token
+- `GET /api/did/{action}/status` check for token status
+- `GET /api/did/{action}/timeout` expire a token
+- `GET /api/did/{action}/auth` create auth response
+- `POST /api/did/{action}/auth` process payment request
 
 **Kind**: instance method of [`WalletHandlers`](#WalletHandlers)\
 **Returns**: void
@@ -375,24 +370,23 @@ Now express app have route handlers attached to the following url
 | [config.onExpire]      | `function`                     | `noop`          | callback when the action token expired                                |
 | [config.onError]       | `function`                     | `console.error` | callback when there are some errors                                   |
 | [config.authPrincipal] | `boolean` \| `string` \| `did` | `true`          | whether should we do auth principal claim first                       |
-
 
 ## WalletHandlers
 
 **Kind**: global class
 
-* [WalletHandlers](#WalletHandlers)
-  * [new WalletHandlers()](#new_WalletHandlers_new)
-  * [new WalletHandlers(config)](#new_WalletHandlers_new)
-  * [attach(config)](#WalletHandlers+attach) ⇒
+- [WalletHandlers](#WalletHandlers)
+  - [new WalletHandlers()](#new_WalletHandlers_new)
+  - [new WalletHandlers(config)](#new_WalletHandlers_new)
+  - [attach(config)](#WalletHandlers+attach) ⇒
 
 ### new WalletHandlers()
 
 Events that are emitted during an did-auth process
 
-* scanned: when the qrcode is scanned by wallet
-* succeed: when authentication complete
-* error: when something goes wrong
+- scanned: when the qrcode is scanned by wallet
+- succeed: when authentication complete
+- error: when something goes wrong
 
 ### new WalletHandlers(config)
 
@@ -416,11 +410,11 @@ Creates an instance of DID Auth Handlers.
 Attach routes and handlers for authenticator
 Now express app have route handlers attached to the following url
 
-* `GET /api/did/{action}/token` create new token
-* `GET /api/did/{action}/status` check for token status
-* `GET /api/did/{action}/timeout` expire a token
-* `GET /api/did/{action}/auth` create auth response
-* `POST /api/did/{action}/auth` process payment request
+- `GET /api/did/{action}/token` create new token
+- `GET /api/did/{action}/status` check for token status
+- `GET /api/did/{action}/timeout` expire a token
+- `GET /api/did/{action}/auth` create auth response
+- `POST /api/did/{action}/auth` process payment request
 
 **Kind**: instance method of [`WalletHandlers`](#WalletHandlers)\
 **Returns**: void
@@ -440,14 +434,13 @@ Now express app have route handlers attached to the following url
 | [config.onError]       | `function`                     | `console.error` | callback when there are some errors                                   |
 | [config.authPrincipal] | `boolean` \| `string` \| `did` | `true`          | whether should we do auth principal claim first                       |
 
-
 ## AgentWalletHandlers
 
 **Kind**: global class
 
-* [AgentWalletHandlers](#AgentWalletHandlers)
-  * [new AgentWalletHandlers(config)](#new_AgentWalletHandlers_new)
-  * [attach(config)](#AgentWalletHandlers+attach) ⇒
+- [AgentWalletHandlers](#AgentWalletHandlers)
+  - [new AgentWalletHandlers(config)](#new_AgentWalletHandlers_new)
+  - [attach(config)](#AgentWalletHandlers+attach) ⇒
 
 ### new AgentWalletHandlers(config)
 
@@ -470,11 +463,11 @@ Creates an instance of DID Auth Handlers.
 Attach routes and handlers for authenticator
 Now express app have route handlers attached to the following url
 
-* `GET /api/agent/:authorizeId/{action}/token` create new token
-* `GET /api/agent/:authorizeId/{action}/status` check for token status
-* `GET /api/agent/:authorizeId/{action}/timeout` expire a token
-* `GET /api/agent/:authorizeId/{action}/auth` create auth response
-* `POST /api/agent/:authorizeId/{action}/auth` process payment request
+- `GET /api/agent/:authorizeId/{action}/token` create new token
+- `GET /api/agent/:authorizeId/{action}/status` check for token status
+- `GET /api/agent/:authorizeId/{action}/timeout` expire a token
+- `GET /api/agent/:authorizeId/{action}/auth` create auth response
+- `POST /api/agent/:authorizeId/{action}/auth` process payment request
 
 **Kind**: instance method of [`AgentWalletHandlers`](#AgentWalletHandlers)\
 **Returns**: void
@@ -494,7 +487,6 @@ Now express app have route handlers attached to the following url
 | [config.onError]       | `function`                     | `console.error` | callback when there are some errors                                   |
 | [config.authPrincipal] | `boolean` \| `string` \| `did` | `true`          | whether should we do auth principal claim first                       |
 
-
 ## ApplicationInfo
 
 **Kind**: global typedef\
@@ -508,7 +500,6 @@ Now express app have route handlers attached to the following url
 | link        | `string` | application home page, with which user can return application from wallet |
 | path        | `string` | deep link url                                                             |
 | publisher   | `string` | application did with `did:abt:` prefix                                    |
-
 
 ## ChainInfo
 

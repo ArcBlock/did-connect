@@ -2,8 +2,7 @@
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![docs](https://img.shields.io/badge/powered%20by-arcblock-green.svg)](https://docs.arcblock.io)
-[![Gitter](https://badges.gitter.im/ArcBlock/community.svg)](https://gitter.im/ArcBlock/community?utm_source=badge\&utm_medium=badge\&utm_campaign=pr-badge)
-
+[![Gitter](https://badges.gitter.im/ArcBlock/community.svg)](https://gitter.im/ArcBlock/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## Overview
 
@@ -11,16 +10,15 @@ This library is implemented according to [ABT-DID-Protocol](https://github.com/A
 
 Within a typical DID Connect Session, the application may request user to sign a transaction or provide some information, such as:
 
-* Provide a user profile, which may contain name, email
-* Prove ownership of a NFT
-* Prove ownership of a passport
+- Provide a user profile, which may contain name, email
+- Prove ownership of a NFT
+- Prove ownership of a passport
 
 The following diagram demonstrates how a typical DID Connect Session works:
 
 ![](./docs/workflow.png)
 
 `Claim` is the key concept in DID Connect Session, its used by the application to send specification of required info to finish the session. A claim is identified by `type`, and defined with a set of properties. Checkout the claim section for more information.
-
 
 ## Install
 
@@ -30,7 +28,6 @@ npm install @arcblock/did-auth
 yarn add @arcblock/did-auth
 ```
 
-
 ## Usage
 
 ### Basic Usage
@@ -38,11 +35,11 @@ yarn add @arcblock/did-auth
 ```js
 const SimpleStorage = require('@arcblock/did-auth-storage-nedb');
 const { fromRandom } = require('@ocap/wallet');
-const { WalletAuthenticator, WalletHandlers } = require('@arcblock/did-auth');
+const { Authenticator, WalletHandlers } = require('@arcblock/did-auth');
 
 // First setup authenticator and handler factory
 const wallet = fromRandom();
-const authenticator = new WalletAuthenticator({
+const authenticator = new Authenticator({
   wallet,
   baseUrl: 'http://wangshijun.natapp1.cc',
   appInfo: {
@@ -177,18 +174,17 @@ handlers.attach({
 });
 ```
 
-
 ## Lifecycle Callbacks
 
 Following callbacks are supported during the lifecycle of a DID-Connect session.
 
-* `onStart({ req, challenge, didwallet, extraParams, updateSession })`: optional, called when a new session starts, can be async, return values from this callback will be returned to and available from browser, error thrown from `onStart` will halt the session.
-* `onConnect({ req, challenge, userDid, userPk, extraParams, updateSession })`: optional, when wallet has selected `userDid` and `userPk`, you can return dynamic claims here, or do some permission check, error thrown from `onConnect` will halt the session.
-* `onDecline({ req, challenge, userDid, userPk, extraParams, updateSession })`: optional, when wallet has rejected dapp request.
-* `onAuth({ req, challenge, claims, userDid, userPk, extraParams, updateSession })`: required, when wallet has approved dapp request, and submitted info will be available in claims, which is a list of the dapp requested info.
-* `onComplete({ req, userDid, userPk, extraParams, updateSession })`: optional, when the did connect session has completed.
-* `onExpire({ extraParams })`: optional, when the did connect session has expired.
-* `onError({ err, extraParams })`: optional, when the did connect session encountered some error, default to `console.error`.
+- `onStart({ req, challenge, didwallet, extraParams, updateSession })`: optional, called when a new session starts, can be async, return values from this callback will be returned to and available from browser, error thrown from `onStart` will halt the session.
+- `onConnect({ req, challenge, userDid, userPk, extraParams, updateSession })`: optional, when wallet has selected `userDid` and `userPk`, you can return dynamic claims here, or do some permission check, error thrown from `onConnect` will halt the session.
+- `onDecline({ req, challenge, userDid, userPk, extraParams, updateSession })`: optional, when wallet has rejected dapp request.
+- `onAuth({ req, challenge, claims, userDid, userPk, extraParams, updateSession })`: required, when wallet has approved dapp request, and submitted info will be available in claims, which is a list of the dapp requested info.
+- `onComplete({ req, userDid, userPk, extraParams, updateSession })`: optional, when the did connect session has completed.
+- `onExpire({ extraParams })`: optional, when the did connect session has expired.
+- `onError({ err, extraParams })`: optional, when the did connect session encountered some error, default to `console.error`.
 
 Most commonly used callbacks are `onConnect` and `onAuth`.
 
@@ -209,7 +205,6 @@ handlers.attach({
   },
 });
 ```
-
 
 ## Claims
 

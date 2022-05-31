@@ -1,4 +1,4 @@
-const { parseWalletUA, getStepChallenge } = require('..');
+const { parseWalletUA, getStepChallenge, formatDisplay } = require('..');
 
 describe('#parseWalletUA', () => {
   describe('#android', () => {
@@ -57,12 +57,31 @@ describe('#parseWalletUA', () => {
   });
 });
 
-describe('#getStepChallenge', () => {
+describe('getStepChallenge', () => {
   test('should return random bytes', async () => {
     const c1 = getStepChallenge();
     const c2 = getStepChallenge();
     expect(c1).toBeTruthy();
     expect(c2).toBeTruthy();
     expect(c1).not.toEqual(c2);
+  });
+});
+
+describe('formatDisplay', () => {
+  test('should formatDisplay work as expected', () => {
+    const fn = formatDisplay;
+    expect(fn('')).toEqual('');
+    expect(fn(null)).toEqual('');
+    expect(fn(undefined)).toEqual('');
+    expect(fn(0)).toEqual('');
+    expect(fn('abc')).toEqual('');
+    expect(fn({ type: 'url', content: 'https://www.arcblock.io' })).toEqual(
+      JSON.stringify({ type: 'url', content: 'https://www.arcblock.io' })
+    );
+    expect(fn(JSON.stringify({ type: 'url', content: 'https://www.arcblock.io' }))).toEqual(
+      JSON.stringify({ type: 'url', content: 'https://www.arcblock.io' })
+    );
+    expect(fn(JSON.stringify({ type: 'url' }))).toEqual('');
+    expect(fn('{"value":xxx}')).toEqual('');
   });
 });
