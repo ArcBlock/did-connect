@@ -22,7 +22,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@did-connect/relay-storage-memory": "^2.0.0",
+    "@did-connect/storage-memory": "^2.0.0",
     "axios": "^0.27.2",
     "jest": "^28.1.0",
     "remark-cli": "^10.0.1",

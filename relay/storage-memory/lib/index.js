@@ -1,4 +1,4 @@
-const StorageInterface = require('@did-connect/relay-storage');
+const StorageInterface = require('@did-connect/storage');
 
 let storage = {};
 

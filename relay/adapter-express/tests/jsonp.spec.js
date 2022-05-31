@@ -5,7 +5,7 @@ const axios = require('axios');
 const qs = require('querystring');
 const url = require('url');
 const Mcrypto = require('@ocap/mcrypto');
-const MemoryAuthStorage = require('@arcblock/did-auth-storage-memory');
+const MemoryAuthStorage = require('@did-connect/storage-memory');
 const { fromRandom, WalletType } = require('@ocap/wallet');
 const { toBase58 } = require('@ocap/util');
 

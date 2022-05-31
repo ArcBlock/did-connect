@@ -1,5 +1,5 @@
 const path = require('path');
-const AuthStorage = require('@arcblock/did-auth-storage-nedb');
+const AuthStorage = require('@did-connect/storage-nedb');
 const getWallet = require('@blocklet/sdk/lib/wallet');
 const Authenticator = require('@blocklet/sdk/lib/wallet-authenticator');
 const WalletHandler = require('@blocklet/sdk/lib/wallet-handler');

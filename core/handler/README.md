@@ -33,7 +33,7 @@ yarn add @arcblock/did-auth
 ### Basic Usage
 
 ```js
-const SimpleStorage = require('@arcblock/did-auth-storage-nedb');
+const SimpleStorage = require('@did-connect/storage-nedb');
 const { fromRandom } = require('@ocap/wallet');
 const { Authenticator, WalletHandlers } = require('@arcblock/did-auth');
 

@@ -6,9 +6,9 @@ import * as events from 'events';
  * Which is used to persist state during the DID-Auth process in a dApp
  *
  * @class SessionStorage
- * @see @did-connect/relay-storage-firebase
- * @see @did-connect/relay-storage-mongo
- * @see @did-connect/relay-storage-keystone
+ * @see @did-connect/storage-firebase
+ * @see @did-connect/storage-mongo
+ * @see @did-connect/storage-keystone
  * @extends {EventEmitter}
  */
 declare class SessionStorage extends events {

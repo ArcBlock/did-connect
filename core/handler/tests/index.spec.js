@@ -6,12 +6,12 @@ const tweetnacl = require('tweetnacl');
 const Mcrypto = require('@ocap/mcrypto');
 const Jwt = require('@arcblock/jwt');
 const SealedBox = require('tweetnacl-sealedbox-js');
-const MemoryAuthStorage = require('@arcblock/did-auth-storage-memory');
+const MemoryAuthStorage = require('@did-connect/storage-memory');
 const { fromRandom, WalletType } = require('@ocap/wallet');
 const { toBase58 } = require('@ocap/util');
 
 const createTestServer = require('../../../scripts/create-test-server');
-const { createHandlers } = require('..');
+const { createHandlers } = require('../lib');
 
 const type = WalletType({
   role: Mcrypto.types.RoleType.ROLE_APPLICATION,

@@ -7,9 +7,9 @@ const { EventEmitter } = require('events');
  * Which is used to persist state during the DID Connect process between dApp and wallet
  *
  * @class SessionStorage
- * @see @did-connect/relay-storage-firebase
- * @see @did-connect/relay-storage-mongo
- * @see @did-connect/relay-storage-keystone
+ * @see @did-connect/storage-firebase
+ * @see @did-connect/storage-mongo
+ * @see @did-connect/storage-keystone
  * @extends {EventEmitter}
  */
 class SessionStorage extends EventEmitter {

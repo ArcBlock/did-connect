@@ -6,7 +6,7 @@ const tweetnacl = require('tweetnacl');
 const Mcrypto = require('@ocap/mcrypto');
 const Jwt = require('@arcblock/jwt');
 const SealedBox = require('tweetnacl-sealedbox-js');
-const MemoryAuthStorage = require('@arcblock/did-auth-storage-memory');
+const MemoryAuthStorage = require('@did-connect/storage-memory');
 const { fromRandom, WalletType } = require('@ocap/wallet');
 const { toBase58 } = require('@ocap/util');
 

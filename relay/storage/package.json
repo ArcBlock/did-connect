@@ -1,5 +1,5 @@
 {
-  "name": "@did-connect/relay-storage",
+  "name": "@did-connect/storage",
   "description": "Storage interface for did-auth",
   "version": "2.0.0",
   "author": "wangshijun <shijun@arcblock.io> (https://ocap.arcblock.io)",

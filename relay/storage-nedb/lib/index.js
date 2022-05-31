@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const Nedb = require('@nedb/core');
 const NedbMulti = require('@nedb/multi');
-const StorageInterface = require('@did-connect/relay-storage');
+const StorageInterface = require('@did-connect/storage');
 
 const debug = require('debug')(require('../package.json').name);
 

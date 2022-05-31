@@ -1,7 +1,7 @@
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable no-param-reassign */
 const MongoClient = require('mongodb');
-const StorageInterface = require('@did-connect/relay-storage');
+const StorageInterface = require('@did-connect/storage');
 
 const debug = require('debug')(require('../package.json').name);
 
