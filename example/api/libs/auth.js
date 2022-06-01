@@ -12,7 +12,7 @@ const wallet = getWallet();
 const authenticator = new Authenticator();
 const handlers = new WalletHandler({
   authenticator,
-  tokenStorage: new AuthStorage({
+  sessionStorage: new AuthStorage({
     dbPath: path.join(env.dataDir, 'auth.db'),
   }),
 });

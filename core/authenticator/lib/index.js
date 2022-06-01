@@ -179,18 +179,18 @@ class Authenticator {
    * @returns {ApplicationInfo}
    * @memberof Authenticator
    */
-  async getAppInfo(params) {
+  async getAppInfo(context) {
     if (typeof this.appInfo === 'function') {
-      const info = await this.tryWithTimeout(() => this.appInfo(params));
+      const info = await this.tryWithTimeout(() => this.appInfo(context));
       if (!info.publisher) {
-        info.publisher = `did:abt:${params.wallet.address}`;
+        info.publisher = `did:abt:${this.wallet.address}`;
       }
 
       return this._validateAppInfo(info);
     }
 
     if (this.appInfo && !this.appInfo.publisher) {
-      this.appInfo.publisher = `did:abt:${params.wallet.address}`;
+      this.appInfo.publisher = `did:abt:${this.wallet.address}`;
     }
 
     return this.appInfo;

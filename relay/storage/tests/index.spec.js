@@ -1,6 +1,6 @@
 const Storage = require('../lib');
 
-describe('#Storage', () => {
+describe('RelayStorage', () => {
   test('should be a function', () => {
     expect(typeof Storage).toEqual('function');
   });

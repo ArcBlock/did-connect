@@ -55,7 +55,7 @@ const authenticator = new Authenticator({
 
 const handlers = new WalletHandlers({
   authenticator,
-  tokenStorage: new SimpleStorage({ dbPath: '/tmp/test/auth.db' }),
+  sessionStorage: new SimpleStorage({ dbPath: '/tmp/test/auth.db' }),
 });
 
 // Then attach handler to express server

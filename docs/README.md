@@ -303,7 +303,7 @@ Creates an instance of DID Auth Handlers.
 | ---------------------- | ---------- | ------- | -------------------------------------------------- |
 | config                 | `object`   |         |                                                    |
 | config.pathTransformer | `function` |         | function to transform path when generate action;   |
-| config.tokenStorage    | `object`   |         | function to generate action token                  |
+| config.sessionStorage  | `object`   |         | function to generate action token                  |
 | config.authenticator   | `object`   |         | Authenticator instance that can to jwt sign/verify |
 | [config.onConnect]     | `function` | `noop`  | function called when wallet selected did           |
 
@@ -332,7 +332,7 @@ Creates an instance of DID Auth Handlers.
 | Param                         | Type       | Default                            | Description                                                                                                                   |
 | ----------------------------- | ---------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | config                        | `object`   |                                    |                                                                                                                               |
-| config.tokenStorage           | `object`   |                                    | function to generate action token                                                                                             |
+| config.sessionStorage         | `object`   |                                    | function to generate action token                                                                                             |
 | config.authenticator          | `object`   |                                    | Authenticator instance that can to jwt sign/verify                                                                            |
 | [config.pathTransformer]      | `function` | ``                                 | how should we update pathname                                                                                                 |
 | [config.onConnect]            | `function` | `noop`                             | function called before each auth request send back to app, used to check for permission, throw error to halt the auth process |
@@ -395,7 +395,7 @@ Creates an instance of DID Auth Handlers.
 | Param                         | Type       | Default                            | Description                                                                                                                   |
 | ----------------------------- | ---------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | config                        | `object`   |                                    |                                                                                                                               |
-| config.tokenStorage           | `object`   |                                    | function to generate action token                                                                                             |
+| config.sessionStorage         | `object`   |                                    | function to generate action token                                                                                             |
 | config.authenticator          | `object`   |                                    | Authenticator instance that can to jwt sign/verify                                                                            |
 | [config.pathTransformer]      | `function` | ``                                 | how should we update pathname                                                                                                 |
 | [config.onConnect]            | `function` | `noop`                             | function called before each auth request send back to app, used to check for permission, throw error to halt the auth process |
@@ -449,7 +449,7 @@ Creates an instance of DID Auth Handlers.
 | Param                          | Type       | Default                                           | Description                                                                                                                   |
 | ------------------------------ | ---------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | config                         | `object`   |                                                   |                                                                                                                               |
-| config.tokenStorage            | `object`   |                                                   | did auth token storage                                                                                                        |
+| config.sessionStorage          | `object`   |                                                   | did auth token storage                                                                                                        |
 | config.agentStorage            | `object`   |                                                   | agent auth storage                                                                                                            |
 | config.authenticator           | `object`   |                                                   | Authenticator instance that can to jwt sign/verify                                                                            |
 | [config.onConnect]             | `function` | `noop`                                            | function called before each auth request send back to app, used to check for permission, throw error to halt the auth process |

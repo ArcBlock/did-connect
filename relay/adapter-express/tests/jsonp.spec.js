@@ -5,7 +5,7 @@ const axios = require('axios');
 const qs = require('querystring');
 const url = require('url');
 const Mcrypto = require('@ocap/mcrypto');
-const MemoryAuthStorage = require('@did-connect/storage-memory');
+const MemoryStorage = require('@did-connect/storage-memory');
 const { fromRandom, WalletType } = require('@ocap/wallet');
 const { toBase58 } = require('@ocap/util');
 
@@ -37,7 +37,7 @@ describe('#JsonpWalletHandlers', () => {
 
   // Attach challenge
   test('should handle common did-auth attach use jsonp as expected', async () => {
-    const tokenStorage = new MemoryAuthStorage();
+    const sessionStorage = new MemoryStorage();
     const authenticator = new Authenticator({
       wallet: app.toJSON(),
       // baseUrl: server.url,
@@ -53,7 +53,7 @@ describe('#JsonpWalletHandlers', () => {
         baseUrl,
       }),
     });
-    const handlers = new WalletHandlers({ tokenStorage, authenticator });
+    const handlers = new WalletHandlers({ sessionStorage, authenticator });
 
     handlers.attach({
       app: server,

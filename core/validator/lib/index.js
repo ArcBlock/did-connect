@@ -68,6 +68,8 @@ const context = Joi.object({
   sessionId: Joi.string().guid().required(),
   session: session.optional().default(null),
   locale: Joi.string().required(),
+  signerPk: Joi.string().optional().default(''),
+  signerToken: Joi.string().optional().default(''),
   previousConnected: Joi.object().optional().allow(null),
 }).options({ stripUnknown: true, noDefaults: false });
 

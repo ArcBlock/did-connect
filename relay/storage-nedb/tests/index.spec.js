@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const Storage = require('../lib');
 
-describe('#Storage', () => {
+describe('RelayStorageNedb', () => {
   test('should be a function', () => {
     expect(typeof Storage).toEqual('function');
   });

@@ -36,12 +36,12 @@
     bs58 "^5.0.0"
 
 "@arcblock/did@1.16.15":
-  version "1.16.15"
+  version "^1.16.15"
   resolved "https://registry.yarnpkg.com/@arcblock/did/-/did-1.16.15.tgz#90c2bff6efe7d1fb6eb31078417f128db1339adb"
   integrity sha512-kU38DSrxFMUdVzBDl8gjh5CWEsx4O1CPKDbVPdNFX/Z84XPhYsuZpiTRd+0/s/SwnWY2i8PgxQHyfFGxN3iqKw==
   dependencies:
-    "@ocap/mcrypto" "1.16.15"
-    "@ocap/util" "1.16.15"
+    "@ocap/mcrypto" "^1.16.15"
+    "@ocap/util" "^1.16.15"
     bn.js "^5.2.0"
     debug "^4.3.3"
     lodash "^4.17.21"
@@ -69,13 +69,13 @@
     ws "^7.2.0"
 
 "@arcblock/event-hub@1.16.15":
-  version "1.16.15"
+  version "^1.16.15"
   resolved "https://registry.yarnpkg.com/@arcblock/event-hub/-/event-hub-1.16.15.tgz#bac9e11d4802cb2e1434e02af565ba15f9d2f648"
   integrity sha512-O+rrUjrxX/JJeLa589UJdGlUPJO6bghCOZl2Mcpebsxl2B8o6ciiZLYpOKDCV5eK8LYMML90YPPdNYot6j27Aw==
   dependencies:
-    "@arcblock/did" "1.16.15"
-    "@arcblock/jwt" "1.16.15"
-    "@ocap/wallet" "1.16.15"
+    "@arcblock/did" "^1.16.15"
+    "@arcblock/jwt" "^1.16.15"
+    "@ocap/wallet" "^1.16.15"
     amp-message "~0.1.1"
     axon "^2.0.3"
 
@@ -85,13 +85,13 @@
   integrity sha512-LXPFZIWOdE3OEGKtW/mOkKvd/+xdWxlIswXmdBi+t4Vy+KKyqcuZghBNbNmHLaNuiSW6cTCyQQi8aBuKyh+gzw==
 
 "@arcblock/jwt@1.16.15":
-  version "1.16.15"
+  version "^1.16.15"
   resolved "https://registry.yarnpkg.com/@arcblock/jwt/-/jwt-1.16.15.tgz#132745835dd718ca109b7453ea23f41d5e5244e7"
   integrity sha512-IXlhk7muvLG9cwo1/t8YBEBhbZ/ytyHD13tyaDtQ/dUcsbG5D5wLb4nL8ltwrW6mavK8fwa7lY6FhaQK6R9VTQ==
   dependencies:
-    "@arcblock/did" "1.16.15"
-    "@ocap/mcrypto" "1.16.15"
-    "@ocap/util" "1.16.15"
+    "@arcblock/did" "^1.16.15"
+    "@ocap/mcrypto" "^1.16.15"
+    "@ocap/util" "^1.16.15"
     debug "^4.3.3"
     json-stable-stringify "^1.0.1"
     semver "^7.3.4"
@@ -150,22 +150,22 @@
     xterm-addon-web-links "^0.2.1"
 
 "@arcblock/validator@1.16.15":
-  version "1.16.15"
+  version "^1.16.15"
   resolved "https://registry.yarnpkg.com/@arcblock/validator/-/validator-1.16.15.tgz#a53d2bec01c57cb16af4b9abbebf9206585a1217"
   integrity sha512-0GhBkX5PQh72iHV/VZzHmDGOlg71Te8suVb6heaySBCxm0Ns6p9AIv+LFK5YHxCE3Ap/9tyggNwX0A26u666aw==
   dependencies:
-    "@arcblock/did" "1.16.15"
-    "@ocap/mcrypto" "1.16.15"
-    "@ocap/util" "1.16.15"
+    "@arcblock/did" "^1.16.15"
+    "@ocap/mcrypto" "^1.16.15"
+    "@ocap/util" "^1.16.15"
     joi "^17.6.0"
     lodash "^4.17.21"
 
 "@arcblock/ws@1.16.15":
-  version "1.16.15"
+  version "^1.16.15"
   resolved "https://registry.yarnpkg.com/@arcblock/ws/-/ws-1.16.15.tgz#fc049796ce329ac48d49d81d561f36fbed98f144"
   integrity sha512-q35rcYcBABwoMOdiGWxA2nShryVrzhgENg+5XuTw66iyAO7zPwhLUtnIEGU1Uh27hurmwehYSk4SkLM/kOyntg==
   dependencies:
-    "@arcblock/event-hub" "1.16.15"
+    "@arcblock/event-hub" "^1.16.15"
     debug "^4.3.3"
     eventemitter3 "^4.0.4"
     phoenix "1.5.12"
@@ -2089,11 +2089,11 @@
     rimraf "^3.0.2"
 
 "@ocap/mcrypto@1.16.15":
-  version "1.16.15"
+  version "^1.16.15"
   resolved "https://registry.yarnpkg.com/@ocap/mcrypto/-/mcrypto-1.16.15.tgz#972d013d0e6aa35b7164875ccf3db65095b75691"
   integrity sha512-sIRXMGfVqHBcgyw3dXNl3eCVZWW51BAwm+uVY+EJa8zKKCStNHlVbREznWxlUcq/w+GlBVnu9CHXwDqIf6g8eA==
   dependencies:
-    "@ocap/util" "1.16.15"
+    "@ocap/util" "^1.16.15"
     bn.js "5.2.0"
     crypto-js "^4.0.0"
     elliptic "^6.5.3"
@@ -2105,7 +2105,7 @@
     tweetnacl "^1.0.3"
 
 "@ocap/util@1.16.15":
-  version "1.16.15"
+  version "^1.16.15"
   resolved "https://registry.yarnpkg.com/@ocap/util/-/util-1.16.15.tgz#e902897ea67b452f1532d970ce172955d0249bb0"
   integrity sha512-OCO47nLlWPohLS34pU8p54VFiBXAxhscK0CIEF9IXH2DU7lOIZCpLkcJP3MVYNZFAc01M6etwodE0k01huJS9Q==
   dependencies:
@@ -2116,12 +2116,12 @@
     utf8 "^3.0.0"
 
 "@ocap/wallet@1.16.15":
-  version "1.16.15"
+  version "^1.16.15"
   resolved "https://registry.yarnpkg.com/@ocap/wallet/-/wallet-1.16.15.tgz#f9b5dcd8180142fc98be3b216335955199d3de12"
   integrity sha512-AT6HF3gnfDl7klUtmtavQ6cQWPUO7MSXn1cizjhSe/O9ur/wGdUCZvWvPGnT6KNv0O/za3KNo+H+5WFPrqi9SQ==
   dependencies:
-    "@arcblock/did" "1.16.15"
-    "@ocap/mcrypto" "1.16.15"
+    "@arcblock/did" "^1.16.15"
+    "@ocap/mcrypto" "^1.16.15"
 
 "@polka/url@^1.0.0-next.20":
   version "1.0.0-next.21"
@@ -15319,6 +15319,11 @@ urix@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
   integrity sha1-2pN/emLiH+wf0Y1Js1wpNQZ6bHI=
+
+url-join@4.x:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/url-join/-/url-join-4.0.1.tgz#b642e21a2646808ffa178c4c5fda39844e12cde7"
+  integrity sha512-jk1+QP6ZJqyOiuEI9AEWQfju/nB2Pw466kbA0LEZljHwKeMgd9WrAEgEGxjPDD2+TNbbb37rTyhEfrCXfuKXnA==
 
 url-loader@^4.1.1:
   version "4.1.1"

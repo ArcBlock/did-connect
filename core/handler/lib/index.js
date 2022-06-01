@@ -7,6 +7,9 @@ const { WsServer } = require('@arcblock/ws');
 const { isValid } = require('@arcblock/did');
 const { context: contextSchema, session: sessionSchema } = require('@did-connect/validator');
 
+// eslint-disable-next-line
+// const debug = require('debug')(`${require('../package.json').name}`);
+
 const { getStepChallenge, parseWalletUA, formatDisplay } = require('./util');
 
 const errors = {
@@ -56,6 +59,36 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
 
   const { signJson, signClaims } = authenticator;
 
+  const verifyUpdater = (params, updaterPk) => {
+    const { body, signerPk, signerToken } = params;
+    if (body.status && ['error'].includes(body.status) === false) {
+      return { error: 'Invalid session status', code: 400 };
+    }
+
+    if (updaterPk && updaterPk !== signerPk) {
+      return { error: 'Invalid updater', code: 400 };
+    }
+
+    if (!signerPk) {
+      return { error: 'Invalid updater pk', code: 400 };
+    }
+    if (!signerToken) {
+      return { error: 'Invalid token', code: 400 };
+    }
+
+    if (Jwt.verify(signerToken, signerPk) === false) {
+      return { error: 'Invalid updater signature', code: 400 };
+    }
+
+    const hash = objectHash(body);
+    const decoded = Jwt.decode(signerToken);
+    if (decoded.hash !== hash) {
+      return { error: 'Invalid payload hash', code: 400 };
+    }
+
+    return { error: null };
+  };
+
   const handleSessionCreate = async (context) => {
     if (isValidContext(context)) {
       return { error: 'Context invalid', code: 400 };
@@ -66,8 +99,10 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
     if (uuid.validate(sessionId) === false) {
       return { error: 'Invalid session id', code: 400 };
     }
-    if (updaterPk !== context.signerPk) {
-      return { error: 'Invalid session updater', code: 400 };
+
+    const result = verifyUpdater(context);
+    if (result.error) {
+      return result;
     }
 
     const session = {
@@ -109,30 +144,10 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
       return { error: 'Session is finalized and can not be updated', code: 400 };
     }
 
-    const { body, session, signerPk, signatureToken } = context;
-    if (body.status && ['error'].includes(body.status) === false) {
-      return { error: 'Invalid session status', code: 400 };
-    }
-
-    if (session.updaterPk !== context.signerPk) {
-      return { error: 'Invalid updater', code: 400 };
-    }
-
-    if (!signerPk) {
-      return { error: 'Invalid updater pk', code: 400 };
-    }
-    if (!signatureToken) {
-      return { error: 'Invalid token', code: 400 };
-    }
-
-    if (Jwt.verify(signatureToken, signerPk) === false) {
-      return { error: 'Invalid updater signature', code: 400 };
-    }
-
-    const hash = objectHash(body);
-    const decoded = Jwt.decode(signatureToken);
-    if (decoded.hash !== hash) {
-      return { error: 'Invalid payload hash', code: 400 };
+    const { body, session } = context;
+    const result = verifyUpdater(context, session.updaterPk);
+    if (result.error) {
+      return result;
     }
 
     const updates = pick(body, ['error', 'status', 'approveResults', 'requestedClaims']);
@@ -309,6 +324,7 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
     handleClaimRequest,
     handleClaimResponse,
     parseWalletUA,
+    wsServer,
   };
 }
 
