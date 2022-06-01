@@ -54,7 +54,12 @@ const session = Joi.object({
     .allow(null),
   currentStep: Joi.number().integer().min(0),
   requestedClaims: Joi.array()
-    .items(...Object.values(claims))
+    .items(
+      Joi.array()
+        .items(...Object.values(claims))
+        .min(1),
+      ...Object.values(claims)
+    )
     .default([]),
   responseClaims: Joi.array().items(Joi.any()).default([]),
   approveResults: Joi.array().items(Joi.any()).default([]),
@@ -65,8 +70,8 @@ const context = Joi.object({
   didwallet: Joi.object().optional(),
   body: Joi.object().optional().default({}),
   headers: Joi.object().required(),
-  sessionId: Joi.string().guid().required(),
-  session: session.optional().default(null),
+  sessionId: Joi.string().guid().allow(''),
+  session: session.allow(null),
   locale: Joi.string().required(),
   signerPk: Joi.string().optional().default(''),
   signerToken: Joi.string().optional().default(''),

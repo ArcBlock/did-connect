@@ -1,4 +1,6 @@
-/* eslint-disable */
+/* eslint-disable consistent-return */
+/* eslint-disable func-names */
+/* eslint-disable prefer-rest-params */
 const http = require('http');
 const https = require('https');
 const express = require('express');

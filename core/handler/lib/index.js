@@ -55,9 +55,16 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
   const wsServer = createSocketServer(logger, socketPathname);
 
   const isSessionFinalized = (x) => ['error', 'timeout', 'canceled', 'rejected'].includes(x.status);
-  const isValidContext = (x) => !contextSchema.validate(x).error;
+  const isValidContext = (x) => {
+    const { error } = contextSchema.validate(x);
+    if (error) {
+      logger.error(error);
+    }
+    return !error;
+  };
 
-  const { signJson, signClaims } = authenticator;
+  const signJson = authenticator.signJson.bind(authenticator);
+  const signClaims = authenticator.signClaims.bind(authenticator);
 
   const verifyUpdater = (params, updaterPk) => {
     const { body, signerPk, signerToken } = params;
@@ -90,7 +97,7 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
   };
 
   const handleSessionCreate = async (context) => {
-    if (isValidContext(context)) {
+    if (isValidContext(context) === false) {
       return { error: 'Context invalid', code: 400 };
     }
 
@@ -136,7 +143,7 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
   };
 
   const handleSessionUpdate = (context) => {
-    if (isValidContext(context)) {
+    if (isValidContext(context) === false) {
       return { error: 'Context invalid', code: 400 };
     }
 
@@ -161,7 +168,7 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
       return { error: 'Invalid requestedClaims', code: 400 };
     }
 
-    logger.info('update session', context.sessionId, body, updates);
+    logger.info('update session', context.sessionId, body);
 
     const { error } = sessionSchema.validate({ ...session, ...updates });
     if (error) {
@@ -172,15 +179,15 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
   };
 
   const handleClaimRequest = async (context) => {
-    if (isValidContext(context)) {
-      return signJson({ error: 'Context invalid', code: 400 });
+    if (isValidContext(context) === false) {
+      return signJson({ error: 'Context invalid', code: 400 }, context);
     }
 
     const { sessionId, session, didwallet } = context;
     const { strategy, requestedClaims, previousConnected, currentStep } = session;
     try {
       if (isSessionFinalized(session)) {
-        return signJson({ error: 'Session is finalized', code: 400 });
+        return signJson({ error: 'Session is finalized', code: 400 }, context);
       }
 
       // if we are in created status, we should return authPrincipal claim
@@ -188,6 +195,7 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
         // If our claims are populated already, move to appConnected
         if (requestedClaims.length > 0) {
           await storage.update(sessionId, { status: 'appConnected' });
+          wsServer.broadcast(sessionId, { status: 'appConnected' });
         } else {
           wsServer.broadcast(sessionId, { status: 'walletScanned', didwallet });
           await storage.update(sessionId, { status: 'walletScanned' });
@@ -217,14 +225,14 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
   };
 
   const handleClaimResponse = async (context) => {
-    if (isValidContext(context)) {
-      return signJson({ error: 'Context invalid', code: 400 });
+    if (isValidContext(context) === false) {
+      return signJson({ error: 'Context invalid', code: 400 }, context);
     }
 
     const { sessionId, session, body, locale } = context;
     try {
       if (isSessionFinalized(session)) {
-        return signJson({ error: 'Session is finalized', code: 400 });
+        return signJson({ error: 'Session is finalized', code: 400 }, context);
       }
 
       const { userDid, userPk, action, challenge, claims } = await authenticator.verify(body, locale);
@@ -289,6 +297,7 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
       );
       if (newSession.status !== 'error') {
         await storage.update(sessionId, { status: 'appApproved' });
+        wsServer.broadcast(sessionId, { status: 'appApproved' });
       }
 
       // Return result if we've done

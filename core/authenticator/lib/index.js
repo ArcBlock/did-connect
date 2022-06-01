@@ -12,8 +12,15 @@ const debug = require('debug')(`${require('../package.json').name}`);
 const DEFAULT_TIMEOUT = 8000;
 const DEFAULT_CHAIN_INFO = { host: 'none' };
 
+// User can set claims in following format
+// requestedClaims: [claim1, [claim2, claim3], claim4]
 const claimsValidator = Joi.array()
-  .items(...Object.values(claimsSchema))
+  .items(
+    Joi.array()
+      .items(...Object.values(claimsSchema))
+      .min(1),
+    ...Object.values(claimsSchema)
+  )
   .min(1);
 
 class Authenticator {
@@ -103,8 +110,8 @@ class Authenticator {
 
     // Remove protocol fields from the response
     const fields = ['error', 'errorMessage', 'successMessage', 'nextWorkflow'];
-    if (typeof data.response === 'object') {
-      final.response = omit(data.response, fields);
+    if (typeof final.response === 'object') {
+      final.response = omit(final.response, fields);
     }
 
     const { response = {}, errorMessage = '', successMessage = '', nextWorkflow = '' } = final;
@@ -138,7 +145,8 @@ class Authenticator {
    * @returns {object} { appPk, authInfo }
    */
   signClaims(claims, context) {
-    let res = claimsValidator.validate(claims);
+    const claimList = Array.isArray(claims) ? claims : [claims];
+    let res = claimsValidator.validate(claimList);
     if (res.error) {
       throw new Error(`Invalid claims: ${res.error.details.map((x) => x.message).join(', ')}`);
     }
@@ -160,7 +168,7 @@ class Authenticator {
       challenge,
       appInfo,
       chainInfo: DEFAULT_CHAIN_INFO, // FIXME: get chainInfo from claim
-      requestedClaims: claims,
+      requestedClaims: claimList,
       url: nextUrl,
     };
 
