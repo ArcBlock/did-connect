@@ -21,7 +21,6 @@ module.exports = {
   testMatch: [`<rootDir>/${parent}/${folder}/**/*.spec.js`],
   coverageDirectory: path.join(cwd, 'coverage'),
   coverageReporters: ['json', 'lcov', 'text', 'clover'],
-  coverageProvider: 'v8',
   collectCoverage: process.argv.indexOf('--coverage') > 0,
   collectCoverageFrom: [
     `<rootDir>/${parent}/${folder}/lib/*.js`,
