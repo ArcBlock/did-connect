@@ -10,7 +10,7 @@ const { context: contextSchema, session: sessionSchema } = require('@did-connect
 // eslint-disable-next-line
 // const debug = require('debug')(`${require('../package.json').name}`);
 
-const { getStepChallenge, parseWalletUA, formatDisplay } = require('./util');
+const { getStepChallenge, parseWalletUA } = require('./util');
 
 const errors = {
   sessionIdMissing: {
@@ -63,9 +63,7 @@ function createHandlers({
   const isSessionFinalized = (x) => ['error', 'timeout', 'canceled', 'rejected'].includes(x.status);
   const isValidContext = (x) => {
     const { error } = contextSchema.validate(x);
-    if (error) {
-      logger.error(error);
-    }
+    if (error) logger.error(error);
     return !error;
   };
 
@@ -75,11 +73,7 @@ function createHandlers({
   const verifyUpdater = (params, updaterPk) => {
     const { body, signerPk, signerToken } = params;
     if (body.status && ['error'].includes(body.status) === false) {
-      return { error: 'Invalid session status', code: 400 };
-    }
-
-    if (updaterPk && updaterPk !== signerPk) {
-      return { error: 'Invalid updater', code: 400 };
+      return { error: 'Invalid session status', code: 403 };
     }
 
     if (!signerPk) {
@@ -91,6 +85,10 @@ function createHandlers({
 
     if (Jwt.verify(signerToken, signerPk) === false) {
       return { error: 'Invalid updater signature', code: 400 };
+    }
+
+    if (updaterPk && updaterPk !== signerPk) {
+      return { error: 'Invalid updater', code: 403 };
     }
 
     const hash = objectHash(body);
@@ -107,10 +105,10 @@ function createHandlers({
       return { error: 'Context invalid', code: 400 };
     }
 
-    const { sessionId, updaterPk, strategy = 'default', authUrl } = context.body;
+    const { sessionId, updaterPk, strategy = 'default', authUrl, requestedClaims = [] } = context.body;
 
     if (uuid.validate(sessionId) === false) {
-      return { error: 'Invalid session id', code: 400 };
+      return { error: 'Invalid sessionId', code: 400 };
     }
 
     const result = verifyUpdater(context);
@@ -129,7 +127,7 @@ function createHandlers({
       previousConnected: context.previousConnected,
       currentConnected: null,
       currentStep: 0,
-      requestedClaims: [], // app requested claims, authPrincipal should not be listed here
+      requestedClaims, // app requested claims, authPrincipal should not be listed here
       responseClaims: [], // wallet submitted claims
       approveResults: [],
       error: '',
@@ -154,7 +152,7 @@ function createHandlers({
     }
 
     if (isSessionFinalized(context.session)) {
-      return { error: 'Session is finalized and can not be updated', code: 400 };
+      return { error: 'Session is finalized', code: 400 };
     }
 
     const { body, session } = context;
@@ -370,4 +368,4 @@ function createHandlers({
   };
 }
 
-module.exports = { createHandlers, parseWalletUA, getStepChallenge, formatDisplay };
+module.exports = createHandlers;

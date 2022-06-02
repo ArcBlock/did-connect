@@ -14,7 +14,7 @@ const trustedIssuerSchema = Joi.alternatives().try(
 module.exports = (chainInfo) => {
   const options = { stripUnknown: true, noDefaults: false };
   const createStandardFields = (type, description) => ({
-    type: Joi.string().valid(type).default(type),
+    type: Joi.string().valid(type).required(),
     description: Joi.string().min(1).default(description),
     chainInfo,
     meta: Joi.any().optional().default({}),

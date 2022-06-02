@@ -1,4 +1,4 @@
-const { parseWalletUA, getStepChallenge, formatDisplay } = require('..');
+const { parseWalletUA, getStepChallenge, formatDisplay } = require('../lib/util');
 
 describe('#parseWalletUA', () => {
   describe('#android', () => {

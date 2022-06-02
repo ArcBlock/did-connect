@@ -1,6 +1,5 @@
 const uuid = require('uuid');
 const get = require('lodash/get');
-const merge = require('lodash/merge');
 
 module.exports = function attachHandlers(router, handlers, prefix = '/api/connect/relay') {
   const {
