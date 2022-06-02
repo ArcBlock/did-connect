@@ -31,7 +31,21 @@ const appInfo = Joi.object({
 const claims = createClaimsSchema(chainInfo);
 
 const session = Joi.object({
-  status: Joi.string().required(), // TODO: whitelist
+  status: Joi.string()
+    .valid(
+      'created',
+      'walletScanned',
+      'walletConnected',
+      'appConnected',
+      'walletApproved',
+      'appApproved',
+      'error',
+      'timeout',
+      'rejected',
+      'canceled',
+      'completed'
+    )
+    .required(),
   updaterPk: Joi.string().required(),
   strategy: Joi.alternatives().try(Joi.DID(), Joi.string().valid('default')),
   authUrl: Joi.string()

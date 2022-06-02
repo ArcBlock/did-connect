@@ -44,7 +44,7 @@ function createHandlers({
 }) {
   const wsServer = createSocketServer(logger, socketPathname);
 
-  const isSessionFinalized = (x) => ['error', 'timeout', 'canceled', 'rejected'].includes(x.status);
+  const isSessionFinalized = (x) => ['error', 'timeout', 'canceled', 'rejected', 'completed'].includes(x.status);
   const isValidContext = (x) => {
     const { error } = contextSchema.validate(x);
     if (error) logger.error(error);
@@ -161,7 +161,7 @@ function createHandlers({
     }
 
     const { sessionId, session, didwallet } = context;
-    const { strategy, requestedClaims, previousConnected, currentStep } = session;
+    const { strategy, previousConnected, currentStep } = session;
     try {
       if (isSessionFinalized(session)) {
         return signJson({ error: 'Session is finalized', code: 400 }, context);
@@ -169,14 +169,8 @@ function createHandlers({
 
       // if we are in created status, we should return authPrincipal claim
       if (session.status === 'created') {
-        // If our claims are populated already, move to appConnected
-        if (requestedClaims.length > 0) {
-          await storage.update(sessionId, { status: 'appConnected' });
-          wsServer.broadcast(sessionId, { status: 'appConnected' });
-        } else {
-          wsServer.broadcast(sessionId, { status: 'walletScanned', didwallet });
-          await storage.update(sessionId, { status: 'walletScanned' });
-        }
+        wsServer.broadcast(sessionId, { status: 'walletScanned', didwallet });
+        await storage.update(sessionId, { status: 'walletScanned' });
 
         return signClaims(
           [
@@ -236,6 +230,7 @@ function createHandlers({
       'Response claims not handled by app'
     );
 
+  // FIXME: authPrincipal only connect is not supported yet.
   const handleClaimResponse = async (context) => {
     if (isValidContext(context) === false) {
       return signJson({ error: 'Context invalid', code: 400 }, context);
@@ -248,6 +243,7 @@ function createHandlers({
       }
 
       const { userDid, userPk, action, challenge, claims } = await authenticator.verify(body, locale);
+      let newSession;
 
       // Ensure user approval
       if (action === 'declineAuth') {
@@ -275,13 +271,18 @@ function createHandlers({
           currentConnected: { userDid, userPk },
         });
         wsServer.broadcast(sessionId, { status: 'walletConnected', userDid, userPk });
-        const newSession = await waitForAppConnect(sessionId);
-        await storage.update(sessionId, { status: 'appConnected' });
-        wsServer.broadcast(sessionId, { status: 'appConnected' });
+
+        // If our claims are populated already, move to appConnected without waiting
+        if (session.requestedClaims.length > 0) {
+          newSession = await storage.update(sessionId, { status: 'appConnected' });
+          wsServer.broadcast(sessionId, { status: 'appConnected' });
+        } else {
+          newSession = await waitForAppConnect(sessionId);
+          await storage.update(sessionId, { status: 'appConnected' });
+          wsServer.broadcast(sessionId, { status: 'appConnected' });
+        }
         return signClaims(newSession.requestedClaims[session.currentStep], { ...context, session: newSession });
       }
-
-      // FIXME: authPrincipal only connect is not supported yet.
 
       // Move to walletApproved state and wait for appApproved
       await storage.update(sessionId, {
@@ -289,7 +290,7 @@ function createHandlers({
         responseClaims: [...session.responseClaims, claims],
       });
       wsServer.broadcast(sessionId, { status: 'walletApproved', claims, currentStep: session.currentStep });
-      let newSession = await waitForAppApprove(sessionId);
+      newSession = await waitForAppApprove(sessionId);
       await storage.update(sessionId, { status: 'appApproved' });
       wsServer.broadcast(sessionId, { status: 'appApproved' });
 

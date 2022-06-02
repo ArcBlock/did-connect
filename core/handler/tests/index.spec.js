@@ -92,7 +92,7 @@ describe('RelayAdapterExpress', () => {
     const storage = new MemoryStorage();
     const authenticator = new Authenticator({ wallet: app, appInfo, chainInfo });
     // eslint-disable-next-line no-console
-    const logger = { info: noop, error: console.error, warn: console.warn, debug: noop };
+    const logger = { info: noop, error: noop, warn: console.warn, debug: noop };
     const handlers = createHandlers({ storage, authenticator, logger, timeout: 1000 });
 
     handlers.wsServer.attach(server.http);
@@ -112,7 +112,9 @@ describe('RelayAdapterExpress', () => {
     const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${sessionId}`);
     const updateSession = (updates, wallet = updater, pk = undefined, token = undefined, hash = undefined) =>
       doSignedRequest(updates, wallet, `/api/connect/relay/session?sid=${sessionId}`, 'PUT', pk, token, hash);
-    return { sessionId, updaterPk, authUrl, updateSession };
+    const getSession = () => api.get(`/api/connect/relay/session?sid=${sessionId}`).then((x) => x.data);
+
+    return { sessionId, updaterPk, authUrl, updateSession, getSession };
   };
 
   const getAuthUrl = (authUrl) => {
@@ -121,42 +123,9 @@ describe('RelayAdapterExpress', () => {
     return obj.href;
   };
 
-  test('should connect complete when everything is working: single', async () => {
-    let session = null;
+  const runSingleTest = async (authUrl, statusHistory, args) => {
     let res = null;
     let authInfo = null;
-    let completed = false;
-
-    const statusHistory = [];
-
-    const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
-
-    client.on(sessionId, async (e) => {
-      expect(e.status).toBeTruthy();
-      statusHistory.push(e.status);
-
-      if (e.status === 'walletConnected') {
-        session = await updateSession({
-          requestedClaims: [
-            {
-              type: 'profile',
-              fields: ['fullName', 'email', 'avatar'],
-              description: 'Please give me your profile',
-            },
-          ],
-        });
-      } else if (e.status === 'walletApproved') {
-        session = await updateSession({
-          approveResults: [`you provided profile ${e.claims[0].fullName}`],
-        });
-      } else if (e.status === 'completed') {
-        completed = true;
-      }
-    });
-
-    // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
-    expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
@@ -197,9 +166,21 @@ describe('RelayAdapterExpress', () => {
     expect(authInfo.response).toMatch(/profile test/);
 
     // 6. wait for complete
-    await waitFor(() => completed);
+    await waitFor(() => args.completed);
 
-    // 7. assert status history
+    // 7. try to submit to a finalized session
+    res = await api.post(nextUrl, {
+      userPk: toBase58(user.publicKey),
+      userInfo: Jwt.sign(user.address, user.secretKey, {
+        requestedClaims: [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
+        challenge,
+      }),
+    });
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.status).toEqual('error');
+    expect(authInfo.errorMessage).toMatch(/Session is finalized/);
+
+    // 8. assert status history
     expect(statusHistory).toEqual([
       'walletScanned',
       'walletConnected',
@@ -209,19 +190,15 @@ describe('RelayAdapterExpress', () => {
       'completed',
     ]);
 
-    client.off(sessionId);
-  });
+    client.off(args.sessionId);
+  };
 
-  test('should connect complete when everything is working: multiple step', async () => {
+  test('should connect complete when everything is working: single', async () => {
     let session = null;
-    let res = null;
-    let authInfo = null;
-    let completed = false;
 
+    const { sessionId, updaterPk, authUrl, updateSession, getSession } = prepareTest();
+    const args = { completed: false, sessionId };
     const statusHistory = [];
-
-    const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
-
     client.on(sessionId, async (e) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
@@ -234,32 +211,79 @@ describe('RelayAdapterExpress', () => {
               fields: ['fullName', 'email', 'avatar'],
               description: 'Please give me your profile',
             },
-            {
-              type: 'asset',
-              description: 'Please prove that you own asset',
-              target: user.address,
-            },
           ],
         });
       } else if (e.status === 'walletApproved') {
-        if (e.currentStep === 0) {
-          session = await updateSession({
-            approveResults: [`you provided profile ${e.claims[0].fullName}`],
-          });
-        }
-        if (e.currentStep === 1) {
-          session = await updateSession({
-            approveResults: [...session.approveResults, `you provided asset ${e.claims[0].address}`],
-          });
-        }
+        session = await updateSession({
+          approveResults: [`you provided profile ${e.claims[0].fullName}`],
+        });
       } else if (e.status === 'completed') {
-        completed = true;
+        args.completed = true;
       }
     });
 
     // 1. create session
     session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
     expect(session.sessionId).toEqual(sessionId);
+
+    await runSingleTest(authUrl, statusHistory, args);
+
+    // assert session completed
+    session = await getSession();
+    expect(session.status).toEqual('completed');
+
+    // try to scan a finalized session
+    const res = await api.get(getAuthUrl(authUrl));
+    const authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.status).toEqual('error');
+    expect(authInfo.errorMessage).toEqual('Session is finalized');
+  });
+
+  test('should connect complete when everything is working: single + prepopulated', async () => {
+    let session = null;
+
+    const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
+
+    const args = { completed: false, sessionId };
+    const statusHistory = [];
+    client.on(sessionId, async (e) => {
+      expect(e.status).toBeTruthy();
+      statusHistory.push(e.status);
+
+      if (e.status === 'walletApproved') {
+        session = await updateSession({
+          approveResults: [`you provided profile ${e.claims[0].fullName}`],
+        });
+      }
+      if (e.status === 'completed') {
+        args.completed = true;
+      }
+    });
+
+    // 1. create session
+    session = await doSignedRequest(
+      {
+        sessionId,
+        updaterPk,
+        authUrl,
+        requestedClaims: [
+          {
+            type: 'profile',
+            fields: ['fullName', 'email', 'avatar'],
+            description: 'Please give me your profile',
+          },
+        ],
+      },
+      updater
+    );
+    expect(session.sessionId).toEqual(sessionId);
+
+    await runSingleTest(authUrl, statusHistory, args);
+  });
+
+  const runMultiStepTest = async (authUrl, statusHistory, args) => {
+    let res = null;
+    let authInfo = null;
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
@@ -314,7 +338,7 @@ describe('RelayAdapterExpress', () => {
     expect(authInfo.response).toMatch(/you provided asset/);
 
     // 6. wait for complete
-    await waitFor(() => completed);
+    await waitFor(() => args.completed);
 
     // 7. assert status history
     expect(statusHistory).toEqual([
@@ -328,7 +352,109 @@ describe('RelayAdapterExpress', () => {
       'completed',
     ]);
 
-    client.off(sessionId);
+    client.off(args.sessionId);
+  };
+
+  test('should connect complete when everything is working: multiple step', async () => {
+    let session = null;
+
+    const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
+
+    const args = { completed: false, sessionId };
+    const statusHistory = [];
+    client.on(sessionId, async (e) => {
+      expect(e.status).toBeTruthy();
+      statusHistory.push(e.status);
+
+      if (e.status === 'walletConnected') {
+        session = await updateSession({
+          requestedClaims: [
+            {
+              type: 'profile',
+              fields: ['fullName', 'email', 'avatar'],
+              description: 'Please give me your profile',
+            },
+            {
+              type: 'asset',
+              description: 'Please prove that you own asset',
+              target: user.address,
+            },
+          ],
+        });
+      } else if (e.status === 'walletApproved') {
+        if (e.currentStep === 0) {
+          session = await updateSession({
+            approveResults: [`you provided profile ${e.claims[0].fullName}`],
+          });
+        }
+        if (e.currentStep === 1) {
+          session = await updateSession({
+            approveResults: [...session.approveResults, `you provided asset ${e.claims[0].address}`],
+          });
+        }
+      } else if (e.status === 'completed') {
+        args.completed = true;
+      }
+    });
+
+    // 1. create session
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    expect(session.sessionId).toEqual(sessionId);
+
+    await runMultiStepTest(authUrl, statusHistory, args);
+  });
+
+  test('should connect complete when everything is working: multiple step + prepopulated', async () => {
+    let session = null;
+
+    const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
+
+    const statusHistory = [];
+    const args = { completed: false, sessionId };
+    client.on(sessionId, async (e) => {
+      expect(e.status).toBeTruthy();
+      statusHistory.push(e.status);
+
+      if (e.status === 'walletApproved') {
+        if (e.currentStep === 0) {
+          session = await updateSession({
+            approveResults: [`you provided profile ${e.claims[0].fullName}`],
+          });
+        }
+        if (e.currentStep === 1) {
+          session = await updateSession({
+            approveResults: [...session.approveResults, `you provided asset ${e.claims[0].address}`],
+          });
+        }
+      } else if (e.status === 'completed') {
+        args.completed = true;
+      }
+    });
+
+    // 1. create session
+    session = await doSignedRequest(
+      {
+        sessionId,
+        updaterPk,
+        authUrl,
+        requestedClaims: [
+          {
+            type: 'profile',
+            fields: ['fullName', 'email', 'avatar'],
+            description: 'Please give me your profile',
+          },
+          {
+            type: 'asset',
+            description: 'Please prove that you own asset',
+            target: user.address,
+          },
+        ],
+      },
+      updater
+    );
+    expect(session.sessionId).toEqual(sessionId);
+
+    await runMultiStepTest(authUrl, statusHistory, args);
   });
 
   test('should abort session when wallet rejected or challenge mismatch', async () => {
