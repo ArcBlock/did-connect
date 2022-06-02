@@ -51,7 +51,13 @@ function createSocketServer(logger, pathname) {
   return new WsServer({ logger, pathname });
 }
 
-function createHandlers({ storage, authenticator, logger = console, socketPathname = '/connect/relay/websocket' }) {
+function createHandlers({
+  storage,
+  authenticator,
+  logger = console,
+  timeout = 20 * 1000,
+  socketPathname = '/connect/relay/websocket',
+}) {
   const wsServer = createSocketServer(logger, socketPathname);
 
   const isSessionFinalized = (x) => ['error', 'timeout', 'canceled', 'rejected'].includes(x.status);
@@ -224,6 +230,41 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
     }
   };
 
+  const waitForSession = async (sessionId, checkFn, reason) => {
+    let session = null;
+    try {
+      await waitFor(
+        async () => {
+          session = await storage.read(sessionId);
+          if (session.status === 'error') {
+            throw new Error(session.error);
+          }
+          return checkFn(session);
+        },
+        { interval: 200, timeout, before: false }
+      );
+      return storage.read(sessionId);
+    } catch (err) {
+      if (session && session.status !== 'error') {
+        const timeoutError = Error(`${reason} within ${timeout}ms`);
+        timeoutError.code = 'TimeoutError';
+        throw timeoutError;
+      }
+      err.session = session;
+      throw err;
+    }
+  };
+
+  const waitForAppConnect = (sessionId) =>
+    waitForSession(sessionId, (x) => x.requestedClaims.length > 0, 'Requested claims not provided by app');
+
+  const waitForAppApprove = (sessionId) =>
+    waitForSession(
+      sessionId,
+      (x) => typeof x.approveResults[x.currentStep] !== 'undefined',
+      'Response claims not handled by app'
+    );
+
   const handleClaimResponse = async (context) => {
     if (isValidContext(context) === false) {
       return signJson({ error: 'Context invalid', code: 400 }, context);
@@ -236,14 +277,6 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
       }
 
       const { userDid, userPk, action, challenge, claims } = await authenticator.verify(body, locale);
-      const waitForSession = (fn) =>
-        waitFor(
-          async () => {
-            const newSession = await storage.read(sessionId);
-            return fn(newSession);
-          },
-          { interval: 200, timeout: 20 * 1000, before: false }
-        ).then(() => storage.read(sessionId));
 
       // Ensure user approval
       if (action === 'declineAuth') {
@@ -273,14 +306,9 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
           currentConnected: { userDid, userPk },
         });
         wsServer.broadcast(sessionId, { status: 'walletConnected', userDid, userPk });
-
-        const newSession = await waitForSession((s) => s.status === 'error' || s.requestedClaims.length > 0);
-        if (newSession.status === 'error') {
-          wsServer.broadcast(sessionId, { status: 'error' });
-          return signJson({ error: newSession.error }, context);
-        }
-
+        const newSession = await waitForAppConnect(sessionId);
         await storage.update(sessionId, { status: 'appConnected' });
+        wsServer.broadcast(sessionId, { status: 'appConnected' });
         return signClaims(newSession.requestedClaims[session.currentStep], { ...context, session: newSession });
       }
 
@@ -292,22 +320,13 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
         responseClaims: [...session.responseClaims, claims],
       });
       wsServer.broadcast(sessionId, { status: 'walletApproved', claims, currentStep: session.currentStep });
-      let newSession = await waitForSession(
-        (s) => s.status === 'error' || typeof s.approveResults[session.currentStep] !== 'undefined'
-      );
-      if (newSession.status !== 'error') {
-        await storage.update(sessionId, { status: 'appApproved' });
-        wsServer.broadcast(sessionId, { status: 'appApproved' });
-      }
+      let newSession = await waitForAppApprove(sessionId);
+      await storage.update(sessionId, { status: 'appApproved' });
+      wsServer.broadcast(sessionId, { status: 'appApproved' });
 
       // Return result if we've done
       const isDone = session.currentStep === session.requestedClaims.length - 1;
       if (isDone) {
-        if (newSession.status === 'error') {
-          wsServer.broadcast(sessionId, { status: 'error' });
-          return signJson({ error: newSession.error }, context);
-        }
-
         await storage.update(sessionId, { status: 'completed' });
         wsServer.broadcast(sessionId, { status: 'completed' });
         return signJson(newSession.approveResults[session.currentStep], context);
@@ -320,6 +339,20 @@ function createHandlers({ storage, authenticator, logger = console, socketPathna
       return signClaims(session.requestedClaims[nextStep], { ...context, session: newSession });
     } catch (err) {
       logger.error(err);
+      // client error
+      if (err.session && err.session.error) {
+        wsServer.broadcast(sessionId, { status: 'error', error: err.session.error });
+        return signJson({ error: err.session.error }, context);
+      }
+
+      // timeout error
+      if (err.code === 'TimeoutError') {
+        await storage.update(sessionId, { status: 'timeout', error: err.message });
+        wsServer.broadcast(sessionId, { status: 'timeout', error: err.message });
+        return signJson({ error: err.message }, context);
+      }
+
+      // anything else
       await storage.update(sessionId, { status: 'error', error: err.message });
       wsServer.broadcast(sessionId, { status: 'error', error: err.message });
       return signJson({ error: err.message }, context);

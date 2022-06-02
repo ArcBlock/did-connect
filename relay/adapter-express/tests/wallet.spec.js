@@ -87,7 +87,7 @@ describe('RelayAdapterExpress', () => {
     const authenticator = new Authenticator({ wallet: app, appInfo, chainInfo });
     // eslint-disable-next-line no-console
     const logger = { info: console.info, error: console.error, warn: console.warn, debug: () => {} };
-    const handlers = createHandlers({ storage, authenticator, logger });
+    const handlers = createHandlers({ storage, authenticator, logger, timeout: 1000 });
 
     handlers.wsServer.attach(server.http);
     handlers.wsServer.attach(server.https);
@@ -351,11 +351,61 @@ describe('RelayAdapterExpress', () => {
     client.off(sessionId);
   });
 
-  test('should connect complete when everything is working', async () => {
+  test('should timeout when client not connect properly', async () => {
     let session = null;
     let res = null;
     let authInfo = null;
-    let completed = false;
+
+    const statusHistory = [];
+    const { sessionId, updaterPk, authUrl } = prepareTest();
+
+    client.on(sessionId, async (e) => {
+      expect(e.status).toBeTruthy();
+      statusHistory.push(e.status);
+
+      if (e.status === 'walletConnected') {
+        // Do nothing to trigger timeout
+      }
+    });
+
+    // 1. create session
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    expect(session.sessionId).toEqual(sessionId);
+    expect(session.updaterPk).toEqual(updaterPk);
+    expect(session.strategy).toEqual('default');
+
+    // 2. simulate scan
+    res = await api.get(getAuthUrl(authUrl));
+    expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+    expect(authInfo.url).toEqual(authUrl);
+
+    // 3. submit auth principal
+    const claims = authInfo.requestedClaims;
+    if (claims.find((x) => x.type === 'authPrincipal')) {
+      res = await axios.post(getAuthUrl(authInfo.url), {
+        userPk: toBase58(user.publicKey),
+        userInfo: Jwt.sign(user.address, user.secretKey, {
+          requestedClaims: [],
+          challenge: authInfo.challenge,
+        }),
+      });
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.status).toEqual('error');
+      expect(authInfo.errorMessage).toMatch('Requested claims not provided');
+    }
+
+    // 7. assert status history
+    expect(statusHistory).toEqual(['walletScanned', 'walletConnected', 'timeout']);
+
+    client.off(sessionId);
+  });
+
+  test('should timeout when client not approve properly', async () => {
+    let session = null;
+    let res = null;
+    let authInfo = null;
 
     const statusHistory = [];
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
@@ -373,17 +423,9 @@ describe('RelayAdapterExpress', () => {
               description: 'Please give me your profile',
             },
           ],
-          // status: 'error',
-          // error: 'You are not allowed to connect to this wallet',
         });
       } else if (e.status === 'walletApproved') {
-        session = await updateSession({
-          approveResults: [`you provided profile ${e.claims[0].fullName}`],
-          // status: 'error',
-          // error: 'You are not allowed to connect to this wallet',
-        });
-      } else if (e.status === 'completed') {
-        completed = true;
+        // Do nothing to trigger timeout
       }
     });
 
@@ -428,14 +470,11 @@ describe('RelayAdapterExpress', () => {
       }),
     });
     authInfo = Jwt.decode(res.data.authInfo);
-    expect(authInfo.status).toEqual('ok');
-    expect(authInfo.response).toMatch(/profile test/);
-
-    // 6. wait for complete
-    await waitFor(() => completed);
+    expect(authInfo.status).toEqual('error');
+    expect(authInfo.errorMessage).toMatch('Response claims not handled');
 
     // 7. assert status history
-    expect(statusHistory).toEqual(['walletScanned', 'walletConnected', 'walletApproved', 'completed']);
+    expect(statusHistory).toEqual(['walletScanned', 'walletConnected', 'appConnected', 'walletApproved', 'timeout']);
 
     client.off(sessionId);
   });
