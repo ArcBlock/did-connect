@@ -1,5 +1,6 @@
 const uuid = require('uuid');
 const get = require('lodash/get');
+const merge = require('lodash/merge');
 
 module.exports = function attachHandlers(router, handlers, prefix = '/api/connect/relay') {
   const {
@@ -52,7 +53,7 @@ module.exports = function attachHandlers(router, handlers, prefix = '/api/connec
 
       req.context = {
         didwallet,
-        body: req.body,
+        body: req.method === 'GET' ? req.query : req.body,
         headers: req.headers,
         sessionId,
         session,
