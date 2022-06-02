@@ -121,7 +121,7 @@ describe('RelayAdapterExpress', () => {
     const { sessionId, updaterPk, authUrl } = prepareTest();
 
     res = await doSignedRequest({ sessionId: 'abc', updaterPk, authUrl }, updater);
-    expect(res.error).toMatch('Invalid session id');
+    expect(res.error).toMatch('Invalid sessionId');
 
     res = await doSignedRequest({ sessionId, updaterPk: '', authUrl }, updater);
     expect(res.error).toMatch('updaterPk');

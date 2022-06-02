@@ -60,7 +60,7 @@
     "gen-docs": "jsdoc2md lib/**/*.js lib/**/**/*.js > docs/README.md",
     "gen-dts": "j2d lib/index.js",
     "format-docs": "remark . -o",
-    "test": "jest --forceExit --detectOpenHandles",
+    "test": "jest --forceExit",
     "coverage": "yarn test --coverage"
   }
 }
