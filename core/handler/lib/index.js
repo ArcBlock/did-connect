@@ -82,7 +82,7 @@ function createHandlers({
 
   const handleSessionCreate = async (context) => {
     if (isValidContext(context) === false) {
-      return { error: 'Context invalid', code: 400 };
+      return { error: 'Invalid context', code: 400 };
     }
 
     const { sessionId, updaterPk, strategy = 'default', authUrl, requestedClaims = [] } = context.body;
@@ -128,7 +128,7 @@ function createHandlers({
 
   const handleSessionUpdate = (context) => {
     if (isValidContext(context) === false) {
-      return { error: 'Context invalid', code: 400 };
+      return { error: 'Invalid context', code: 400 };
     }
 
     if (isSessionFinalized(context.session)) {
@@ -157,7 +157,7 @@ function createHandlers({
 
   const handleClaimRequest = async (context) => {
     if (isValidContext(context) === false) {
-      return signJson({ error: 'Context invalid', code: 400 }, context);
+      return signJson({ error: 'Invalid context', code: 400 }, context);
     }
 
     const { sessionId, session, didwallet } = context;
@@ -233,7 +233,7 @@ function createHandlers({
   // FIXME: authPrincipal only connect is not supported yet.
   const handleClaimResponse = async (context) => {
     if (isValidContext(context) === false) {
-      return signJson({ error: 'Context invalid', code: 400 }, context);
+      return signJson({ error: 'Invalid context', code: 400 }, context);
     }
 
     const { sessionId, session, body, locale } = context;
