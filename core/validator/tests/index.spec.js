@@ -3,6 +3,7 @@ const { claims } = require('../lib');
 describe('Validator', () => {
   test('should trusted issuers work', () => {
     const { error } = claims.verifiableCredential.validate({
+      type: 'verifiableCredential',
       description: 'xxx',
       filters: [
         { trustedIssuers: ['z1Tp3bGid5Kwc1NygaBPdVVg6BuhJagF2G4'] },
