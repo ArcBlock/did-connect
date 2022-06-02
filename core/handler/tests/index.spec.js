@@ -906,6 +906,10 @@ describe('RelayAdapterExpress', () => {
     res = await updateSession({ status: 'xxxx' });
     expect(res.error).toEqual('Invalid session status');
 
+    res = await updateSession({ requestedClaims: [{ a: 'b' }] });
+    expect(res.error).toMatch('Invalid session');
+    expect(res.error).toMatch('requestedClaims');
+
     res = await updateSession({ status: 'error' }, updater, '');
     expect(res.error).toEqual('Invalid updater pk');
 

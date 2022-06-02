@@ -47,7 +47,7 @@ function createHandlers({
   const isSessionFinalized = (x) => ['error', 'timeout', 'canceled', 'rejected', 'completed'].includes(x.status);
   const isValidContext = (x) => {
     const { error } = contextSchema.validate(x);
-    if (error) logger.error(error);
+    // if (error) logger.error(error);
     return !error;
   };
 
@@ -56,10 +56,6 @@ function createHandlers({
 
   const verifyUpdater = (params, updaterPk) => {
     const { body, signerPk, signerToken } = params;
-    if (body.status && ['error'].includes(body.status) === false) {
-      return { error: 'Invalid session status', code: 403 };
-    }
-
     if (!signerPk) {
       return { error: 'Invalid updater pk', code: 400 };
     }
@@ -143,6 +139,10 @@ function createHandlers({
     const result = verifyUpdater(context, session.updaterPk);
     if (result.error) {
       return result;
+    }
+
+    if (body.status && ['error', 'canceled'].includes(body.status) === false) {
+      return { error: 'Invalid session status', code: 400 };
     }
 
     logger.info('update session', context.sessionId, body);
