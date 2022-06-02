@@ -6,7 +6,7 @@
 
 ## Overview
 
-This library is implemented according to [ABT-DID-Protocol](https://github.com/ArcBlock/abt-did-spec), aiming to make it easier for developers to handle customized DID Connect Sessions in Node.js applications, and should always be used together with [DID Connect UX package](https://www.npmjs.com/package/@arcblock/did-connect), if you are composing a blocklet, you may find the wrapped implementation in [Blocklet SDK](https://www.npmjs.com/package/@blocklet/sdk) more useful.
+This library is implemented according to [ABT-DID-Protocol](https://github.com/ArcBlock/abt-did-spec), aiming to make it easier for developers to handle customized DID Connect Sessions in Node.js applications, and should always be used together with [DID Connect UX package](https://www.npmjs.com/package/@did-connect/react), if you are composing a blocklet, you may find the wrapped implementation in [Blocklet SDK](https://www.npmjs.com/package/@blocklet/sdk) more useful.
 
 Within a typical DID Connect Session, the application may request user to sign a transaction or provide some information, such as:
 
@@ -89,7 +89,7 @@ handlers.attach({
 });
 ```
 
-Then your application backend is ready to handle DID Connect Session that request and accept profile from user. For frontend integration please checkout [DID Connect UX](https://www.npmjs.com/package/@arcblock/did-connect).
+Then your application backend is ready to handle DID Connect Session that request and accept profile from user. For frontend integration please checkout [DID Connect UX](https://www.npmjs.com/package/@did-connect/react).
 
 ### Multiple Claims
 
