@@ -331,6 +331,65 @@ describe('RelayAdapterExpress', () => {
     client.off(sessionId);
   });
 
+  test('should abort session when wallet rejected or challenge mismatch', async () => {
+    let session = null;
+    let res = null;
+    let authInfo = null;
+
+    const statusHistory = [];
+
+    const { sessionId, updaterPk, authUrl } = prepareTest();
+
+    client.on(sessionId, async (e) => {
+      expect(e.status).toBeTruthy();
+      statusHistory.push(e.status);
+    });
+
+    // 1. create session
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    expect(session.sessionId).toEqual(sessionId);
+
+    // 2. simulate scan
+    res = await api.get(getAuthUrl(authUrl));
+    expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+    expect(authInfo.url).toEqual(authUrl);
+
+    // 3. submit auth principal
+    const claims = authInfo.requestedClaims;
+    if (claims.find((x) => x.type === 'authPrincipal')) {
+      const nextUrl = getAuthUrl(authInfo.url);
+      res = await api.post(nextUrl, {
+        userPk: toBase58(user.publicKey),
+        userInfo: Jwt.sign(user.address, user.secretKey, {
+          requestedClaims: [],
+          challenge: 'abcd',
+        }),
+      });
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.status).toEqual('error');
+      expect(authInfo.errorMessage).toEqual('Challenge mismatch');
+
+      authInfo = Jwt.decode(res.data.authInfo);
+      res = await api.post(nextUrl, {
+        userPk: toBase58(user.publicKey),
+        userInfo: Jwt.sign(user.address, user.secretKey, {
+          action: 'declineAuth',
+          requestedClaims: [],
+          challenge: authInfo.challenge,
+        }),
+      });
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.requestedClaims).toBeFalsy();
+    }
+
+    // 7. assert status history
+    expect(statusHistory).toEqual(['walletScanned', 'rejected']);
+
+    client.off(sessionId);
+  });
+
   test('should abort session when error thrown on app connect', async () => {
     let session = null;
     let res = null;

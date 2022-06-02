@@ -61,7 +61,7 @@ const session = Joi.object({
       ...Object.values(claims)
     )
     .default([]),
-  responseClaims: Joi.array().items(Joi.any()).default([]),
+  responseClaims: Joi.array().items(Joi.array().items(Joi.any()).min(1)).default([]),
   approveResults: Joi.array().items(Joi.any()).default([]),
   error: Joi.string().optional().allow(''),
 }).options({ stripUnknown: true, noDefaults: false });

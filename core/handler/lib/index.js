@@ -13,33 +13,17 @@ const { context: contextSchema, session: sessionSchema } = require('@did-connect
 const { getStepChallenge, parseWalletUA } = require('./util');
 
 const errors = {
-  sessionIdMissing: {
-    en: 'Session Id is required to check status',
-    zh: '缺少会话 ID 参数',
-  },
   sessionNotFound: {
     en: 'Session not found or expired',
     zh: '会话不存在或已过期',
   },
   didMismatch: {
-    en: 'Login user and wallet user mismatch, please relogin and try again',
+    en: 'Login user and wallet user mismatch, please reconnect and try again',
     zh: '登录用户和扫码用户不匹配，为保障安全，请重新登录应用',
   },
   challengeMismatch: {
     en: 'Challenge mismatch',
     zh: '随机校验码不匹配',
-  },
-  didMissing: {
-    en: 'userDid is required to start auth',
-    zh: 'userDid 参数缺失，请勿尝试连接多个不同的钱包',
-  },
-  pkMissing: {
-    en: 'userPk is required to start auth',
-    zh: 'userPk 参数缺失，请勿尝试连接多个不同的钱包',
-  },
-  authClaim: {
-    en: 'authPrincipal claim is not configured correctly',
-    zh: 'authPrincipal 声明配置不正确',
   },
   userDeclined: {
     en: 'You have declined the authentication request',
@@ -161,19 +145,8 @@ function createHandlers({
       return result;
     }
 
-    const updates = pick(body, ['error', 'status', 'approveResults', 'requestedClaims']);
-    if (updates.error && typeof updates.error !== 'string') {
-      return { error: 'Invalid error message', code: 400 };
-    }
-    if (updates.approveResults && Array.isArray(updates.approveResults) === false) {
-      return { error: 'Invalid approveResults', code: 400 };
-    }
-    if (updates.requestedClaims && Array.isArray(updates.requestedClaims) === false) {
-      return { error: 'Invalid requestedClaims', code: 400 };
-    }
-
     logger.info('update session', context.sessionId, body);
-
+    const updates = pick(body, ['error', 'status', 'approveResults', 'requestedClaims']);
     const { error } = sessionSchema.validate({ ...session, ...updates });
     if (error) {
       return { error: `Invalid session: ${error.details.map((x) => x.message).join(', ')}`, code: 400 };
@@ -283,14 +256,12 @@ function createHandlers({
           error: errors.userDeclined[locale],
           currentStep: Math.max(session.currentStep - 1, 0),
         });
+        wsServer.broadcast(sessionId, { status: 'rejected' });
 
         return signJson({}, context);
       }
 
       // Ensure challenge match
-      if (!challenge) {
-        return signJson({ error: errors.challengeMismatch[locale] }, context);
-      }
       if (challenge !== session.challenge) {
         return signJson({ error: errors.challengeMismatch[locale] }, context);
       }
