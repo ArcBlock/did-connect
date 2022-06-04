@@ -1,4 +1,10 @@
+require('node-localstorage/register'); // polyfill ls
+
+const axios = require('axios');
 const joinUrl = require('url-join');
+const objectHash = require('object-hash');
+const Jwt = require('@arcblock/jwt');
+const { fromRandom, fromSecretKey } = require('@ocap/wallet');
 
 const createSocketEndpoint = (baseUrl) => {
   if (!baseUrl) {
@@ -56,8 +62,31 @@ const createDeepLink = (baseUrl, sessionId) => {
   return tmp.href;
 };
 
+const doSignedRequest = async (data, wallet, baseUrl, method = 'POST') => {
+  const headers = {};
+  headers['x-updater-pk'] = wallet.publicKey;
+  headers['x-updater-token'] = Jwt.sign(wallet.address, wallet.secretKey, { hash: objectHash(data) });
+  const res = await axios({ method, url: joinUrl(baseUrl, '/session'), data, headers, timeout: 8000 });
+  return res.data;
+};
+
+const getUpdater = () => {
+  // eslint-disable-next-line no-undef
+  const sk = localStorage.getItem('updater-sk');
+  if (sk) {
+    return fromSecretKey(sk);
+  }
+
+  const updater = fromRandom();
+  // eslint-disable-next-line no-undef
+  localStorage.setItem('updater-sk', updater.secretKey);
+  return updater;
+};
+
 module.exports = {
   createSocketEndpoint,
   createAuthUrl,
   createDeepLink,
+  doSignedRequest,
+  getUpdater,
 };

@@ -18,14 +18,15 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/ws": "^1.16.15",
     "@arcblock/jwt": "^1.16.15",
+    "@arcblock/ws": "^1.16.15",
     "@ocap/wallet": "^1.16.15",
     "axios": "^0.27.2",
     "lodash": "^4.17.21",
+    "node-localstorage": "^2.2.1",
     "object-hash": "^3.0.0",
-    "uuid": "^8.3.2",
     "url-join": "^4.0.1",
+    "uuid": "^8.3.2",
     "xstate": "^4.32.1"
   },
   "devDependencies": {

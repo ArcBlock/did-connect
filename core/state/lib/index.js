@@ -1,32 +1,19 @@
 const uuid = require('uuid');
-const axios = require('axios');
 const wrap = require('lodash/wrap');
-const objectHash = require('object-hash');
-const joinUrl = require('url-join');
-const Jwt = require('@arcblock/jwt');
-const { fromRandom } = require('@ocap/wallet');
+const pick = require('lodash/pick');
 const { createMachine, assign } = require('xstate');
 
-const { createAuthUrl, createDeepLink, createSocketEndpoint } = require('./util');
+const { createAuthUrl, createDeepLink, createSocketEndpoint, doSignedRequest, getUpdater } = require('./util');
 const { createConnection } = require('./socket');
 
 const noop = () => null;
-const updater = fromRandom(); // FIXME: shell we save this to localStorage
-
-const doSignedRequest = async (data, wallet, baseUrl, method = 'POST') => {
-  const headers = {};
-  headers['x-updater-pk'] = wallet.publicKey;
-  headers['x-updater-token'] = Jwt.sign(wallet.address, wallet.secretKey, { hash: objectHash(data) });
-  const res = await axios({ method, url: joinUrl(baseUrl, '/session'), data, headers, timeout: 8000 });
-  return res.data;
-};
 
 const createStateMachine = ({
   baseUrl = '/api/connect/relay',
-  sessionId,
-  initial = 'start',
-  updaterPk,
+  initial = 'start', // we maybe reusing existing session
+  sessionId, // we maybe reusing existing session
   strategy = 'default',
+  dispatch, // handle events emitted from websocket relay
   onStart = noop,
   onCreate = noop,
   onConnect,
@@ -41,8 +28,9 @@ const createStateMachine = ({
 
   // FIXME: how do we ensure updaterPk is a valid public key?
 
+  const updater = getUpdater();
   const sid = sessionId || uuid.v4();
-  const pk = updaterPk || updater.publicKey;
+  const pk = updater.publicKey;
 
   const _onCreate = wrap(onCreate, async (cb) => {
     const authUrl = createAuthUrl(baseUrl, sid);
@@ -57,12 +45,11 @@ const createStateMachine = ({
   const socket = createConnection(createSocketEndpoint(baseUrl));
   socket.on(sid, (e) => {
     if (e.status === 'walletScanned') {
+      dispatch({ type: 'WALLET_SCAN', didwallet: e.didwallet });
     } else if (e.status === 'walletConnected') {
-      onConnect(e);
-      // TODO: call onConnect
+      dispatch({ type: 'WALLET_CONNECTED', connectedUser: pick(e, ['userDid', 'userPk']) });
     } else if (e.status === 'walletApproved') {
-      onApprove(e);
-      // TODO: call onApprove
+      dispatch({ type: 'WALLET_APPROVE', ...pick(e, ['claims', 'currentStep']) });
     } else if (e.status === 'completed') {
       onComplete(e);
     } else if (e.status === 'error') {
