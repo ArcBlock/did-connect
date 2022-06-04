@@ -6,7 +6,17 @@ const { createMachine, assign } = require('xstate');
 const { createAuthUrl, createDeepLink, createSocketEndpoint, doSignedRequest, getUpdater } = require('./util');
 const { createConnection, destroyConnections } = require('./socket');
 
-const noop = () => null;
+const noopAsync = async () => undefined; // FIXME: how to detect if the function returns a promise
+const returnAsync = async (x) => x;
+const DEFAULT_TIMEOUT = {
+  START_TIMEOUT: 10 * 1000, // webapp-callback
+  CREATE_TIMEOUT: 10 * 1000, // relay-server
+  WALLET_SCAN_TIMEOUT: 60 * 1000, // user-wallet
+  WALLET_CONNECT_TIMEOUT: 60 * 1000, // user-wallet
+  WALLET_APPROVE_TIMEOUT: 60 * 1000, // user-wallet
+  APP_CONNECT_TIMEOUT: 20 * 1000, // webapp-callback
+  APP_APPROVE_TIMEOUT: 20 * 1000, // webapp-callback
+};
 
 const createStateMachine = ({
   baseUrl = '/api/connect/relay',
@@ -14,13 +24,14 @@ const createStateMachine = ({
   sessionId, // we maybe reusing existing session
   strategy = 'default',
   dispatch, // handle events emitted from websocket relay
-  onStart = noop,
-  onCreate = noop,
+  onStart = noopAsync,
+  onCreate = returnAsync,
   onConnect, // TODO: can be claim object, claim list, function that returns either object or list
   onApprove, // TODO: must be a function
-  onComplete = noop,
-  onReject = noop,
-  onCancel = noop,
+  onComplete = noopAsync,
+  onReject = noopAsync,
+  onCancel = noopAsync,
+  timeout = DEFAULT_TIMEOUT,
 }) => {
   if (sessionId && uuid.validate(sessionId) === false) {
     throw new Error('Invalid session id, which must be a valid uuid.v4');
@@ -33,17 +44,32 @@ const createStateMachine = ({
   const pk = updater.publicKey;
 
   const _onCreate = wrap(onCreate, async (cb) => {
-    const authUrl = createAuthUrl(baseUrl, sid);
-    const session = await doSignedRequest({ sessionId: sid, updaterPk: pk, authUrl }, updater);
-    await cb(session);
+    try {
+      const authUrl = createAuthUrl(baseUrl, sid);
+      console.log('_onCreate.authUrl', authUrl);
+      const session = await doSignedRequest({
+        data: { sessionId: sid, updaterPk: pk, authUrl },
+        wallet: updater,
+        baseUrl,
+      });
+      console.log('_onCreate.session', session);
+      await cb(session);
+    } catch (err) {
+      console.error(err);
+    }
   });
 
-  const _onError = () => {
-    assign({ error: (ctx, e) => e.error });
-  };
+  const _onError = () =>
+    assign({
+      error: (ctx, e) => {
+        console.log('_onError', e);
+        return e.error;
+      },
+    });
 
   createConnection(createSocketEndpoint(baseUrl)).then((socket) => {
     socket.on(sid, (e) => {
+      console.log('event', e);
       if (e.status === 'walletScanned') {
         dispatch({ type: 'WALLET_SCAN', didwallet: e.didwallet });
       } else if (e.status === 'walletConnected') {
@@ -62,6 +88,8 @@ const createStateMachine = ({
     });
   });
 
+  console.log('sessionId', sid);
+
   const machine = createMachine(
     {
       id: 'DIDConnectSession',
@@ -71,15 +99,8 @@ const createStateMachine = ({
         strategy, // strategy used to wallet to select account, can be default or did
         updaterPk: pk, // pk used to verify updater request to avoid accidental overwriting
         error: '',
-        previousConnected: {
-          userDid: '', // previous connected user did
-          userPk: '',
-          wallet: '',
-        },
-        currentConnected: {
-          userDid: '', // current connected user did
-          userPk: '',
-        },
+        previousConnected: null, // previous connected user
+        currentConnected: null, // current connected user
         currentStep: 0,
         requestedClaims: [], // app requested claims, authPrincipal should not be listed here
         responseClaims: [], // wallet submitted claims
@@ -112,7 +133,6 @@ const createStateMachine = ({
             src: _onCreate,
             onDone: {
               target: 'created',
-              actions: ['mergeRemoteSession'],
             },
             onError: {
               target: 'error',
@@ -248,12 +268,6 @@ const createStateMachine = ({
         onComplete,
         onCancel,
         onError: _onError,
-        mergeRemoteSession: assign({
-          previousConnected: (ctx, e) => {
-            console.log('mergeRemoteSession', e);
-            return e.previousConnected;
-          },
-        }),
         saveConnectedUser: assign({
           currentConnected: (ctx, e) => {
             console.log('saveConnectedUser', e);
@@ -297,15 +311,7 @@ const createStateMachine = ({
           return ctx.currentStep < ctx.claims.request.length;
         },
       },
-      delays: {
-        START_TIMEOUT: 10 * 1000, // webapp-callback
-        CREATE_TIMEOUT: 10 * 1000, // relay-server
-        WALLET_SCAN_TIMEOUT: 60 * 1000, // user-wallet
-        WALLET_CONNECT_TIMEOUT: 60 * 1000, // user-wallet
-        WALLET_APPROVE_TIMEOUT: 60 * 1000, // user-wallet
-        APP_CONNECT_TIMEOUT: 20 * 1000, // webapp-callback
-        APP_APPROVE_TIMEOUT: 20 * 1000, // webapp-callback
-      },
+      delays: { ...DEFAULT_TIMEOUT, ...timeout },
     }
   );
 

@@ -40,7 +40,7 @@ function createHandlers({
   authenticator,
   logger = console,
   timeout = 20 * 1000,
-  socketPathname = '/connect/relay/websocket',
+  socketPathname = '/api/connect/relay/websocket',
 }) {
   const wsServer = createSocketServer(logger, socketPathname);
 

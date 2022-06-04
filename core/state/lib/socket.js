@@ -5,7 +5,6 @@ const connections = {};
 
 // create new connection
 const createConnection = (endpoint) => {
-  console.log('createConnection', endpoint);
   if (!connections[endpoint]) {
     connections[endpoint] = new WsClient(endpoint, { heartbeatIntervalMs: 10 * 1000 });
   }

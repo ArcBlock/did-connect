@@ -62,7 +62,7 @@ const createDeepLink = (baseUrl, sessionId) => {
   return tmp.href;
 };
 
-const doSignedRequest = async (data, wallet, baseUrl, method = 'POST') => {
+const doSignedRequest = async ({ data, wallet, baseUrl, method = 'POST' }) => {
   const headers = {};
   headers['x-updater-pk'] = wallet.publicKey;
   headers['x-updater-token'] = Jwt.sign(wallet.address, wallet.secretKey, { hash: objectHash(data) });
@@ -83,10 +83,19 @@ const getUpdater = () => {
   return updater;
 };
 
+const isAsyncFunction = (fn) => {
+  if (fn.constructor.name === 'AsyncFunction') {
+    return true;
+  }
+
+  return false;
+};
+
 module.exports = {
   createSocketEndpoint,
   createAuthUrl,
   createDeepLink,
   doSignedRequest,
   getUpdater,
+  isAsyncFunction,
 };

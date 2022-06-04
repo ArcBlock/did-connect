@@ -56,7 +56,7 @@ describe('RelayAdapterExpress', () => {
 
   const getWsClient = async (endpoint) => {
     if (!client) {
-      client = new WsClient(`${endpoint}/connect/relay`, { heartbeatIntervalMs: 10 * 1000 });
+      client = new WsClient(`${endpoint}/api/connect/relay`, { heartbeatIntervalMs: 10 * 1000 });
 
       process.on('exit', () => {
         client.disconnect();

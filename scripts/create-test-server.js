@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
 /* eslint-disable prefer-rest-params */
