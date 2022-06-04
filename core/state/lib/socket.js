@@ -5,6 +5,7 @@ const connections = {};
 
 // create new connection
 const createConnection = (endpoint) => {
+  console.log('createConnection', endpoint);
   if (!connections[endpoint]) {
     connections[endpoint] = new WsClient(endpoint, { heartbeatIntervalMs: 10 * 1000 });
   }
@@ -28,7 +29,9 @@ const createConnection = (endpoint) => {
 
 const destroyConnections = () => {
   Object.keys(connections).forEach((key) => {
-    connections[key].disconnect();
+    if (connections[key].isConnected()) {
+      connections[key].disconnect();
+    }
     connections[key] = null;
   });
 };

@@ -26,3 +26,4 @@ storybook-static
 *.sw?
 coverage
 */coverage
+scratch

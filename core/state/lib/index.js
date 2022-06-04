@@ -4,7 +4,7 @@ const pick = require('lodash/pick');
 const { createMachine, assign } = require('xstate');
 
 const { createAuthUrl, createDeepLink, createSocketEndpoint, doSignedRequest, getUpdater } = require('./util');
-const { createConnection } = require('./socket');
+const { createConnection, destroyConnections } = require('./socket');
 
 const noop = () => null;
 
@@ -16,8 +16,8 @@ const createStateMachine = ({
   dispatch, // handle events emitted from websocket relay
   onStart = noop,
   onCreate = noop,
-  onConnect,
-  onApprove,
+  onConnect, // TODO: can be claim object, claim list, function that returns either object or list
+  onApprove, // TODO: must be a function
   onComplete = noop,
   onReject = noop,
   onCancel = noop,
@@ -42,23 +42,24 @@ const createStateMachine = ({
     assign({ error: (ctx, e) => e.error });
   };
 
-  const socket = createConnection(createSocketEndpoint(baseUrl));
-  socket.on(sid, (e) => {
-    if (e.status === 'walletScanned') {
-      dispatch({ type: 'WALLET_SCAN', didwallet: e.didwallet });
-    } else if (e.status === 'walletConnected') {
-      dispatch({ type: 'WALLET_CONNECTED', connectedUser: pick(e, ['userDid', 'userPk']) });
-    } else if (e.status === 'walletApproved') {
-      dispatch({ type: 'WALLET_APPROVE', ...pick(e, ['claims', 'currentStep']) });
-    } else if (e.status === 'completed') {
-      onComplete(e);
-    } else if (e.status === 'error') {
-      onReject(e);
-    } else if (e.status === 'rejected') {
-      onCancel(e);
-    } else if (e.status === 'timeout') {
-      onCancel(e);
-    }
+  createConnection(createSocketEndpoint(baseUrl)).then((socket) => {
+    socket.on(sid, (e) => {
+      if (e.status === 'walletScanned') {
+        dispatch({ type: 'WALLET_SCAN', didwallet: e.didwallet });
+      } else if (e.status === 'walletConnected') {
+        dispatch({ type: 'WALLET_CONNECTED', connectedUser: pick(e, ['userDid', 'userPk']) });
+      } else if (e.status === 'walletApproved') {
+        dispatch({ type: 'WALLET_APPROVE', ...pick(e, ['claims', 'currentStep']) });
+      } else if (e.status === 'completed') {
+        onComplete(e);
+      } else if (e.status === 'error') {
+        onReject(e);
+      } else if (e.status === 'rejected') {
+        onCancel(e);
+      } else if (e.status === 'timeout') {
+        onCancel(e);
+      }
+    });
   });
 
   const machine = createMachine(
@@ -80,7 +81,7 @@ const createStateMachine = ({
           userPk: '',
         },
         currentStep: 0,
-        requestClaims: [], // app requested claims, authPrincipal should not be listed here
+        requestedClaims: [], // app requested claims, authPrincipal should not be listed here
         responseClaims: [], // wallet submitted claims
         approveResults: [],
       },
@@ -153,7 +154,7 @@ const createStateMachine = ({
             src: onConnect,
             onDone: {
               target: 'appConnected',
-              actions: ['saveRequestClaims'],
+              actions: ['saveRequestedClaims'],
             },
             onError: {
               target: 'error',
@@ -161,7 +162,7 @@ const createStateMachine = ({
             },
           },
           on: {
-            '': [{ target: 'appConnected', cond: 'hasRequestClaims' }],
+            always: [{ target: 'appConnected', cond: 'hasRequestClaims' }],
             APP_CANCELED: { target: 'canceled' },
           },
           entry: ['saveConnectedUser'],
@@ -209,7 +210,7 @@ const createStateMachine = ({
         // app has respond on wallet submitted claims
         appApproved: {
           on: {
-            '': [
+            always: [
               { target: 'walletApproved', cond: 'allStepsNotDone' },
               { target: 'completed', cond: 'allStepsDone' },
             ],
@@ -250,19 +251,19 @@ const createStateMachine = ({
         mergeRemoteSession: assign({
           previousConnected: (ctx, e) => {
             console.log('mergeRemoteSession', e);
-            return e.data.previousConnected;
+            return e.previousConnected;
           },
         }),
         saveConnectedUser: assign({
           currentConnected: (ctx, e) => {
             console.log('saveConnectedUser', e);
-            return e.data;
+            return e.connectedUser;
           },
         }),
-        saveRequestClaims: assign({
-          claims: (ctx, e) => {
-            console.log('saveRequestClaims', e);
-            const claims = Array.isArray(e.data) ? e.data : [e.data];
+        saveRequestedClaims: assign({
+          requestedClaims: (ctx, e) => {
+            console.log('saveRequestedClaims', e);
+            const claims = Array.isArray(e.claims) ? e.claims : [e.claims];
             return { ...ctx.claims, request: claims };
           },
         }),
@@ -273,13 +274,13 @@ const createStateMachine = ({
           },
         }),
         saveResponseClaims: assign({
-          claims: (ctx, e) => {
+          responseClaims: (ctx, e) => {
             console.log('saveResponseClaims', e);
             return { ...ctx.claims, response: [...ctx.claims.response, e.data] };
           },
         }),
         saveApproveResult: assign({
-          results: (ctx, e) => {
+          approveResults: (ctx, e) => {
             console.log('saveApproveResult', e);
             return { ...ctx.results, approve: [...ctx.results.approve, e.data] };
           },
@@ -315,4 +316,5 @@ module.exports = {
   createMachine: createStateMachine,
   createDeepLink,
   createAuthUrl,
+  destroyConnections,
 };
