@@ -1,5 +1,27 @@
 const joinUrl = require('url-join');
 
+const createSocketEndpoint = (baseUrl) => {
+  if (!baseUrl) {
+    throw new Error('baseUrl is required when createAuthUrl');
+  }
+
+  let endpoint = baseUrl;
+
+  // we are in browser
+  if (baseUrl.startsWith('/')) {
+    if (typeof window === 'undefined') {
+      throw new Error('Can not create authUrl with pathname in none-browser env');
+    }
+
+    // eslint-disable-next-line no-undef
+    const tmp = new URL(window.location.origin);
+    tmp.pathname = joinUrl(baseUrl);
+    endpoint = tmp.href;
+  }
+
+  return endpoint.replace('https:', 'wss:').replace('http:', 'ws:');
+};
+
 const createAuthUrl = (baseUrl, sessionId) => {
   if (!baseUrl) {
     throw new Error('baseUrl is required when createAuthUrl');
@@ -35,6 +57,7 @@ const createDeepLink = (baseUrl, sessionId) => {
 };
 
 module.exports = {
+  createSocketEndpoint,
   createAuthUrl,
   createDeepLink,
 };

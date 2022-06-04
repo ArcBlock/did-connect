@@ -7,7 +7,8 @@ const Jwt = require('@arcblock/jwt');
 const { fromRandom } = require('@ocap/wallet');
 const { createMachine, assign } = require('xstate');
 
-const { createAuthUrl, createDeepLink } = require('./util');
+const { createAuthUrl, createDeepLink, createSocketEndpoint } = require('./util');
+const { createConnection } = require('./socket');
 
 const noop = () => null;
 const updater = fromRandom(); // FIXME: shell we save this to localStorage
@@ -19,14 +20,6 @@ const doSignedRequest = async (data, wallet, baseUrl, method = 'POST') => {
   const res = await axios({ method, url: joinUrl(baseUrl, '/session'), data, headers, timeout: 8000 });
   return res.data;
 };
-
-function onError() {
-  assign({
-    error: (ctx, e) => {
-      return e.error;
-    },
-  });
-}
 
 const createStateMachine = ({
   baseUrl = '/api/connect/relay',
@@ -57,7 +50,31 @@ const createStateMachine = ({
     await cb(session);
   });
 
-  return createMachine(
+  const _onError = () => {
+    assign({ error: (ctx, e) => e.error });
+  };
+
+  const socket = createConnection(createSocketEndpoint(baseUrl));
+  socket.on(sid, (e) => {
+    if (e.status === 'walletScanned') {
+    } else if (e.status === 'walletConnected') {
+      onConnect(e);
+      // TODO: call onConnect
+    } else if (e.status === 'walletApproved') {
+      onApprove(e);
+      // TODO: call onApprove
+    } else if (e.status === 'completed') {
+      onComplete(e);
+    } else if (e.status === 'error') {
+      onReject(e);
+    } else if (e.status === 'rejected') {
+      onCancel(e);
+    } else if (e.status === 'timeout') {
+      onCancel(e);
+    }
+  });
+
+  const machine = createMachine(
     {
       id: 'DIDConnectSession',
       initial,
@@ -242,7 +259,7 @@ const createStateMachine = ({
         onReject,
         onComplete,
         onCancel,
-        onError,
+        onError: _onError,
         mergeRemoteSession: assign({
           previousConnected: (ctx, e) => {
             console.log('mergeRemoteSession', e);
@@ -303,6 +320,8 @@ const createStateMachine = ({
       },
     }
   );
+
+  return machine;
 };
 
 module.exports = {
