@@ -103,6 +103,7 @@ function createHandlers({
       // the client shall compose the deep-link by itself, since the rules are simple enough
       authUrl,
       challenge: getStepChallenge(),
+      // FIXME: app link should be updated according to blocklet env?
       appInfo: await authenticator.getAppInfo({ ...context, baseUrl: new URL(authUrl).origin }),
       previousConnected: context.previousConnected,
       currentConnected: null,

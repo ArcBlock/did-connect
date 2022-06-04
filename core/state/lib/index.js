@@ -1,8 +1,35 @@
+const uuid = require('uuid');
+const axios = require('axios');
+const wrap = require('lodash/wrap');
+const objectHash = require('object-hash');
+const joinUrl = require('url-join');
+const Jwt = require('@arcblock/jwt');
+const { fromRandom } = require('@ocap/wallet');
 const { createMachine, assign } = require('xstate');
 
-const noop = () => null;
+const { createAuthUrl, createDeepLink } = require('./util');
 
-module.exports = function createConnectMachine({
+const noop = () => null;
+const updater = fromRandom(); // FIXME: shell we save this to localStorage
+
+const doSignedRequest = async (data, wallet, baseUrl, method = 'POST') => {
+  const headers = {};
+  headers['x-updater-pk'] = wallet.publicKey;
+  headers['x-updater-token'] = Jwt.sign(wallet.address, wallet.secretKey, { hash: objectHash(data) });
+  const res = await axios({ method, url: joinUrl(baseUrl, '/session'), data, headers, timeout: 8000 });
+  return res.data;
+};
+
+function onError() {
+  assign({
+    error: (ctx, e) => {
+      return e.error;
+    },
+  });
+}
+
+const createStateMachine = ({
+  baseUrl = '/api/connect/relay',
   sessionId,
   initial = 'start',
   updaterPk,
@@ -14,23 +41,30 @@ module.exports = function createConnectMachine({
   onComplete = noop,
   onReject = noop,
   onCancel = noop,
-}) {
-  function onError() {
-    assign({
-      error: (ctx, e) => {
-        return e.error;
-      },
-    });
+}) => {
+  if (sessionId && uuid.validate(sessionId) === false) {
+    throw new Error('Invalid session id, which must be a valid uuid.v4');
   }
+
+  // FIXME: how do we ensure updaterPk is a valid public key?
+
+  const sid = sessionId || uuid.v4();
+  const pk = updaterPk || updater.publicKey;
+
+  const _onCreate = wrap(onCreate, async (cb) => {
+    const authUrl = createAuthUrl(baseUrl, sid);
+    const session = await doSignedRequest({ sessionId: sid, updaterPk: pk, authUrl }, updater);
+    await cb(session);
+  });
 
   return createMachine(
     {
       id: 'DIDConnectSession',
       initial,
       context: {
-        sessionId, // uuid.v4()
+        sessionId: sid,
         strategy, // strategy used to wallet to select account, can be default or did
-        updaterPk, // pk used to verify updater request to avoid accidental overwriting
+        updaterPk: pk, // pk used to verify updater request to avoid accidental overwriting
         error: '',
         previousConnected: {
           userDid: '', // previous connected user did
@@ -70,7 +104,7 @@ module.exports = function createConnectMachine({
         loading: {
           invoke: {
             id: 'createSession',
-            src: onCreate,
+            src: _onCreate,
             onDone: {
               target: 'created',
               actions: ['mergeRemoteSession'],
@@ -269,4 +303,10 @@ module.exports = function createConnectMachine({
       },
     }
   );
+};
+
+module.exports = {
+  createMachine: createStateMachine,
+  createDeepLink,
+  createAuthUrl,
 };
