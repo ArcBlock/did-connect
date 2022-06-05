@@ -215,7 +215,7 @@ describe('RelayAdapterExpress', () => {
         });
       } else if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [`you provided profile ${e.claims[0].fullName}`],
+          approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
         });
       } else if (e.status === 'completed') {
         args.completed = true;
@@ -252,7 +252,7 @@ describe('RelayAdapterExpress', () => {
 
       if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [`you provided profile ${e.claims[0].fullName}`],
+          approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
         });
       }
       if (e.status === 'completed') {
@@ -384,12 +384,12 @@ describe('RelayAdapterExpress', () => {
       } else if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${e.claims[0].fullName}`],
+            approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
           });
         }
         if (e.currentStep === 1) {
           session = await updateSession({
-            approveResults: [...session.approveResults, `you provided asset ${e.claims[0].address}`],
+            approveResults: [...session.approveResults, `you provided asset ${e.responseClaims[0].address}`],
           });
         }
       } else if (e.status === 'completed') {
@@ -418,12 +418,12 @@ describe('RelayAdapterExpress', () => {
       if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${e.claims[0].fullName}`],
+            approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
           });
         }
         if (e.currentStep === 1) {
           session = await updateSession({
-            approveResults: [...session.approveResults, `you provided asset ${e.claims[0].address}`],
+            approveResults: [...session.approveResults, `you provided asset ${e.responseClaims[0].address}`],
           });
         }
       } else if (e.status === 'completed') {
@@ -810,7 +810,7 @@ describe('RelayAdapterExpress', () => {
       } else if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${e.claims[0].fullName}`],
+            approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
           });
         }
       }

@@ -35,6 +35,7 @@ function createSocketServer(logger, pathname) {
   return new WsServer({ logger, pathname });
 }
 
+// TODO: remove the session after complete/expire/canceled/rejected
 function createHandlers({
   storage,
   authenticator,
@@ -123,7 +124,6 @@ function createHandlers({
   };
 
   const handleSessionRead = async (sessionId) => {
-    // TODO: remove the session after complete/expire/canceled/rejected
     return storage.read(sessionId);
   };
 
@@ -147,12 +147,12 @@ function createHandlers({
     }
 
     logger.info('update session', context.sessionId, body);
-    const updates = pick(body, ['error', 'status', 'approveResults', 'requestedClaims']);
-    const { error } = sessionSchema.validate({ ...session, ...updates });
+    const { error, value } = sessionSchema.validate({ ...session, ...body });
     if (error) {
       return { error: `Invalid session: ${error.details.map((x) => x.message).join(', ')}`, code: 400 };
     }
 
+    const updates = pick(value, ['error', 'status', 'approveResults', 'requestedClaims']);
     return storage.update(context.sessionId, updates);
   };
 
@@ -276,11 +276,11 @@ function createHandlers({
         // If our claims are populated already, move to appConnected without waiting
         if (session.requestedClaims.length > 0) {
           newSession = await storage.update(sessionId, { status: 'appConnected' });
-          wsServer.broadcast(sessionId, { status: 'appConnected' });
+          wsServer.broadcast(sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
         } else {
           newSession = await waitForAppConnect(sessionId);
           await storage.update(sessionId, { status: 'appConnected' });
-          wsServer.broadcast(sessionId, { status: 'appConnected' });
+          wsServer.broadcast(sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
         }
         return signClaims(newSession.requestedClaims[session.currentStep], { ...context, session: newSession });
       }
@@ -290,10 +290,17 @@ function createHandlers({
         status: 'walletApproved',
         responseClaims: [...session.responseClaims, claims],
       });
-      wsServer.broadcast(sessionId, { status: 'walletApproved', claims, currentStep: session.currentStep });
+      wsServer.broadcast(sessionId, {
+        status: 'walletApproved',
+        responseClaims: claims,
+        currentStep: session.currentStep,
+      });
       newSession = await waitForAppApprove(sessionId);
       await storage.update(sessionId, { status: 'appApproved' });
-      wsServer.broadcast(sessionId, { status: 'appApproved' });
+      wsServer.broadcast(sessionId, {
+        status: 'appApproved',
+        approveResult: newSession.approveResults[session.currentStep],
+      });
 
       // Return result if we've done
       const isDone = session.currentStep === session.requestedClaims.length - 1;
