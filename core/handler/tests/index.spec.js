@@ -178,7 +178,7 @@ describe('RelayAdapterExpress', () => {
     });
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('error');
-    expect(authInfo.errorMessage).toMatch(/Session is finalized/);
+    expect(authInfo.errorMessage).toMatch(/Session finalized/);
 
     // 8. assert status history
     expect(statusHistory).toEqual([
@@ -188,6 +188,7 @@ describe('RelayAdapterExpress', () => {
       'walletApproved',
       'appApproved',
       'completed',
+      'error',
     ]);
 
     client.off(args.sessionId);
@@ -230,13 +231,13 @@ describe('RelayAdapterExpress', () => {
 
     // assert session completed
     session = await getSession();
-    expect(session.status).toEqual('completed');
+    expect(session.status).toEqual('error');
 
     // try to scan a finalized session
     const res = await api.get(getAuthUrl(authUrl));
     const authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('error');
-    expect(authInfo.errorMessage).toEqual('Session is finalized');
+    expect(authInfo.errorMessage).toEqual('Session finalized');
   });
 
   test('should connect complete when everything is working: single + prepopulated', async () => {
@@ -457,7 +458,54 @@ describe('RelayAdapterExpress', () => {
     await runMultiStepTest(authUrl, statusHistory, args);
   });
 
-  test('should abort session when wallet rejected or challenge mismatch', async () => {
+  test('should abort session when wallet rejected', async () => {
+    let session = null;
+    let res = null;
+    let authInfo = null;
+
+    const statusHistory = [];
+
+    const { sessionId, updaterPk, authUrl } = prepareTest();
+
+    client.on(sessionId, async (e) => {
+      expect(e.status).toBeTruthy();
+      statusHistory.push(e.status);
+    });
+
+    // 1. create session
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    expect(session.sessionId).toEqual(sessionId);
+
+    // 2. simulate scan
+    res = await api.get(getAuthUrl(authUrl));
+    expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+    expect(authInfo.url).toEqual(authUrl);
+
+    // 3. submit auth principal
+    const claims = authInfo.requestedClaims;
+    if (claims.find((x) => x.type === 'authPrincipal')) {
+      const nextUrl = getAuthUrl(authInfo.url);
+      res = await api.post(nextUrl, {
+        userPk: toBase58(user.publicKey),
+        userInfo: Jwt.sign(user.address, user.secretKey, {
+          action: 'declineAuth',
+          requestedClaims: [],
+          challenge: authInfo.challenge,
+        }),
+      });
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.requestedClaims).toBeFalsy();
+    }
+
+    // 7. assert status history
+    expect(statusHistory).toEqual(['walletScanned', 'rejected']);
+
+    client.off(sessionId);
+  });
+
+  test('should abort session when or challenge mismatch', async () => {
     let session = null;
     let res = null;
     let authInfo = null;
@@ -496,22 +544,10 @@ describe('RelayAdapterExpress', () => {
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.status).toEqual('error');
       expect(authInfo.errorMessage).toEqual('Challenge mismatch');
-
-      authInfo = Jwt.decode(res.data.authInfo);
-      res = await api.post(nextUrl, {
-        userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
-          action: 'declineAuth',
-          requestedClaims: [],
-          challenge: authInfo.challenge,
-        }),
-      });
-      authInfo = Jwt.decode(res.data.authInfo);
-      expect(authInfo.requestedClaims).toBeFalsy();
     }
 
     // 7. assert status history
-    expect(statusHistory).toEqual(['walletScanned', 'rejected']);
+    expect(statusHistory).toEqual(['walletScanned', 'error']);
 
     client.off(sessionId);
   });
@@ -926,7 +962,7 @@ describe('RelayAdapterExpress', () => {
     expect(session.status).toEqual('error');
 
     res = await updateSession({ status: 'error' });
-    expect(res.error).toEqual('Session is finalized');
+    expect(res.error).toEqual('Session finalized');
 
     // 3. invalid session
     res = await doSignedRequest({ sessionId, updaterPk, authUrl, requestedClaims: [{ type: 'unknown' }] }, updater);

@@ -31,11 +31,18 @@ const errors = {
   },
 };
 
+function CustomError(code, reason) {
+  const err = new Error(reason);
+  err.code = code;
+  return err;
+}
+
 function createSocketServer(logger, pathname) {
   return new WsServer({ logger, pathname });
 }
 
 // TODO: remove the session after complete/expire/canceled/rejected
+// FIXME: i18n for errors
 function createHandlers({
   storage,
   authenticator,
@@ -133,7 +140,7 @@ function createHandlers({
     }
 
     if (isSessionFinalized(context.session)) {
-      return { error: 'Session is finalized', code: 400 };
+      return { error: 'Session finalized', code: 400 };
     }
 
     const { body, session } = context;
@@ -165,7 +172,7 @@ function createHandlers({
     const { strategy, previousConnected, currentStep } = session;
     try {
       if (isSessionFinalized(session)) {
-        return signJson({ error: 'Session is finalized', code: 400 }, context);
+        return signJson({ error: 'Session finalized', code: 400 }, context);
       }
 
       // if we are in created status, we should return authPrincipal claim
@@ -212,10 +219,9 @@ function createHandlers({
       return storage.read(sessionId);
     } catch (err) {
       if (session && session.status !== 'error') {
-        const timeoutError = Error(`${reason} within ${timeout}ms`);
-        timeoutError.code = 'TimeoutError';
-        throw timeoutError;
+        throw new CustomError('TimeoutError', `${reason} within ${timeout}ms`);
       }
+
       err.session = session;
       throw err;
     }
@@ -233,14 +239,14 @@ function createHandlers({
 
   // FIXME: authPrincipal only connect is not supported yet.
   const handleClaimResponse = async (context) => {
-    if (isValidContext(context) === false) {
-      return signJson({ error: 'Invalid context', code: 400 }, context);
-    }
-
     const { sessionId, session, body, locale } = context;
     try {
+      if (isValidContext(context) === false) {
+        throw new Error('Invalid context');
+      }
+
       if (isSessionFinalized(session)) {
-        return signJson({ error: 'Session is finalized', code: 400 }, context);
+        throw new Error('Session finalized');
       }
 
       const { userDid, userPk, action, challenge, claims } = await authenticator.verify(body, locale);
@@ -248,19 +254,12 @@ function createHandlers({
 
       // Ensure user approval
       if (action === 'declineAuth') {
-        await storage.update(sessionId, {
-          status: 'rejected',
-          error: errors.userDeclined[locale],
-          currentStep: Math.max(session.currentStep - 1, 0),
-        });
-        wsServer.broadcast(sessionId, { status: 'rejected' });
-
-        return signJson({}, context);
+        throw new CustomError('RejectError', errors.userDeclined[locale]);
       }
 
       // Ensure challenge match
       if (challenge !== session.challenge) {
-        return signJson({ error: errors.challengeMismatch[locale] }, context);
+        throw new Error(errors.challengeMismatch[locale]);
       }
 
       // If wallet is submitting authPrincipal claim,
@@ -317,6 +316,7 @@ function createHandlers({
       return signClaims(session.requestedClaims[nextStep], { ...context, session: newSession });
     } catch (err) {
       logger.error(err);
+
       // client error
       if (err.session && err.session.error) {
         wsServer.broadcast(sessionId, { status: 'error', error: err.session.error });
@@ -328,6 +328,13 @@ function createHandlers({
         await storage.update(sessionId, { status: 'timeout', error: err.message });
         wsServer.broadcast(sessionId, { status: 'timeout', error: err.message });
         return signJson({ error: err.message }, context);
+      }
+
+      // reject error
+      if (err.code === 'RejectError') {
+        await storage.update(sessionId, { status: 'rejected', currentStep: Math.max(session.currentStep - 1, 0) });
+        wsServer.broadcast(sessionId, { status: 'rejected' });
+        return signJson({}, context);
       }
 
       // anything else
