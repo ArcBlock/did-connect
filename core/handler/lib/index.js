@@ -164,15 +164,16 @@ function createHandlers({
   };
 
   const handleClaimRequest = async (context) => {
-    if (isValidContext(context) === false) {
-      return signJson({ error: 'Invalid context', code: 400 }, context);
-    }
-
     const { sessionId, session, didwallet } = context;
-    const { strategy, previousConnected, currentStep } = session;
+
     try {
+      if (isValidContext(context) === false) {
+        throw new Error('Invalid context');
+      }
+
+      const { strategy, previousConnected, currentStep } = session;
       if (isSessionFinalized(session)) {
-        return signJson({ error: 'Session finalized', code: 400 }, context);
+        throw new Error('Session finalized');
       }
 
       // if we are in created status, we should return authPrincipal claim

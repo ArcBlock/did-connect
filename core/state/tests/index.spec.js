@@ -65,6 +65,13 @@ describe('StateMachine', () => {
     baseUrl = server.url;
   });
 
+  test('should throw on invalid sessionId', () => {
+    expect(() => createMachine({ sessionId: 'abc' })).toThrow(/Invalid sessionId/);
+    expect(() => createMachine({ dispatch: 'abc' })).toThrow(/Invalid dispatch/);
+    expect(() => createMachine({ dispatch: noop })).toThrow(/Invalid onApprove/);
+    expect(() => createMachine({ dispatch: noop, onApprove: noop })).toThrow(/Invalid onConnect/);
+  });
+
   test('should work as expected: 1 claim + 1 step', async () => {
     let res;
     let authInfo;

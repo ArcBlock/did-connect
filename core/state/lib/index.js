@@ -1,5 +1,8 @@
 const uuid = require('uuid');
 const pick = require('lodash/pick');
+const isFunction = require('lodash/isFunction');
+const isObject = require('lodash/isObject');
+const isArray = require('lodash/isArray');
 const { createMachine, assign } = require('xstate');
 
 const { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, getUpdater } = require('./util');
@@ -7,7 +10,6 @@ const { createConnection, destroyConnections } = require('./socket');
 
 const noop = () => undefined;
 const debug = noop;
-const returnAsync = async (x) => x;
 const DEFAULT_TIMEOUT = {
   START_TIMEOUT: 10 * 1000, // webapp-callback
   CREATE_TIMEOUT: 10 * 1000, // relay-server
@@ -25,9 +27,9 @@ const createStateMachine = ({
   strategy = 'default',
   dispatch, // handle events emitted from websocket relay
   onStart = noop,
-  onCreate = returnAsync,
-  onConnect, // TODO: can be claim object, claim list, function that returns either object or list
-  onApprove, // TODO: must be a function
+  onCreate = noop,
+  onConnect,
+  onApprove,
   onComplete = noop,
   onReject = noop,
   onCancel = noop,
@@ -38,7 +40,17 @@ const createStateMachine = ({
     throw new Error('Invalid sessionId, which must be a valid uuid.v4');
   }
 
-  // FIXME: how do we ensure updaterPk is a valid public key?
+  const fns = { dispatch, onStart, onCreate, onApprove, onComplete, onReject, onCancel, onTimeout };
+  Object.keys(fns).forEach((x) => {
+    if (isFunction(fns[x]) === false) {
+      throw new Error(`Invalid ${x}, which must be a function`);
+    }
+  });
+
+  // TODO: can be claim object, claim list, function that returns either object or list
+  if (isFunction(onConnect) === false && isObject(onConnect) === false && isArray(onConnect) === false) {
+    throw new Error('Invalid onConnect, which must be a function or an object or an array');
+  }
 
   const updater = getUpdater();
   const sid = sessionId || uuid.v4();

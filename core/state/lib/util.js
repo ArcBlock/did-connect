@@ -83,19 +83,10 @@ const getUpdater = () => {
   return updater;
 };
 
-const isAsyncFunction = (fn) => {
-  if (fn.constructor.name === 'AsyncFunction') {
-    return true;
-  }
-
-  return false;
-};
-
 module.exports = {
   createSocketEndpoint,
   createApiUrl,
   createDeepLink,
   doSignedRequest,
   getUpdater,
-  isAsyncFunction,
 };
