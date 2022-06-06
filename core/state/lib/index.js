@@ -1,12 +1,12 @@
 const uuid = require('uuid');
-const wrap = require('lodash/wrap');
 const pick = require('lodash/pick');
 const { createMachine, assign } = require('xstate');
 
-const { createAuthUrl, createDeepLink, createSocketEndpoint, doSignedRequest, getUpdater } = require('./util');
+const { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, getUpdater } = require('./util');
 const { createConnection, destroyConnections } = require('./socket');
 
-const noopAsync = async () => undefined; // FIXME: how to detect if the function returns a promise
+const noop = () => undefined;
+const debug = noop;
 const returnAsync = async (x) => x;
 const DEFAULT_TIMEOUT = {
   START_TIMEOUT: 10 * 1000, // webapp-callback
@@ -24,17 +24,18 @@ const createStateMachine = ({
   sessionId, // we maybe reusing existing session
   strategy = 'default',
   dispatch, // handle events emitted from websocket relay
-  onStart = noopAsync,
+  onStart = noop,
   onCreate = returnAsync,
   onConnect, // TODO: can be claim object, claim list, function that returns either object or list
   onApprove, // TODO: must be a function
-  onComplete = noopAsync,
-  onReject = noopAsync,
-  onCancel = noopAsync,
+  onComplete = noop,
+  onReject = noop,
+  onCancel = noop,
+  onTimeout = noop,
   timeout = DEFAULT_TIMEOUT,
 }) => {
   if (sessionId && uuid.validate(sessionId) === false) {
-    throw new Error('Invalid session id, which must be a valid uuid.v4');
+    throw new Error('Invalid sessionId, which must be a valid uuid.v4');
   }
 
   // FIXME: how do we ensure updaterPk is a valid public key?
@@ -43,52 +44,121 @@ const createStateMachine = ({
   const sid = sessionId || uuid.v4();
   const pk = updater.publicKey;
 
-  const _onCreate = wrap(onCreate, async (cb) => {
+  const authApiUrl = createApiUrl(baseUrl, sid, '/auth');
+  const sessionApiUrl = createApiUrl(baseUrl, sid, '/session');
+
+  const _onStart = async (ctx, e) => {
+    await onStart(ctx, e);
+  };
+
+  const _onCreate = async (ctx, e) => {
     try {
-      const authUrl = createAuthUrl(baseUrl, sid);
-      console.log('_onCreate.authUrl', authUrl);
-      const session = await doSignedRequest({
-        data: { sessionId: sid, updaterPk: pk, authUrl },
+      let requestedClaims = [];
+      if (typeof onConnect === 'object') {
+        requestedClaims = onConnect;
+      }
+
+      // TODO: move previousConnected to initial ctx data
+      const result = await doSignedRequest({
+        url: sessionApiUrl,
+        data: { sessionId: sid, updaterPk: pk, requestedClaims, authUrl: authApiUrl },
         wallet: updater,
-        baseUrl,
+        method: 'POST',
       });
-      console.log('_onCreate.session', session);
-      await cb(session);
+      await onCreate(result, ctx, e);
     } catch (err) {
+      // FIXME: handle error here
       console.error(err);
     }
-  });
+  };
+
+  const _onConnect = async (ctx, e) => {
+    try {
+      // FIXME: validation here before send to remote
+      const claims = await onConnect(ctx, e);
+      const result = await doSignedRequest({
+        url: sessionApiUrl,
+        data: { requestedClaims: claims },
+        wallet: updater,
+        method: 'PUT',
+      });
+      return result.requestedClaims;
+    } catch (err) {
+      // FIXME: handle error here
+      console.error(err);
+    }
+  };
+
+  const _onApprove = async (ctx, e) => {
+    try {
+      let approveResult = await onApprove(ctx, e);
+      if (typeof approveResult === 'undefined') {
+        approveResult = null;
+      }
+
+      debug('_onApprove', e, approveResult);
+      await doSignedRequest({
+        url: sessionApiUrl,
+        data: { approveResults: [...ctx.approveResults, approveResult] },
+        wallet: updater,
+        method: 'PUT',
+      });
+      return approveResult;
+    } catch (err) {
+      // FIXME: handle error here
+      console.error(err);
+    }
+  };
+
+  const _onComplete = async (...args) => {
+    await onComplete(...args);
+  };
+
+  const _onReject = async (...args) => {
+    await onReject(...args);
+  };
+
+  const _onTimeout = async (...args) => {
+    debug('_onTimeout', ...args);
+    await onTimeout(...args);
+  };
+
+  const _onCancel = async (...args) => {
+    debug('_onCancel', ...args);
+    await onCancel(...args);
+  };
 
   const _onError = () =>
     assign({
       error: (ctx, e) => {
-        console.log('_onError', e);
+        debug('_onError', e);
         return e.error;
       },
     });
 
   createConnection(createSocketEndpoint(baseUrl)).then((socket) => {
     socket.on(sid, (e) => {
-      console.log('event', e);
-      if (e.status === 'walletScanned') {
-        dispatch({ type: 'WALLET_SCAN', didwallet: e.didwallet });
-      } else if (e.status === 'walletConnected') {
-        dispatch({ type: 'WALLET_CONNECTED', connectedUser: pick(e, ['userDid', 'userPk']) });
-      } else if (e.status === 'walletApproved') {
-        dispatch({ type: 'WALLET_APPROVE', ...pick(e, ['claims', 'currentStep']) });
-      } else if (e.status === 'completed') {
-        onComplete(e);
-      } else if (e.status === 'error') {
-        onReject(e);
-      } else if (e.status === 'rejected') {
-        onCancel(e);
-      } else if (e.status === 'timeout') {
-        onCancel(e);
+      debug('event form relay', e);
+      switch (e.status) {
+        case 'walletScanned':
+          return dispatch({ type: 'WALLET_SCAN', didwallet: e.didwallet });
+        case 'walletConnected':
+          return dispatch({ type: 'WALLET_CONNECTED', connectedUser: pick(e, ['userDid', 'userPk']) });
+        case 'walletApproved':
+          return dispatch({ type: 'WALLET_APPROVE', ...pick(e, ['responseClaims', 'currentStep']) });
+        case 'completed':
+          return dispatch({ type: 'COMPLETE' });
+        case 'error':
+          return dispatch({ type: 'ERROR', error: e.error });
+        case 'rejected':
+          return dispatch({ type: 'WALLET_REJECT', error: e.error });
+        case 'timeout':
+          return dispatch({ type: 'TIMEOUT', error: e.error });
+        default:
+          return null;
       }
     });
   });
-
-  console.log('sessionId', sid);
 
   const machine = createMachine(
     {
@@ -111,7 +181,7 @@ const createStateMachine = ({
         start: {
           invoke: {
             id: 'startSession',
-            src: onStart,
+            src: _onStart,
             onDone: {
               target: 'loading',
             },
@@ -149,6 +219,7 @@ const createStateMachine = ({
           on: {
             WALLET_SCAN: { target: 'walletScanned' },
             APP_CANCELED: { target: 'canceled' },
+            ERROR: { target: 'error' },
           },
           after: {
             WALLET_SCAN_TIMEOUT: { target: 'timeout' },
@@ -161,6 +232,7 @@ const createStateMachine = ({
             WALLET_CONNECTED: { target: 'walletConnected' },
             WALLET_REJECT: { target: 'rejected' },
             APP_CANCELED: { target: 'canceled' },
+            ERROR: { target: 'error' },
           },
           after: {
             WALLET_CONNECT_TIMEOUT: { target: 'timeout' },
@@ -171,7 +243,7 @@ const createStateMachine = ({
         walletConnected: {
           invoke: {
             id: 'onConnect',
-            src: onConnect,
+            src: _onConnect,
             onDone: {
               target: 'appConnected',
               actions: ['saveRequestedClaims'],
@@ -182,8 +254,8 @@ const createStateMachine = ({
             },
           },
           on: {
-            always: [{ target: 'appConnected', cond: 'hasRequestClaims' }],
             APP_CANCELED: { target: 'canceled' },
+            ERROR: { target: 'error' },
           },
           entry: ['saveConnectedUser'],
           after: {
@@ -198,6 +270,7 @@ const createStateMachine = ({
             APP_CANCELED: { target: 'canceled' },
             WALLET_APPROVE: { target: 'walletApproved' },
             WALLET_REJECT: { target: 'rejected' },
+            ERROR: { target: 'error' },
           },
           after: {
             WALLET_APPROVE_TIMEOUT: { target: 'timeout' },
@@ -208,9 +281,7 @@ const createStateMachine = ({
         walletApproved: {
           invoke: {
             id: 'onApprove',
-            // should emit event and wait for app callback when run in backend
-            // should call user callback on frontend
-            src: onApprove,
+            src: _onApprove,
             onDone: {
               target: 'appApproved',
               actions: ['saveApproveResult'],
@@ -219,6 +290,9 @@ const createStateMachine = ({
               target: 'error',
               actions: ['onError'],
             },
+          },
+          on: {
+            ERROR: { target: 'error' },
           },
           entry: ['saveResponseClaims'],
           exit: ['incrementCurrentStep'],
@@ -230,10 +304,9 @@ const createStateMachine = ({
         // app has respond on wallet submitted claims
         appApproved: {
           on: {
-            always: [
-              { target: 'walletApproved', cond: 'allStepsNotDone' },
-              { target: 'completed', cond: 'allStepsDone' },
-            ],
+            WALLET_APPROVE: { target: 'walletApproved' },
+            COMPLETE: { target: 'completed' },
+            ERROR: { target: 'error' },
           },
         },
 
@@ -242,13 +315,13 @@ const createStateMachine = ({
           type: 'final',
           entry: ['onComplete'],
         },
-
         rejected: {
           type: 'final',
           entry: ['onReject'],
         },
         timeout: {
           type: 'final',
+          entry: ['onTimeout'],
         },
         canceled: {
           type: 'final',
@@ -262,56 +335,19 @@ const createStateMachine = ({
     },
     {
       actions: {
-        onConnect,
-        onApprove,
-        onReject,
-        onComplete,
-        onCancel,
+        onComplete: _onComplete,
+        onReject: _onReject,
+        onCancel: _onCancel,
+        onTimeout: _onTimeout,
         onError: _onError,
-        saveConnectedUser: assign({
-          currentConnected: (ctx, e) => {
-            console.log('saveConnectedUser', e);
-            return e.connectedUser;
-          },
-        }),
-        saveRequestedClaims: assign({
-          requestedClaims: (ctx, e) => {
-            console.log('saveRequestedClaims', e);
-            const claims = Array.isArray(e.claims) ? e.claims : [e.claims];
-            return { ...ctx.claims, request: claims };
-          },
-        }),
-        incrementCurrentStep: assign({
-          currentStep: (ctx, e) => {
-            console.log('incrementCurrentStep', e);
-            return ctx.currentStep + 1;
-          },
-        }),
-        saveResponseClaims: assign({
-          responseClaims: (ctx, e) => {
-            console.log('saveResponseClaims', e);
-            return { ...ctx.claims, response: [...ctx.claims.response, e.data] };
-          },
-        }),
-        saveApproveResult: assign({
-          approveResults: (ctx, e) => {
-            console.log('saveApproveResult', e);
-            return { ...ctx.results, approve: [...ctx.results.approve, e.data] };
-          },
-        }),
-      },
-      guards: {
-        hasRequestClaims: (ctx, e) => {
-          return ctx.claims.request.length > 0;
-        },
-        allStepsDone: (ctx, e) => {
-          return ctx.currentStep === ctx.claims.request.length;
-        },
-        allStepsNotDone: (ctx, e) => {
-          return ctx.currentStep < ctx.claims.request.length;
-        },
+        saveConnectedUser: assign({ currentConnected: (ctx, e) => e.connectedUser }), // from server
+        saveRequestedClaims: assign({ requestedClaims: (ctx, e) => e.data }), // from client
+        incrementCurrentStep: assign({ currentStep: (ctx) => ctx.currentStep + 1 }), // from server
+        saveResponseClaims: assign({ responseClaims: (ctx, e) => [...ctx.responseClaims, e.responseClaims] }), // from server
+        saveApproveResult: assign({ approveResults: (ctx, e) => [...ctx.approveResults, e.data] }), // from client
       },
       delays: { ...DEFAULT_TIMEOUT, ...timeout },
+      guards: {},
     }
   );
 
@@ -321,6 +357,5 @@ const createStateMachine = ({
 module.exports = {
   createMachine: createStateMachine,
   createDeepLink,
-  createAuthUrl,
   destroyConnections,
 };

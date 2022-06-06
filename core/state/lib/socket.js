@@ -10,7 +10,7 @@ const createConnection = (endpoint) => {
   }
 
   if (connections[endpoint].isConnected()) {
-    return connections[endpoint];
+    return Promise.resolve(connections[endpoint]);
   }
 
   return new Promise((resolve, reject) => {

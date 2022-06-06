@@ -67,6 +67,7 @@ const session = Joi.object({
     .optional()
     .allow(null),
   currentStep: Joi.number().integer().min(0),
+  // FIXME: support multiple claim in single request
   requestedClaims: Joi.array()
     .items(
       Joi.array()

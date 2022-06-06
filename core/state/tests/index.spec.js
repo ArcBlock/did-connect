@@ -1,7 +1,10 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
 const { types } = require('@ocap/mcrypto');
 const { fromRandom } = require('@ocap/wallet');
 const { interpret } = require('xstate');
+const last = require('lodash/last');
+const pick = require('lodash/pick');
 const axios = require('axios');
 const Jwt = require('@arcblock/jwt');
 const { toBase58 } = require('@ocap/util');
@@ -20,19 +23,22 @@ const noop = () => null;
 const user = fromRandom();
 const app = fromRandom({ role: types.RoleType.ROLE_APPLICATION });
 
-const chainInfo = {
-  host: 'https://beta.abtnetwork.io/api',
-  id: 'beta',
-};
-
-const appInfo = ({ baseUrl }) => ({
-  name: 'DID Wallet Demo',
-  description: 'Demo application to show the potential of DID Wallet',
-  icon: 'https://arcblock.oss-cn-beijing.aliyuncs.com/images/wallet-round.png',
-  link: baseUrl,
-  updateSubEndpoint: true,
-  subscriptionEndpoint: '/api/websocket',
-  nodeDid: 'z1Zg7PUWJX2NS9cRhpjuMtvjjLK5W2E3Wsh',
+const storage = new MemoryStorage();
+const authenticator = new Authenticator({
+  wallet: app,
+  appInfo: ({ baseUrl }) => ({
+    name: 'DID Wallet Demo',
+    description: 'Demo application to show the potential of DID Wallet',
+    icon: 'https://arcblock.oss-cn-beijing.aliyuncs.com/images/wallet-round.png',
+    link: baseUrl,
+    updateSubEndpoint: true,
+    subscriptionEndpoint: '/api/websocket',
+    nodeDid: 'z1Zg7PUWJX2NS9cRhpjuMtvjjLK5W2E3Wsh',
+  }),
+  chainInfo: {
+    host: 'https://beta.abtnetwork.io/api',
+    id: 'beta',
+  },
 });
 
 const getAuthUrl = (authUrl) => {
@@ -41,17 +47,15 @@ const getAuthUrl = (authUrl) => {
   return obj.href;
 };
 
-describe('RelayAdapterExpress', () => {
+describe('StateMachine', () => {
   let server;
   let baseUrl;
 
   beforeAll(async () => {
     server = await createTestServer();
 
-    const storage = new MemoryStorage();
-    const authenticator = new Authenticator({ wallet: app, appInfo, chainInfo });
     // eslint-disable-next-line no-console
-    const logger = { info: console.info, error: console.info, warn: console.warn, debug: noop };
+    const logger = { info: console.info, error: console.error, warn: console.warn, debug: noop };
     const handlers = createHandlers({ storage, authenticator, logger, timeout: 1000 });
     handlers.wsServer.attach(server.http);
     handlers.wsServer.attach(server.https);
@@ -61,37 +65,49 @@ describe('RelayAdapterExpress', () => {
     baseUrl = server.url;
   });
 
-  test('should work as expected: single', async () => {
+  test('should work as expected: 1 claim + 1 step', async () => {
     let res;
     let authInfo;
 
+    const stateHistory = [];
+
     const machine = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
-      onConnect: (...args) => {
-        console.log('onConnect', args);
+      dispatch: (...args) => service.send.call(service, ...args),
+      onConnect: (ctx, e) => {
         return [
           {
             type: 'profile',
             fields: ['fullName', 'email', 'avatar'],
-            description: 'Please give me your profile',
+            description: `Please give me your profile for ${e.connectedUser.userDid}`,
           },
         ];
       },
-      onApprove: (...args) => {
-        console.log('onApprove', args);
-        return 'approve result';
+      onApprove: (ctx, e) => {
+        return `approved with result ${e.responseClaims[0].fullName}`;
       },
-      dispatch: (...args) => service.send.call(service, ...args),
+      onComplete: (ctx) => {
+        expect(ctx.requestedClaims.length).toBe(1);
+        expect(ctx.responseClaims.length).toBe(1);
+        expect(ctx.responseClaims[0].length).toBe(1);
+        expect(ctx.approveResults.length).toBe(1);
+
+        expect(ctx.requestedClaims[0].type).toEqual('profile');
+        expect(ctx.responseClaims[0][0].type).toEqual('profile');
+        expect(ctx.approveResults[0]).toEqual(`approved with result ${ctx.responseClaims[0][0].fullName}`);
+      },
     });
 
     const initial = machine.initialState;
-    const service = interpret(machine).onTransition((state) => console.log('transition', state.value, state.context));
+    const service = interpret(machine).onTransition((state) => {
+      stateHistory.push(state.value);
+    });
 
-    // Start the service
+    // Start the service and wait for session created
     service.start();
+    await waitFor(() => last(stateHistory) === 'created');
 
     const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${initial.context.sessionId}`);
-    console.log(authUrl);
 
     // 2. simulate scan
     try {
@@ -131,10 +147,272 @@ describe('RelayAdapterExpress', () => {
       expect(authInfo.status).toEqual('ok');
     } catch (err) {
       console.error(err);
+      expect(err).toBeFalsy();
     }
 
-    return new Promise((resolve) => setTimeout(resolve, 10000));
-  }, 60000);
+    await waitFor(() => last(stateHistory) === 'completed');
+    expect(stateHistory).toEqual([
+      'start',
+      'loading',
+      'created',
+      'walletScanned',
+      'walletConnected',
+      'appConnected',
+      'walletApproved',
+      'appApproved',
+      'completed',
+    ]);
+  }, 10000);
+
+  test('should work as expected: 1 claim + 2 steps', async () => {
+    let res;
+    let authInfo;
+    let currentStep;
+
+    const stateHistory = [];
+
+    const machine = createMachine({
+      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      dispatch: (...args) => service.send.call(service, ...args),
+
+      onConnect: (ctx, e) => {
+        return [
+          {
+            type: 'profile',
+            fields: ['fullName', 'email', 'avatar'],
+            description: `Please give me your profile for ${e.connectedUser.userDid}`,
+          },
+          {
+            type: 'asset',
+            description: 'Please prove that you own asset',
+            target: user.address,
+          },
+        ];
+      },
+
+      onApprove: (ctx, e) => {
+        currentStep = e.currentStep;
+        if (e.currentStep === 0) {
+          return `approved with profile ${e.responseClaims[0].fullName}`;
+        }
+
+        return `approved with asset ${e.responseClaims[0].address}`;
+      },
+
+      // eslint-disable-next-line no-unused-vars
+      onComplete: (ctx, e) => {
+        expect(ctx.requestedClaims.length).toBe(2);
+        expect(ctx.responseClaims.length).toBe(2);
+        expect(ctx.responseClaims[0].length).toBe(1);
+        expect(ctx.responseClaims[1].length).toBe(1);
+        expect(ctx.approveResults.length).toBe(2);
+
+        expect(ctx.requestedClaims[0].type).toEqual('profile');
+        expect(ctx.requestedClaims[1].type).toEqual('asset');
+        expect(ctx.responseClaims[0][0].type).toEqual('profile');
+        expect(ctx.responseClaims[1][0].type).toEqual('asset');
+        expect(ctx.approveResults[0]).toEqual(`approved with profile ${ctx.responseClaims[0][0].fullName}`);
+        expect(ctx.approveResults[1]).toEqual(`approved with asset ${ctx.responseClaims[1][0].address}`);
+      },
+    });
+
+    const initial = machine.initialState;
+    const service = interpret(machine).onTransition((state) => {
+      stateHistory.push(state.value);
+    });
+
+    // Start the service and wait for session created
+    service.start();
+    await waitFor(() => last(stateHistory) === 'created');
+
+    const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${initial.context.sessionId}`);
+
+    // 2. simulate scan
+    try {
+      res = await axios.get(getAuthUrl(authUrl));
+      expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+      expect(authInfo.url).toEqual(authUrl);
+
+      // 3. submit auth principal
+      let claims = authInfo.requestedClaims;
+      let nextUrl = getAuthUrl(authUrl);
+      let challenge = authInfo.challenge; // eslint-disable-line
+      if (claims.find((x) => x.type === 'authPrincipal')) {
+        res = await axios.post(getAuthUrl(authInfo.url), {
+          userPk: toBase58(user.publicKey),
+          userInfo: Jwt.sign(user.address, user.secretKey, {
+            requestedClaims: [],
+            challenge: authInfo.challenge,
+          }),
+        });
+        authInfo = Jwt.decode(res.data.authInfo);
+        expect(authInfo.requestedClaims[0].type).toEqual('profile');
+        claims = authInfo.requestedClaims;
+        challenge = authInfo.challenge;
+        nextUrl = authInfo.url;
+      }
+
+      // 4. submit profile claim: return asset claim
+      res = await axios.post(nextUrl, {
+        userPk: toBase58(user.publicKey),
+        userInfo: Jwt.sign(user.address, user.secretKey, {
+          requestedClaims: [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
+          challenge,
+        }),
+      });
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.requestedClaims[0].type).toEqual('asset');
+      claims = authInfo.requestedClaims;
+      challenge = authInfo.challenge;
+      nextUrl = authInfo.url;
+
+      await waitFor(() => currentStep === 0);
+
+      // 5. submit asset claim
+      res = await axios.post(nextUrl, {
+        userPk: toBase58(user.publicKey),
+        userInfo: Jwt.sign(user.address, user.secretKey, {
+          requestedClaims: [{ type: 'asset', address: user.address }],
+          challenge,
+        }),
+      });
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.status).toEqual('ok');
+    } catch (err) {
+      console.error(err);
+      expect(err).toBeFalsy();
+    }
+
+    await waitFor(() => last(stateHistory) === 'completed');
+    expect(stateHistory).toEqual([
+      'start',
+      'loading',
+      'created',
+      'walletScanned',
+      'walletConnected',
+      'appConnected',
+      'walletApproved',
+      'appApproved',
+      'walletApproved',
+      'appApproved',
+      'completed',
+    ]);
+  }, 10000);
+
+  test('should abort session when challenge mismatch', async () => {
+    let res;
+    let authInfo;
+
+    const stateHistory = [];
+
+    const machine = createMachine({
+      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      dispatch: (...args) => service.send.call(service, ...args),
+      onConnect: (ctx, e) => {},
+      onApprove: (ctx, e) => {},
+      onComplete: (ctx, e) => {},
+    });
+
+    const initial = machine.initialState;
+    const service = interpret(machine).onTransition((state) => {
+      stateHistory.push(state.value);
+    });
+
+    // Start the service and wait for session created
+    service.start();
+    await waitFor(() => last(stateHistory) === 'created');
+
+    const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${initial.context.sessionId}`);
+
+    // 2. simulate scan
+    try {
+      res = await axios.get(getAuthUrl(authUrl));
+      expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+      expect(authInfo.url).toEqual(authUrl);
+
+      // 3. submit auth principal
+      const claims = authInfo.requestedClaims;
+      if (claims.find((x) => x.type === 'authPrincipal')) {
+        res = await axios.post(getAuthUrl(authInfo.url), {
+          userPk: toBase58(user.publicKey),
+          userInfo: Jwt.sign(user.address, user.secretKey, {
+            requestedClaims: [],
+            challenge: 'abcd',
+          }),
+        });
+        authInfo = Jwt.decode(res.data.authInfo);
+        expect(authInfo.status).toEqual('error');
+        expect(authInfo.errorMessage).toEqual('Challenge mismatch');
+      }
+    } catch (err) {
+      console.error(err);
+      expect(err).toBeFalsy();
+    }
+
+    await waitFor(() => last(stateHistory) === 'error');
+    expect(stateHistory).toEqual(['start', 'loading', 'created', 'walletScanned', 'error']);
+  });
+
+  test('should abort session when wallet rejected', async () => {
+    let res;
+    let authInfo;
+
+    const stateHistory = [];
+
+    const machine = createMachine({
+      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      dispatch: (...args) => service.send.call(service, ...args),
+      onConnect: (ctx, e) => {},
+      onApprove: (ctx, e) => {},
+      onComplete: (ctx, e) => {},
+    });
+
+    const initial = machine.initialState;
+    const service = interpret(machine).onTransition((state) => {
+      stateHistory.push(state.value);
+    });
+
+    // Start the service and wait for session created
+    service.start();
+    await waitFor(() => last(stateHistory) === 'created');
+
+    const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${initial.context.sessionId}`);
+
+    // 2. simulate scan
+    try {
+      res = await axios.get(getAuthUrl(authUrl));
+      expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+      expect(authInfo.url).toEqual(authUrl);
+
+      // 3. submit auth principal
+      const claims = authInfo.requestedClaims;
+      if (claims.find((x) => x.type === 'authPrincipal')) {
+        const nextUrl = getAuthUrl(authInfo.url);
+        res = await axios.post(nextUrl, {
+          userPk: toBase58(user.publicKey),
+          userInfo: Jwt.sign(user.address, user.secretKey, {
+            action: 'declineAuth',
+            requestedClaims: [],
+            challenge: authInfo.challenge,
+          }),
+        });
+        authInfo = Jwt.decode(res.data.authInfo);
+        expect(authInfo.requestedClaims).toBeFalsy();
+      }
+    } catch (err) {
+      console.error(err);
+      expect(err).toBeFalsy();
+    }
+
+    await waitFor(() => last(stateHistory) === 'rejected');
+    expect(stateHistory).toEqual(['start', 'loading', 'created', 'walletScanned', 'rejected']);
+  });
 
   afterAll(async () => {
     // CAUTION: socket client disconnect should be called before server shutdown

@@ -34,21 +34,21 @@ module.exports = function attachHandlers(router, handlers, prefix = '/api/connec
       if (isSessionRequired) {
         sessionId = req.query.sid;
         if (!sessionId) {
-          return res.status(400).jsonp({ error: 'No session id' });
+          return res.status(400).jsonp({ error: 'No sessionId' });
         }
         if (uuid.validate(sessionId) === false) {
-          return res.status(400).jsonp({ error: 'Invalid session id' });
+          return res.status(400).jsonp({ error: `Invalid sessionId: ${sessionId}` });
         }
 
         session = await handleSessionRead(sessionId);
         if (!session) {
-          return res.status(400).jsonp({ error: 'Session not found' });
+          return res.status(400).jsonp({ error: `Session not found: ${sessionId}` });
         }
       }
 
       // extra context
       const didwallet = parseWalletUA(req.query['user-agent'] || req.headers['user-agent']);
-      const locale = (req.acceptsLanguages('en-US', 'zh-CN') || 'en-US').split('-').shift();
+      const locale = (req.query.locale || req.acceptsLanguages('en-US', 'zh-CN') || 'en-US').split('-').shift();
 
       req.context = {
         didwallet,
