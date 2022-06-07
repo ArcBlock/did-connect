@@ -108,7 +108,6 @@ function createHandlers({
       status: 'created',
       updaterPk,
       strategy,
-      // the client shall compose the deep-link by itself, since the rules are simple enough
       authUrl,
       challenge: getStepChallenge(),
       // FIXME: app link should be updated according to blocklet env?
@@ -153,13 +152,13 @@ function createHandlers({
       return { error: 'Invalid session status', code: 400 };
     }
 
-    logger.info('update session', context.sessionId, body);
     const { error, value } = sessionSchema.validate({ ...session, ...body });
     if (error) {
       return { error: `Invalid session: ${error.details.map((x) => x.message).join(', ')}`, code: 400 };
     }
 
     const updates = pick(value, ['error', 'status', 'approveResults', 'requestedClaims']);
+    logger.info('update session', context.sessionId, updates);
     return storage.update(context.sessionId, updates);
   };
 
@@ -211,7 +210,7 @@ function createHandlers({
         async () => {
           session = await storage.read(sessionId);
           if (session.status === 'error') {
-            throw new Error(session.error);
+            throw new CustomError('AppError', session.error);
           }
           return checkFn(session);
         },
@@ -223,7 +222,6 @@ function createHandlers({
         throw new CustomError('TimeoutError', `${reason} within ${timeout}ms`);
       }
 
-      err.session = session;
       throw err;
     }
   };
@@ -318,23 +316,23 @@ function createHandlers({
     } catch (err) {
       logger.error(err);
 
-      // client error
-      if (err.session && err.session.error) {
-        wsServer.broadcast(sessionId, { status: 'error', error: err.session.error });
-        return signJson({ error: err.session.error }, context);
+      // error reported by dapp
+      if (err.code === 'AppError') {
+        wsServer.broadcast(sessionId, { status: 'error', error: err.message, source: 'app' });
+        return signJson({ error: err.message }, context);
       }
 
       // timeout error
       if (err.code === 'TimeoutError') {
         await storage.update(sessionId, { status: 'timeout', error: err.message });
-        wsServer.broadcast(sessionId, { status: 'timeout', error: err.message });
+        wsServer.broadcast(sessionId, { status: 'timeout', error: err.message, source: 'timer' });
         return signJson({ error: err.message }, context);
       }
 
       // reject error
       if (err.code === 'RejectError') {
         await storage.update(sessionId, { status: 'rejected', currentStep: Math.max(session.currentStep - 1, 0) });
-        wsServer.broadcast(sessionId, { status: 'rejected' });
+        wsServer.broadcast(sessionId, { status: 'rejected', source: 'wallet' });
         return signJson({}, context);
       }
 

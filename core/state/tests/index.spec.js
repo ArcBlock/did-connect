@@ -169,6 +169,7 @@ describe('StateMachine', () => {
       'appApproved',
       'completed',
     ]);
+    service.stop();
   }, 10000);
 
   test('should work as expected: 1 claim + 2 steps', async () => {
@@ -306,6 +307,7 @@ describe('StateMachine', () => {
       'appApproved',
       'completed',
     ]);
+    service.stop();
   }, 10000);
 
   test('should abort session when challenge mismatch', async () => {
@@ -362,6 +364,7 @@ describe('StateMachine', () => {
 
     await waitFor(() => last(stateHistory) === 'error');
     expect(stateHistory).toEqual(['start', 'loading', 'created', 'walletScanned', 'error']);
+    service.stop();
   });
 
   test('should abort session when wallet rejected', async () => {
@@ -419,6 +422,162 @@ describe('StateMachine', () => {
 
     await waitFor(() => last(stateHistory) === 'rejected');
     expect(stateHistory).toEqual(['start', 'loading', 'created', 'walletScanned', 'rejected']);
+    service.stop();
+  });
+
+  test('should abort session when onConnect throws', async () => {
+    let res;
+    let authInfo;
+
+    const stateHistory = [];
+
+    const machine = createMachine({
+      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      dispatch: (...args) => service.send.call(service, ...args),
+      onConnect: (ctx, e) => {
+        throw new Error('onConnect error');
+      },
+      onApprove: (ctx, e) => {},
+      onComplete: (ctx, e) => {},
+    });
+
+    const initial = machine.initialState;
+    const service = interpret(machine).onTransition((state) => {
+      stateHistory.push(state.value);
+    });
+
+    // Start the service and wait for session created
+    service.start();
+    await waitFor(() => last(stateHistory) === 'created');
+
+    const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${initial.context.sessionId}`);
+
+    // 2. simulate scan
+    try {
+      res = await axios.get(getAuthUrl(authUrl));
+      expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+      expect(authInfo.url).toEqual(authUrl);
+
+      // 3. submit auth principal
+      const claims = authInfo.requestedClaims;
+      if (claims.find((x) => x.type === 'authPrincipal')) {
+        res = await axios.post(getAuthUrl(authInfo.url), {
+          userPk: toBase58(user.publicKey),
+          userInfo: Jwt.sign(user.address, user.secretKey, {
+            requestedClaims: [],
+            challenge: authInfo.challenge,
+          }),
+        });
+        authInfo = Jwt.decode(res.data.authInfo);
+        expect(authInfo.requestedClaims).toBeFalsy();
+        expect(authInfo.status).toEqual('error');
+        expect(authInfo.errorMessage).toEqual('onConnect error');
+      }
+    } catch (err) {
+      console.error(err);
+      expect(err).toBeFalsy();
+    }
+
+    await waitFor(() => last(stateHistory) === 'error');
+    expect(stateHistory).toEqual(['start', 'loading', 'created', 'walletScanned', 'walletConnected', 'error']);
+    service.stop();
+  });
+
+  test('should abort session when onApprove throws', async () => {
+    let res;
+    let authInfo;
+    let hasError = false;
+
+    const stateHistory = [];
+
+    const machine = createMachine({
+      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      dispatch: (...args) => service.send.call(service, ...args),
+      onConnect: (ctx, e) => {
+        return [
+          {
+            type: 'profile',
+            fields: ['fullName', 'email', 'avatar'],
+            description: `Please give me your profile for ${e.connectedUser.userDid}`,
+          },
+        ];
+      },
+      onApprove: (ctx, e) => {
+        throw new Error('onApprove error');
+      },
+      onComplete: (ctx, e) => {},
+      onError: (ctx, e) => {
+        hasError = true;
+      },
+    });
+
+    const initial = machine.initialState;
+    const service = interpret(machine).onTransition((state) => {
+      stateHistory.push(state.value);
+    });
+
+    // Start the service and wait for session created
+    service.start();
+    await waitFor(() => last(stateHistory) === 'created');
+
+    const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${initial.context.sessionId}`);
+
+    // 2. simulate scan
+    try {
+      res = await axios.get(getAuthUrl(authUrl));
+      expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+      expect(authInfo.url).toEqual(authUrl);
+
+      // 3. submit auth principal
+      let claims = authInfo.requestedClaims;
+      let nextUrl = getAuthUrl(authUrl);
+      let challenge = authInfo.challenge; // eslint-disable-line
+      if (claims.find((x) => x.type === 'authPrincipal')) {
+        res = await axios.post(getAuthUrl(authInfo.url), {
+          userPk: toBase58(user.publicKey),
+          userInfo: Jwt.sign(user.address, user.secretKey, {
+            requestedClaims: [],
+            challenge,
+          }),
+        });
+        authInfo = Jwt.decode(res.data.authInfo);
+        expect(authInfo.requestedClaims[0].type).toBe('profile');
+        claims = authInfo.requestedClaims;
+        challenge = authInfo.challenge;
+        nextUrl = authInfo.url;
+      }
+
+      res = await axios.post(nextUrl, {
+        userPk: toBase58(user.publicKey),
+        userInfo: Jwt.sign(user.address, user.secretKey, {
+          requestedClaims: [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
+          challenge,
+        }),
+      });
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.status).toEqual('error');
+      expect(authInfo.errorMessage).toEqual('onApprove error');
+    } catch (err) {
+      console.error(err);
+      expect(err).toBeFalsy();
+    }
+
+    await waitFor(() => last(stateHistory) === 'error');
+    expect(stateHistory).toEqual([
+      'start',
+      'loading',
+      'created',
+      'walletScanned',
+      'walletConnected',
+      'appConnected',
+      'walletApproved',
+      'error',
+    ]);
+    service.stop();
   });
 
   afterAll(async () => {

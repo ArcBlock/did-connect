@@ -9,7 +9,7 @@ const { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, get
 const { createConnection, destroyConnections } = require('./socket');
 
 const noop = () => undefined;
-const debug = noop;
+const debug = console.info;
 const DEFAULT_TIMEOUT = {
   START_TIMEOUT: 10 * 1000, // webapp-callback
   CREATE_TIMEOUT: 10 * 1000, // relay-server
@@ -34,13 +34,14 @@ const createStateMachine = ({
   onReject = noop,
   onCancel = noop,
   onTimeout = noop,
+  onError = noop,
   timeout = DEFAULT_TIMEOUT,
 }) => {
   if (sessionId && uuid.validate(sessionId) === false) {
     throw new Error('Invalid sessionId, which must be a valid uuid.v4');
   }
 
-  const fns = { dispatch, onStart, onCreate, onApprove, onComplete, onReject, onCancel, onTimeout };
+  const fns = { dispatch, onStart, onCreate, onApprove, onComplete, onReject, onCancel, onTimeout, onError };
   Object.keys(fns).forEach((x) => {
     if (isFunction(fns[x]) === false) {
       throw new Error(`Invalid ${x}, which must be a function`);
@@ -59,67 +60,69 @@ const createStateMachine = ({
   const authApiUrl = createApiUrl(baseUrl, sid, '/auth');
   const sessionApiUrl = createApiUrl(baseUrl, sid, '/session');
 
+  const safeWrap =
+    (fn) =>
+    async (...args) => {
+      try {
+        const result = await fn(...args);
+        return result;
+      } catch (err) {
+        console.error(err);
+        await doSignedRequest({
+          url: sessionApiUrl,
+          data: { status: 'error', error: err.message },
+          wallet: updater,
+          method: 'PUT',
+        });
+      }
+    };
+
   const _onStart = async (ctx, e) => {
     await onStart(ctx, e);
   };
 
   const _onCreate = async (ctx, e) => {
-    try {
-      let requestedClaims = [];
-      if (typeof onConnect === 'object') {
-        requestedClaims = onConnect;
-      }
-
-      // TODO: move previousConnected to initial ctx data
-      const result = await doSignedRequest({
-        url: sessionApiUrl,
-        data: { sessionId: sid, updaterPk: pk, requestedClaims, authUrl: authApiUrl },
-        wallet: updater,
-        method: 'POST',
-      });
-      await onCreate(result, ctx, e);
-    } catch (err) {
-      // FIXME: handle error here
-      console.error(err);
+    let requestedClaims = [];
+    if (typeof onConnect === 'object') {
+      requestedClaims = onConnect;
     }
+
+    // TODO: move previousConnected to initial ctx data
+    const result = await doSignedRequest({
+      url: sessionApiUrl,
+      data: { sessionId: sid, updaterPk: pk, requestedClaims, authUrl: authApiUrl },
+      wallet: updater,
+      method: 'POST',
+    });
+    await onCreate(result, ctx, e);
   };
 
   const _onConnect = async (ctx, e) => {
-    try {
-      // FIXME: validation here before send to remote
-      const claims = await onConnect(ctx, e);
-      const result = await doSignedRequest({
-        url: sessionApiUrl,
-        data: { requestedClaims: claims },
-        wallet: updater,
-        method: 'PUT',
-      });
-      return result.requestedClaims;
-    } catch (err) {
-      // FIXME: handle error here
-      console.error(err);
-    }
+    // FIXME: validation here before send to remote
+    const claims = await onConnect(ctx, e);
+    const result = await doSignedRequest({
+      url: sessionApiUrl,
+      data: { requestedClaims: claims },
+      wallet: updater,
+      method: 'PUT',
+    });
+    return result.requestedClaims;
   };
 
   const _onApprove = async (ctx, e) => {
-    try {
-      let approveResult = await onApprove(ctx, e);
-      if (typeof approveResult === 'undefined') {
-        approveResult = null;
-      }
-
-      debug('_onApprove', e, approveResult);
-      await doSignedRequest({
-        url: sessionApiUrl,
-        data: { approveResults: [...ctx.approveResults, approveResult] },
-        wallet: updater,
-        method: 'PUT',
-      });
-      return approveResult;
-    } catch (err) {
-      // FIXME: handle error here
-      console.error(err);
+    let approveResult = await onApprove(ctx, e);
+    if (typeof approveResult === 'undefined') {
+      approveResult = null;
     }
+
+    debug('_onApprove', e, approveResult);
+    await doSignedRequest({
+      url: sessionApiUrl,
+      data: { approveResults: [...ctx.approveResults, approveResult] },
+      wallet: updater,
+      method: 'PUT',
+    });
+    return approveResult;
   };
 
   const _onComplete = async (...args) => {
@@ -135,18 +138,25 @@ const createStateMachine = ({
     await onTimeout(...args);
   };
 
+  // TODO: report cancel to relay then execute callback
   const _onCancel = async (...args) => {
     debug('_onCancel', ...args);
     await onCancel(...args);
   };
 
-  const _onError = () =>
-    assign({
-      error: (ctx, e) => {
-        debug('_onError', e);
-        return e.error;
-      },
-    });
+  const _onError = async (ctx, e) => {
+    // report client error to relay, and execute callback
+    if (e.data) {
+      console.error(e.data);
+      await doSignedRequest({
+        url: sessionApiUrl,
+        data: { status: 'error', error: e.data.message },
+        wallet: updater,
+        method: 'PUT',
+      });
+    }
+    await onError(ctx, e);
+  };
 
   createConnection(createSocketEndpoint(baseUrl)).then((socket) => {
     socket.on(sid, (e) => {
@@ -161,7 +171,8 @@ const createStateMachine = ({
         case 'completed':
           return dispatch({ type: 'COMPLETE' });
         case 'error':
-          return dispatch({ type: 'ERROR', error: e.error });
+          // Do not transit to error state when we receiver propagated error from relay
+          return e.source === 'app' ? null : dispatch({ type: 'ERROR', error: e.error });
         case 'rejected':
           return dispatch({ type: 'WALLET_REJECT', error: e.error });
         case 'timeout':
@@ -174,7 +185,7 @@ const createStateMachine = ({
 
   const machine = createMachine(
     {
-      id: 'DIDConnectSession',
+      id: `connect.session.${sid}`,
       initial,
       context: {
         sessionId: sid,
@@ -202,6 +213,9 @@ const createStateMachine = ({
               actions: ['onError'],
             },
           },
+          on: {
+            ERROR: { target: 'error' },
+          },
           after: {
             START_TIMEOUT: { target: 'timeout' },
           },
@@ -220,6 +234,9 @@ const createStateMachine = ({
               target: 'error',
               actions: ['onError'],
             },
+          },
+          on: {
+            ERROR: { target: 'error' },
           },
           after: {
             CREATE_TIMEOUT: { target: 'timeout' },
