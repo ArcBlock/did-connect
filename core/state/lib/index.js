@@ -8,7 +8,7 @@ const { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, get
 const { createConnection, destroyConnections } = require('./socket');
 
 const noop = () => undefined;
-const debug = console.info;
+const debug = noop;
 const DEFAULT_TIMEOUT = {
   START_TIMEOUT: 10 * 1000, // webapp-callback
   CREATE_TIMEOUT: 10 * 1000, // relay-server
@@ -47,7 +47,7 @@ const createStateMachine = ({
     }
   });
 
-  // TODO: can be claim list or function that returns claim list
+  // can be claim list or function that returns claim list
   if (isFunction(onConnect) === false && isArray(onConnect) === false) {
     throw new Error('Invalid onConnect, which must be a function or an object or an array');
   }

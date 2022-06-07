@@ -617,6 +617,7 @@ describe('StateMachine', () => {
       'walletApproved',
       'error',
     ]);
+    expect(hasError).toBe(true);
     service.stop();
   });
 
