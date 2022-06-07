@@ -1,0 +1,24 @@
+{
+  "name": "@did-connect/relay-server",
+  "version": "2.0.0",
+  "description": "Simple relay server built on top of express",
+  "keywords": [
+    "did-connect"
+  ],
+  "author": {
+    "name": "wangshijun",
+    "email": "shijun@arcblock.io",
+    "url": "https://github.com/wangshijun"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArcBlock/did-connect"
+  },
+  "bugs": {
+    "url": "https://github.com/ArcBlock/did-connect/issues",
+    "email": "shijun@arcblock.io"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

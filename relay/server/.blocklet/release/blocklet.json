@@ -1,0 +1,66 @@
+{
+  "name": "@did-connect/relay-server",
+  "version": "2.0.0",
+  "description": "Simple relay server built on top of express",
+  "keywords": [
+    "relay"
+  ],
+  "author": {
+    "name": "wangshijun",
+    "email": "shijun@arcblock.io",
+    "url": "https://github.com/wangshijun"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArcBlock/did-connect.git"
+  },
+  "title": "DID Connect Relay",
+  "group": "dapp",
+  "main": "blocklet.zip",
+  "specVersion": "1.2.7",
+  "files": [
+    "screenshots"
+  ],
+  "interfaces": [
+    {
+      "type": "web",
+      "name": "publicUrl",
+      "path": "/",
+      "prefix": "*",
+      "port": "BLOCKLET_PORT",
+      "protocol": "http"
+    }
+  ],
+  "did": "z8ia46ePwnscVS4X2vKUTrdRKhNJ64pWguvwb",
+  "community": "",
+  "documentation": "",
+  "homepage": "",
+  "license": "",
+  "payment": {
+    "price": [],
+    "share": []
+  },
+  "timeout": {
+    "start": 60
+  },
+  "requirements": {
+    "server": ">=1.7.0",
+    "os": "*",
+    "cpu": "*"
+  },
+  "environments": [],
+  "capabilities": {
+    "clusterMode": false,
+    "component": true
+  },
+  "screenshots": [],
+  "children": [],
+  "gitHash": "4a84148f45e919284b82551583d7ccdaf9823474",
+  "path": "/dapp/@did-connect/relay-server",
+  "nftFactory": "",
+  "dist": {
+    "tarball": "@did-connectrelay-server-2.0.0.tgz",
+    "integrity": "sha512-GpnpSifChplrEgUbo1nPnR0CVgk05+B/SYTMbTpEDlqGfg35ZDt7/yIA0s+K33J1UNuwmxZzGWrZFJdPX+gZKw==",
+    "size": 10863375
+  }
+}
