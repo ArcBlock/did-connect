@@ -72,7 +72,7 @@ describe('StateMachine', () => {
     expect(() => createMachine({ dispatch: noop, onApprove: noop })).toThrow(/Invalid onConnect/);
   });
 
-  test('should work as expected: 1 claim + 1 step', async () => {
+  const runSingleTest = async ({ onConnect }) => {
     let res;
     let authInfo;
 
@@ -81,15 +81,7 @@ describe('StateMachine', () => {
     const machine = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
-      onConnect: (ctx, e) => {
-        return [
-          {
-            type: 'profile',
-            fields: ['fullName', 'email', 'avatar'],
-            description: `Please give me your profile for ${e.connectedUser.userDid}`,
-          },
-        ];
-      },
+      onConnect,
       onApprove: (ctx, e) => {
         return `approved with result ${e.responseClaims[0].fullName}`;
       },
@@ -170,9 +162,35 @@ describe('StateMachine', () => {
       'completed',
     ]);
     service.stop();
+  };
+
+  test('should work as expected: 1 claim + 1 step', async () => {
+    await runSingleTest({
+      onConnect: (ctx, e) => {
+        return [
+          {
+            type: 'profile',
+            fields: ['fullName', 'email', 'avatar'],
+            description: `Please give me your profile for ${e.connectedUser.userDid}`,
+          },
+        ];
+      },
+    });
   }, 10000);
 
-  test('should work as expected: 1 claim + 2 steps', async () => {
+  test('should work as expected: 1 claim + 1 step + pre-populate', async () => {
+    await runSingleTest({
+      onConnect: [
+        {
+          type: 'profile',
+          fields: ['fullName', 'email', 'avatar'],
+          description: 'Please give me your profile',
+        },
+      ],
+    });
+  }, 10000);
+
+  const runMultiStepTest = async ({ onConnect }) => {
     let res;
     let authInfo;
     let currentStep;
@@ -182,21 +200,7 @@ describe('StateMachine', () => {
     const machine = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
-
-      onConnect: (ctx, e) => {
-        return [
-          {
-            type: 'profile',
-            fields: ['fullName', 'email', 'avatar'],
-            description: `Please give me your profile for ${e.connectedUser.userDid}`,
-          },
-          {
-            type: 'asset',
-            description: 'Please prove that you own asset',
-            target: user.address,
-          },
-        ];
-      },
+      onConnect,
 
       onApprove: (ctx, e) => {
         currentStep = e.currentStep;
@@ -308,6 +312,42 @@ describe('StateMachine', () => {
       'completed',
     ]);
     service.stop();
+  };
+
+  test('should work as expected: 1 claim + 2 steps', async () => {
+    await runMultiStepTest({
+      onConnect: (ctx, e) => {
+        return [
+          {
+            type: 'profile',
+            fields: ['fullName', 'email', 'avatar'],
+            description: `Please give me your profile for ${e.connectedUser.userDid}`,
+          },
+          {
+            type: 'asset',
+            description: 'Please prove that you own asset',
+            target: user.address,
+          },
+        ];
+      },
+    });
+  }, 10000);
+
+  test('should work as expected: 1 claim + 2 steps + pre-populated', async () => {
+    await runMultiStepTest({
+      onConnect: [
+        {
+          type: 'profile',
+          fields: ['fullName', 'email', 'avatar'],
+          description: 'Please give me your profile',
+        },
+        {
+          type: 'asset',
+          description: 'Please prove that you own asset',
+          target: user.address,
+        },
+      ],
+    });
   }, 10000);
 
   test('should abort session when challenge mismatch', async () => {

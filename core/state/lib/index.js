@@ -1,7 +1,6 @@
 const uuid = require('uuid');
 const pick = require('lodash/pick');
 const isFunction = require('lodash/isFunction');
-const isObject = require('lodash/isObject');
 const isArray = require('lodash/isArray');
 const { createMachine, assign } = require('xstate');
 
@@ -48,9 +47,14 @@ const createStateMachine = ({
     }
   });
 
-  // TODO: can be claim object, claim list, function that returns either object or list
-  if (isFunction(onConnect) === false && isObject(onConnect) === false && isArray(onConnect) === false) {
+  // TODO: can be claim list or function that returns claim list
+  if (isFunction(onConnect) === false && isArray(onConnect) === false) {
     throw new Error('Invalid onConnect, which must be a function or an object or an array');
+  }
+
+  let requestedClaims = [];
+  if (typeof onConnect !== 'function') {
+    requestedClaims = onConnect;
   }
 
   const updater = getUpdater();
@@ -60,33 +64,11 @@ const createStateMachine = ({
   const authApiUrl = createApiUrl(baseUrl, sid, '/auth');
   const sessionApiUrl = createApiUrl(baseUrl, sid, '/session');
 
-  const safeWrap =
-    (fn) =>
-    async (...args) => {
-      try {
-        const result = await fn(...args);
-        return result;
-      } catch (err) {
-        console.error(err);
-        await doSignedRequest({
-          url: sessionApiUrl,
-          data: { status: 'error', error: err.message },
-          wallet: updater,
-          method: 'PUT',
-        });
-      }
-    };
-
   const _onStart = async (ctx, e) => {
     await onStart(ctx, e);
   };
 
   const _onCreate = async (ctx, e) => {
-    let requestedClaims = [];
-    if (typeof onConnect === 'object') {
-      requestedClaims = onConnect;
-    }
-
     // TODO: move previousConnected to initial ctx data
     const result = await doSignedRequest({
       url: sessionApiUrl,
@@ -98,6 +80,10 @@ const createStateMachine = ({
   };
 
   const _onConnect = async (ctx, e) => {
+    if (ctx.requestedClaims.length) {
+      return ctx.requestedClaims;
+    }
+
     // FIXME: validation here before send to remote
     const claims = await onConnect(ctx, e);
     const result = await doSignedRequest({
@@ -195,7 +181,7 @@ const createStateMachine = ({
         previousConnected: null, // previous connected user
         currentConnected: null, // current connected user
         currentStep: 0,
-        requestedClaims: [], // app requested claims, authPrincipal should not be listed here
+        requestedClaims, // app requested claims, authPrincipal should not be listed here
         responseClaims: [], // wallet submitted claims
         approveResults: [],
       },
