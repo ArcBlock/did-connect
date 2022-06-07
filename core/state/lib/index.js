@@ -19,6 +19,28 @@ const DEFAULT_TIMEOUT = {
   APP_APPROVE_TIMEOUT: 20 * 1000, // webapp-callback
 };
 
+/**
+ * Create a new did connect session state machine
+ *
+ * @param {object} {
+ *   baseUrl = '/api/connect/relay',
+ *   initial = 'start', // we maybe reusing existing session
+ *   sessionId, // we maybe reusing existing session
+ *   strategy = 'default',
+ *   dispatch, // handle events emitted from websocket relay
+ *   onStart = noop,
+ *   onCreate = noop,
+ *   onConnect,
+ *   onApprove,
+ *   onComplete = noop,
+ *   onReject = noop,
+ *   onCancel = noop,
+ *   onTimeout = noop,
+ *   onError = noop,
+ *   timeout = DEFAULT_TIMEOUT,
+ * }
+ * @return {object} xstate machine instance
+ */
 const createStateMachine = ({
   baseUrl = '/api/connect/relay',
   initial = 'start', // we maybe reusing existing session
@@ -69,14 +91,19 @@ const createStateMachine = ({
   };
 
   const _onCreate = async (ctx, e) => {
-    // TODO: move previousConnected to initial ctx data
-    const result = await doSignedRequest({
-      url: sessionApiUrl,
-      data: { sessionId: sid, updaterPk: pk, requestedClaims, authUrl: authApiUrl },
-      wallet: updater,
-      method: 'POST',
-    });
-    await onCreate(result, ctx, e);
+    const isExistingSession = sessionId === sid;
+    if (isExistingSession) {
+      // Reuse existing session
+    } else {
+      // Create new session
+      const result = await doSignedRequest({
+        url: sessionApiUrl,
+        data: { sessionId: sid, updaterPk: pk, requestedClaims, authUrl: authApiUrl },
+        wallet: updater,
+        method: 'POST',
+      });
+      await onCreate(result, ctx, e);
+    }
   };
 
   const _onConnect = async (ctx, e) => {
