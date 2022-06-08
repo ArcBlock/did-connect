@@ -91,10 +91,10 @@ const createStateMachine = ({
     await onStart(ctx, e);
   };
 
-  const _onCreate = async (ctx, e) => {
+  const _createOrRestoreSession = async (ctx, e) => {
     const isExistingSession = sessionId === sid;
     if (isExistingSession) {
-      // Reuse existing session
+      // FIXME: Reuse existing session
     } else {
       // Create new session
       const result = await doSignedRequest({
@@ -103,7 +103,8 @@ const createStateMachine = ({
         wallet: updater,
         method: 'POST',
       });
-      await onCreate(result, ctx, e);
+      await onCreate(ctx, e);
+      return result.appInfo;
     }
   };
 
@@ -241,9 +242,10 @@ const createStateMachine = ({
         loading: {
           invoke: {
             id: 'createSession',
-            src: _onCreate,
+            src: _createOrRestoreSession,
             onDone: {
               target: 'created',
+              actions: ['saveAppInfo'],
             },
             onError: {
               target: 'error',
@@ -384,6 +386,7 @@ const createStateMachine = ({
         onCancel: _onCancel,
         onTimeout: _onTimeout,
         onError: _onError,
+        saveAppInfo: assign({ appInfo: (ctx, e) => e.data }), // from client
         saveConnectedUser: assign({ currentConnected: (ctx, e) => e.connectedUser }), // from server
         saveRequestedClaims: assign({ requestedClaims: (ctx, e) => e.data }), // from client
         incrementCurrentStep: assign({ currentStep: (ctx) => ctx.currentStep + 1 }), // from server

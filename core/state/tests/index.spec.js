@@ -100,6 +100,9 @@ describe('StateMachine', () => {
 
     const initial = machine.initialState;
     const service = interpret(machine).onTransition((state) => {
+      if (state.value === 'created') {
+        expect(state.context.appInfo).toBeTruthy();
+      }
       stateHistory.push(state.value);
     });
 
@@ -231,6 +234,9 @@ describe('StateMachine', () => {
 
     const initial = machine.initialState;
     const service = interpret(machine).onTransition((state) => {
+      if (state.value === 'created') {
+        expect(state.context.appInfo).toBeTruthy();
+      }
       stateHistory.push(state.value);
     });
 
