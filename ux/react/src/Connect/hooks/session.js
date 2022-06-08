@@ -51,6 +51,13 @@ export default function useSession({
   const [retryCount, setRetryCount] = useState(0);
   const generate = () => setRetryCount((counter) => counter + 1);
 
+  const _onComplete = async (...args) => {
+    if (autoConnect && state.context.currentConnected) {
+      updateConnectedInfo(state.context);
+    }
+    await onComplete(...args);
+  };
+
   const session = useMemo(
     () =>
       createMachine({
@@ -62,7 +69,7 @@ export default function useSession({
         onCreate,
         onConnect,
         onApprove,
-        onComplete,
+        onComplete: _onComplete,
         onError,
 
         // - autoConnect 请求参数用于控制服务端是否给钱包应用发送自动连接通知
@@ -77,7 +84,9 @@ export default function useSession({
         // onReject: noop,
         // onCancel: noop,
         // onTimeout: noop,
-        // timeout: DEFAULT_TIMEOUT,
+        // timeout: {
+        //   WALLET_SCAN_TIMEOUT: 10000,
+        // },
       }),
     [retryCount] // eslint-disable-line
   );
@@ -137,43 +146,9 @@ export default function useSession({
   //   }
   // };
 
-  // useEffect(() => {
-  //   if (!state.token && !state.store && !state.loading && !state.error) {
-  //     // connect to existing session if any
-  //     if (existingSession) {
-  //       applyExistingToken();
-  //       // Create our first token if we do not have one
-  //     } else {
-  //       generate(false);
-  //       return;
-  //     }
-  //   }
-
-  //   // Mark token as expired if exceed max retry count
-  //   if (state.status !== 'timeout' && state.checkCount > maxCheckCount) {
-  //     setState({ status: 'timeout' });
-  //     unsubscribe();
-  //     return;
-  //   }
-
-  //   // Trigger on success if we completed the process
-  //   if (state.status === 'succeed') {
-  //     // save connected_did to cookie
-  //     if (state.saveConnect && state.store.did) {
-  //       updateConnectedInfo({ ...state.store, appInfo: state.appInfo });
-  //     }
-
-  //     if (typeof onSuccess === 'function' && !onSuccessCalled) {
-  //       setOnSuccessCalled(true);
-  //       onSuccess(state.store, decrypt);
-  //     }
-  //   }
-  // });
-
   return {
     sessionId,
-    session: state,
-    deepLink,
+    session: { status: state.value, context: state.context, deepLink },
     dispatch: send,
     generate,
     cancel,

@@ -29,7 +29,7 @@ function Connect({
   autoConnect,
   ...rest
 }) {
-  const { session, deepLink, generate, cancel } = useSession({
+  const { session, generate, cancel } = useSession({
     baseUrl,
     timeout,
     prefix,
@@ -45,7 +45,6 @@ function Connect({
 
   const connectProps = {
     ...rest,
-    deepLink,
     session,
     generate,
     cancel,

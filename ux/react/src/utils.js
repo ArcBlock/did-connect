@@ -69,18 +69,19 @@ export const getAppId = (appInfo) => {
   return appInfo ? appInfo.publisher.replace('did:abt:', '') : window.blocklet?.appId || window.env?.appId || '';
 };
 
-export const updateConnectedInfo = (data) => {
-  const cookieOptions = getCookieOptions({
-    expireInDays: 7,
-    returnDomain: false,
-  });
+export const updateConnectedInfo = (ctx) => {
+  const cookieOptions = getCookieOptions({ expireInDays: 7, returnDomain: false });
+
   // connected_did and connected_pk are used to skip authPrincipal
-  Cookie.set('connected_did', data.did || '', cookieOptions);
-  Cookie.set('connected_pk', data.pk || '', cookieOptions);
+  Cookie.set('connected_did', ctx.connectedUser.userDid || '', cookieOptions);
+  Cookie.set('connected_pk', ctx.connectedUser.userPk || '', cookieOptions);
+
   // connected_app is used to check session validity
-  Cookie.set('connected_app', getAppId(data.appInfo), cookieOptions);
-  if (data.connectedWallet?.os) {
-    Cookie.set('connected_wallet_os', data.connectedWallet.os, cookieOptions);
+  Cookie.set('connected_app', getAppId(ctx.appInfo), cookieOptions);
+
+  // connected_wallet_os is used to decide autoConnect target
+  if (ctx.connectedUser.wallet?.os) {
+    Cookie.set('connected_wallet_os', ctx.connectedUser.wallet.os, cookieOptions);
   }
 };
 

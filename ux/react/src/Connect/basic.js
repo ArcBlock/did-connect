@@ -55,7 +55,6 @@ export default function BasicConnect({
   showDownload,
   webWalletUrl,
   session,
-  deepLink,
   generate,
   cancel,
   enabledConnectTypes,
@@ -64,7 +63,7 @@ export default function BasicConnect({
   loadingEle,
   ...rest
 }) {
-  const { context, value: status } = session;
+  const { context, status, deepLink } = session;
 
   // eslint-disable-next-line no-param-reassign
   webWalletUrl = useMemo(() => webWalletUrl || getWebWalletUrl(), [webWalletUrl]);
@@ -90,9 +89,9 @@ export default function BasicConnect({
 
       let callbackUrl = window.location.href;
       if (callbackUrl.indexOf('?') > 0) {
-        callbackUrl += `&${tokenKey}=${session.context.sessionId}`;
+        callbackUrl += `&${tokenKey}=${context.sessionId}`;
       } else {
-        callbackUrl += `?${tokenKey}=${session.context.sessionId}`;
+        callbackUrl += `?${tokenKey}=${context.sessionId}`;
       }
 
       callbackUrl = encodeURIComponent(callbackUrl);
@@ -344,7 +343,6 @@ BasicConnect.propTypes = {
   showDownload: PropTypes.bool,
 
   session: PropTypes.object.isRequired,
-  deepLink: PropTypes.string.isRequired,
   generate: PropTypes.func.isRequired,
   cancel: PropTypes.func.isRequired,
 

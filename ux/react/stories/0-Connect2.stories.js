@@ -16,7 +16,7 @@ const baseUrl = 'https://did-connect-relay-server-vwb-192-168-123-127.ip.abtnet.
 
 const onCreate = async (ctx, e) => {
   action('onCreate')(ctx, e);
-  await sleep(2000);
+  await sleep(1000);
 };
 
 const onConnect = async (ctx, e) => {
