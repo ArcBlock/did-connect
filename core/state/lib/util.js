@@ -1,5 +1,3 @@
-require('node-localstorage/register'); // polyfill ls
-
 const axios = require('axios');
 const joinUrl = require('url-join');
 const objectHash = require('object-hash');
@@ -58,7 +56,7 @@ const createApiUrl = (baseUrl, sessionId, suffix = '/auth') => {
 const createDeepLink = (baseUrl, sessionId) => {
   const tmp = new URL('https://abtwallet.io/i/');
   tmp.searchParams.set('action', 'requestAuth');
-  tmp.searchParams.set('url', encodeURIComponent(createApiUrl(baseUrl, sessionId)));
+  tmp.searchParams.set('url', encodeURIComponent(createApiUrl(baseUrl, sessionId, '/auth')));
   return tmp.href;
 };
 

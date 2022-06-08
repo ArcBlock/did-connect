@@ -53,6 +53,7 @@ const session = Joi.object({
     .required(),
   challenge: Joi.string().required(),
   appInfo,
+  autoConnect: Joi.boolean().default(true),
   previousConnected: Joi.object({
     userDid: Joi.DID().required(),
     userPk: Joi.string().required(),

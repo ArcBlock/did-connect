@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
+require('node-localstorage/register'); // polyfill ls
 const { types } = require('@ocap/mcrypto');
 const { fromRandom } = require('@ocap/wallet');
 const { interpret } = require('xstate');
@@ -78,7 +79,7 @@ describe('StateMachine', () => {
 
     const stateHistory = [];
 
-    const machine = createMachine({
+    const { machine } = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect,
@@ -197,7 +198,7 @@ describe('StateMachine', () => {
 
     const stateHistory = [];
 
-    const machine = createMachine({
+    const { machine } = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect,
@@ -356,7 +357,7 @@ describe('StateMachine', () => {
 
     const stateHistory = [];
 
-    const machine = createMachine({
+    const { machine } = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect: (ctx, e) => {},
@@ -413,7 +414,7 @@ describe('StateMachine', () => {
 
     const stateHistory = [];
 
-    const machine = createMachine({
+    const { machine } = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect: (ctx, e) => {},
@@ -471,7 +472,7 @@ describe('StateMachine', () => {
 
     const stateHistory = [];
 
-    const machine = createMachine({
+    const { machine } = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect: (ctx, e) => {
@@ -532,7 +533,7 @@ describe('StateMachine', () => {
 
     const stateHistory = [];
 
-    const machine = createMachine({
+    const { machine } = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect: (ctx, e) => {

@@ -95,6 +95,9 @@ class Authenticator {
       throw new Error(`Invalid context: ${error.details.map((x) => x.message).join(', ')}`);
     }
 
+    // eslint-disable-next-line no-param-reassign
+    data = data || {};
+
     const final = data.response ? { response: data.response } : { response: data };
 
     // Attach protocol fields to the root

@@ -31,10 +31,15 @@ const errors = {
   },
 };
 
-function CustomError(code, reason) {
-  const err = new Error(reason);
-  err.code = code;
-  return err;
+class CustomError extends Error {
+  constructor(code, message, props = {}) {
+    super(message);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, CustomError);
+    }
+    this.code = code;
+    this.props = props;
+  }
 }
 
 function createSocketServer(logger, pathname) {

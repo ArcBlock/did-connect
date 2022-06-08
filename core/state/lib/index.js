@@ -56,6 +56,7 @@ const createStateMachine = ({
   onCancel = noop,
   onTimeout = noop,
   onError = noop,
+  autoConnect = true,
   timeout = DEFAULT_TIMEOUT,
 }) => {
   if (sessionId && uuid.validate(sessionId) === false) {
@@ -98,7 +99,7 @@ const createStateMachine = ({
       // Create new session
       const result = await doSignedRequest({
         url: sessionApiUrl,
-        data: { sessionId: sid, updaterPk: pk, requestedClaims, authUrl: authApiUrl },
+        data: { sessionId: sid, updaterPk: pk, requestedClaims, autoConnect, authUrl: authApiUrl },
         wallet: updater,
         method: 'POST',
       });
@@ -171,6 +172,7 @@ const createStateMachine = ({
     await onError(ctx, e);
   };
 
+  // FIXME: fallback to polling when socket connection failed
   createConnection(createSocketEndpoint(baseUrl)).then((socket) => {
     socket.on(sid, (e) => {
       debug('event form relay', e);
@@ -393,7 +395,7 @@ const createStateMachine = ({
     }
   );
 
-  return machine;
+  return { sessionId: sid, machine, deepLink: createDeepLink(baseUrl, sid) };
 };
 
 module.exports = {
