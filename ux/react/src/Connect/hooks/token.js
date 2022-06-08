@@ -14,10 +14,10 @@ import { decodeConnectUrl, parseTokenFromConnectUrl, updateConnectedInfo } from 
 
 import translations from '../assets/locale';
 
-const escape = str => str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+const escape = (str) => str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 const unescape = str => (str + '==='.slice((str.length + 3) % 4)).replace(/-/g, '+').replace(/_/g, '/'); // prettier-ignore
-const encodeKey = key => escape(Buffer.from(key).toString('base64'));
-const decodeKey = str => Uint8Array.from(Buffer.from(unescape(str), 'base64'));
+const encodeKey = (key) => escape(Buffer.from(key).toString('base64'));
+const decodeKey = (str) => Uint8Array.from(Buffer.from(unescape(str), 'base64'));
 
 function getExtraHeaders(baseUrl) {
   const headers = {};
@@ -27,9 +27,7 @@ function getExtraHeaders(baseUrl) {
     const { hostname, protocol, port } = new URL(authUrl);
     headers['x-real-hostname'] = hostname;
     headers['x-real-port'] = port;
-    headers['x-real-protocol'] = protocol.endsWith(':')
-      ? protocol.substring(0, protocol.length - 1)
-      : protocol;
+    headers['x-real-protocol'] = protocol.endsWith(':') ? protocol.substring(0, protocol.length - 1) : protocol;
   }
   return headers;
 }
@@ -129,7 +127,7 @@ export default function useToken({
     baseUrl,
   });
   // 每次 cancel 操作时计数器 +1 => 重新生成 token
-  const cancelWhenScanned = () => setCancelWhenScannedCounter(counter => counter + 1);
+  const cancelWhenScanned = () => setCancelWhenScannedCounter((counter) => counter + 1);
   useEffect(() => {
     // 计数器 > 0, 说明人为触发了 cancel, 重新生成 token
     if (cancelWhenScannedCounter > 0) {
@@ -158,7 +156,7 @@ export default function useToken({
     inExistingSession: false,
   });
 
-  const decrypt = value => {
+  const decrypt = (value) => {
     const decrypted = SealedBox.open(
       Uint8Array.from(Buffer.from(value, 'base64')),
       decodeKey(encryptKey),
@@ -303,10 +301,10 @@ export default function useToken({
     if (state.token && connection && !subscriptions.current[state.token]) {
       connection
         .subscribe('auth', state.token)
-        .then(sub => {
+        .then((sub) => {
           setSubscription(sub);
           subscriptions.current[state.token] = sub;
-          sub.on('data', data => {
+          sub.on('data', (data) => {
             let { status, error } = data;
             if (status === 'forbidden') {
               error = translations[locale].forbidden;
@@ -347,7 +345,7 @@ export default function useToken({
       return null;
     }
 
-    setState(prevState => ({ checkCount: prevState.checkCount + 1 }));
+    setState((prevState) => ({ checkCount: prevState.checkCount + 1 }));
 
     // Do not do status check if we have websocket connection
     if (connection && subscription) {

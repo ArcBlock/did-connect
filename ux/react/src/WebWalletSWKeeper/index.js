@@ -11,7 +11,7 @@ const STORAGE_KEY_DISABLED = 'wallet_sw_keeper_disabled';
 // iframe id, 如果存在多个 WebWalletSWKeeper 组件实例, 共享此 id, 保证只有一个 iframe
 let id;
 
-const injectIframe = webWalletUrl => {
+const injectIframe = (webWalletUrl) => {
   const iframe = document.createElement('iframe');
   iframe.id = id;
   iframe.style.width = 0;
@@ -39,7 +39,7 @@ const cleanup = () => {
   id = null;
 };
 
-const enable = webWalletUrl => {
+const enable = (webWalletUrl) => {
   if (!id) {
     id = `web_wallet_sw_keeper_${Date.now()}`;
     injectIframe(webWalletUrl);
@@ -73,7 +73,7 @@ WebWalletSWKeeper.defaultProps = {
 
 export default WebWalletSWKeeper;
 
-export const withWebWalletSWKeeper = Component => {
+export const withWebWalletSWKeeper = (Component) => {
   // eslint-disable-next-line react/prop-types
   return function WithWebWalletSWKeeperComponent({ webWalletUrl, maxIdleTime, ...rest }) {
     // eslint-disable-next-line no-param-reassign

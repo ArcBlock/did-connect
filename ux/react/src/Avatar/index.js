@@ -26,7 +26,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 // 参考: asset-chain @arcblock/did
-const isEthereumDid = did => {
+const isEthereumDid = (did) => {
   const address = did.replace('did:abt:', '');
   // check if it has the basic requirements of an address
   if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
@@ -72,12 +72,7 @@ function Avatar(props) {
   if (blockyIcon) {
     return (
       <BlockyIconContainer $size={size} {...rest}>
-        <Img
-          className={`${classes.img} avatar-img--${variant}`}
-          width={size}
-          src={blockyIcon}
-          alt={did}
-        />
+        <Img className={`${classes.img} avatar-img--${variant}`} width={size} src={blockyIcon} alt={did} />
       </BlockyIconContainer>
     );
   }
@@ -115,11 +110,11 @@ Avatar.defaultProps = {
 };
 
 const BlockyIconContainer = styled.div`
-  width: ${props => props.$size / 0.7}px;
-  height: ${props => props.$size}px;
+  width: ${(props) => props.$size / 0.7}px;
+  height: ${(props) => props.$size}px;
   padding: 2px 0;
   overflow: hidden;
-  border-radius: ${props => Math.min(10, Math.floor(0.1 * props.$size + 2))}px;
+  border-radius: ${(props) => Math.min(10, Math.floor(0.1 * props.$size + 2))}px;
   text-align: center;
   background: #ddd;
 `;
@@ -136,7 +131,8 @@ export default function AvatarWithErrorBoundary(props) {
           bgcolor="grey.300"
           className={`${classes.img} avatar-img--${props.variant || 'default'}`}
         />
-      )}>
+      )}
+    >
       <Avatar {...props} />
     </ErrorBoundary>
   );

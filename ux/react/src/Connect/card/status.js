@@ -34,13 +34,7 @@ export default function Status({ status, onCancel, onRetry, messages, locale, ..
           <Box>
             <ConnectIcon style={{ width: 48, height: 48, fill: '#4598FA' }} />
           </Box>
-          <Box
-            mt={2}
-            lineHeight="34px"
-            color="#4598fa"
-            fontSize={24}
-            textAlign="center"
-            fontWeight={400}>
+          <Box mt={2} lineHeight="34px" color="#4598fa" fontSize={24} textAlign="center" fontWeight={400}>
             {translations[locale].scanned}
           </Box>
           <Box mt={1.5} display="flex" alignItems="center">

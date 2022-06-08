@@ -1,11 +1,7 @@
 import CookieEngine from './engine/cookie';
 import LocalStorageEngine from './engine/local-storage';
 
-export default function createStorage(
-  storageKey = 'did.auth.token',
-  storageEngine = 'ls',
-  storageOptions = {}
-) {
+export default function createStorage(storageKey = 'did.auth.token', storageEngine = 'ls', storageOptions = {}) {
   if (!storageKey) {
     throw new Error('storageKey must be specified to create a storage');
   }

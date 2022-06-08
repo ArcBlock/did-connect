@@ -26,7 +26,8 @@ export default function GetWallet({ locale, ...rest }) {
         target="_blank"
         ref={linkRef}
         style={{ display: 'none' }}
-        rel="noreferrer">
+        rel="noreferrer"
+      >
         link
       </a>
     </Root>

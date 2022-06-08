@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 // 递归, 将 text (string) 部分替换为 CompactText (保持元素结构)
 // eslint-disable-next-line react/prop-types
 function RecursiveWrapper({ children, ...rest }) {
-  const wrappedChildren = React.Children.map(children, child => {
+  const wrappedChildren = React.Children.map(children, (child) => {
     if (typeof child === 'string') {
       return <CompactText {...rest}>{child}</CompactText>;
     }

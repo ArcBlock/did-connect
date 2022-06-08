@@ -9,7 +9,7 @@ import copy from 'copy-to-clipboard';
 import CopyIcon from '@arcblock/icons/lib/Copy';
 import CompactText from './compact-text';
 
-export const formatAddress = str => str.split(':').pop();
+export const formatAddress = (str) => str.split(':').pop();
 
 const translations = {
   en: {
@@ -37,20 +37,7 @@ const translations = {
  */
 const DidAddress = forwardRef(
   (
-    {
-      component,
-      size,
-      copyable,
-      content,
-      children,
-      prepend,
-      append,
-      compact,
-      startChars,
-      endChars,
-      locale,
-      ...rest
-    },
+    { component, size, copyable, content, children, prepend, append, compact, startChars, endChars, locale, ...rest },
     ref
   ) => {
     if (!translations[locale]) {
@@ -62,7 +49,7 @@ const DidAddress = forwardRef(
 
     const [copied, setCopied] = useState(false);
     const textRef = useRef();
-    const onCopy = e => {
+    const onCopy = (e) => {
       e.stopPropagation();
       copy(content || textRef.current.textContent);
       setCopied(true);
@@ -97,7 +84,8 @@ const DidAddress = forwardRef(
         <span
           ref={textRef}
           className="did-address__text did-address-truncate"
-          style={{ display: compact ? 'none' : 'inline' }}>
+          style={{ display: compact ? 'none' : 'inline' }}
+        >
           {children}
         </span>
         {compact && (
@@ -147,7 +135,7 @@ DidAddress.defaultProps = {
   locale: 'en',
 };
 
-const getFontSize = size => {
+const getFontSize = (size) => {
   // 12px 及以上的 size 有效, 否则返回 inherit
   if (size && Number(size) >= 12) {
     return `${Number(size)}px`;
@@ -163,7 +151,7 @@ const Root = styled.div`
     max-width: 100%;
     overflow: hidden;
     color: #ccc;
-    font-size: ${props => getFontSize(props.size)};
+    font-size: ${(props) => getFontSize(props.size)};
     font-weight: 400;
 
     svg {

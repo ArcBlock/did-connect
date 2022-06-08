@@ -49,7 +49,8 @@ export default function withDialog(Component) {
           TransitionComponent: Transition,
           PaperProps: { style: { background: 'transparent' } },
           style: { paddingTop: 44 },
-        })}>
+        })}
+      >
         <DialogContent
           style={{
             width: isFullScreen ? '100%' : 720,
@@ -64,7 +65,8 @@ export default function withDialog(Component) {
               borderRadius: '16px 16px 0 0',
               background: '#fff',
             }),
-          }}>
+          }}
+        >
           {!hideCloseButton && <CloseButton onClick={handleClose}>&times;</CloseButton>}
           <Component {...rest} />
         </DialogContent>

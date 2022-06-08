@@ -294,8 +294,7 @@ export default function createSessionContext(
     }
 
     render() {
-      const { children, locale, timeout, extraParams, webWalletUrl, messages, ...rest } =
-        this.props;
+      const { children, locale, timeout, extraParams, webWalletUrl, messages, ...rest } = this.props;
       const { autoConnect } = this;
       const { action, user, open, initialized, loading } = this.state;
 
@@ -386,7 +385,7 @@ export default function createSessionContext(
 
   function withSession(Component) {
     return function WithSessionComponent(props) {
-      return <Consumer>{sessionProps => <Component {...props} {...sessionProps} />}</Consumer>;
+      return <Consumer>{(sessionProps) => <Component {...props} {...sessionProps} />}</Consumer>;
     };
   }
 

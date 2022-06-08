@@ -33,12 +33,7 @@ export default function ResponsiveDidAddress({ style, className, component, ...r
     }
   }, [containerWidth, addressFullWidth]);
   return (
-    <Root
-      as={component}
-      inline={rest.inline}
-      ref={containerRef}
-      style={style}
-      className={className}>
+    <Root as={component} inline={rest.inline} ref={containerRef} style={style} className={className}>
       <StyledDidAddress {...rest} component={component} inline compact={compact} ref={ref} />
     </Root>
   );

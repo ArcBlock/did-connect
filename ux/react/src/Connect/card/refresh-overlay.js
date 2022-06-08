@@ -5,7 +5,7 @@ import Refresh from '@mui/icons-material/Refresh';
 
 // 需要父元素设置 relative position
 export default function RefreshOverlay({ onRefresh, ...rest }) {
-  const handleOnRefresh = e => {
+  const handleOnRefresh = (e) => {
     e.stopPropagation();
     onRefresh();
   };

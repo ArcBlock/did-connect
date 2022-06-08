@@ -53,11 +53,11 @@ ResponsiveCard.defaultProps = {
 
 const ResponsiveCardRoot = styled(Card)`
   display: flex;
-  flex-direction: ${props => (props.layout === 'tb' ? 'column' : 'row')};
+  flex-direction: ${(props) => (props.layout === 'tb' ? 'column' : 'row')};
   justify-content: space-between;
   > div {
     flex: 0 0 auto;
-    ${props => (props.layout === 'lr' ? 'align-self: center;' : '')}
+    ${(props) => (props.layout === 'lr' ? 'align-self: center;' : '')}
   }
 
   /* web wallet provider 内容可能比较长, 窄屏下需要支持 shrink, 并且与右边的 icon 保持间距 */

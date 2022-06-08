@@ -26,9 +26,4 @@ function useBrowserEnvContext() {
   return useContext(BrowserEnvContext);
 }
 
-export {
-  BrowserEnvContext,
-  BrowserEnvProvider,
-  Consumer as BrowserEnvConsumer,
-  useBrowserEnvContext,
-};
+export { BrowserEnvContext, BrowserEnvProvider, Consumer as BrowserEnvConsumer, useBrowserEnvContext };

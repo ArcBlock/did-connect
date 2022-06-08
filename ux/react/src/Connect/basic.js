@@ -14,41 +14,27 @@ import { useBrowserEnvContext } from './contexts/browser';
 import translations from './assets/locale';
 import DidAddress from '../Address';
 import DidAvatar from '../Avatar';
-import {
-  StatusCard,
-  MobileWalletCard,
-  ConnectWebWalletCard,
-  ConnectMobileWalletCard,
-  GetWalletCard,
-} from './card';
+import { StatusCard, MobileWalletCard, ConnectWebWalletCard, ConnectMobileWalletCard, GetWalletCard } from './card';
 import { getWebWalletUrl, checkSameProtocol } from '../utils';
 
 // #442, 页面初始化时的可见性, 如果不可见 (比如通过在某个页面中右键在新标签页中打开的一个基于 did-connect 登录页) 则禁止自动弹出 web wallet 窗口
 const initialDocVisible = !document.hidden;
+const isSessionFinalized = (status) => ['error', 'timeout', 'canceled', 'rejected', 'completed'].includes(status);
 
-const getAppDid = publisher => {
+const getAppDid = (publisher) => {
   if (!publisher) {
     return '';
   }
   return publisher.split(':').pop();
 };
 
-const AppIcon = ({ appInfo, ...rest }) => {
+function AppIcon({ appInfo, ...rest }) {
   const [error, setError] = React.useState(false);
   if (error) {
     return <DidAvatar did={appInfo.publisher} size={32} />;
   }
-  return (
-    <Img
-      src={appInfo.icon}
-      alt={appInfo.title}
-      width={32}
-      height={32}
-      {...rest}
-      onError={() => setError(true)}
-    />
-  );
-};
+  return <Img src={appInfo.icon} alt={appInfo.title} width={32} height={32} {...rest} onError={() => setError(true)} />;
+}
 
 AppIcon.propTypes = {
   appInfo: PropTypes.object.isRequired,
@@ -61,8 +47,8 @@ export default function BasicConnect({
   qrcodeSize,
   showDownload,
   webWalletUrl,
-
-  tokenState: state,
+  session,
+  deepLink,
   generate,
   cancelWhenScanned,
   enabledConnectTypes,
@@ -73,10 +59,8 @@ export default function BasicConnect({
 }) {
   // eslint-disable-next-line no-param-reassign
   webWalletUrl = useMemo(() => webWalletUrl || getWebWalletUrl(), [webWalletUrl]);
-  if (!translations[locale]) {
-    // eslint-disable-next-line no-param-reassign
-    locale = 'en';
-  }
+  // eslint-disable-next-line no-param-reassign
+  locale = translations[locale] ? locale : 'en';
 
   const theme = useTheme();
 
@@ -90,37 +74,33 @@ export default function BasicConnect({
   const [cancelCounter, setCancelCounter] = useState(0);
 
   const getDeepLink = () => {
-    if (!state.url) {
-      return '';
-    }
-
-    let deepLink = state.url;
+    let link = deepLink;
 
     if (isMobile) {
-      deepLink = deepLink.replace(/^https?:\/\//, 'abt://');
+      link = deepLink.replace(/^https?:\/\//, 'abt://');
 
       let callbackUrl = window.location.href;
       if (callbackUrl.indexOf('?') > 0) {
-        callbackUrl += `&${tokenKey}=${state.token}`;
+        callbackUrl += `&${tokenKey}=${session.context.sessionId}`;
       } else {
-        callbackUrl += `?${tokenKey}=${state.token}`;
+        callbackUrl += `?${tokenKey}=${session.context.sessionId}`;
       }
 
       callbackUrl = encodeURIComponent(callbackUrl);
       if (deepLink.indexOf('?') > 0) {
-        deepLink += `&callback=${callbackUrl}&callback_delay=1500`;
+        link += `&callback=${callbackUrl}&callback_delay=1500`;
       } else {
-        deepLink += `?callback=${callbackUrl}&callback_delay=1500`;
+        link += `?callback=${callbackUrl}&callback_delay=1500`;
       }
     }
 
-    return deepLink;
+    return link;
   };
 
   const handleRetry = () => {
     onRecreateSession();
     // inExistingSession 为 true 时不重新生成 token
-    if (!state.inExistingSession) {
+    if (!session.inExistingSession) {
       setNativeCalled(false);
       generate();
     }
@@ -128,7 +108,7 @@ export default function BasicConnect({
 
   const handleCancel = () => {
     onRecreateSession();
-    if (!state.inExistingSession) {
+    if (!session.inExistingSession) {
       setCancelCounter(cancelCounter + 1);
       cancelWhenScanned();
     }
@@ -136,39 +116,39 @@ export default function BasicConnect({
 
   const handleRefresh = () => {
     onRecreateSession();
-    if (!state.inExistingSession) {
+    if (!session.inExistingSession) {
       generate(false);
     }
   };
 
   useEffect(() => {
-    const deepLink = getDeepLink();
-    if (state.status === 'created' && deepLink && !isNativeCalled) {
-      import('dsbridge').then(jsBridge => {
-        jsBridge.call('authAction', { action: 'auth', deepLink });
+    const link = getDeepLink();
+    if (session.value.status === 'created' && link && !isNativeCalled) {
+      import('dsbridge').then((jsBridge) => {
+        jsBridge.call('authAction', { action: 'auth', link });
       });
       setNativeCalled(true);
     }
-  }, [state]);
+  }, [session]); // eslint-disable-line
 
-  const onGoWebWallet = url => {
+  const onGoWebWallet = (url) => {
     openWebWallet({ webWalletUrl, url, locale });
   };
 
   let showConnectWithWebWallet = false;
   let showScanWithMobileWallet = false;
-  if (['created', 'timeout'].includes(state.status) && !isWalletWebview) {
+  if (['created', 'timeout'].includes(session.value) && !isWalletWebview) {
     if (enabledConnectTypes.includes('web') && isSameProtocol) {
       showConnectWithWebWallet = true;
     }
     showScanWithMobileWallet = enabledConnectTypes.includes('mobile');
   }
 
-  const shouldAutoLogin = useMemo(() => {
+  const shouldAutoConnect = useMemo(() => {
     if (cancelCounter > 0) {
       return false;
     }
-    if (state.status === 'created') {
+    if (session.value === 'created') {
       // 自动唤起 native wallet
       if (isWalletWebview && getDeepLink()) {
         return true;
@@ -176,8 +156,7 @@ export default function BasicConnect({
       // 自动弹起 web wallet
       if (
         showConnectWithWebWallet &&
-        state.saveConnect &&
-        state.status === 'created' &&
+        session.value === 'created' &&
         initialDocVisible &&
         Cookie.get('connected_wallet_os') === 'web'
       ) {
@@ -185,59 +164,54 @@ export default function BasicConnect({
       }
     }
     return false;
-  }, [state.status, showConnectWithWebWallet, state.saveConnect]);
+  }, [session.value, showConnectWithWebWallet]); // eslint-disable-line
 
   // - If in DID Wallet, just show the progress indicator, since we are calling native js bridge
-  // - wallet webview 环境下, 除 error, succeed 两种状态外, 其他状态都显示 loading (#245)
-  const showLoading =
-    state.loading || (!['error', 'succeed'].includes(state.status) && isWalletWebview);
-  const showStatus = ['scanned', 'succeed', 'error'].includes(state.status);
+  // - wallet webview 环境下, 除 final 状态外, 其他状态都显示 loading (#245)
+  const showLoading = session.value === 'loading' || (!isSessionFinalized(session.value) && isWalletWebview);
+  const showStatus = ['walletScanned'].includes(session.value) || isSessionFinalized(session.value);
   const showConnectMobileWalletCard = !showLoading && (isWalletWebview || isMobile);
 
   if (showLoading) {
-    return (
-      <LoadingContainer>
-        {loadingEle || <Spinner style={{ color: colors.did.primary }} />}
-      </LoadingContainer>
-    );
+    return <LoadingContainer>{loadingEle || <Spinner style={{ color: colors.did.primary }} />}</LoadingContainer>;
   }
 
   // 如果满足下列条件, 则自动连接 web wallet
   // - "connect with web wallet" 可用
-  // - saveConnect 为 true
   // - token 刚创建 (created)
   // - cookie 中 connected_wallet_os === 'web'
   // - !isWebWalletOpened (未打开过 web wallet auth 窗口)
   // - 页面可见
   if (
     showConnectWithWebWallet &&
-    state.saveConnect &&
-    state.status === 'created' &&
+    session.value === 'created' &&
     Cookie.get('connected_wallet_os') === 'web' &&
     !isWebWalletOpened &&
     initialDocVisible
   ) {
-    onGoWebWallet(state.url);
+    onGoWebWallet(session.url);
     setWebWalletOpened(true);
   }
 
   const statusMessages = {
     confirm: messages.confirm, // scanned
     success: messages.success,
-    error: state.error || '',
+    error: session.error || '',
   };
 
+  console.log(session);
+
   return (
-    <Root {...rest} theme={theme} ref={ref} data-did-auth-url={state.url}>
+    <Root {...rest} theme={theme} ref={ref} data-did-auth-url={session.url}>
       <div className="auth_inner">
-        {!showStatus && state.appInfo && (
+        {!showStatus && session.appInfo && (
           <AppInfo>
-            <AppIcon appInfo={state.appInfo} />
+            <AppIcon appInfo={session.appInfo} />
             <div className="app-info_content">
-              <Box className="app-info_name">{state.appInfo.name}</Box>
-              {state.appInfo.publisher && (
+              <Box className="app-info_name">{session.appInfo.name}</Box>
+              {session.appInfo.publisher && (
                 <DidAddress size={14} className="app-info_did">
-                  {getAppDid(state.appInfo.publisher)}
+                  {getAppDid(session.appInfo.publisher)}
                 </DidAddress>
               )}
             </div>
@@ -253,7 +227,7 @@ export default function BasicConnect({
 
         <Main isMobile={isMobile} className={matchSmallScreen ? 'auth_main--small' : ''}>
           <div>
-            {!showStatus && !shouldAutoLogin && (
+            {!showStatus && !shouldAutoConnect && (
               <Box display="flex" alignItems="center" justifyContent="center">
                 <Box color="#999" fontSize={14} fontWeight={400} lineHeight={1}>
                   {translations[locale].connect}
@@ -261,7 +235,7 @@ export default function BasicConnect({
                 <DidWalletLogo style={{ height: '1em', marginLeft: 8 }} />
               </Box>
             )}
-            {!showStatus && shouldAutoLogin && (
+            {!showStatus && shouldAutoConnect && (
               <Box
                 display="flex"
                 alignItems="center"
@@ -270,7 +244,8 @@ export default function BasicConnect({
                 lineHeight="24px"
                 color="#999"
                 fontSize={14}
-                fontWeight={400}>
+                fontWeight={400}
+              >
                 <Spinner size={12} style={{ color: colors.did.primary }} />
                 <Box display="flex" alignItems="center" ml={1} lineHeight={1}>
                   {translations[locale].connecting}
@@ -282,7 +257,7 @@ export default function BasicConnect({
             <div className="auth_main-inner">
               {showStatus && (
                 <StatusCard
-                  status={state.status}
+                  status={session.value}
                   onCancel={handleCancel}
                   onRetry={handleRetry}
                   messages={statusMessages}
@@ -296,9 +271,9 @@ export default function BasicConnect({
                     <ConnectWebWalletCard
                       className="auth_connect-type"
                       layout={matchSmallScreen ? 'lr' : 'tb'}
-                      tokenState={state}
+                      session={session}
                       onRefresh={handleRefresh}
-                      onClick={() => onGoWebWallet(state.url)}
+                      onClick={() => onGoWebWallet(deepLink)}
                       webWalletUrl={webWalletUrl}
                     />
                   )}
@@ -306,7 +281,8 @@ export default function BasicConnect({
                     <MobileWalletCard
                       className="auth_connect-type"
                       qrcodeSize={qrcodeSize}
-                      tokenState={state}
+                      session={session}
+                      deepLink={deepLink}
                       onRefresh={handleRefresh}
                       layout={matchSmallScreen ? 'lr' : 'tb'}
                     />
@@ -316,7 +292,7 @@ export default function BasicConnect({
                     <ConnectMobileWalletCard
                       deepLink={getDeepLink()}
                       className="auth_connect-type"
-                      tokenState={state}
+                      session={session}
                       onRefresh={handleRefresh}
                       layout={matchSmallScreen ? 'lr' : 'tb'}
                     />
@@ -357,8 +333,8 @@ BasicConnect.propTypes = {
   }).isRequired,
   showDownload: PropTypes.bool,
 
-  // useToken 与 auth-panel 渲染分离
-  tokenState: PropTypes.object.isRequired,
+  session: PropTypes.object.isRequired,
+  deepLink: PropTypes.string.isRequired,
   generate: PropTypes.func.isRequired,
   cancelWhenScanned: PropTypes.func.isRequired,
 
@@ -378,7 +354,7 @@ BasicConnect.propTypes = {
 
 BasicConnect.defaultProps = {
   locale: 'en',
-  tokenKey: '_t_',
+  tokenKey: 'sid',
   qrcodeSize: 184,
   showDownload: true,
   webWalletUrl: '',
@@ -477,7 +453,7 @@ const ActionInfo = styled.div`
     font-size: 18px;
     color: #9397a1;
   }
-  ${props => props.theme.breakpoints.down('md')} {
+  ${(props) => props.theme.breakpoints.down('md')} {
     .action-info_title {
       font-size: 24px;
     }

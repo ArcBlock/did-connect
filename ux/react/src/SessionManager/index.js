@@ -2,17 +2,7 @@
 /* eslint-disable react/jsx-no-bind */
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  IconButton,
-  ClickAwayListener,
-  MenuList,
-  MenuItem,
-  Paper,
-  Popper,
-  SvgIcon,
-  Button,
-  Chip,
-} from '@mui/material';
+import { IconButton, ClickAwayListener, MenuList, MenuItem, Paper, Popper, SvgIcon, Button, Chip } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import AccountOutline from 'mdi-material-ui/AccountOutline';
 import ShieldCheck from 'mdi-material-ui/ShieldCheck';
@@ -45,7 +35,7 @@ const messages = {
   },
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {},
   user: {
     fontSize: 12,
@@ -117,7 +107,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SessionManager = ({
+function SessionManager({
   session,
   locale,
   showText,
@@ -136,7 +126,7 @@ const SessionManager = ({
   dark,
   size,
   ...rest
-}) => {
+}) {
   const userAnchorRef = useRef(null);
   const classes = useStyles({ dark });
   const [userOpen, setUserOpen] = useState(false);
@@ -144,7 +134,7 @@ const SessionManager = ({
   // base64 img maybe have some blank char, need encodeURIComponent to transform it
   const avatar = session.user?.avatar?.replace(/\s/g, encodeURIComponent(' '));
   const currentRole = useMemo(
-    () => session.user?.passports?.find(item => item.name === session.user.role),
+    () => session.user?.passports?.find((item) => item.name === session.user.role),
     [session.user]
   );
   const browser = useBrowser();
@@ -156,23 +146,21 @@ const SessionManager = ({
         variant="outlined"
         onClick={_onLogin}
         {...rest}
-        data-cy="sessionManager-login">
+        data-cy="sessionManager-login"
+      >
         <SvgIcon component={AccountOutline} />
         <span style={{ lineHeight: '25px' }}>{messages[locale].connect}</span>
       </Button>
     ) : (
       <IconButton {...rest} onClick={_onLogin} data-cy="sessionManager-login" size="large">
         {/* AccountOutline实际显示尺寸会偏小一点，适当增大尺寸可以和登陆后尺寸相等 */}
-        <SvgIcon
-          component={AccountOutline}
-          style={{ fontSize: size * 1.14286, color: dark ? '#fff' : '' }}
-        />
+        <SvgIcon component={AccountOutline} style={{ fontSize: size * 1.14286, color: dark ? '#fff' : '' }} />
       </IconButton>
     );
   }
 
   function onToggleUser() {
-    setUserOpen(prevOpen => !prevOpen);
+    setUserOpen((prevOpen) => !prevOpen);
   }
 
   function onCloseUser(e) {
@@ -219,14 +207,9 @@ const SessionManager = ({
         className={classes.root}
         {...rest}
         data-cy="sessionManager-logout-popup"
-        size="large">
-        <DidAvatar
-          variant="circle"
-          did={session.user.did}
-          src={avatar}
-          size={size}
-          shape="circle"
-        />
+        size="large"
+      >
+        <DidAvatar variant="circle" did={session.user.did} src={avatar} size={size} shape="circle" />
       </IconButton>
       {userAnchorRef.current && (
         <Popper
@@ -234,7 +217,8 @@ const SessionManager = ({
           open={userOpen}
           disablePortal
           anchorEl={userAnchorRef.current}
-          placement="bottom-end">
+          placement="bottom-end"
+        >
           <Paper className={`${classes.paper} ${dark && classes.darkPaper}`} variant="outlined">
             <ClickAwayListener onClickAway={onCloseUser}>
               <MenuList className={classes.menuList}>
@@ -263,11 +247,10 @@ const SessionManager = ({
                           ...menuItem,
                           icon: undefined,
                           label: undefined,
-                        }}>
+                        }}
+                      >
                         {menuItem.svgIcon
-                          ? menuItem.svgIcon && (
-                              <SvgIcon component={menuItem.svgIcon} className={classes.menuIcon} />
-                            )
+                          ? menuItem.svgIcon && <SvgIcon component={menuItem.svgIcon} className={classes.menuIcon} />
                           : menuItem.icon}
                         {menuItem.label}
                       </MenuItem>
@@ -285,16 +268,14 @@ const SessionManager = ({
                     className={classes.menuItem}
                     data-cy="sessionManager-openInWallet"
                     href="https://www.abtwallet.io/"
-                    target="_blank">
+                    target="_blank"
+                  >
                     <SvgIcon component={OpenInIcon} className={classes.menuIcon} />
                     {messages[locale].openInWallet}
                   </MenuItem>
                 )}
                 {!!switchDid && (
-                  <MenuItem
-                    className={classes.menuItem}
-                    onClick={_onSwitchDid}
-                    data-cy="sessionManager-switch-trigger">
+                  <MenuItem className={classes.menuItem} onClick={_onSwitchDid} data-cy="sessionManager-switch-trigger">
                     <SvgIcon component={SwitchDidIcon} className={classes.menuIcon} />
                     {messages[locale].switchDid}
                   </MenuItem>
@@ -303,7 +284,8 @@ const SessionManager = ({
                   <MenuItem
                     className={classes.menuItem}
                     onClick={_onSwitchProfile}
-                    data-cy="sessionManager-switch-profile-trigger">
+                    data-cy="sessionManager-switch-profile-trigger"
+                  >
                     <SvgIcon component={SwitchProfileIcon} className={classes.menuIcon} />
                     {messages[locale].switchProfile}
                   </MenuItem>
@@ -312,7 +294,8 @@ const SessionManager = ({
                   <MenuItem
                     className={classes.menuItem}
                     onClick={_onSwitchPassport}
-                    data-cy="sessionManager-switch-passport-trigger">
+                    data-cy="sessionManager-switch-passport-trigger"
+                  >
                     <SvgIcon component={SwitchPassportIcon} className={classes.menuIcon} />
                     {messages[locale].switchPassport}
                   </MenuItem>
@@ -321,7 +304,8 @@ const SessionManager = ({
                   className={classes.menuItem}
                   onClick={_onLogout}
                   disabled={disableLogout}
-                  data-cy="sessionManager-logout-trigger">
+                  data-cy="sessionManager-logout-trigger"
+                >
                   <SvgIcon component={DisconnectIcon} className={classes.menuIcon} />
                   {messages[locale].disconnect}
                 </MenuItem>
@@ -332,7 +316,7 @@ const SessionManager = ({
       )}
     </>
   );
-};
+}
 
 SessionManager.propTypes = {
   session: PropTypes.shape({

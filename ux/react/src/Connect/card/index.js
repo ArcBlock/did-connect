@@ -5,11 +5,4 @@ import ConnectWebWalletCard from './connect-web-wallet';
 import ConnectMobileWalletCard from './connect-mobile-wallet';
 import GetWalletCard from './get-wallet';
 
-export {
-  Card,
-  StatusCard,
-  MobileWalletCard,
-  ConnectWebWalletCard,
-  ConnectMobileWalletCard,
-  GetWalletCard,
-};
+export { Card, StatusCard, MobileWalletCard, ConnectWebWalletCard, ConnectMobileWalletCard, GetWalletCard };

@@ -16,15 +16,11 @@ export const providerName = 'wallet_url';
  * - production web wallet url
  */
 export const getWebWalletUrl = () => {
-  return (
-    window.localStorage.getItem(providerName) ||
-    window.env?.webWalletUrl ||
-    'https://web.abtwallet.io/'
-  );
+  return window.localStorage.getItem(providerName) || window.env?.webWalletUrl || 'https://web.abtwallet.io/';
 };
 
 // 检查 wallet url protocol 和当前页面地址的 protocol 是否一致
-export const checkSameProtocol = webWalletUrl => {
+export const checkSameProtocol = (webWalletUrl) => {
   const { protocol } = window.location;
   let walletProtocol = '';
   try {
@@ -46,29 +42,27 @@ function escape(str) {
 // 如果需要 did-connect 加入一个已经存在的 session, 可以通过 url 传递一个 "__connect_url__" 查询参数, did-connect 会解析参数值中的 token 和 connect url 并加入该 session
 // "__connect_url__" 需要编码/解码才可以正常使用
 // 该方法只针对 browser 环境, nodejs 环境可以使用 escape(Buffer.from(url).toString('base64')) 进行编码
-export const encodeConnectUrl = url => {
+export const encodeConnectUrl = (url) => {
   return escape(window.btoa(url));
 };
 
-export const decodeConnectUrl = encoded => {
+export const decodeConnectUrl = (encoded) => {
   return window.atob(unescape(encoded));
 };
 
 // connectUrl 对应 create token 响应数据中的 url 字段值
-export const parseTokenFromConnectUrl = connectUrl => {
+export const parseTokenFromConnectUrl = (connectUrl) => {
   const connectUrlObj = new URL(connectUrl);
   const url = decodeURIComponent(connectUrlObj.searchParams.get('url'));
   const token = new URL(url).searchParams.get('_t_');
   return token;
 };
 
-export const getAppId = appInfo => {
-  return appInfo
-    ? appInfo.publisher.replace('did:abt:', '')
-    : window.blocklet?.appId || window.env?.appId || '';
+export const getAppId = (appInfo) => {
+  return appInfo ? appInfo.publisher.replace('did:abt:', '') : window.blocklet?.appId || window.env?.appId || '';
 };
 
-export const updateConnectedInfo = data => {
+export const updateConnectedInfo = (data) => {
   const cookieOptions = getCookieOptions({
     expireInDays: 7,
     returnDomain: false,

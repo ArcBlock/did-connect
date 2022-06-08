@@ -4,7 +4,7 @@ export default function createService(baseURL, storage, timeout = 10000) {
   const service = axios.create({ baseURL, timeout });
 
   service.interceptors.request.use(
-    config => {
+    (config) => {
       if (storage.engine === 'ls') {
         const token = storage.getToken();
         if (token) {
@@ -14,7 +14,7 @@ export default function createService(baseURL, storage, timeout = 10000) {
 
       return config;
     },
-    error => Promise.reject(error)
+    (error) => Promise.reject(error)
   );
 
   return service;
