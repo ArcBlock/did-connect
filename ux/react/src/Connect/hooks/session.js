@@ -1,11 +1,11 @@
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import Cookie from 'js-cookie';
 import joinUrl from 'url-join';
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 import { createMachine } from '@did-connect/state';
-import { useMachine } from '@xstate/react';
 
 import { decodeConnectUrl, parseTokenFromConnectUrl, updateConnectedInfo } from '../../utils';
+import useMachine from './machine';
 
 // 从 url params 中获取已存在的 session (token & connect url)
 const parseExistingSession = () => {
@@ -42,44 +42,48 @@ export default function useSession({
   baseUrl,
   autoConnect = true,
 }) {
-  const existingSession = useMemo(() => parseExistingSession(), []);
-  const [cancelCount, setCancelCount] = useState(0);
   const browser = useBrowser();
-  const create = () =>
-    createMachine({
-      baseUrl: joinUrl(baseUrl, prefix),
-      sessionId: existingSession ? existingSession.sessionId : null,
-      // initial = 'start', // we maybe reusing existing session
-      // strategy = 'default',
-      dispatch: (...args) => service.send.call(service, ...args),
-      onCreate,
-      onConnect,
-      onApprove,
-      onComplete,
-      onError,
+  const existingSession = useMemo(() => parseExistingSession(), []);
 
-      // - autoConnect 请求参数用于控制服务端是否给钱包应用发送自动连接通知
-      // - 使用 connect 组件时明确传入了 autoConnect = false, 则 autoConnect 请求参数 为 false
-      // - 如果 cancelCount > 0, 说明用户进行过 cancel 操作, 则临时禁用自动连接, autoConnect 请求参数 为 false
-      //   (避免 "无限自动连接问题")
-      // - 如果上次使用了 web wallet 进行连接, 则 autoConnect 请求参数 为 false (web wallet 并非像 native 钱包一样基于通知实现自动连接)
-      //   (防止 native 钱包收到通知自动唤起 auth 窗口)
-      autoConnect: autoConnect && !browser.wallet && !cancelCount && Cookie.get('connected_wallet_os') !== 'web',
+  const [cancelCount, setCancelCount] = useState(0);
+  const cancel = () => setCancelCount((counter) => counter + 1);
 
-      // onStart: noop,
-      // onReject: noop,
-      // onCancel: noop,
-      // onTimeout: noop,
-      // timeout: DEFAULT_TIMEOUT,
-    });
+  const [retryCount, setRetryCount] = useState(0);
+  const generate = () => setRetryCount((counter) => counter + 1);
 
-  const [session, setSession] = useState(create());
+  const session = useMemo(
+    () =>
+      createMachine({
+        baseUrl: joinUrl(baseUrl, prefix),
+        sessionId: existingSession ? existingSession.sessionId : null,
+        // initial = 'start', // we maybe reusing existing session
+        // strategy = 'default',
+        dispatch: (...args) => send.call(service, ...args),
+        onCreate,
+        onConnect,
+        onApprove,
+        onComplete,
+        onError,
+
+        // - autoConnect 请求参数用于控制服务端是否给钱包应用发送自动连接通知
+        // - 使用 connect 组件时明确传入了 autoConnect = false, 则 autoConnect 请求参数 为 false
+        // - 如果 cancelCount > 0, 说明用户进行过 cancel 操作, 则临时禁用自动连接, autoConnect 请求参数 为 false
+        //   (避免 "无限自动连接问题")
+        // - 如果上次使用了 web wallet 进行连接, 则 autoConnect 请求参数 为 false (web wallet 并非像 native 钱包一样基于通知实现自动连接)
+        //   (防止 native 钱包收到通知自动唤起 auth 窗口)
+        autoConnect: autoConnect && !browser.wallet && !cancelCount && Cookie.get('connected_wallet_os') !== 'web',
+
+        // onStart: noop,
+        // onReject: noop,
+        // onCancel: noop,
+        // onTimeout: noop,
+        // timeout: DEFAULT_TIMEOUT,
+      }),
+    [retryCount] // eslint-disable-line
+  );
+
   const { machine, deepLink, sessionId } = session;
   const [state, send, service] = useMachine(machine);
-
-  const generate = () => {
-    setSession(create());
-  };
 
   // 每次 cancel 操作时计数器 +1 => 重新生成 token
   useEffect(() => {
@@ -167,12 +171,11 @@ export default function useSession({
   // });
 
   return {
-    session: state,
-    service,
-    dispatch: send,
     sessionId,
+    session: state,
     deepLink,
+    dispatch: send,
     generate,
-    cancel: () => setCancelCount((counter) => counter + 1),
+    cancel,
   };
 }

@@ -16,12 +16,12 @@ const baseUrl = 'https://did-connect-relay-server-vwb-192-168-123-127.ip.abtnet.
 
 const onCreate = async (ctx, e) => {
   action('onCreate')(ctx, e);
-  await sleep(3000);
+  await sleep(2000);
 };
 
 const onConnect = async (ctx, e) => {
   action('onConnect')(ctx, e);
-  await sleep(3000);
+  await sleep(2000);
   return [
     {
       type: 'profile',
@@ -32,7 +32,7 @@ const onConnect = async (ctx, e) => {
 };
 const onApprove = async (ctx, e) => {
   action('onApprove')(ctx, e);
-  await sleep(3000);
+  await sleep(2000);
   return 'approved';
 };
 

@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import useSession from './hooks/session';
+
 import BasicConnect from './basic';
 import { BrowserEnvProvider } from './contexts/browser';
 import withDialog from './withDialog';
 import { withWebWalletSWKeeper } from '../WebWalletSWKeeper';
+import useSession from './hooks/session';
+
 import '@fontsource/lato/400.css';
 import '@fontsource/lato/700.css';
 
