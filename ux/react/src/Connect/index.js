@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import useToken from './hooks/token';
+import useSession from './hooks/session';
 import BasicConnect from './basic';
 import { BrowserEnvProvider } from './contexts/browser';
 import withDialog from './withDialog';
@@ -13,12 +12,14 @@ import '@fontsource/lato/700.css';
  * - 将 token state (useToken) 提升到这里 (提升 BasicConnect 上层, 方便 BasicConnect 独立测试)
  */
 function Connect({
+  onCreate,
   onConnect,
   onApprove,
+  onComplete,
   onError,
   onClose,
   prefix,
-  checkTimeout,
+  timeout,
   locale,
   tokenKey,
   encKey,
@@ -26,23 +27,24 @@ function Connect({
   autoConnect,
   ...rest
 }) {
-  const { state, generate, cancel } = useToken({
+  const { session, deepLink, generate, cancel } = useSession({
     baseUrl,
-    checkTimeout,
+    timeout,
     prefix,
+    onCreate,
     onConnect,
     onApprove,
+    onComplete,
     onError,
     onClose,
     locale,
-    tokenKey,
-    encKey,
     autoConnect,
   });
 
   const connectProps = {
     ...rest,
-    session: state,
+    deepLink,
+    session,
     generate,
     cancel,
     locale,
@@ -52,7 +54,7 @@ function Connect({
 
   return (
     <BrowserEnvProvider>
-      <BasicConnect {...connectProps} />
+      <BasicConnect key={session.context.sessionId} {...connectProps} />
     </BrowserEnvProvider>
   );
 }
@@ -60,10 +62,12 @@ function Connect({
 Connect.propTypes = {
   onClose: PropTypes.func,
   onError: PropTypes.func,
+  onCreate: PropTypes.func,
   onConnect: PropTypes.func.isRequired,
   onApprove: PropTypes.func.isRequired,
+  onComplete: PropTypes.func,
   prefix: PropTypes.string,
-  checkTimeout: PropTypes.number,
+  timeout: PropTypes.number,
   locale: PropTypes.oneOf(['en', 'zh']),
   tokenKey: PropTypes.string,
   encKey: PropTypes.string,
@@ -71,12 +75,15 @@ Connect.propTypes = {
   autoConnect: PropTypes.bool,
 };
 
+const noop = () => null;
 Connect.defaultProps = {
-  prefix: '/api/did',
-  onClose: () => {},
-  onError: () => {},
+  prefix: '/api/connect/relay',
+  onClose: noop,
+  onError: noop,
+  onCreate: noop,
+  onComplete: noop,
   // TODO: split this timeout or calculate
-  checkTimeout: 60000, // 1 minute
+  timeout: 60000, // 1 minute
   locale: 'en',
   tokenKey: '_t_',
   encKey: '_ek_',

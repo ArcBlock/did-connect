@@ -83,7 +83,6 @@ export default function useSession({
 
   // 每次 cancel 操作时计数器 +1 => 重新生成 token
   useEffect(() => {
-    // 计数器 > 0, 说明人为触发了 cancel, 重新生成 token
     if (cancelCount > 0) {
       generate();
     }

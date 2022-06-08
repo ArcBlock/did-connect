@@ -6,7 +6,7 @@ import { action } from '@storybook/addon-actions';
 import LocaleSelector from '@arcblock/ux/lib/Locale/selector';
 import { LocaleProvider } from '@arcblock/ux/lib/Locale/context';
 
-import Connect from '../src/Connect/v2';
+import Connect from '../src/Connect';
 import { BrowserEnvContext } from '../src/Connect/contexts/browser';
 import { messages } from './util';
 
