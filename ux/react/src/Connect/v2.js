@@ -19,7 +19,7 @@ function Connect({
   onError,
   onClose,
   prefix,
-  checkTimeout,
+  timeout,
   locale,
   tokenKey,
   encKey,
@@ -27,9 +27,9 @@ function Connect({
   autoConnect,
   ...rest
 }) {
-  const { session, deepLink, generate, cancelWhenScanned } = useSession({
+  const { session, deepLink, generate, cancel } = useSession({
     baseUrl,
-    checkTimeout,
+    timeout,
     prefix,
     onCreate,
     onConnect,
@@ -46,7 +46,7 @@ function Connect({
     deepLink,
     session,
     generate,
-    cancelWhenScanned,
+    cancel,
     locale,
     tokenKey,
     encKey,
@@ -67,7 +67,7 @@ Connect.propTypes = {
   onApprove: PropTypes.func.isRequired,
   onComplete: PropTypes.func,
   prefix: PropTypes.string,
-  checkTimeout: PropTypes.number,
+  timeout: PropTypes.number,
   locale: PropTypes.oneOf(['en', 'zh']),
   tokenKey: PropTypes.string,
   encKey: PropTypes.string,
@@ -83,7 +83,7 @@ Connect.defaultProps = {
   onCreate: noop,
   onComplete: noop,
   // TODO: split this timeout or calculate
-  checkTimeout: 60000, // 1 minute
+  timeout: 60000, // 1 minute
   locale: 'en',
   tokenKey: '_t_',
   encKey: '_ek_',

@@ -8,22 +8,22 @@ import RefreshOverlay from './refresh-overlay';
 /**
  * MobileWallet (QRCode scanning)
  */
-export default function MobileWallet({ qrcodeSize, deepLink, session, onRefresh, ...rest }) {
+export default function MobileWallet({ qrcodeSize, deepLink, status, onRefresh, ...rest }) {
   return (
-    <ResponsiveCard {...rest} position="relative" color="#A8B4C5" fontWeight={700} status={session.value}>
+    <ResponsiveCard {...rest} position="relative" color="#A8B4C5" fontWeight={700} status={status}>
       <div>
         <Box mt={0.5} fontSize={20} color="#666">
           Mobile Wallet
         </Box>
       </div>
       <QRCode data={deepLink} size={qrcodeSize} />
-      {session.value === 'timeout' && <RefreshOverlay onRefresh={onRefresh} />}
+      {status === 'timeout' && <RefreshOverlay onRefresh={onRefresh} />}
     </ResponsiveCard>
   );
 }
 
 MobileWallet.propTypes = {
-  session: PropTypes.object.isRequired,
+  status: PropTypes.string.isRequired,
   qrcodeSize: PropTypes.number.isRequired,
   deepLink: PropTypes.string.isRequired,
   onRefresh: PropTypes.func.isRequired,

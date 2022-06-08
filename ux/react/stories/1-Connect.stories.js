@@ -39,7 +39,7 @@ const makeConnectProps = (session, props) => {
         success: 'You have successfully signed in!',
       },
       generate: () => {},
-      cancelWhenScanned: () => {},
+      cancel: () => {},
       webWalletUrl: `${window.location.protocol}//wallet.staging.arcblock.io`,
     },
     props

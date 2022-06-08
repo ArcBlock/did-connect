@@ -12,7 +12,7 @@ import RefreshOverlay from './refresh-overlay';
  * - mobile browser 环境会显示 (该情况下文案改成了 Open With ...)
  * - wallet webview 环境会显示, 该情况下实际上没有机会显示, 因为 token created 时会自动唤起 mobile auth
  */
-export default function ConnectMobileWallet({ session, onRefresh, deepLink, ...rest }) {
+export default function ConnectMobileWallet({ status, onRefresh, deepLink, ...rest }) {
   const iconSize = rest.layout === 'lr' ? [20, 34] : [40, 68];
   const linkRef = React.useRef();
   return (
@@ -24,9 +24,7 @@ export default function ConnectMobileWallet({ session, onRefresh, deepLink, ...r
         </Box>
       </div>
       <MobileIcon style={{ width: iconSize[0], height: iconSize[1] }} />
-
-      {session.value === 'timeout' && <RefreshOverlay onRefresh={onRefresh} />}
-
+      {status === 'timeout' && <RefreshOverlay onRefresh={onRefresh} />}
       <a href={deepLink} target="_blank" ref={linkRef} style={{ display: 'none' }} rel="noreferrer">
         link
       </a>
@@ -40,7 +38,7 @@ const Root = styled(ResponsiveCard)`
 `;
 
 ConnectMobileWallet.propTypes = {
-  session: PropTypes.object.isRequired,
+  status: PropTypes.string.isRequired,
   onRefresh: PropTypes.func.isRequired,
   deepLink: PropTypes.string.isRequired,
 };

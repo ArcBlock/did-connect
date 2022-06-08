@@ -53,10 +53,10 @@ export const serviceUrl = 'http://10.165.110.118:3030';
 export const createCheckFn = () => axios.create({ baseURL: serviceUrl }).get;
 
 export const messages = {
-  title: 'login',
-  scan: 'Scan QR code with DID Wallet',
+  title: 'Login Required',
+  scan: 'Connect your DID Wallet to profile profile',
   confirm: 'Confirm login on your DID Wallet',
-  success: 'You have successfully signed in!',
+  success: 'You have successfully connected!',
 };
 
 export const messagesZh = {

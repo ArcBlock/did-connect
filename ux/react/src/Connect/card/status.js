@@ -29,7 +29,6 @@ const StyledButton = styled(Button)`
  * Status (scanned/succeed/error)
  */
 export default function Status({ status, onCancel, onRetry, messages, locale, ...rest }) {
-  // TODO: support reject, timeout, cancel
   return (
     <Root {...rest}>
       {isSessionActive(status) && (

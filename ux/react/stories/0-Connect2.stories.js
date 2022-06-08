@@ -86,12 +86,12 @@ storiesOf('DID-Connect/Connect2', module)
       </TestContainer>
     );
   })
-  .add('api-mocking/checkTimeout 4000', () => (
+  .add('api-mocking/timeout 4000', () => (
     <TestContainer width={720} height={780}>
       <Connect
         popup
         open
-        checkTimeout={4000}
+        timeout={4000}
         onClose={action('login.close')}
         onConnect={onConnect}
         onApprove={action('login.success')}

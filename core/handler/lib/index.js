@@ -243,7 +243,7 @@ function createHandlers({
 
   // FIXME: authPrincipal only connect is not supported yet.
   const handleClaimResponse = async (context) => {
-    const { sessionId, session, body, locale } = context;
+    const { sessionId, session, body, locale, didwallet } = context;
     try {
       if (isValidContext(context) === false) {
         throw new Error('Invalid context');
@@ -270,11 +270,8 @@ function createHandlers({
       // move to walletConnected and wait for appConnected
       // once appConnected we return the first claim
       if (session.status === 'walletScanned') {
-        await storage.update(sessionId, {
-          status: 'walletConnected',
-          currentConnected: { userDid, userPk },
-        });
-        wsServer.broadcast(sessionId, { status: 'walletConnected', userDid, userPk });
+        await storage.update(sessionId, { status: 'walletConnected', currentConnected: { userDid, userPk } });
+        wsServer.broadcast(sessionId, { status: 'walletConnected', userDid, userPk, wallet: didwallet });
 
         // If our claims are populated already, move to appConnected without waiting
         if (session.requestedClaims.length > 0) {

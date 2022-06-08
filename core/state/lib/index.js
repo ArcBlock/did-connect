@@ -8,7 +8,7 @@ const { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, get
 const { createConnection, destroyConnections } = require('./socket');
 
 const noop = () => undefined;
-const debug = noop;
+const debug = console.log;
 const DEFAULT_TIMEOUT = {
   START_TIMEOUT: 10 * 1000, // webapp-callback
   CREATE_TIMEOUT: 10 * 1000, // relay-server
@@ -181,7 +181,7 @@ const createStateMachine = ({
         case 'walletScanned':
           return dispatch({ type: 'WALLET_SCAN', didwallet: e.didwallet });
         case 'walletConnected':
-          return dispatch({ type: 'WALLET_CONNECTED', connectedUser: pick(e, ['userDid', 'userPk']) });
+          return dispatch({ type: 'WALLET_CONNECTED', currentConnected: pick(e, ['userDid', 'userPk', 'wallet']) });
         case 'walletApproved':
           return dispatch({ type: 'WALLET_APPROVE', ...pick(e, ['responseClaims', 'currentStep']) });
         case 'completed':
@@ -363,19 +363,19 @@ const createStateMachine = ({
         },
         rejected: {
           type: 'final',
-          entry: ['onReject'],
+          entry: ['saveError', 'onReject'],
         },
         timeout: {
           type: 'final',
-          entry: ['onTimeout'],
+          entry: ['saveError', 'onTimeout'],
         },
         canceled: {
           type: 'final',
-          entry: ['onCancel'],
+          entry: ['saveError', 'onCancel'],
         },
         error: {
           type: 'final',
-          entry: ['onError'],
+          entry: ['saveError', 'onError'],
         },
       },
     },
@@ -387,8 +387,9 @@ const createStateMachine = ({
         onTimeout: _onTimeout,
         onError: _onError,
         saveAppInfo: assign({ appInfo: (ctx, e) => e.data }), // from client
-        saveConnectedUser: assign({ currentConnected: (ctx, e) => e.connectedUser }), // from server
+        saveConnectedUser: assign({ currentConnected: (ctx, e) => e.currentConnected }), // from server
         saveRequestedClaims: assign({ requestedClaims: (ctx, e) => e.data }), // from client
+        saveError: assign({ error: (ctx, e) => e.error }), // from server
         incrementCurrentStep: assign({ currentStep: (ctx) => ctx.currentStep + 1 }), // from server
         saveResponseClaims: assign({ responseClaims: (ctx, e) => [...ctx.responseClaims, e.responseClaims] }), // from server
         saveApproveResult: assign({ approveResults: (ctx, e) => [...ctx.approveResults, e.data] }), // from client

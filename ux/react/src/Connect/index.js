@@ -26,7 +26,7 @@ function Connect({
   autoConnect,
   ...rest
 }) {
-  const { state, generate, cancelWhenScanned } = useToken({
+  const { state, generate, cancel } = useToken({
     baseUrl,
     checkTimeout,
     prefix,
@@ -44,7 +44,7 @@ function Connect({
     ...rest,
     session: state,
     generate,
-    cancelWhenScanned,
+    cancel,
     locale,
     tokenKey,
     encKey,

@@ -9,9 +9,9 @@ import RefreshOverlay from './refresh-overlay';
 /**
  * ConnectWebWallet
  */
-export default function ConnectWebWallet({ session, onRefresh, webWalletUrl, ...rest }) {
+export default function ConnectWebWallet({ status, onRefresh, webWalletUrl, ...rest }) {
   const iconSize = rest.layout === 'lr' ? 48 : 64;
-  const isTimeout = session.value === 'timeout';
+  const isTimeout = status === 'timeout';
   const className = `${rest.className || ''} ${isTimeout ? 'card_timeout' : ''}`;
   const url = new URL(webWalletUrl);
 
@@ -53,7 +53,7 @@ export default function ConnectWebWallet({ session, onRefresh, webWalletUrl, ...
 }
 
 ConnectWebWallet.propTypes = {
-  session: PropTypes.object.isRequired,
+  status: PropTypes.string.isRequired,
   onRefresh: PropTypes.func.isRequired,
   webWalletUrl: PropTypes.string,
 };

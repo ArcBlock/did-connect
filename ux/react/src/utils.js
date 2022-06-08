@@ -84,8 +84,7 @@ export const updateConnectedInfo = (data) => {
   }
 };
 
-export const isSessionFinalized = (status) =>
-  ['error', 'timeout', 'canceled', 'rejected', 'completed'].includes(status);
+export const isSessionFinalized = (status) => ['error', 'canceled', 'rejected', 'completed'].includes(status);
 
 export const isSessionActive = (status) =>
   ['walletScanned', 'walletConnected', 'appConnected', 'walletApproved', 'appApproved'].includes(status);

@@ -57,25 +57,27 @@ export default function BasicConnect({
   session,
   deepLink,
   generate,
-  cancelWhenScanned,
+  cancel,
   enabledConnectTypes,
   onRecreateSession,
   extraContent,
   loadingEle,
   ...rest
 }) {
+  const { context, value: status } = session;
+
   // eslint-disable-next-line no-param-reassign
   webWalletUrl = useMemo(() => webWalletUrl || getWebWalletUrl(), [webWalletUrl]);
   // eslint-disable-next-line no-param-reassign
   locale = translations[locale] ? locale : 'en';
 
+  const isSameProtocol = checkSameProtocol(webWalletUrl);
   const theme = useTheme();
 
   const [ref, { width }] = useMeasure();
   // const matchSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const matchSmallScreen = width < 600;
   const { isWalletWebview, isMobile } = useBrowserEnvContext();
-  const isSameProtocol = checkSameProtocol(webWalletUrl);
   const [isNativeCalled, setNativeCalled] = useState(false);
   const [isWebWalletOpened, setWebWalletOpened] = useState(false);
   const [cancelCounter, setCancelCounter] = useState(0);
@@ -117,7 +119,7 @@ export default function BasicConnect({
     onRecreateSession();
     if (!session.inExistingSession) {
       setCancelCounter(cancelCounter + 1);
-      cancelWhenScanned();
+      cancel();
     }
   };
 
@@ -130,7 +132,7 @@ export default function BasicConnect({
 
   useEffect(() => {
     const link = getDeepLink();
-    if (session.value.status === 'created' && link && !isNativeCalled) {
+    if (status === 'created' && link && !isNativeCalled) {
       import('dsbridge').then((jsBridge) => {
         jsBridge.call('authAction', { action: 'auth', link });
       });
@@ -142,28 +144,28 @@ export default function BasicConnect({
     openWebWallet({ webWalletUrl, url, locale });
   };
 
-  let showConnectWithWebWallet = false;
-  let showScanWithMobileWallet = false;
-  if (['created', 'timeout'].includes(session.value) && !isWalletWebview) {
+  let showWebWalletCard = false;
+  let showNativeWalletCard = false;
+  if (['created', 'timeout'].includes(status) && !isWalletWebview) {
     if (enabledConnectTypes.includes('web') && isSameProtocol) {
-      showConnectWithWebWallet = true;
+      showWebWalletCard = true;
     }
-    showScanWithMobileWallet = enabledConnectTypes.includes('mobile');
+    showNativeWalletCard = enabledConnectTypes.includes('mobile');
   }
 
   const shouldAutoConnect = useMemo(() => {
     if (cancelCounter > 0) {
       return false;
     }
-    if (session.value === 'created') {
+    if (status === 'created') {
       // 自动唤起 native wallet
       if (isWalletWebview && getDeepLink()) {
         return true;
       }
       // 自动弹起 web wallet
       if (
-        showConnectWithWebWallet &&
-        session.value === 'created' &&
+        showWebWalletCard &&
+        status === 'created' &&
         initialDocVisible &&
         Cookie.get('connected_wallet_os') === 'web'
       ) {
@@ -171,14 +173,13 @@ export default function BasicConnect({
       }
     }
     return false;
-  }, [session.value, showConnectWithWebWallet]); // eslint-disable-line
+  }, [status, showWebWalletCard]); // eslint-disable-line
 
   // wallet webview 环境下, 除 final 状态外, 其他状态都显示 loading (#245)
-  const showLoading =
-    isSessionLoading(session.value) || (isWalletWebview && isSessionFinalized(session.value) === false);
+  const showLoading = isSessionLoading(status) || (isWalletWebview && isSessionFinalized(status) === false);
 
   // 进行中或者结束状态都展示 Status
-  const showStatus = isSessionActive(session.value) || isSessionFinalized(session.value);
+  const showStatus = isSessionActive(status) || isSessionFinalized(status);
   const showConnectMobileWalletCard = !showLoading && (isWalletWebview || isMobile);
 
   if (showLoading) {
@@ -192,8 +193,8 @@ export default function BasicConnect({
   // - !isWebWalletOpened (未打开过 web wallet auth 窗口)
   // - 页面可见
   if (
-    showConnectWithWebWallet &&
-    session.value === 'created' &&
+    showWebWalletCard &&
+    status === 'created' &&
     Cookie.get('connected_wallet_os') === 'web' &&
     !isWebWalletOpened &&
     initialDocVisible
@@ -202,15 +203,13 @@ export default function BasicConnect({
     setWebWalletOpened(true);
   }
 
-  const { context } = session;
-
   const statusMessages = {
     confirm: messages.confirm, // scanned
     success: messages.success,
     error: context.error || '',
   };
 
-  console.log('session', session.value, session.context);
+  console.log('session', status, context);
 
   return (
     <Root {...rest} theme={theme} ref={ref} data-did-auth-url={deepLink}>
@@ -268,7 +267,7 @@ export default function BasicConnect({
             <div className="auth_main-inner">
               {showStatus && (
                 <StatusCard
-                  status={session.value}
+                  status={status}
                   onCancel={handleCancel}
                   onRetry={handleRetry}
                   messages={statusMessages}
@@ -276,23 +275,23 @@ export default function BasicConnect({
                   className="auth_status"
                 />
               )}
-              {(showConnectWithWebWallet || showScanWithMobileWallet) && (
+              {(showWebWalletCard || showNativeWalletCard) && (
                 <div className="auth_connect-types">
-                  {!isMobile && showConnectWithWebWallet && (
+                  {!isMobile && showWebWalletCard && (
                     <ConnectWebWalletCard
                       className="auth_connect-type"
                       layout={matchSmallScreen ? 'lr' : 'tb'}
-                      session={session}
+                      status={status}
                       onRefresh={handleRefresh}
                       onClick={() => onGoWebWallet(deepLink)}
                       webWalletUrl={webWalletUrl}
                     />
                   )}
-                  {showScanWithMobileWallet && (
+                  {showNativeWalletCard && (
                     <MobileWalletCard
                       className="auth_connect-type"
                       qrcodeSize={qrcodeSize}
-                      session={session}
+                      status={status}
                       deepLink={deepLink}
                       onRefresh={handleRefresh}
                       layout={matchSmallScreen ? 'lr' : 'tb'}
@@ -303,7 +302,7 @@ export default function BasicConnect({
                     <ConnectMobileWalletCard
                       deepLink={getDeepLink()}
                       className="auth_connect-type"
-                      session={session}
+                      status={status}
                       onRefresh={handleRefresh}
                       layout={matchSmallScreen ? 'lr' : 'tb'}
                     />
@@ -323,7 +322,7 @@ export default function BasicConnect({
               />
             )}
 
-            {(showConnectWithWebWallet || showScanWithMobileWallet) && extraContent}
+            {(showWebWalletCard || showNativeWalletCard) && extraContent}
           </div>
         </Main>
       </div>
@@ -347,7 +346,7 @@ BasicConnect.propTypes = {
   session: PropTypes.object.isRequired,
   deepLink: PropTypes.string.isRequired,
   generate: PropTypes.func.isRequired,
-  cancelWhenScanned: PropTypes.func.isRequired,
+  cancel: PropTypes.func.isRequired,
 
   // web, mobile 开关, 默认都启用
   enabledConnectTypes: PropTypes.array,
