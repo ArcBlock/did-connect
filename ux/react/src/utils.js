@@ -1,8 +1,9 @@
-import { getCookieOptions } from '@arcblock/ux/lib/Util';
 import Cookie from 'js-cookie';
+import { getCookieOptions } from '@arcblock/ux/lib/Util';
 
-/* eslint-disable import/prefer-default-export */
 export const providerName = 'wallet_url';
+
+export const noop = () => null;
 
 /**
  * 获取 web wallet url, 常用于为 did connect 组件传递 webWalletUrl 参数,
@@ -12,11 +13,17 @@ export const providerName = 'wallet_url';
  *
  * 获取优先级:
  * - localStorage  使用 provider 注册
+ * - blocklet.webWalletUrl
  * - env.webWalletUrl
  * - production web wallet url
  */
 export const getWebWalletUrl = () => {
-  return window.localStorage.getItem(providerName) || window.env?.webWalletUrl || 'https://web.abtwallet.io/';
+  return (
+    window.localStorage.getItem(providerName) ||
+    window.blocklet?.webWalletUrl ||
+    window.env?.webWalletUrl ||
+    'https://web.abtwallet.io/'
+  );
 };
 
 // 检查 wallet url protocol 和当前页面地址的 protocol 是否一致
@@ -76,3 +83,11 @@ export const updateConnectedInfo = (data) => {
     Cookie.set('connected_wallet_os', data.connectedWallet.os, cookieOptions);
   }
 };
+
+export const isSessionFinalized = (status) =>
+  ['error', 'timeout', 'canceled', 'rejected', 'completed'].includes(status);
+
+export const isSessionActive = (status) =>
+  ['walletScanned', 'walletConnected', 'appConnected', 'walletApproved', 'appApproved'].includes(status);
+
+export const isSessionLoading = (status) => ['start', 'loading'].includes(status);

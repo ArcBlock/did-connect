@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const sleep = (timeout = 1000) => new Promise(resolve => setTimeout(resolve, timeout));
+const sleep = (timeout = 1000) => new Promise((resolve) => setTimeout(resolve, timeout));
 const token = 'c6ba08ce34f30e11f10742c3c7edceff314a5e825bee62e9fad8506a1c20b2d4';
 const appInfo = {
   icon: 'https://node-dev-1.arcblock.io/admin/blocklet/logo/z8iZjySpAu4jzbMochL9k1okuji1GcS7RRRDM',
@@ -10,7 +10,7 @@ const appInfo = {
 
 export const createFakeCheckFn = (title, timeout, maxCheckCount) => {
   let checkCount = -1;
-  return async url => {
+  return async (url) => {
     // eslint-disable-next-line no-console
     console.log(`checkStatus.${title}`, url);
     await sleep(timeout);

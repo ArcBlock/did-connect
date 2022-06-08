@@ -133,7 +133,7 @@ export default function useToken({
     if (cancelWhenScannedCounter > 0) {
       generate();
     }
-  }, [cancelWhenScannedCounter]);
+  }, [cancelWhenScannedCounter]); // eslint-disable-line
 
   const subscriptions = useRef({});
   const socket = useRef(null);

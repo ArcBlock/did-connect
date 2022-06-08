@@ -15,11 +15,17 @@ import translations from './assets/locale';
 import DidAddress from '../Address';
 import DidAvatar from '../Avatar';
 import { StatusCard, MobileWalletCard, ConnectWebWalletCard, ConnectMobileWalletCard, GetWalletCard } from './card';
-import { getWebWalletUrl, checkSameProtocol } from '../utils';
+import {
+  getWebWalletUrl,
+  checkSameProtocol,
+  isSessionFinalized,
+  isSessionActive,
+  isSessionLoading,
+  noop,
+} from '../utils';
 
 // #442, 页面初始化时的可见性, 如果不可见 (比如通过在某个页面中右键在新标签页中打开的一个基于 did-connect 登录页) 则禁止自动弹出 web wallet 窗口
 const initialDocVisible = !document.hidden;
-const isSessionFinalized = (status) => ['error', 'timeout', 'canceled', 'rejected', 'completed'].includes(status);
 
 const getAppDid = (publisher) => {
   if (!publisher) {
@@ -40,6 +46,7 @@ AppIcon.propTypes = {
   appInfo: PropTypes.object.isRequired,
 };
 
+// FIXME: reuse existing session is not working
 export default function BasicConnect({
   locale,
   tokenKey,
@@ -166,10 +173,12 @@ export default function BasicConnect({
     return false;
   }, [session.value, showConnectWithWebWallet]); // eslint-disable-line
 
-  // - If in DID Wallet, just show the progress indicator, since we are calling native js bridge
-  // - wallet webview 环境下, 除 final 状态外, 其他状态都显示 loading (#245)
-  const showLoading = session.value === 'loading' || (!isSessionFinalized(session.value) && isWalletWebview);
-  const showStatus = ['walletScanned'].includes(session.value) || isSessionFinalized(session.value);
+  // wallet webview 环境下, 除 final 状态外, 其他状态都显示 loading (#245)
+  const showLoading =
+    isSessionLoading(session.value) || (isWalletWebview && isSessionFinalized(session.value) === false);
+
+  // 进行中或者结束状态都展示 Status
+  const showStatus = isSessionActive(session.value) || isSessionFinalized(session.value);
   const showConnectMobileWalletCard = !showLoading && (isWalletWebview || isMobile);
 
   if (showLoading) {
@@ -189,29 +198,31 @@ export default function BasicConnect({
     !isWebWalletOpened &&
     initialDocVisible
   ) {
-    onGoWebWallet(session.url);
+    onGoWebWallet(deepLink);
     setWebWalletOpened(true);
   }
+
+  const { context } = session;
 
   const statusMessages = {
     confirm: messages.confirm, // scanned
     success: messages.success,
-    error: session.error || '',
+    error: context.error || '',
   };
 
-  console.log(session);
+  console.log('session', session.value, session.context);
 
   return (
-    <Root {...rest} theme={theme} ref={ref} data-did-auth-url={session.url}>
+    <Root {...rest} theme={theme} ref={ref} data-did-auth-url={deepLink}>
       <div className="auth_inner">
-        {!showStatus && session.appInfo && (
+        {!showStatus && context.appInfo && (
           <AppInfo>
-            <AppIcon appInfo={session.appInfo} />
+            <AppIcon appInfo={context.appInfo} />
             <div className="app-info_content">
-              <Box className="app-info_name">{session.appInfo.name}</Box>
-              {session.appInfo.publisher && (
+              <Box className="app-info_name">{context.appInfo.name}</Box>
+              {context.appInfo.publisher && (
                 <DidAddress size={14} className="app-info_did">
-                  {getAppDid(session.appInfo.publisher)}
+                  {getAppDid(context.appInfo.publisher)}
                 </DidAddress>
               )}
             </div>
@@ -360,7 +371,7 @@ BasicConnect.defaultProps = {
   webWalletUrl: '',
 
   enabledConnectTypes: ['web', 'mobile'],
-  onRecreateSession: () => {},
+  onRecreateSession: noop,
   extraContent: null,
   loadingEle: '',
 };

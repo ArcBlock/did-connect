@@ -336,8 +336,8 @@ function createHandlers({
 
       // reject error
       if (err.code === 'RejectError') {
-        await storage.update(sessionId, { status: 'rejected', currentStep: Math.max(session.currentStep - 1, 0) });
-        wsServer.broadcast(sessionId, { status: 'rejected', source: 'wallet' });
+        await storage.update(sessionId, { status: 'rejected', error: err.message });
+        wsServer.broadcast(sessionId, { status: 'rejected', error: err.message, source: 'wallet' });
         return signJson({}, context);
       }
 

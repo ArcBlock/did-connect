@@ -16,10 +16,10 @@ const longUrl = `https://abtwallet.io/i/?action=requestAuth&url=https%253A%252F%
   30
 )}`;
 
-const makeConnectProps = (tokenState, props) => {
+const makeConnectProps = (session, props) => {
   return Object.assign(
     {
-      tokenState: Object.assign(
+      session: Object.assign(
         {
           appInfo: {
             // eslint-disable-next-line prettier/prettier
@@ -28,7 +28,7 @@ const makeConnectProps = (tokenState, props) => {
             publisher: 'did:abt:zNKYkwPJHM4V44YSJ23AxZaHpky9e72SmoKs',
           },
         },
-        tokenState
+        session
       ),
       action: 'login',
       prefix: '',
@@ -123,10 +123,7 @@ storiesOf('DID-Connect/Connect', module)
   .add('status/created & NOT isSameProtocol', () => (
     <TestContainer width={720} height={780} resize="true">
       <BasicConnect
-        {...makeConnectProps(
-          { status: 'created', url: 'dummy-url' },
-          { webWalletUrl: 'custom-protocol://url' }
-        )}
+        {...makeConnectProps({ status: 'created', url: 'dummy-url' }, { webWalletUrl: 'custom-protocol://url' })}
       />
     </TestContainer>
   ))
@@ -152,18 +149,12 @@ storiesOf('DID-Connect/Connect', module)
   ))
   .add('connectTypes/connect-with-web-wallet', () => (
     <TestContainer width={720} height={780} resize="true">
-      <BasicConnect
-        {...makeConnectProps({ status: 'created', url: 'dummy-url' })}
-        enabledConnectTypes={['web']}
-      />
+      <BasicConnect {...makeConnectProps({ status: 'created', url: 'dummy-url' })} enabledConnectTypes={['web']} />
     </TestContainer>
   ))
   .add('connectTypes/scan-with-mobile-wallet', () => (
     <TestContainer width={720} height={780} resize="true">
-      <BasicConnect
-        {...makeConnectProps({ status: 'created', url: 'dummy-url' })}
-        enabledConnectTypes={['mobile']}
-      />
+      <BasicConnect {...makeConnectProps({ status: 'created', url: 'dummy-url' })} enabledConnectTypes={['mobile']} />
     </TestContainer>
   ))
   // TODO: token 状态和浏览器环境组合状态比较多 - 考虑使用 knobs / dat.gui 类似的方法
@@ -294,7 +285,7 @@ storiesOf('DID-Connect/Connect', module)
   .add('api-mocking/i18n', () => {
     const [locale, setLocale] = React.useState('en');
     const [open, setOpen] = React.useState(false);
-    const handleLocaleChange = newLocale => {
+    const handleLocaleChange = (newLocale) => {
       setLocale(newLocale);
     };
     const handleClose = () => {
@@ -409,7 +400,7 @@ const TestContainerRoot = styled(Box)`
   padding: 8px;
   border: 1px solid #ddd;
   background-color: #eee;
-  ${props =>
+  ${(props) =>
     props.resize
       ? `
     overflow: auto;

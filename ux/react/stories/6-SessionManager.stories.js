@@ -15,7 +15,7 @@ const { SessionProvider } = createAuthServiceSessionContext();
 
 const sessionLogin = {
   login: () => {},
-  logout: cb => {
+  logout: (cb) => {
     cb();
   },
   user: {
@@ -27,7 +27,7 @@ const sessionLogin = {
   },
 };
 const sessionNotLogin = {
-  login: cb => {
+  login: (cb) => {
     cb();
   },
   logout: () => {},
@@ -41,10 +41,7 @@ storiesOf('DID-Connect/SessionManager', module)
       <SessionManager session={sessionLogin} showRole />
       <hr />
       <h4>Default role</h4>
-      <SessionManager
-        session={{ ...sessionLogin, user: { ...sessionLogin.user, passports: [] } }}
-        showRole
-      />
+      <SessionManager session={{ ...sessionLogin, user: { ...sessionLogin.user, passports: [] } }} showRole />
       <hr />
       <h4>Without role</h4>
       <SessionManager session={sessionLogin} />

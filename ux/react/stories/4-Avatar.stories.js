@@ -18,11 +18,7 @@ storiesOf('DID-Connect/Avatar', module)
         <Avatar did="zysiVRb5pSUPGcitPepiz4Pm5SpQ2EtgejMV" size={36} style={{ marginLeft: 20 }} />
         <Avatar did="zysiVRb5pSUPGcitPepiz4Pm5SpQ2EtgejMV" size={72} />
         <Avatar did="zysiVRb5pSUPGcitPepiz4Pm5SpQ2EtgejMV" size={144} />
-        <Avatar
-          did="zysiVRb5pSUPGcitPepiz4Pm5SpQ2EtgejMV"
-          src="https://picsum.photos/200/100"
-          size={144}
-        />
+        <Avatar did="zysiVRb5pSUPGcitPepiz4Pm5SpQ2EtgejMV" src="https://picsum.photos/200/100" size={144} />
         <Avatar
           did="zysiVRb5pSUPGcitPepiz4Pm5SpQ2EtgejMV"
           src="https://picsum.photos/200/100"
@@ -82,7 +78,8 @@ storiesOf('DID-Connect/Avatar', module)
         border: '1px solid #eee',
         overflow: 'hidden',
         resize: 'both',
-      }}>
+      }}
+    >
       <Avatar did="z1YXMb8Souf2u8zVwWzexSNiD5Te7XGS313" responsive />
     </div>
   ))

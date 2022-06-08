@@ -48,7 +48,8 @@ storiesOf('DID-Connect/Logo', module)
         background: '#4E6AF6',
         color: '#ffffff',
         margin: 32,
-      }}>
+      }}
+    >
       <DidLogo size={128} />
     </div>
   ));

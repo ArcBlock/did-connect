@@ -158,7 +158,8 @@ storiesOf('DID-Connect/Address', module)
             <Box component="span" ml={0.5} bgcolor="#000">
               [append]
             </Box>
-          }>
+          }
+        >
           z1SBWdzYCEEY6WrvEPJv2umgpkkrvgdtBry
         </DidAddress>
       </div>
@@ -166,18 +167,13 @@ storiesOf('DID-Connect/Address', module)
       <div>
         <DidAddress
           size={12}
-          prepend={
-            <Avatar
-              did="z1SBWdzYCEEY6WrvEPJv2umgpkkrvgdtBry"
-              size={20}
-              style={{ marginRight: 8 }}
-            />
-          }
+          prepend={<Avatar did="z1SBWdzYCEEY6WrvEPJv2umgpkkrvgdtBry" size={20} style={{ marginRight: 8 }} />}
           append={
             <Box component="a" href="javascript:void(0)" display="flex" alignItems="center" ml={1}>
               <LinkIcon />
             </Box>
-          }>
+          }
+        >
           z1SBWdzYCEEY6WrvEPJv2umgpkkrvgdtBry
         </DidAddress>
       </div>

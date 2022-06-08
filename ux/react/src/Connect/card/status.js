@@ -7,8 +7,10 @@ import Check from '@mui/icons-material/Check';
 import Clear from '@mui/icons-material/Clear';
 import ConnectIcon from '@arcblock/icons/lib/Connect';
 import DidWalletLogo from '@arcblock/icons/lib/DidWalletLogo';
+
 import translations from '../assets/locale';
 import Card from './card';
+import { isSessionActive, noop } from '../../utils';
 
 const StyledButton = styled(Button)`
   && {
@@ -27,9 +29,10 @@ const StyledButton = styled(Button)`
  * Status (scanned/succeed/error)
  */
 export default function Status({ status, onCancel, onRetry, messages, locale, ...rest }) {
+  // TODO: support reject, timeout, cancel
   return (
     <Root {...rest}>
-      {status === 'scanned' && (
+      {isSessionActive(status) && (
         <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
           <Box>
             <ConnectIcon style={{ width: 48, height: 48, fill: '#4598FA' }} />
@@ -48,7 +51,7 @@ export default function Status({ status, onCancel, onRetry, messages, locale, ..
           </Box>
         </Box>
       )}
-      {status === 'succeed' && (
+      {status === 'completed' && (
         <Box textAlign="center" className="status--succeed">
           <span className="status_icon">
             <Check />
@@ -61,7 +64,7 @@ export default function Status({ status, onCancel, onRetry, messages, locale, ..
           </Box>
         </Box>
       )}
-      {status === 'error' && (
+      {['error', 'rejected', 'timeout', 'canceled'].includes(status) && (
         <Box textAlign="center" className="status--error">
           <span className="status_icon">
             <Clear />
@@ -82,7 +85,7 @@ export default function Status({ status, onCancel, onRetry, messages, locale, ..
 }
 
 Status.propTypes = {
-  status: PropTypes.string,
+  status: PropTypes.string.isRequired,
   onCancel: PropTypes.func,
   onRetry: PropTypes.func,
   messages: PropTypes.shape({
@@ -94,9 +97,8 @@ Status.propTypes = {
 };
 
 Status.defaultProps = {
-  status: '',
-  onCancel: () => {},
-  onRetry: () => {},
+  onCancel: noop,
+  onRetry: noop,
   locale: 'en',
 };
 

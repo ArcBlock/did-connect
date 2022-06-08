@@ -1,4 +1,4 @@
 module.exports = {
   root: true,
-  extends: '@arcblock/eslint-config-base',
+  extends: '@arcblock/eslint-config',
 };
