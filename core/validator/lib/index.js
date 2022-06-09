@@ -86,7 +86,7 @@ const context = Joi.object({
   didwallet: Joi.object().optional(),
   body: Joi.object().optional().default({}),
   headers: Joi.object().required(),
-  sessionId: Joi.string().guid().allow(''),
+  sessionId: Joi.string().max(21).min(21).allow(''),
   session: session.allow(null),
   locale: Joi.string().required(),
   signerPk: Joi.string().optional().allow(''),

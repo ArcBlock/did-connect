@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
-const uuid = require('uuid');
 const axios = require('axios');
 const Jwt = require('@arcblock/jwt');
+const { nanoid } = require('nanoid');
 const { WsClient } = require('@arcblock/ws');
 const { fromRandom } = require('@ocap/wallet');
 const { toBase58 } = require('@ocap/util');
@@ -106,7 +106,7 @@ describe('RelayAdapterExpress', () => {
   });
 
   const prepareTest = () => {
-    const sessionId = uuid.v4();
+    const sessionId = nanoid();
     const updaterPk = updater.publicKey;
 
     const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${sessionId}`);

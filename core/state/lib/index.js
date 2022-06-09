@@ -1,4 +1,4 @@
-const uuid = require('uuid');
+const { nanoid } = require('nanoid');
 const pick = require('lodash/pick');
 const isFunction = require('lodash/isFunction');
 const isArray = require('lodash/isArray');
@@ -60,8 +60,8 @@ const createStateMachine = ({
   autoConnect = true,
   timeout = DEFAULT_TIMEOUT,
 }) => {
-  if (sessionId && uuid.validate(sessionId) === false) {
-    throw new Error('Invalid sessionId, which must be a valid uuid.v4');
+  if (sessionId && sessionId.length !== 21) {
+    throw new Error('Invalid sessionId, which must be a valid 21 char nanoid');
   }
 
   const fns = { dispatch, onStart, onCreate, onApprove, onComplete, onReject, onCancel, onTimeout, onError };
@@ -82,7 +82,7 @@ const createStateMachine = ({
   }
 
   const updater = getUpdater();
-  const sid = sessionId || uuid.v4();
+  const sid = sessionId || nanoid();
   const pk = updater.publicKey;
 
   const authApiUrl = createApiUrl(baseUrl, sid, '/auth');

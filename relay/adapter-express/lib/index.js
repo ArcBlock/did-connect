@@ -1,4 +1,3 @@
-const uuid = require('uuid');
 const get = require('lodash/get');
 
 module.exports = function attachHandlers(router, handlers, prefix = '/api/connect/relay') {
@@ -36,7 +35,7 @@ module.exports = function attachHandlers(router, handlers, prefix = '/api/connec
         if (!sessionId) {
           return res.status(400).jsonp({ error: 'No sessionId' });
         }
-        if (uuid.validate(sessionId) === false) {
+        if (sessionId.length !== 21) {
           return res.status(400).jsonp({ error: `Invalid sessionId: ${sessionId}` });
         }
 

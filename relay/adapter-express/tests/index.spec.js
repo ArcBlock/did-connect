@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
-const uuid = require('uuid');
 const axios = require('axios');
 const Jwt = require('@arcblock/jwt');
+const { nanoid } = require('nanoid');
 const { WsClient } = require('@arcblock/ws');
 const { fromRandom } = require('@ocap/wallet');
 const { toBase58 } = require('@ocap/util');
@@ -10,9 +10,9 @@ const waitFor = require('p-wait-for');
 const joinUrl = require('url-join');
 const Mcrypto = require('@ocap/mcrypto');
 const MemoryStorage = require('@did-connect/storage-memory');
-
 const Authenticator = require('@did-connect/authenticator');
 const createHandlers = require('@did-connect/handler');
+
 const createTestServer = require('../../../scripts/create-test-server');
 const attachHandlers = require('../lib');
 
@@ -86,7 +86,7 @@ describe('RelayAdapterExpress', () => {
     const storage = new MemoryStorage();
     const authenticator = new Authenticator({ wallet: app, appInfo, chainInfo });
     // eslint-disable-next-line no-console
-    const logger = { info: noop, error: console.error, warn: console.warn, debug: noop };
+    const logger = { info: console.info, error: console.error, warn: console.warn, debug: noop };
     const handlers = createHandlers({ storage, authenticator, logger, timeout: 1000 });
 
     handlers.wsServer.attach(server.http);
@@ -100,7 +100,7 @@ describe('RelayAdapterExpress', () => {
   });
 
   const prepareTest = () => {
-    const sessionId = uuid.v4();
+    const sessionId = nanoid();
     const updaterPk = updater.publicKey;
 
     const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${sessionId}`);
@@ -127,9 +127,21 @@ describe('RelayAdapterExpress', () => {
     expect(res.error).toMatch('updaterPk');
 
     try {
-      await api.get(`/api/connect/relay/session?sid=${uuid.v4()}`);
+      await api.get(`/api/connect/relay/session?sid=${nanoid()}`);
     } catch (err) {
       expect(err.response.data.error).toMatch('not found');
+    }
+
+    try {
+      await api.get('/api/connect/relay/session');
+    } catch (err) {
+      expect(err.response.data.error).toMatch('No sessionId');
+    }
+
+    try {
+      await api.get('/api/connect/relay/session?sid=abc');
+    } catch (err) {
+      expect(err.response.data.error).toMatch('Invalid sessionId');
     }
   });
 
@@ -144,7 +156,6 @@ describe('RelayAdapterExpress', () => {
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
     client.on(sessionId, async (e) => {
-      expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
       if (e.status === 'walletConnected') {
@@ -159,7 +170,7 @@ describe('RelayAdapterExpress', () => {
         });
       } else if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [`you provided profile ${e.claims[0].fullName}`],
+          approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
         });
       } else if (e.status === 'completed') {
         completed = true;
@@ -261,12 +272,12 @@ describe('RelayAdapterExpress', () => {
       } else if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${e.claims[0].fullName}`],
+            approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
           });
         }
         if (e.currentStep === 1) {
           session = await updateSession({
-            approveResults: [...session.approveResults, `you provided asset ${e.claims[0].address}`],
+            approveResults: [...session.approveResults, `you provided asset ${e.responseClaims[0].address}`],
           });
         }
       } else if (e.status === 'completed') {

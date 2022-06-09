@@ -1,11 +1,9 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
 require('node-localstorage/register'); // polyfill ls
 const { types } = require('@ocap/mcrypto');
 const { fromRandom } = require('@ocap/wallet');
 const { interpret } = require('xstate');
 const last = require('lodash/last');
-const pick = require('lodash/pick');
 const axios = require('axios');
 const Jwt = require('@arcblock/jwt');
 const { toBase58 } = require('@ocap/util');
@@ -629,6 +627,70 @@ describe('StateMachine', () => {
   });
 
   test('should abort session when app canceled', async () => {
+    let res;
+    let authInfo;
+    let hasCanceled = false;
+
+    const stateHistory = [];
+
+    const { machine } = createMachine({
+      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      dispatch: (...args) => service.send.call(service, ...args),
+      onConnect: (ctx, e) => {
+        service.send({ type: 'CANCEL' });
+      },
+      onApprove: (ctx, e) => {},
+      onComplete: (ctx, e) => {},
+      onCancel: (ctx, e) => {
+        hasCanceled = true;
+      },
+    });
+
+    const initial = machine.initialState;
+    const service = interpret(machine).onTransition((state) => {
+      stateHistory.push(state.value);
+    });
+
+    // Start the service and wait for session created
+    service.start();
+    await waitFor(() => last(stateHistory) === 'created');
+
+    const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${initial.context.sessionId}`);
+
+    // 2. simulate scan
+    try {
+      res = await axios.get(getAuthUrl(authUrl));
+      expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+      expect(authInfo.url).toEqual(authUrl);
+
+      // 3. submit auth principal
+      const claims = authInfo.requestedClaims;
+      if (claims.find((x) => x.type === 'authPrincipal')) {
+        res = await axios.post(getAuthUrl(authInfo.url), {
+          userPk: toBase58(user.publicKey),
+          userInfo: Jwt.sign(user.address, user.secretKey, {
+            requestedClaims: [],
+            challenge: authInfo.challenge,
+          }),
+        });
+        authInfo = Jwt.decode(res.data.authInfo);
+        expect(authInfo.status).toEqual('error');
+        expect(authInfo.errorMessage).toMatch('canceled');
+      }
+    } catch (err) {
+      console.error(err);
+      expect(err).toBeFalsy();
+    }
+
+    await waitFor(() => last(stateHistory) === 'canceled');
+    expect(stateHistory).toEqual(['start', 'loading', 'created', 'walletScanned', 'walletConnected', 'canceled']);
+    expect(hasCanceled).toBe(true);
+    service.stop();
+  });
+
+  test('should abort session when reuse non-existing session', async () => {
     let res;
     let authInfo;
     let hasCanceled = false;

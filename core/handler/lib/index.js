@@ -1,4 +1,3 @@
-const uuid = require('uuid');
 const pick = require('lodash/pick');
 const waitFor = require('p-wait-for');
 const Jwt = require('@arcblock/jwt');
@@ -50,18 +49,16 @@ function createSocketServer(logger, pathname) {
   return new WsServer({ logger, pathname });
 }
 
-// TODO: remove the session after complete/expire/canceled/rejected
 // FIXME: i18n for errors
 function createHandlers({
   storage,
   authenticator,
   logger = console,
-  timeout = 20 * 1000,
+  timeout = 20 * 1000, // how long to wait when wait for app events
   socketPathname = '/api/connect/relay/websocket',
 }) {
   const wsServer = createSocketServer(logger, socketPathname);
 
-  const isSessionFinalized = (x) => ['error', 'timeout', 'canceled', 'rejected', 'completed'].includes(x.status);
   const isValidContext = (x) => {
     const { error } = contextSchema.validate(x);
     // if (error) logger.error(error);
@@ -104,7 +101,7 @@ function createHandlers({
 
     const { sessionId, updaterPk, strategy = 'default', authUrl, requestedClaims = [] } = context.body;
 
-    if (uuid.validate(sessionId) === false) {
+    if (sessionId.length !== 21) {
       return { error: 'Invalid sessionId', code: 400 };
     }
 
@@ -148,7 +145,7 @@ function createHandlers({
     }
 
     const { body, session } = context;
-    if (isSessionFinalized(session)) {
+    if (storage.isFinalized(session.status)) {
       return { error: `Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`, code: 400 };
     }
 
@@ -180,7 +177,7 @@ function createHandlers({
       }
 
       const { strategy, previousConnected, currentStep } = session;
-      if (isSessionFinalized(session)) {
+      if (storage.isFinalized(session.status)) {
         throw new Error('Session finalized');
       }
 
@@ -258,7 +255,7 @@ function createHandlers({
         throw new Error('Invalid context');
       }
 
-      if (isSessionFinalized(session)) {
+      if (storage.isFinalized(session.status)) {
         throw new Error(`Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`);
       }
 

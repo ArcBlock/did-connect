@@ -21,18 +21,18 @@
     "@arcblock/did": "^1.16.15",
     "@arcblock/jwt": "^1.16.15",
     "@arcblock/ws": "^1.16.15",
+    "@did-connect/validator": "2.0.0",
     "@ocap/mcrypto": "^1.16.15",
     "@ocap/util": "^1.16.15",
-    "@did-connect/validator": "2.0.0",
     "lodash": "^4.17.21",
     "object-hash": "^3.0.0",
     "p-wait-for": "3.x",
-    "semver": "^7.3.4",
-    "uuid": "^8.3.2"
+    "semver": "^7.3.4"
   },
   "devDependencies": {
     "axios": "^0.27.2",
     "jest": "^28.1.0",
+    "nanoid": "3.x",
     "remark-cli": "^10.0.1",
     "remark-preset-github": "^4.0.1",
     "tweetnacl": "^1.0.3"
