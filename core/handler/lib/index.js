@@ -29,6 +29,10 @@ const errors = {
     en: 'You have declined the authentication request',
     zh: '授权请求被拒绝',
   },
+  userCanceled: {
+    en: 'User has canceled the request from app',
+    zh: '用户在应用端取消了请求',
+  },
 };
 
 class CustomError extends Error {
@@ -208,7 +212,7 @@ function createHandlers({
     }
   };
 
-  const waitForSession = async (sessionId, checkFn, reason) => {
+  const waitForSession = async (sessionId, checkFn, reason, locale) => {
     let session = null;
     try {
       await waitFor(
@@ -217,13 +221,17 @@ function createHandlers({
           if (session.status === 'error') {
             throw new CustomError('AppError', session.error);
           }
+          if (session.status === 'canceled') {
+            throw new CustomError('AppCanceled', errors.userCanceled[locale]);
+          }
+
           return checkFn(session);
         },
         { interval: 200, timeout, before: false }
       );
       return storage.read(sessionId);
     } catch (err) {
-      if (session && session.status !== 'error') {
+      if (session && ['error', 'canceled'].includes(session.status) === false) {
         throw new CustomError('TimeoutError', `${reason} within ${timeout}ms`);
       }
 
@@ -231,14 +239,15 @@ function createHandlers({
     }
   };
 
-  const waitForAppConnect = (sessionId) =>
-    waitForSession(sessionId, (x) => x.requestedClaims.length > 0, 'Requested claims not provided by app');
+  const waitForAppConnect = (sessionId, locale) =>
+    waitForSession(sessionId, (x) => x.requestedClaims.length > 0, 'Requested claims not provided by app', locale);
 
-  const waitForAppApprove = (sessionId) =>
+  const waitForAppApprove = (sessionId, locale) =>
     waitForSession(
       sessionId,
       (x) => typeof x.approveResults[x.currentStep] !== 'undefined',
-      'Response claims not handled by app'
+      'Response claims not handled by app',
+      locale
     );
 
   // FIXME: authPrincipal only connect is not supported yet.
@@ -278,7 +287,7 @@ function createHandlers({
           newSession = await storage.update(sessionId, { status: 'appConnected' });
           wsServer.broadcast(sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
         } else {
-          newSession = await waitForAppConnect(sessionId);
+          newSession = await waitForAppConnect(sessionId, locale);
           await storage.update(sessionId, { status: 'appConnected' });
           wsServer.broadcast(sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
         }
@@ -295,7 +304,7 @@ function createHandlers({
         responseClaims: claims,
         currentStep: session.currentStep,
       });
-      newSession = await waitForAppApprove(sessionId);
+      newSession = await waitForAppApprove(sessionId, locale);
       await storage.update(sessionId, { status: 'appApproved' });
       wsServer.broadcast(sessionId, {
         status: 'appApproved',
@@ -321,6 +330,12 @@ function createHandlers({
       // error reported by dapp
       if (err.code === 'AppError') {
         wsServer.broadcast(sessionId, { status: 'error', error: err.message, source: 'app' });
+        return signJson({ error: err.message }, context);
+      }
+
+      // error reported by dapp
+      if (err.code === 'AppCanceled') {
+        wsServer.broadcast(sessionId, { status: 'canceled', error: err.message, source: 'app' });
         return signJson({ error: err.message }, context);
       }
 

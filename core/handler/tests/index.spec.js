@@ -922,6 +922,57 @@ describe('RelayAdapterExpress', () => {
     client.off(sessionId);
   });
 
+  test('should abort session when session canceled', async () => {
+    let session = null;
+    let res = null;
+    let authInfo = null;
+
+    const statusHistory = [];
+    const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
+
+    client.on(sessionId, async (e) => {
+      expect(e.status).toBeTruthy();
+      statusHistory.push(e.status);
+
+      if (e.status === 'walletConnected') {
+        session = await updateSession({
+          status: 'canceled',
+        });
+      }
+    });
+
+    // 1. create session
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    expect(session.sessionId).toEqual(sessionId);
+
+    // 2. simulate scan
+    res = await api.get(getAuthUrl(authUrl));
+    expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+    expect(authInfo.url).toEqual(authUrl);
+
+    // 3. submit auth principal
+    const claims = authInfo.requestedClaims;
+    if (claims.find((x) => x.type === 'authPrincipal')) {
+      res = await api.post(getAuthUrl(authInfo.url), {
+        userPk: toBase58(user.publicKey),
+        userInfo: Jwt.sign(user.address, user.secretKey, {
+          requestedClaims: [],
+          challenge: authInfo.challenge,
+        }),
+      });
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.status).toEqual('error');
+      expect(authInfo.errorMessage).toMatch('canceled');
+    }
+
+    // 7. assert status history
+    expect(statusHistory).toEqual(['walletScanned', 'walletConnected', 'canceled']);
+
+    client.off(sessionId);
+  });
+
   test('should session create/update work and throw as expected', async () => {
     let session = null;
     let res = null;
