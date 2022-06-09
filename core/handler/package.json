@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "axios": "^0.27.2",
-    "jest": "^28.1.0",
+    "jest": "^28.1.1",
     "nanoid": "3.x",
     "remark-cli": "^10.0.1",
     "remark-preset-github": "^4.0.1",

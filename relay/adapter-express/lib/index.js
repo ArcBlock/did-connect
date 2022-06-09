@@ -33,15 +33,15 @@ module.exports = function attachHandlers(router, handlers, prefix = '/api/connec
       if (isSessionRequired) {
         sessionId = req.query.sid;
         if (!sessionId) {
-          return res.status(400).jsonp({ error: 'No sessionId' });
+          return res.status(400).jsonp({ error: 'No sessionId', code: 'SESSION_ID_EMPTY' });
         }
         if (sessionId.length !== 21) {
-          return res.status(400).jsonp({ error: `Invalid sessionId: ${sessionId}` });
+          return res.status(400).jsonp({ error: `Invalid sessionId: ${sessionId}`, code: 'SESSION_ID_INVALID' });
         }
 
         session = await handleSessionRead(sessionId);
         if (!session) {
-          return res.status(400).jsonp({ error: `Session not found: ${sessionId}` });
+          return res.status(400).jsonp({ error: `Session not found: ${sessionId}`, code: 'SESSION_NOT_FOUND' });
         }
       }
 

@@ -15,7 +15,7 @@
   ],
   "devDependencies": {
     "j2d": "^1.0.3-dev",
-    "jest": "^28.1.0",
+    "jest": "^28.1.1",
     "remark-cli": "^10.0.1",
     "remark-preset-github": "^4.0.1"
   },

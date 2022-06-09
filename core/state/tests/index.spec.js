@@ -3,6 +3,7 @@ require('node-localstorage/register'); // polyfill ls
 const { types } = require('@ocap/mcrypto');
 const { fromRandom } = require('@ocap/wallet');
 const { interpret } = require('xstate');
+const { nanoid } = require('nanoid');
 const last = require('lodash/last');
 const axios = require('axios');
 const Jwt = require('@arcblock/jwt');
@@ -17,6 +18,9 @@ const attachHandlers = require('@did-connect/relay-adapter-express');
 
 const createTestServer = require('../../../scripts/create-test-server');
 const { createMachine, destroyConnections } = require('..');
+
+// eslint-disable-next-line
+const sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout));
 
 const noop = () => null;
 const user = fromRandom();
@@ -364,9 +368,9 @@ describe('StateMachine', () => {
     const { machine } = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
-      onConnect: (ctx, e) => {},
-      onApprove: (ctx, e) => {},
-      onComplete: (ctx, e) => {},
+      onConnect: () => {},
+      onApprove: () => {},
+      onComplete: () => {},
     });
 
     const initial = machine.initialState;
@@ -421,9 +425,9 @@ describe('StateMachine', () => {
     const { machine } = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
-      onConnect: (ctx, e) => {},
-      onApprove: (ctx, e) => {},
-      onComplete: (ctx, e) => {},
+      onConnect: () => {},
+      onApprove: () => {},
+      onComplete: () => {},
     });
 
     const initial = machine.initialState;
@@ -479,11 +483,11 @@ describe('StateMachine', () => {
     const { machine } = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
-      onConnect: (ctx, e) => {
+      onConnect: () => {
         throw new Error('onConnect error');
       },
-      onApprove: (ctx, e) => {},
-      onComplete: (ctx, e) => {},
+      onApprove: () => {},
+      onComplete: () => {},
     });
 
     const initial = machine.initialState;
@@ -549,11 +553,11 @@ describe('StateMachine', () => {
           },
         ];
       },
-      onApprove: (ctx, e) => {
+      onApprove: () => {
         throw new Error('onApprove error');
       },
-      onComplete: (ctx, e) => {},
-      onError: (ctx, e) => {
+      onComplete: () => {},
+      onError: () => {
         hasError = true;
       },
     });
@@ -626,6 +630,7 @@ describe('StateMachine', () => {
     service.stop();
   });
 
+  let finalizedSessionId = null;
   test('should abort session when app canceled', async () => {
     let res;
     let authInfo;
@@ -637,11 +642,13 @@ describe('StateMachine', () => {
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect: (ctx, e) => {
+        expect(e.type).toBe('WALLET_CONNECTED');
         service.send({ type: 'CANCEL' });
       },
-      onApprove: (ctx, e) => {},
-      onComplete: (ctx, e) => {},
+      onApprove: () => {},
+      onComplete: () => {},
       onCancel: (ctx, e) => {
+        expect(e.type).toBe('CANCEL');
         hasCanceled = true;
       },
     });
@@ -650,6 +657,8 @@ describe('StateMachine', () => {
     const service = interpret(machine).onTransition((state) => {
       stateHistory.push(state.value);
     });
+
+    finalizedSessionId = initial.context.sessionId;
 
     // Start the service and wait for session created
     service.start();
@@ -691,70 +700,61 @@ describe('StateMachine', () => {
   });
 
   test('should abort session when reuse non-existing session', async () => {
-    let res;
-    let authInfo;
-    let hasCanceled = false;
-
     const stateHistory = [];
-
+    const nonExistingSession = nanoid();
+    let hasError = false;
     const { machine } = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      sessionId: nonExistingSession,
       dispatch: (...args) => service.send.call(service, ...args),
-      onConnect: (ctx, e) => {
-        service.send({ type: 'CANCEL' });
-      },
-      onApprove: (ctx, e) => {},
-      onComplete: (ctx, e) => {},
-      onCancel: (ctx, e) => {
-        hasCanceled = true;
+      onConnect: () => {},
+      onApprove: () => {},
+      onError: () => {
+        hasError = true;
       },
     });
 
-    const initial = machine.initialState;
     const service = interpret(machine).onTransition((state) => {
       stateHistory.push(state.value);
     });
 
     // Start the service and wait for session created
     service.start();
-    await waitFor(() => last(stateHistory) === 'created');
+    await waitFor(() => last(stateHistory) === 'error');
+    await waitFor(() => hasError === true);
+    expect(stateHistory).toEqual(['start', 'loading', 'error']);
+    service.stop();
+  });
 
-    const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${initial.context.sessionId}`);
+  test('should abort session when reuse finalized session', async () => {
+    const stateHistory = [];
+    let hasError = false;
+    const { machine } = createMachine({
+      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      sessionId: finalizedSessionId,
+      dispatch: (...args) => service.send.call(service, ...args),
+      onConnect: () => {},
+      onApprove: () => {},
+      onError: (ctx, e) => {
+        expect(e.data.code).toBe('INVALID_SESSION');
+        hasError = true;
+      },
+    });
 
-    // 2. simulate scan
-    try {
-      res = await axios.get(getAuthUrl(authUrl));
-      expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
-      authInfo = Jwt.decode(res.data.authInfo);
-      expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
-      expect(authInfo.url).toEqual(authUrl);
+    const service = interpret(machine).onTransition((state) => {
+      stateHistory.push(state.value);
+    });
 
-      // 3. submit auth principal
-      const claims = authInfo.requestedClaims;
-      if (claims.find((x) => x.type === 'authPrincipal')) {
-        res = await axios.post(getAuthUrl(authInfo.url), {
-          userPk: toBase58(user.publicKey),
-          userInfo: Jwt.sign(user.address, user.secretKey, {
-            requestedClaims: [],
-            challenge: authInfo.challenge,
-          }),
-        });
-        authInfo = Jwt.decode(res.data.authInfo);
-        expect(authInfo.status).toEqual('error');
-        expect(authInfo.errorMessage).toMatch('canceled');
-      }
-    } catch (err) {
-      console.error(err);
-      expect(err).toBeFalsy();
-    }
-
-    await waitFor(() => last(stateHistory) === 'canceled');
-    expect(stateHistory).toEqual(['start', 'loading', 'created', 'walletScanned', 'walletConnected', 'canceled']);
-    expect(hasCanceled).toBe(true);
+    // Start the service and wait for session created
+    service.start();
+    await waitFor(() => last(stateHistory) === 'error');
+    await waitFor(() => hasError === true);
+    expect(stateHistory).toEqual(['start', 'loading', 'error']);
     service.stop();
   });
 
   afterAll(async () => {
+    await sleep(200);
     // CAUTION: socket client disconnect should be called before server shutdown
     destroyConnections();
     await server.close();

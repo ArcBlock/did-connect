@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "axios": "^0.27.2",
-    "jest": "^28.1.0",
+    "jest": "^28.1.1",
     "remark-cli": "^10.0.1",
     "remark-preset-github": "^4.0.1",
     "tweetnacl": "^1.0.3"

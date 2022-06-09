@@ -1,7 +1,8 @@
-const { nanoid } = require('nanoid');
+const get = require('lodash/get');
 const pick = require('lodash/pick');
 const isFunction = require('lodash/isFunction');
 const isArray = require('lodash/isArray');
+const { nanoid } = require('nanoid');
 const { createMachine, assign } = require('xstate');
 
 const { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, getUpdater } = require('./util');
@@ -9,7 +10,6 @@ const { createConnection, destroyConnections } = require('./socket');
 
 const noop = () => undefined;
 // eslint-disable-next-line no-console
-const debug = console.log;
 const DEFAULT_TIMEOUT = {
   START_TIMEOUT: 10 * 1000, // webapp-callback
   CREATE_TIMEOUT: 10 * 1000, // relay-server
@@ -19,6 +19,16 @@ const DEFAULT_TIMEOUT = {
   APP_CONNECT_TIMEOUT: 20 * 1000, // webapp-callback
   APP_APPROVE_TIMEOUT: 20 * 1000, // webapp-callback
 };
+
+class CustomError extends Error {
+  constructor(code, message) {
+    super(message);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, CustomError);
+    }
+    this.code = code;
+  }
+}
 
 /**
  * Create a new did connect session state machine
@@ -61,19 +71,19 @@ const createStateMachine = ({
   timeout = DEFAULT_TIMEOUT,
 }) => {
   if (sessionId && sessionId.length !== 21) {
-    throw new Error('Invalid sessionId, which must be a valid 21 char nanoid');
+    throw new CustomError('INVALID_SESSION_ID', 'Invalid sessionId, which must be a valid 21 char nanoid');
   }
 
   const fns = { dispatch, onStart, onCreate, onApprove, onComplete, onReject, onCancel, onTimeout, onError };
   Object.keys(fns).forEach((x) => {
     if (isFunction(fns[x]) === false) {
-      throw new Error(`Invalid ${x}, which must be a function`);
+      throw new CustomError('INVALID_CALLBACK', `Invalid ${x}, which must be a function`);
     }
   });
 
   // can be claim list or function that returns claim list
   if (isFunction(onConnect) === false && isArray(onConnect) === false) {
-    throw new Error('Invalid onConnect, which must be a function or an object or an array');
+    throw new CustomError('INVALID_CALLBACK', 'Invalid onConnect, which must be a function or an object or an array');
   }
 
   let requestedClaims = [];
@@ -96,12 +106,26 @@ const createStateMachine = ({
     const isExistingSession = sid === sessionId;
     let session = null;
     if (isExistingSession) {
-      session = await doSignedRequest({
-        url: sessionApiUrl,
-        data: {},
-        wallet: updater,
-        method: 'GET',
-      });
+      try {
+        session = await doSignedRequest({
+          url: sessionApiUrl,
+          data: {},
+          wallet: updater,
+          method: 'GET',
+        });
+        if (session.status !== 'created') {
+          throw new CustomError(
+            'INVALID_SESSION',
+            `Invalid existing session status, expecting created, got ${session.status}`
+          );
+        }
+      } catch (err) {
+        if (err.name === 'AxiosError') {
+          throw new CustomError(get(err, 'response.data.code'), get(err, 'response.data.error'));
+        }
+
+        throw err;
+      }
     } else {
       // Create new session
       session = await doSignedRequest({
@@ -137,7 +161,6 @@ const createStateMachine = ({
       approveResult = null;
     }
 
-    debug('_onApprove', e, approveResult);
     await doSignedRequest({
       url: sessionApiUrl,
       data: { approveResults: [...ctx.approveResults, approveResult] },
@@ -156,25 +179,25 @@ const createStateMachine = ({
   };
 
   const _onTimeout = async (...args) => {
-    debug('_onTimeout', ...args);
     await onTimeout(...args);
   };
 
   const _onCancel = async (...args) => {
-    debug('_onCancel', ...args);
     await onCancel(...args);
   };
 
+  // report some client error to relay, and execute callback
   const _onError = async (ctx, e) => {
-    // report client error to relay, and execute callback
     if (e.data) {
-      console.error(e.data);
-      await doSignedRequest({
-        url: sessionApiUrl,
-        data: { status: 'error', error: e.data.message },
-        wallet: updater,
-        method: 'PUT',
-      });
+      console.error('Client', e.data);
+      if (['SESSION_NOT_FOUND', 'SESSION_FINALIZED'].includes(e.data.code) === false) {
+        doSignedRequest({
+          url: sessionApiUrl,
+          data: { status: 'error', error: e.data.message },
+          wallet: updater,
+          method: 'PUT',
+        }).catch((err) => console.error('Report Error', get(err, 'response.data.error', err.message)));
+      }
     }
     await onError(ctx, e);
   };
@@ -182,7 +205,6 @@ const createStateMachine = ({
   // TODO: fallback to polling when socket connection failed
   createConnection(createSocketEndpoint(baseUrl)).then((socket) => {
     socket.on(sid, (e) => {
-      debug('event form relay', e);
       switch (e.status) {
         case 'walletScanned':
           return dispatch({ type: 'WALLET_SCAN', didwallet: e.didwallet });
@@ -234,9 +256,6 @@ const createStateMachine = ({
               target: 'error',
               actions: ['onError'],
             },
-          },
-          on: {
-            ERROR: { target: 'error' },
           },
           after: {
             START_TIMEOUT: { target: 'timeout' },

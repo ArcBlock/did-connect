@@ -4,6 +4,7 @@
 /* eslint-disable prefer-rest-params */
 const http = require('http');
 const https = require('https');
+const morgan = require('morgan');
 const express = require('express');
 const pify = require('pify');
 const createCert = require('create-cert');
@@ -20,6 +21,7 @@ const createTestServer = (opts = {}) =>
     server.set('etag', false);
     server.set('trust proxy', true);
 
+    server.use(morgan('combined'));
     server.use(cookieParser());
     if (opts.bodyParser !== false) {
       server.use(bodyParser.json(Object.assign({ limit: '1mb', type: 'application/json' }, opts.bodyParser)));

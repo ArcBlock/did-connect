@@ -35,13 +35,12 @@ const errors = {
 };
 
 class CustomError extends Error {
-  constructor(code, message, props = {}) {
+  constructor(code, message) {
     super(message);
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, CustomError);
     }
     this.code = code;
-    this.props = props;
   }
 }
 
@@ -71,24 +70,24 @@ function createHandlers({
   const verifyUpdater = (params, updaterPk) => {
     const { body, signerPk, signerToken } = params;
     if (!signerPk) {
-      return { error: 'Invalid updater pk', code: 400 };
+      return { error: 'Invalid updater pk', code: 'UPDATER_PK_EMPTY' };
     }
     if (!signerToken) {
-      return { error: 'Invalid token', code: 400 };
+      return { error: 'Invalid token', code: 'SIGNATURE_EMPTY' };
     }
 
     if (Jwt.verify(signerToken, signerPk) === false) {
-      return { error: 'Invalid updater signature', code: 400 };
+      return { error: 'Invalid updater signature', code: 'SIGNATURE_INVALID' };
     }
 
     if (updaterPk && updaterPk !== signerPk) {
-      return { error: 'Invalid updater', code: 403 };
+      return { error: 'Invalid updater', code: 'UPDATER_MISMATCH' };
     }
 
     const hash = objectHash(body);
     const decoded = Jwt.decode(signerToken);
     if (decoded.hash !== hash) {
-      return { error: 'Invalid payload hash', code: 400 };
+      return { error: 'Invalid payload hash', code: 'PAYLOAD_HASH_MISMATCH' };
     }
 
     return { error: null };
@@ -96,13 +95,13 @@ function createHandlers({
 
   const handleSessionCreate = async (context) => {
     if (isValidContext(context) === false) {
-      return { error: 'Invalid context', code: 400 };
+      return { error: 'Invalid context', code: 'CONTEXT_INVALID' };
     }
 
     const { sessionId, updaterPk, strategy = 'default', authUrl, requestedClaims = [] } = context.body;
 
     if (sessionId.length !== 21) {
-      return { error: 'Invalid sessionId', code: 400 };
+      return { error: 'Invalid sessionId', code: 'SESSION_ID_INVALID' };
     }
 
     const result = verifyUpdater(context);
@@ -129,7 +128,10 @@ function createHandlers({
 
     const { value, error } = sessionSchema.validate(session);
     if (error) {
-      return { error: `Invalid session: ${error.details.map((x) => x.message).join(', ')}`, code: 400 };
+      return {
+        error: `Invalid session updates: ${error.details.map((x) => x.message).join(', ')}`,
+        code: 'SESSION_UPDATE_INVALID',
+      };
     }
 
     return storage.create(sessionId, value);
@@ -141,12 +143,15 @@ function createHandlers({
 
   const handleSessionUpdate = (context) => {
     if (isValidContext(context) === false) {
-      return { error: 'Invalid context', code: 400 };
+      return { error: 'Invalid context', code: 'CONTEXT_INVALID' };
     }
 
     const { body, session } = context;
     if (storage.isFinalized(session.status)) {
-      return { error: `Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`, code: 400 };
+      return {
+        error: `Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`,
+        code: 'SESSION_FINALIZED',
+      };
     }
 
     const result = verifyUpdater(context, session.updaterPk);
@@ -155,12 +160,15 @@ function createHandlers({
     }
 
     if (body.status && ['error', 'canceled'].includes(body.status) === false) {
-      return { error: 'Invalid session status', code: 400 };
+      return { error: 'Invalid session status', code: 'SESSION_STATUS_INVALID' };
     }
 
     const { error, value } = sessionSchema.validate({ ...session, ...body });
     if (error) {
-      return { error: `Invalid session: ${error.details.map((x) => x.message).join(', ')}`, code: 400 };
+      return {
+        error: `Invalid session updates: ${error.details.map((x) => x.message).join(', ')}`,
+        code: 'SESSION_UPDATE_INVALID',
+      };
     }
 
     const updates = pick(value, ['error', 'status', 'approveResults', 'requestedClaims']);
@@ -173,12 +181,15 @@ function createHandlers({
 
     try {
       if (isValidContext(context) === false) {
-        throw new Error('Invalid context');
+        throw new CustomError('CONTEXT_INVALID', 'Invalid context');
       }
 
       const { strategy, previousConnected, currentStep } = session;
       if (storage.isFinalized(session.status)) {
-        throw new Error('Session finalized');
+        throw new CustomError(
+          'SESSION_FINALIZED',
+          `Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`
+        );
       }
 
       // if we are in created status, we should return authPrincipal claim
@@ -252,11 +263,14 @@ function createHandlers({
     const { sessionId, session, body, locale, didwallet } = context;
     try {
       if (isValidContext(context) === false) {
-        throw new Error('Invalid context');
+        throw new CustomError('CONTEXT_INVALID', 'Invalid context');
       }
 
       if (storage.isFinalized(session.status)) {
-        throw new Error(`Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`);
+        throw new CustomError(
+          'SESSION_FINALIZED',
+          `Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`
+        );
       }
 
       const { userDid, userPk, action, challenge, claims } = await authenticator.verify(body, locale);
@@ -352,7 +366,7 @@ function createHandlers({
 
       // anything else
       await storage.update(sessionId, { status: 'error', error: err.message });
-      wsServer.broadcast(sessionId, { status: 'error', error: err.message });
+      wsServer.broadcast(sessionId, { status: 'error', error: err.message, code: err.code });
       return signJson({ error: err.message }, context);
     }
   };
