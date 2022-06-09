@@ -20,8 +20,6 @@ module.exports = class DiskSessionStorage extends StorageInterface {
       throw new Error('DiskSessionStorage requires a valid dbPath option to initialize');
     }
 
-    this.options = options;
-
     const DataStore = options.dbPort ? NedbMulti(options.dbPort) : Nedb;
 
     this.db = new DataStore(
@@ -94,6 +92,9 @@ module.exports = class DiskSessionStorage extends StorageInterface {
           } else {
             this.emit('update', doc);
             debug('emit.update', { sessionId, updates });
+            if (updates.status && this.isFinalized(updates.status)) {
+              this.deleteFinalized(sessionId).catch(console.error);
+            }
             resolve(doc);
           }
         }
@@ -111,7 +112,7 @@ module.exports = class DiskSessionStorage extends StorageInterface {
         if (err) {
           reject(err);
         } else {
-          this.emit('destroy', sessionId);
+          this.emit('delete', sessionId);
           resolve(numRemoved);
         }
       });

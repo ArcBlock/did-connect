@@ -20,7 +20,7 @@
   "dependencies": {
     "@blocklet/sdk": "^1.7.23",
     "@did-connect/handler": "2.0.0",
-    "@did-connect/storage-memory": "^2.0.0",
+    "@did-connect/storage-nedb": "^2.0.0",
     "@did-connect/authenticator": "2.0.0",
     "@did-connect/relay-adapter-express": "2.0.0",
     "cors": "^2.8.5",

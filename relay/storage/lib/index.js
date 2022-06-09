@@ -19,8 +19,9 @@ class SessionStorage extends EventEmitter {
    * @class
    * @param {object} options
    */
-  constructor(options) {
+  constructor(options = {}) {
     super(options);
+    this.options = options || {};
   }
 
   create(sessionId, attributes) {
@@ -41,6 +42,19 @@ class SessionStorage extends EventEmitter {
 
   exist(sessionId, did) {
     throw new Error('SessionStorage.exist must be implemented in child class');
+  }
+
+  isFinalized(status) {
+    return ['error', 'timeout', 'canceled', 'rejected', 'completed'].includes(status);
+  }
+
+  deleteFinalized(sessionId) {
+    const { ttl = 8 * 1000 } = this.options;
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(this.delete(sessionId));
+      }, ttl);
+    });
   }
 }
 

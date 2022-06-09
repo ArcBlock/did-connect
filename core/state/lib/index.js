@@ -8,6 +8,7 @@ const { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, get
 const { createConnection, destroyConnections } = require('./socket');
 
 const noop = () => undefined;
+// eslint-disable-next-line no-console
 const debug = console.log;
 const DEFAULT_TIMEOUT = {
   START_TIMEOUT: 10 * 1000, // webapp-callback
@@ -92,20 +93,27 @@ const createStateMachine = ({
   };
 
   const _createOrRestoreSession = async (ctx, e) => {
-    const isExistingSession = sessionId === sid;
+    const isExistingSession = sid === sessionId;
+    let session = null;
     if (isExistingSession) {
-      // FIXME: Reuse existing session
+      session = await doSignedRequest({
+        url: sessionApiUrl,
+        data: {},
+        wallet: updater,
+        method: 'GET',
+      });
     } else {
       // Create new session
-      const result = await doSignedRequest({
+      session = await doSignedRequest({
         url: sessionApiUrl,
         data: { sessionId: sid, updaterPk: pk, requestedClaims, autoConnect, authUrl: authApiUrl },
         wallet: updater,
         method: 'POST',
       });
-      await onCreate(ctx, e);
-      return result.appInfo;
     }
+
+    await onCreate(ctx, e);
+    return session.appInfo;
   };
 
   const _onConnect = async (ctx, e) => {
@@ -113,7 +121,6 @@ const createStateMachine = ({
       return ctx.requestedClaims;
     }
 
-    // FIXME: validation here before send to remote
     const claims = await onConnect(ctx, e);
     const result = await doSignedRequest({
       url: sessionApiUrl,

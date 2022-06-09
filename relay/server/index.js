@@ -1,14 +1,15 @@
 /* eslint-disable no-console */
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const env = require('@blocklet/sdk/lib/env');
 const getWallet = require('@blocklet/sdk/lib/wallet');
-const MemoryStorage = require('@did-connect/storage-memory');
+const SessionStorage = require('@did-connect/storage-nedb');
 const Authenticator = require('@did-connect/authenticator');
 const createHandlers = require('@did-connect/handler');
 const attachHandlers = require('@did-connect/relay-adapter-express');
 
-const storage = new MemoryStorage();
+const storage = new SessionStorage({ dbPath: path.join(env.dataDir, 'sessions.db'), ttl: 60 * 1000 });
 const authenticator = new Authenticator({
   wallet: getWallet(),
   appInfo: {

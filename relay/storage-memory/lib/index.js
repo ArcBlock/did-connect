@@ -17,11 +17,14 @@ module.exports = class MemorySessionStorage extends StorageInterface {
     delete updates.sessionId;
     storage[sessionId] = Object.assign(storage[sessionId], updates);
     this.emit('update', storage[sessionId]);
+    if (updates.status && this.isFinalized(updates.status)) {
+      this.deleteFinalized(sessionId);
+    }
     return storage[sessionId];
   }
 
   delete(sessionId) {
-    this.emit('destroy', storage[sessionId]);
+    this.emit('delete', storage[sessionId]);
     delete storage[sessionId];
   }
 

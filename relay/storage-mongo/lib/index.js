@@ -20,7 +20,6 @@ module.exports = class MongoSessionStorage extends StorageInterface {
     super(options);
 
     this.collectionName = options.collection || 'did_auth_tokens';
-    this.options = options;
 
     this.changeState('init');
 
@@ -135,6 +134,9 @@ module.exports = class MongoSessionStorage extends StorageInterface {
         } else {
           this.emit('update', data);
           debug('emit.update', { sessionId, updates });
+          if (updates.status && this.isFinalized(updates.status)) {
+            this.deleteFinalized(sessionId).catch(console.error);
+          }
         }
 
         return data;
@@ -144,7 +146,7 @@ module.exports = class MongoSessionStorage extends StorageInterface {
   delete(sessionId) {
     return this.collectionReady()
       .then((collection) => collection.deleteOne({ sessionId }))
-      .then(() => this.emit('destroy', sessionId));
+      .then(() => this.emit('delete', sessionId));
   }
 
   exist(sessionId, did) {
