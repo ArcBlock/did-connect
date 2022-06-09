@@ -3,22 +3,29 @@ require('node-localstorage/register');
 const { createSocketEndpoint, createApiUrl, createDeepLink, doSignedRequest, getUpdater } = require('../lib/util');
 
 describe('Util', () => {
-  beforeAll(() => {
+  const mockWindow = () => {
     global.window = {
       location: new URL('https://www.arcblock.io'),
     };
-  });
+  };
+
+  const resetWindow = () => {
+    global.window = undefined;
+  };
 
   describe('createSocketEndpoint', () => {
     test('should return socket endpoint for absolute', () => {
       expect(() => createSocketEndpoint()).toThrow();
+      expect(() => createSocketEndpoint('/api/connect/relay')).toThrow();
       const endpoint = createSocketEndpoint('https://www.arcblock.io');
       expect(endpoint).toBe('wss://www.arcblock.io');
     });
 
     test('should return socket endpoint for relative', () => {
+      mockWindow();
       const endpoint = createSocketEndpoint('/api/connect/relay');
       expect(endpoint).toBe('wss://www.arcblock.io/api/connect/relay');
+      resetWindow();
     });
   });
 
@@ -35,12 +42,16 @@ describe('Util', () => {
     });
 
     test('should return valid url for absolute', () => {
+      expect(() => createApiUrl('/api/connect/relay', 'abc', '/auth')).toThrow();
+
+      mockWindow();
       expect(createApiUrl('/api/connect/relay', 'abcd', '/auth')).toEqual(
         'https://www.arcblock.io/api/connect/relay/auth?sid=abcd'
       );
       expect(createApiUrl('/api/connect/relay', 'abcd', '/session')).toEqual(
         'https://www.arcblock.io/api/connect/relay/session?sid=abcd'
       );
+      resetWindow();
     });
   });
 
