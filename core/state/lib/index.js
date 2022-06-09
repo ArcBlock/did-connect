@@ -153,7 +153,6 @@ const createStateMachine = ({
     await onTimeout(...args);
   };
 
-  // TODO: report cancel to relay then execute callback
   const _onCancel = async (...args) => {
     debug('_onCancel', ...args);
     await onCancel(...args);
@@ -173,7 +172,7 @@ const createStateMachine = ({
     await onError(ctx, e);
   };
 
-  // FIXME: fallback to polling when socket connection failed
+  // TODO: fallback to polling when socket connection failed
   createConnection(createSocketEndpoint(baseUrl)).then((socket) => {
     socket.on(sid, (e) => {
       debug('event form relay', e);
@@ -266,6 +265,7 @@ const createStateMachine = ({
             WALLET_SCAN: { target: 'walletScanned' },
             APP_CANCELED: { target: 'canceled' },
             ERROR: { target: 'error' },
+            CANCEL: { target: 'canceled' },
           },
           after: {
             WALLET_SCAN_TIMEOUT: { target: 'timeout' },
@@ -279,6 +279,7 @@ const createStateMachine = ({
             WALLET_REJECT: { target: 'rejected' },
             APP_CANCELED: { target: 'canceled' },
             ERROR: { target: 'error' },
+            CANCEL: { target: 'canceled' },
           },
           after: {
             WALLET_CONNECT_TIMEOUT: { target: 'timeout' },
@@ -302,6 +303,7 @@ const createStateMachine = ({
           on: {
             APP_CANCELED: { target: 'canceled' },
             ERROR: { target: 'error' },
+            CANCEL: { target: 'canceled' },
           },
           entry: ['saveConnectedUser'],
           after: {
@@ -317,6 +319,7 @@ const createStateMachine = ({
             WALLET_APPROVE: { target: 'walletApproved' },
             WALLET_REJECT: { target: 'rejected' },
             ERROR: { target: 'error' },
+            CANCEL: { target: 'canceled' },
           },
           after: {
             WALLET_APPROVE_TIMEOUT: { target: 'timeout' },
@@ -339,6 +342,7 @@ const createStateMachine = ({
           },
           on: {
             ERROR: { target: 'error' },
+            CANCEL: { target: 'canceled' },
           },
           entry: ['saveResponseClaims'],
           exit: ['incrementCurrentStep'],
@@ -353,6 +357,7 @@ const createStateMachine = ({
             WALLET_APPROVE: { target: 'walletApproved' },
             COMPLETE: { target: 'completed' },
             ERROR: { target: 'error' },
+            CANCEL: { target: 'canceled' },
           },
         },
 
@@ -371,7 +376,7 @@ const createStateMachine = ({
         },
         canceled: {
           type: 'final',
-          entry: ['saveError', 'onCancel'],
+          entry: ['reportCancel', 'onCancel'],
         },
         error: {
           type: 'final',
@@ -393,6 +398,13 @@ const createStateMachine = ({
         incrementCurrentStep: assign({ currentStep: (ctx) => ctx.currentStep + 1 }), // from server
         saveResponseClaims: assign({ responseClaims: (ctx, e) => [...ctx.responseClaims, e.responseClaims] }), // from server
         saveApproveResult: assign({ approveResults: (ctx, e) => [...ctx.approveResults, e.data] }), // from client
+        reportCancel: () =>
+          doSignedRequest({
+            url: sessionApiUrl,
+            data: { status: 'canceled' },
+            wallet: updater,
+            method: 'PUT',
+          }),
       },
       delays: { ...DEFAULT_TIMEOUT, ...timeout },
       guards: {},
