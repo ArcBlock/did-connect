@@ -237,7 +237,7 @@ describe('RelayAdapterExpress', () => {
     const res = await api.get(getAuthUrl(authUrl));
     const authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('error');
-    expect(authInfo.errorMessage).toEqual('Session finalized');
+    expect(authInfo.errorMessage).toMatch('Session finalized');
   });
 
   test('should connect complete when everything is working: single + prepopulated', async () => {
@@ -1013,7 +1013,7 @@ describe('RelayAdapterExpress', () => {
     expect(session.status).toEqual('error');
 
     res = await updateSession({ status: 'error' });
-    expect(res.error).toEqual('Session finalized');
+    expect(res.error).toMatch('Session finalized');
 
     // 3. invalid session
     res = await doSignedRequest({ sessionId, updaterPk, authUrl, requestedClaims: [{ type: 'unknown' }] }, updater);

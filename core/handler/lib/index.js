@@ -147,11 +147,11 @@ function createHandlers({
       return { error: 'Invalid context', code: 400 };
     }
 
-    if (isSessionFinalized(context.session)) {
-      return { error: 'Session finalized', code: 400 };
+    const { body, session } = context;
+    if (isSessionFinalized(session)) {
+      return { error: `Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`, code: 400 };
     }
 
-    const { body, session } = context;
     const result = verifyUpdater(context, session.updaterPk);
     if (result.error) {
       return result;
@@ -259,7 +259,7 @@ function createHandlers({
       }
 
       if (isSessionFinalized(session)) {
-        throw new Error('Session finalized');
+        throw new Error(`Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`);
       }
 
       const { userDid, userPk, action, challenge, claims } = await authenticator.verify(body, locale);

@@ -46,10 +46,7 @@ export default function useSession({
   const existingSession = useMemo(() => parseExistingSession(), []);
 
   const [cancelCount, setCancelCount] = useState(0);
-  const cancel = () => setCancelCount((counter) => counter + 1);
-
   const [retryCount, setRetryCount] = useState(0);
-  const generate = () => setRetryCount((counter) => counter + 1);
 
   const _onComplete = async (...args) => {
     if (autoConnect && state.context.currentConnected) {
@@ -93,6 +90,15 @@ export default function useSession({
 
   const { machine, deepLink, sessionId } = session;
   const [state, send, service] = useMachine(machine);
+
+  const cancel = () => {
+    send({ type: 'CANCEL' });
+    setCancelCount((counter) => counter + 1);
+  };
+
+  const generate = () => {
+    setRetryCount((counter) => counter + 1);
+  };
 
   // 每次 cancel 操作时计数器 +1 => 重新生成 token
   useEffect(() => {
