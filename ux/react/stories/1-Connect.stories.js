@@ -30,7 +30,6 @@ const makeConnectProps = (session, props) => {
         },
         session
       ),
-      action: 'login',
       prefix: '',
       messages: {
         title: 'My Action Name',
@@ -177,7 +176,6 @@ storiesOf('DID-Connect/Connect', module)
     return (
       <TestContainer width={720} height={780} resize="true">
         <Connect
-          action="login"
           prefix=""
           checkFn={createFakeCheckFn('default')}
           onClose={action('login.close')}
@@ -202,7 +200,6 @@ storiesOf('DID-Connect/Connect', module)
         <Connect
           popup
           open={open}
-          action="login"
           prefix=""
           checkFn={createFakeCheckFn('default')}
           onClose={handleClose}
@@ -219,7 +216,6 @@ storiesOf('DID-Connect/Connect', module)
       <Connect
         popup
         open
-        action="login"
         prefix=""
         checkInterval={500}
         checkFn={createFakeCheckFn('interval')}
@@ -235,7 +231,6 @@ storiesOf('DID-Connect/Connect', module)
       <Connect
         popup
         open
-        action="login"
         prefix=""
         checkInterval={2000}
         checkTimeout={4000}
@@ -252,7 +247,6 @@ storiesOf('DID-Connect/Connect', module)
       <Connect
         popup
         open
-        action="error"
         prefix=""
         checkFn={createFakeCheckFn('error')}
         onClose={action('login.close')}
@@ -267,7 +261,6 @@ storiesOf('DID-Connect/Connect', module)
       <Connect
         popup
         open
-        action="login"
         prefix=""
         checkFn={createFakeCheckFn('login')}
         onClose={action('login.close')}
@@ -304,7 +297,6 @@ storiesOf('DID-Connect/Connect', module)
           <Connect
             popup
             open={open}
-            action="login"
             prefix=""
             locale={locale}
             checkFn={createFakeCheckFn('login', 1000)}
