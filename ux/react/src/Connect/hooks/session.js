@@ -31,16 +31,19 @@ const parseExistingSession = () => {
 const noop = () => null;
 
 export default function useSession({
-  // FIXME: timeout does not work now
-  // timeout,
   prefix,
-  onError,
   onCreate = noop,
   onConnect,
   onApprove,
   onComplete = noop,
+  onTimeout = noop,
+  onReject = noop,
+  onCancel = noop,
+  onError = noop,
   baseUrl,
   autoConnect = true,
+  // FIXME: timeout does not work now
+  // timeout,
 }) {
   const browser = useBrowser();
   const existingSession = useMemo(() => parseExistingSession(), []);
@@ -67,6 +70,9 @@ export default function useSession({
         onConnect,
         onApprove,
         onComplete: _onComplete,
+        onTimeout,
+        onReject,
+        onCancel,
         onError,
 
         // - autoConnect 请求参数用于控制服务端是否给钱包应用发送自动连接通知
@@ -77,10 +83,6 @@ export default function useSession({
         //   (防止 native 钱包收到通知自动唤起 auth 窗口)
         autoConnect: autoConnect && !browser.wallet && !cancelCount && Cookie.get('connected_wallet_os') !== 'web',
 
-        // onStart: noop,
-        // onReject: noop,
-        // onCancel: noop,
-        // onTimeout: noop,
         // timeout: {
         //   WALLET_SCAN_TIMEOUT: 10000,
         // },

@@ -3,8 +3,6 @@ import styled from 'styled-components';
 import Box from '@mui/material/Box';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import LocaleSelector from '@arcblock/ux/lib/Locale/selector';
-import { LocaleProvider } from '@arcblock/ux/lib/Locale/context';
 
 import Connect from '../src/Connect';
 import { BrowserEnvContext } from '../src/Connect/contexts/browser';
@@ -12,8 +10,17 @@ import { messages } from './util';
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout));
+
+// TODO: deploy this to staging server
 const baseUrl = 'https://did-connect-relay-server-vwb-192-168-123-127.ip.abtnet.io';
 
+const onStart = action('onStart');
+const onClose = action('onClose');
+const onError = action('onError');
+const onComplete = action('onComplete');
+const onCancel = action('onCancel');
+const onReject = action('onReject');
+const onTimeout = action('onTimeout');
 const onCreate = async (ctx, e) => {
   action('onCreate')(ctx, e);
   await sleep(1000);
@@ -39,21 +46,26 @@ const onApprove = async (ctx, e) => {
 /**
  * stories
  */
-storiesOf('DID-Connect/Connect2', module)
+storiesOf('DID-Connect/Examples', module)
   .addParameters({
     readme: {
       sidebar: '<!-- PROPS -->',
     },
   })
-  .add('api-mocking/default', () => {
+  .add('LifeCycle Callbacks', () => {
     return (
       <TestContainer width={720} height={780} resize="true">
         <Connect
-          onClose={action('login.close')}
+          onClose={onClose}
+          onStart={onStart}
           onCreate={onCreate}
           onConnect={onConnect}
           onApprove={onApprove}
-          onComplete={action('onComplete')}
+          onComplete={onComplete}
+          onReject={onReject}
+          onCancel={onCancel}
+          onTimeout={onTimeout}
+          onError={onError}
           messages={messages}
           webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
           baseUrl={baseUrl}
@@ -61,7 +73,7 @@ storiesOf('DID-Connect/Connect2', module)
       </TestContainer>
     );
   })
-  .add('api-mocking/popup', () => {
+  .add('Request Profile', () => {
     const [open, setOpen] = React.useState(false);
     const handleClose = () => {
       action('login.close');
@@ -77,7 +89,12 @@ storiesOf('DID-Connect/Connect2', module)
           open={open}
           onClose={handleClose}
           onConnect={onConnect}
-          onApprove={action('login.success')}
+          onApprove={onApprove}
+          onComplete={onComplete}
+          onReject={onReject}
+          onCancel={onCancel}
+          onTimeout={onTimeout}
+          onError={onError}
           messages={messages}
           webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
           dialogStyle={{ height: 800 }}
@@ -86,7 +103,7 @@ storiesOf('DID-Connect/Connect2', module)
       </TestContainer>
     );
   })
-  .add('api-mocking/timeout 4000', () => (
+  .add('Request NFT', () => (
     <TestContainer width={720} height={780}>
       <Connect
         popup
@@ -101,7 +118,7 @@ storiesOf('DID-Connect/Connect2', module)
       />
     </TestContainer>
   ))
-  .add('api-mocking/throw error', () => (
+  .add('Request Verifiable Credential', () => (
     <TestContainer width={720} height={780}>
       <Connect
         popup
@@ -115,7 +132,7 @@ storiesOf('DID-Connect/Connect2', module)
       />
     </TestContainer>
   ))
-  .add('api-mocking/long messages', () => (
+  .add('Request Text Signature', () => (
     <TestContainer width={720} height={780}>
       <Connect
         popup
@@ -134,40 +151,101 @@ storiesOf('DID-Connect/Connect2', module)
       />
     </TestContainer>
   ))
-  .add('api-mocking/i18n', () => {
-    const [locale, setLocale] = React.useState('en');
-    const [open, setOpen] = React.useState(false);
-    const handleLocaleChange = (newLocale) => {
-      setLocale(newLocale);
-    };
-    const handleClose = () => {
-      action('login.close');
-      setOpen(false);
-    };
-    return (
-      <LocaleProvider locale={locale} translations={{}}>
-        <TestContainer width={720} height={780}>
-          <Box display="flex" alignItems="center">
-            <button type="button" onClick={() => setOpen(true)} style={{ marginRight: 8 }}>
-              Open
-            </button>
-            <LocaleSelector onChange={handleLocaleChange} />
-          </Box>
-          <Connect
-            popup
-            open={open}
-            locale={locale}
-            onConnect={onConnect}
-            onClose={handleClose}
-            onApprove={action('login.success')}
-            messages={messages}
-            webWalletUrl={`${window.location.protocol}//wallet.staging.arcblock.io`}
-            baseUrl={baseUrl}
-          />
-        </TestContainer>
-      </LocaleProvider>
-    );
-  });
+  .add('Request Digest Signature', () => (
+    <TestContainer width={720} height={780}>
+      <Connect
+        popup
+        open
+        onClose={action('login.close')}
+        onConnect={onConnect}
+        onApprove={action('login.success')}
+        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+        baseUrl={baseUrl}
+        messages={{
+          title: 'login',
+          scan: 'Scan QR code with DID Wallet'.repeat(2),
+          confirm: 'Confirm login on your DID Wallet'.repeat(2),
+          success: 'You have successfully signed in!'.repeat(2),
+        }}
+      />
+    </TestContainer>
+  ))
+  .add('Request Transaction Signature', () => (
+    <TestContainer width={720} height={780}>
+      <Connect
+        popup
+        open
+        onClose={action('login.close')}
+        onConnect={onConnect}
+        onApprove={action('login.success')}
+        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+        baseUrl={baseUrl}
+        messages={{
+          title: 'login',
+          scan: 'Scan QR code with DID Wallet'.repeat(2),
+          confirm: 'Confirm login on your DID Wallet'.repeat(2),
+          success: 'You have successfully signed in!'.repeat(2),
+        }}
+      />
+    </TestContainer>
+  ))
+  .add('Request Ethereum Signature', () => (
+    <TestContainer width={720} height={780}>
+      <Connect
+        popup
+        open
+        onClose={action('login.close')}
+        onConnect={onConnect}
+        onApprove={action('login.success')}
+        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+        baseUrl={baseUrl}
+        messages={{
+          title: 'login',
+          scan: 'Scan QR code with DID Wallet'.repeat(2),
+          confirm: 'Confirm login on your DID Wallet'.repeat(2),
+          success: 'You have successfully signed in!'.repeat(2),
+        }}
+      />
+    </TestContainer>
+  ))
+  .add('Request Multiple Claims', () => (
+    <TestContainer width={720} height={780}>
+      <Connect
+        popup
+        open
+        onClose={action('login.close')}
+        onConnect={onConnect}
+        onApprove={action('login.success')}
+        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+        baseUrl={baseUrl}
+        messages={{
+          title: 'login',
+          scan: 'Scan QR code with DID Wallet'.repeat(2),
+          confirm: 'Confirm login on your DID Wallet'.repeat(2),
+          success: 'You have successfully signed in!'.repeat(2),
+        }}
+      />
+    </TestContainer>
+  ))
+  .add('Multiple Workflows', () => (
+    <TestContainer width={720} height={780}>
+      <Connect
+        popup
+        open
+        onClose={action('login.close')}
+        onConnect={onConnect}
+        onApprove={action('login.success')}
+        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+        baseUrl={baseUrl}
+        messages={{
+          title: 'login',
+          scan: 'Scan QR code with DID Wallet'.repeat(2),
+          confirm: 'Confirm login on your DID Wallet'.repeat(2),
+          success: 'You have successfully signed in!'.repeat(2),
+        }}
+      />
+    </TestContainer>
+  ));
 
 // 模拟最常见的 PC 的情况, 该环境会显示 connect with web wallet 和 scan with mobile wallet
 const defaultBrowserEnv = { isWalletWebview: false, isMobile: false };

@@ -52,6 +52,8 @@ class SessionStorage extends EventEmitter {
     const { ttl = 8 * 1000 } = this.options;
     return new Promise((resolve) => {
       setTimeout(() => {
+        // eslint-disable-next-line no-console
+        console.info('delete finalized session', sessionId);
         resolve(this.delete(sessionId));
       }, ttl);
     });

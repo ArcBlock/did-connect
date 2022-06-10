@@ -178,6 +178,7 @@ const createStateMachine = ({
     await onReject(...args);
   };
 
+  // FIXME: report timeout events to server
   const _onTimeout = async (...args) => {
     await onTimeout(...args);
   };

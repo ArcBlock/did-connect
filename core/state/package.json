@@ -47,10 +47,8 @@
   },
   "homepage": "https://github.com/ArcBlock/did-connect",
   "keywords": [
-    "blockchain",
-    "arcblock",
-    "sdk",
-    "nodejs"
+    "did",
+    "web3"
   ],
   "license": "Apache-2.0",
   "main": "./lib/index.js",
