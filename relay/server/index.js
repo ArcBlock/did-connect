@@ -17,6 +17,7 @@ const authenticator = new Authenticator({
     description: env.appDescription,
     icon: 'https://arcblock.oss-cn-beijing.aliyuncs.com/images/wallet-round.png',
     link: env.appUrl,
+    // FIXME: following props should be wrapped in @blocklet/sdk
     updateSubEndpoint: true,
     subscriptionEndpoint: '/api/websocket',
     nodeDid: process.env.ABT_NODE_DID,
@@ -33,6 +34,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 attachHandlers(app, handlers);
+
+app.use((req, res) => {
+  res.send('DID Connect Relay server is running');
+});
 
 const port = parseInt(process.env.BLOCKLET_PORT, 10) || 3000;
 const server = app.listen(port, (err) => {

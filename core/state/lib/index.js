@@ -9,15 +9,19 @@ const { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, get
 const { createConnection, destroyConnections } = require('./socket');
 
 const noop = () => undefined;
+
+const DEFAULT_APP_TIMEOUT = 20 * 1000;
+const DEFAULT_WALLET_TIMEOUT = 60 * 1000;
+
 // eslint-disable-next-line no-console
 const DEFAULT_TIMEOUT = {
-  START_TIMEOUT: 10 * 1000, // webapp-callback
-  CREATE_TIMEOUT: 10 * 1000, // relay-server
-  WALLET_SCAN_TIMEOUT: 60 * 1000, // user-wallet
-  WALLET_CONNECT_TIMEOUT: 60 * 1000, // user-wallet
-  WALLET_APPROVE_TIMEOUT: 60 * 1000, // user-wallet
-  APP_CONNECT_TIMEOUT: 20 * 1000, // webapp-callback
-  APP_APPROVE_TIMEOUT: 20 * 1000, // webapp-callback
+  START_TIMEOUT: DEFAULT_APP_TIMEOUT, // webapp-callback
+  CREATE_TIMEOUT: DEFAULT_APP_TIMEOUT, // relay-server
+  WALLET_SCAN_TIMEOUT: DEFAULT_WALLET_TIMEOUT, // user-wallet
+  WALLET_CONNECT_TIMEOUT: DEFAULT_WALLET_TIMEOUT, // user-wallet
+  WALLET_APPROVE_TIMEOUT: DEFAULT_WALLET_TIMEOUT, // user-wallet
+  APP_CONNECT_TIMEOUT: DEFAULT_APP_TIMEOUT, // webapp-callback
+  APP_APPROVE_TIMEOUT: DEFAULT_APP_TIMEOUT, // webapp-callback
 };
 
 class CustomError extends Error {
@@ -30,28 +34,6 @@ class CustomError extends Error {
   }
 }
 
-/**
- * Create a new did connect session state machine
- *
- * @param {object} {
- *   baseUrl = '/api/connect/relay',
- *   initial = 'start', // we maybe reusing existing session
- *   sessionId, // we maybe reusing existing session
- *   strategy = 'default',
- *   dispatch, // handle events emitted from websocket relay
- *   onStart = noop,
- *   onCreate = noop,
- *   onConnect,
- *   onApprove,
- *   onComplete = noop,
- *   onReject = noop,
- *   onCancel = noop,
- *   onTimeout = noop,
- *   onError = noop,
- *   timeout = DEFAULT_TIMEOUT,
- * }
- * @return {object} xstate machine instance
- */
 const createStateMachine = ({
   baseUrl = '/api/connect/relay',
   initial = 'start', // we maybe reusing existing session
@@ -68,6 +50,7 @@ const createStateMachine = ({
   onTimeout = noop,
   onError = noop,
   autoConnect = true,
+  onlyConnect = false,
   timeout = DEFAULT_TIMEOUT,
 }) => {
   if (sessionId && sessionId.length !== 21) {
@@ -130,7 +113,7 @@ const createStateMachine = ({
       // Create new session
       session = await doSignedRequest({
         url: sessionApiUrl,
-        data: { sessionId: sid, updaterPk: pk, requestedClaims, autoConnect, authUrl: authApiUrl },
+        data: { sessionId: sid, updaterPk: pk, requestedClaims, autoConnect, onlyConnect, authUrl: authApiUrl },
         wallet: updater,
         method: 'POST',
       });
@@ -328,6 +311,7 @@ const createStateMachine = ({
             },
           },
           on: {
+            WALLET_APPROVE: { target: 'walletApproved' },
             APP_CANCELED: { target: 'canceled' },
             ERROR: { target: 'error' },
             CANCEL: { target: 'canceled' },

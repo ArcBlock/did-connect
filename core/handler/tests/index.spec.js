@@ -973,6 +973,55 @@ describe('RelayAdapterExpress', () => {
     client.off(sessionId);
   });
 
+  test('should complete session when in onlyConnect mode', async () => {
+    let session = null;
+    let res = null;
+    let authInfo = null;
+
+    const statusHistory = [];
+    const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
+
+    client.on(sessionId, async (e) => {
+      expect(e.status).toBeTruthy();
+      statusHistory.push(e.status);
+
+      if (e.status === 'walletApproved') {
+        session = await updateSession({
+          approveResults: [{ successMessage: `you connected account ${e.responseClaims[0].userDid}` }],
+        });
+      }
+    });
+
+    // 1. create session
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, onlyConnect: true }, updater);
+    expect(session.sessionId).toEqual(sessionId);
+    expect(session.onlyConnect).toEqual(true);
+
+    // 2. simulate scan
+    res = await api.get(getAuthUrl(authUrl));
+    expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+    expect(authInfo.requestedClaims[0].supervised).toEqual(true);
+    expect(authInfo.url).toEqual(authUrl);
+
+    // 3. submit auth principal
+    res = await api.post(getAuthUrl(authInfo.url), {
+      userPk: toBase58(user.publicKey),
+      userInfo: Jwt.sign(user.address, user.secretKey, {
+        requestedClaims: [],
+        challenge: authInfo.challenge,
+      }),
+    });
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.status).toEqual('ok');
+    expect(authInfo.successMessage).toMatch('you connected account');
+
+    // 7. assert status history
+    expect(statusHistory).toEqual(['walletScanned', 'walletConnected', 'walletApproved', 'appApproved', 'completed']);
+    client.off(sessionId);
+  });
+
   test('should session create/update work and throw as expected', async () => {
     let session = null;
     let res = null;

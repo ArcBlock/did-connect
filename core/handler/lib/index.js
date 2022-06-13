@@ -1,4 +1,5 @@
 const pick = require('lodash/pick');
+const isEmpty = require('lodash/isEmpty');
 const waitFor = require('p-wait-for');
 const Jwt = require('@arcblock/jwt');
 const objectHash = require('object-hash');
@@ -98,7 +99,15 @@ function createHandlers({
       return { error: 'Invalid context', code: 'CONTEXT_INVALID' };
     }
 
-    const { sessionId, updaterPk, strategy = 'default', authUrl, requestedClaims = [] } = context.body;
+    const {
+      sessionId,
+      updaterPk,
+      strategy = 'default',
+      authUrl,
+      autoConnect,
+      onlyConnect,
+      requestedClaims = [],
+    } = context.body;
 
     if (sessionId.length !== 21) {
       return { error: 'Invalid sessionId', code: 'SESSION_ID_INVALID' };
@@ -115,6 +124,8 @@ function createHandlers({
       strategy,
       authUrl,
       challenge: getStepChallenge(),
+      autoConnect,
+      onlyConnect,
       // FIXME: app link should be updated according to blocklet env?
       appInfo: await authenticator.getAppInfo({ ...context, baseUrl: new URL(authUrl).origin }),
       previousConnected: context.previousConnected,
@@ -184,7 +195,7 @@ function createHandlers({
         throw new CustomError('CONTEXT_INVALID', 'Invalid context');
       }
 
-      const { strategy, previousConnected, currentStep } = session;
+      const { strategy, previousConnected, onlyConnect, currentStep } = session;
       if (storage.isFinalized(session.status)) {
         throw new CustomError(
           'SESSION_FINALIZED',
@@ -203,7 +214,7 @@ function createHandlers({
               type: 'authPrincipal',
               description: 'select the principal to be used for authentication',
               target: isValid(strategy) ? strategy : '',
-              supervised: !!previousConnected,
+              supervised: onlyConnect || !!previousConnected,
             },
           ],
           context
@@ -258,7 +269,6 @@ function createHandlers({
       locale
     );
 
-  // FIXME: authPrincipal only connect is not supported yet.
   const handleClaimResponse = async (context) => {
     const { sessionId, session, body, locale, didwallet } = context;
     try {
@@ -286,12 +296,38 @@ function createHandlers({
         throw new Error(errors.challengeMismatch[locale]);
       }
 
+      const handleWalletApprove = async () => {
+        await storage.update(sessionId, {
+          status: 'walletApproved',
+          responseClaims: [...session.responseClaims, claims],
+        });
+        wsServer.broadcast(sessionId, {
+          status: 'walletApproved',
+          responseClaims: isEmpty(claims) ? [session.currentConnected] : claims,
+          currentStep: session.currentStep,
+        });
+        newSession = await waitForAppApprove(sessionId, locale);
+        await storage.update(sessionId, { status: 'appApproved' });
+        wsServer.broadcast(sessionId, {
+          status: 'appApproved',
+          approveResult: newSession.approveResults[session.currentStep],
+        });
+      };
+
       // If wallet is submitting authPrincipal claim,
       // move to walletConnected and wait for appConnected
       // once appConnected we return the first claim
       if (session.status === 'walletScanned') {
         await storage.update(sessionId, { status: 'walletConnected', currentConnected: { userDid, userPk } });
         wsServer.broadcast(sessionId, { status: 'walletConnected', userDid, userPk, wallet: didwallet });
+
+        // If this is a connect-only session, end it: walletApprove --> appApprove --> complete
+        if (session.onlyConnect) {
+          await handleWalletApprove();
+          await storage.update(sessionId, { status: 'completed' });
+          wsServer.broadcast(sessionId, { status: 'completed' });
+          return signJson(newSession.approveResults[session.currentStep], context);
+        }
 
         // If our claims are populated already, move to appConnected without waiting
         if (session.requestedClaims.length > 0) {
@@ -306,21 +342,7 @@ function createHandlers({
       }
 
       // Move to walletApproved state and wait for appApproved
-      await storage.update(sessionId, {
-        status: 'walletApproved',
-        responseClaims: [...session.responseClaims, claims],
-      });
-      wsServer.broadcast(sessionId, {
-        status: 'walletApproved',
-        responseClaims: claims,
-        currentStep: session.currentStep,
-      });
-      newSession = await waitForAppApprove(sessionId, locale);
-      await storage.update(sessionId, { status: 'appApproved' });
-      wsServer.broadcast(sessionId, {
-        status: 'appApproved',
-        approveResult: newSession.approveResults[session.currentStep],
-      });
+      await handleWalletApprove();
 
       // Return result if we've done
       const isDone = session.currentStep === session.requestedClaims.length - 1;

@@ -42,6 +42,8 @@ export default function useSession({
   onError = noop,
   baseUrl,
   autoConnect = true,
+  onlyConnect = false,
+  // FIXME: support optional saveConnect
   // FIXME: timeout does not work now
   // timeout,
 }) {
@@ -82,6 +84,9 @@ export default function useSession({
         // - 如果上次使用了 web wallet 进行连接, 则 autoConnect 请求参数 为 false (web wallet 并非像 native 钱包一样基于通知实现自动连接)
         //   (防止 native 钱包收到通知自动唤起 auth 窗口)
         autoConnect: autoConnect && !browser.wallet && !cancelCount && Cookie.get('connected_wallet_os') !== 'web',
+
+        // do supervised authPrincipal and end the session
+        onlyConnect,
 
         // timeout: {
         //   WALLET_SCAN_TIMEOUT: 10000,

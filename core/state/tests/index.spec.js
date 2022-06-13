@@ -75,7 +75,47 @@ describe('StateMachine', () => {
     expect(() => createMachine({ dispatch: noop, onApprove: noop })).toThrow(/Invalid onConnect/);
   });
 
-  const runSingleTest = async ({ onConnect }) => {
+  const defaultConnectHandler = (authInfo) => {
+    expect(authInfo.requestedClaims[0].type).toEqual('profile');
+    const claims = authInfo.requestedClaims;
+    const { challenge } = authInfo;
+    const nextUrl = authInfo.url;
+    return [claims, challenge, nextUrl];
+  };
+
+  const defaultApproveHandler = (ctx, e) => {
+    return `approved with result ${e.responseClaims[0].fullName}`;
+  };
+
+  const defaultCompleteHandler = (ctx) => {
+    expect(ctx.requestedClaims.length).toBe(1);
+    expect(ctx.responseClaims.length).toBe(1);
+    expect(ctx.responseClaims[0].length).toBe(1);
+    expect(ctx.approveResults.length).toBe(1);
+
+    expect(ctx.requestedClaims[0].type).toEqual('profile');
+    expect(ctx.responseClaims[0][0].type).toEqual('profile');
+    expect(ctx.approveResults[0]).toEqual(`approved with result ${ctx.responseClaims[0][0].fullName}`);
+  };
+
+  const runSingleTest = async ({
+    sessionProps = {},
+    handleWalletConnect = defaultConnectHandler,
+    onConnect,
+    onApprove = defaultApproveHandler,
+    onComplete = defaultCompleteHandler,
+    expectedStatusHistory = [
+      'start',
+      'loading',
+      'created',
+      'walletScanned',
+      'walletConnected',
+      'appConnected',
+      'walletApproved',
+      'appApproved',
+      'completed',
+    ],
+  }) => {
     let res;
     let authInfo;
 
@@ -84,20 +124,10 @@ describe('StateMachine', () => {
     const { machine } = createMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
+      ...sessionProps,
       onConnect,
-      onApprove: (ctx, e) => {
-        return `approved with result ${e.responseClaims[0].fullName}`;
-      },
-      onComplete: (ctx) => {
-        expect(ctx.requestedClaims.length).toBe(1);
-        expect(ctx.responseClaims.length).toBe(1);
-        expect(ctx.responseClaims[0].length).toBe(1);
-        expect(ctx.approveResults.length).toBe(1);
-
-        expect(ctx.requestedClaims[0].type).toEqual('profile');
-        expect(ctx.responseClaims[0][0].type).toEqual('profile');
-        expect(ctx.approveResults[0]).toEqual(`approved with result ${ctx.responseClaims[0][0].fullName}`);
-      },
+      onApprove,
+      onComplete,
     });
 
     const initial = machine.initialState;
@@ -135,38 +165,27 @@ describe('StateMachine', () => {
           }),
         });
         authInfo = Jwt.decode(res.data.authInfo);
-        expect(authInfo.requestedClaims[0].type).toEqual('profile');
-        claims = authInfo.requestedClaims;
-        challenge = authInfo.challenge;
-        nextUrl = authInfo.url;
+        [claims, challenge, nextUrl] = await handleWalletConnect(authInfo);
       }
 
-      res = await axios.post(nextUrl, {
-        userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
-          requestedClaims: [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
-          challenge,
-        }),
-      });
-      authInfo = Jwt.decode(res.data.authInfo);
-      expect(authInfo.status).toEqual('ok');
+      if (nextUrl) {
+        res = await axios.post(nextUrl, {
+          userPk: toBase58(user.publicKey),
+          userInfo: Jwt.sign(user.address, user.secretKey, {
+            requestedClaims: [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
+            challenge,
+          }),
+        });
+        authInfo = Jwt.decode(res.data.authInfo);
+        expect(authInfo.status).toEqual('ok');
+      }
     } catch (err) {
       console.error(err);
       expect(err).toBeFalsy();
     }
 
     await waitFor(() => last(stateHistory) === 'completed');
-    expect(stateHistory).toEqual([
-      'start',
-      'loading',
-      'created',
-      'walletScanned',
-      'walletConnected',
-      'appConnected',
-      'walletApproved',
-      'appApproved',
-      'completed',
-    ]);
+    expect(stateHistory).toEqual(expectedStatusHistory);
     service.stop();
   };
 
@@ -182,7 +201,7 @@ describe('StateMachine', () => {
         ];
       },
     });
-  }, 10000);
+  });
 
   test('should work as expected: 1 claim + 1 step + pre-populate', async () => {
     await runSingleTest({
@@ -194,7 +213,47 @@ describe('StateMachine', () => {
         },
       ],
     });
-  }, 10000);
+  });
+
+  test('should work as expected: connect only', async () => {
+    await runSingleTest({
+      sessionProps: { onlyConnect: true },
+      handleWalletConnect: (authInfo) => {
+        expect(authInfo.status).toEqual('ok');
+        expect(authInfo.successMessage).toMatch('you connected account');
+        return [];
+      },
+      onConnect: noop,
+      onApprove: (ctx, e) => {
+        return { successMessage: `you connected account ${e.responseClaims[0].userDid}` };
+      },
+      onComplete: noop,
+      expectedStatusHistory: [
+        'start',
+        'loading',
+        'created',
+        'walletScanned',
+        'walletConnected',
+        'walletApproved',
+        'appApproved',
+        'completed',
+      ],
+    });
+  });
+
+  test('should work as expected: connect only', async () => {
+    await runSingleTest({
+      onConnect: (ctx, e) => {
+        return [
+          {
+            type: 'profile',
+            fields: ['fullName', 'email', 'avatar'],
+            description: `Please give me your profile for ${e.currentConnected.userDid}`,
+          },
+        ];
+      },
+    });
+  });
 
   const runMultiStepTest = async ({ onConnect }) => {
     let res;
@@ -340,7 +399,7 @@ describe('StateMachine', () => {
         ];
       },
     });
-  }, 10000);
+  });
 
   test('should work as expected: 1 claim + 2 steps + pre-populated', async () => {
     await runMultiStepTest({
@@ -357,7 +416,7 @@ describe('StateMachine', () => {
         },
       ],
     });
-  }, 10000);
+  });
 
   test('should abort session when challenge mismatch', async () => {
     let res;

@@ -53,6 +53,7 @@ const session = Joi.object({
     .required(),
   challenge: Joi.string().required(),
   appInfo,
+  onlyConnect: Joi.boolean().default(false),
   autoConnect: Joi.boolean().default(true),
   previousConnected: Joi.object({
     userDid: Joi.DID().required(),
@@ -77,7 +78,7 @@ const session = Joi.object({
       ...Object.values(claims)
     )
     .default([]),
-  responseClaims: Joi.array().items(Joi.array().items(Joi.any()).min(1)).default([]),
+  responseClaims: Joi.array().items(Joi.array().items(Joi.any()).min(0)).default([]),
   approveResults: Joi.array().items(Joi.any()).default([]),
   error: Joi.string().optional().allow(''),
 }).options({ stripUnknown: true, noDefaults: false });
