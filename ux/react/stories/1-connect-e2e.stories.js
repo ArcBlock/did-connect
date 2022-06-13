@@ -14,6 +14,7 @@ const sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout)
 // TODO: deploy this to staging server
 const baseUrl = 'https://did-connect-relay-server-vwb-192-168-123-127.ip.abtnet.io';
 
+const noop = () => undefined;
 const onStart = action('onStart');
 const onClose = action('onClose');
 const onError = action('onError');
@@ -66,7 +67,39 @@ storiesOf('DID-Connect/Examples', module)
           onCancel={onCancel}
           onTimeout={onTimeout}
           onError={onError}
-          messages={messages}
+          messages={{
+            title: 'Profile Required',
+            scan: 'Connect your DID Wallet to profile profile',
+            confirm: 'Confirm login on your DID Wallet',
+            success: 'You profile accepted',
+          }}
+          webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+          baseUrl={baseUrl}
+        />
+      </TestContainer>
+    );
+  })
+  .add('Request DID Only', () => {
+    return (
+      <TestContainer width={720} height={780} resize="true">
+        <Connect
+          onlyConnect
+          onClose={onClose}
+          onStart={onStart}
+          onCreate={onCreate}
+          onConnect={noop}
+          onApprove={onApprove}
+          onComplete={onComplete}
+          onReject={onReject}
+          onCancel={onCancel}
+          onTimeout={onTimeout}
+          onError={onError}
+          messages={{
+            title: 'Connect DID Wallet',
+            scan: 'You will always see the app connection screen on DID Wallet when scan follow qrcode',
+            confirm: 'Confirm operation on your DID Wallet',
+            success: 'You have successfully connected!',
+          }}
           webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
           baseUrl={baseUrl}
         />

@@ -47,6 +47,7 @@ export default function useSession({
   // FIXME: timeout does not work now
   // timeout,
 }) {
+  console.log('useSession', { autoConnect, onlyConnect });
   const browser = useBrowser();
   const existingSession = useMemo(() => parseExistingSession(), []);
 

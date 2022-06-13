@@ -49,7 +49,6 @@ AppIcon.propTypes = {
 // FIXME: reuse existing session is not working
 export default function BasicConnect({
   locale,
-  tokenKey,
   messages,
   qrcodeSize,
   showDownload,
@@ -81,29 +80,7 @@ export default function BasicConnect({
   const [isWebWalletOpened, setWebWalletOpened] = useState(false);
   const [cancelCounter, setCancelCounter] = useState(0);
 
-  const getDeepLink = () => {
-    let link = deepLink;
-
-    if (isMobile) {
-      link = deepLink.replace(/^https?:\/\//, 'abt://');
-
-      let callbackUrl = window.location.href;
-      if (callbackUrl.indexOf('?') > 0) {
-        callbackUrl += `&${tokenKey}=${context.sessionId}`;
-      } else {
-        callbackUrl += `?${tokenKey}=${context.sessionId}`;
-      }
-
-      callbackUrl = encodeURIComponent(callbackUrl);
-      if (deepLink.indexOf('?') > 0) {
-        link += `&callback=${callbackUrl}&callback_delay=1500`;
-      } else {
-        link += `?callback=${callbackUrl}&callback_delay=1500`;
-      }
-    }
-
-    return link;
-  };
+  const getDeepLink = () => (isMobile ? deepLink.replace(/^https?:\/\//, 'abt://') : deepLink);
 
   const handleRetry = () => {
     onRecreateSession();
@@ -331,7 +308,6 @@ export default function BasicConnect({
 
 BasicConnect.propTypes = {
   locale: PropTypes.oneOf(['en', 'zh']),
-  tokenKey: PropTypes.string,
   qrcodeSize: PropTypes.number,
   webWalletUrl: PropTypes.string,
   messages: PropTypes.shape({
@@ -362,7 +338,6 @@ BasicConnect.propTypes = {
 
 BasicConnect.defaultProps = {
   locale: 'en',
-  tokenKey: 'sid',
   qrcodeSize: 184,
   showDownload: true,
   webWalletUrl: '',

@@ -26,10 +26,10 @@ function Connect({
   prefix,
   timeout,
   locale,
-  tokenKey,
-  encKey,
+  webWalletUrl,
   baseUrl,
   autoConnect,
+  onlyConnect,
   ...rest
 }) {
   const { session, generate, cancel } = useSession({
@@ -47,6 +47,7 @@ function Connect({
     onClose,
     locale,
     autoConnect,
+    onlyConnect,
   });
 
   const connectProps = {
@@ -55,8 +56,7 @@ function Connect({
     generate,
     cancel,
     locale,
-    tokenKey,
-    encKey,
+    webWalletUrl,
   };
 
   return (
@@ -79,10 +79,10 @@ Connect.propTypes = {
   prefix: PropTypes.string,
   timeout: PropTypes.number,
   locale: PropTypes.oneOf(['en', 'zh']),
-  tokenKey: PropTypes.string,
-  encKey: PropTypes.string,
+  webWalletUrl: PropTypes.string,
   baseUrl: PropTypes.string,
   autoConnect: PropTypes.bool,
+  onlyConnect: PropTypes.bool,
 };
 
 const noop = () => null;
@@ -98,10 +98,10 @@ Connect.defaultProps = {
   // TODO: split this timeout or calculate
   timeout: 60000, // 1 minute
   locale: 'en',
-  tokenKey: '_t_',
-  encKey: '_ek_',
+  webWalletUrl: '',
   baseUrl: '',
   autoConnect: true,
+  onlyConnect: false,
 };
 
 export default withWebWalletSWKeeper(withDialog(Connect));
