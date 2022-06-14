@@ -5,10 +5,10 @@ import Typography from '@mui/material/Typography';
 import Button from '@arcblock/ux/lib/Button';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { toBase58 } from '@ocap/util';
 
 import Connect from '../src/Connect';
 import { BrowserEnvContext } from '../src/Connect/contexts/browser';
-import { messages } from './util';
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout));
@@ -320,44 +320,130 @@ storiesOf('DID-Connect/Examples', module)
       </TestContainer>
     );
   })
-  .add('Request Text Signature', () => (
-    <TestContainer width={720} height={780}>
-      <Connect
-        popup
-        open
-        onClose={action('login.close')}
-        onConnect={onConnect}
-        onApprove={action('login.success')}
-        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
-        baseUrl={baseUrl}
-        messages={{
-          title: 'login',
-          scan: 'Scan QR code with DID Wallet'.repeat(2),
-          confirm: 'Confirm login on your DID Wallet'.repeat(2),
-          success: 'You have successfully signed in!'.repeat(2),
-        }}
-      />
-    </TestContainer>
-  ))
-  .add('Request Digest Signature', () => (
-    <TestContainer width={720} height={780}>
-      <Connect
-        popup
-        open
-        onClose={action('login.close')}
-        onConnect={onConnect}
-        onApprove={action('login.success')}
-        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
-        baseUrl={baseUrl}
-        messages={{
-          title: 'login',
-          scan: 'Scan QR code with DID Wallet'.repeat(2),
-          confirm: 'Confirm login on your DID Wallet'.repeat(2),
-          success: 'You have successfully signed in!'.repeat(2),
-        }}
-      />
-    </TestContainer>
-  ))
+  .add('Request Text Signature', () => {
+    const [open, setOpen] = useState(false);
+    const [message] = useState('Sign Random Text');
+    const [response, setResponse] = useState(null);
+    const handleClose = () => {
+      action('close');
+      setOpen(false);
+    };
+    const handleConnect = async (ctx, e) => {
+      action('onConnect')(ctx, e);
+      return [
+        {
+          type: 'signature',
+          typeUrl: 'mime:text/plain',
+          origin: toBase58('DID Connect is Awesome'),
+          description: 'Please sign the message',
+        },
+      ];
+    };
+
+    const handleApprove = async (ctx, e) => {
+      action('onApprove')(ctx, e);
+      setResponse(e);
+    };
+
+    const handleComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setOpen(false);
+    };
+
+    return (
+      <TestContainer height={780} resize="true">
+        <Button variant="contained" size="small" onClick={() => setOpen(true)}>
+          {message}
+        </Button>
+        {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
+        <Connect
+          popup
+          open={open}
+          onClose={handleClose}
+          onConnect={handleConnect}
+          onApprove={handleApprove}
+          onComplete={handleComplete}
+          onReject={onReject}
+          onCancel={onCancel}
+          onTimeout={onTimeout}
+          onError={onError}
+          messages={{
+            title: 'Signature Required',
+            scan: 'Please sign the message',
+            confirm: 'Confirm on your DID Wallet',
+            success: 'Sig accepted',
+          }}
+          webWalletUrl={webWalletUrl}
+          baseUrl={baseUrl}
+        />
+      </TestContainer>
+    );
+  })
+  .add('Request Digest Signature', () => {
+    const [open, setOpen] = useState(false);
+    const [message] = useState('Sign Digest for Data');
+    const [response, setResponse] = useState(null);
+    const handleClose = () => {
+      action('close');
+      setOpen(false);
+    };
+    const handleConnect = async (ctx, e) => {
+      action('onConnect')(ctx, e);
+      return [
+        {
+          type: 'signature',
+          typeUrl: 'fg:t:transaction',
+          description: 'Please provide passport issued by Blocklet Server(Staging)',
+        },
+      ];
+    };
+
+    const handleApprove = async (ctx, e) => {
+      action('onApprove')(ctx, e);
+      setResponse(e);
+    };
+
+    const handleComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setOpen(false);
+    };
+
+    return (
+      <TestContainer height={780} resize="true">
+        <Typography gutterBottom>
+          Please admin a passport vc from{' '}
+          <a href="https://node-dev-1.arcblock.io/admin/" target="_blank" rel="noreferrer">
+            node-dev-1.arcblock.io
+          </a>{' '}
+          before click following button.
+        </Typography>
+        <Button variant="contained" size="small" onClick={() => setOpen(true)}>
+          {message}
+        </Button>
+        {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
+        <Connect
+          popup
+          open={open}
+          onClose={handleClose}
+          onConnect={handleConnect}
+          onApprove={handleApprove}
+          onComplete={handleComplete}
+          onReject={onReject}
+          onCancel={onCancel}
+          onTimeout={onTimeout}
+          onError={onError}
+          messages={{
+            title: 'VC Required',
+            scan: 'Please provide a NFT obtained from https://node-dev-1.arcblock.io/admin/',
+            confirm: 'Confirm on your DID Wallet',
+            success: 'VC accepted',
+          }}
+          webWalletUrl={webWalletUrl}
+          baseUrl={baseUrl}
+        />
+      </TestContainer>
+    );
+  })
   .add('Request Transaction Signature', () => (
     <TestContainer width={720} height={780}>
       <Connect

@@ -2464,6 +2464,17 @@
     lodash "^4.17.21"
     utf8 "^3.0.0"
 
+"@ocap/util@^1.16.16":
+  version "1.16.16"
+  resolved "https://registry.yarnpkg.com/@ocap/util/-/util-1.16.16.tgz#a5b1a93dbe381093d99e7b00104b72ca35b5ca97"
+  integrity sha512-B0MuTCFxpqOpV9W5u2hLwYwByQc7cohqhjZE9H8tGYS7IJpBRHdbpMYNrgXWk0OiFpYt9PrU/V/c4tIgg14pmQ==
+  dependencies:
+    base64-url "^2.3.3"
+    bn.js "5.2.0"
+    bs58 "^5.0.0"
+    lodash "^4.17.21"
+    utf8 "^3.0.0"
+
 "@ocap/wallet@1.16.15", "@ocap/wallet@^1.16.15":
   version "1.16.15"
   resolved "https://registry.yarnpkg.com/@ocap/wallet/-/wallet-1.16.15.tgz#f9b5dcd8180142fc98be3b216335955199d3de12"
