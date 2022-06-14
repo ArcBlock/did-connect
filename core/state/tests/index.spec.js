@@ -104,6 +104,7 @@ describe('StateMachine', () => {
     onConnect,
     onApprove = defaultApproveHandler,
     onComplete = defaultCompleteHandler,
+    requestedClaims = [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
     expectedStatusHistory = [
       'start',
       'loading',
@@ -172,7 +173,7 @@ describe('StateMachine', () => {
         res = await axios.post(nextUrl, {
           userPk: toBase58(user.publicKey),
           userInfo: Jwt.sign(user.address, user.secretKey, {
-            requestedClaims: [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
+            requestedClaims,
             challenge,
           }),
         });
@@ -199,6 +200,43 @@ describe('StateMachine', () => {
             description: `Please give me your profile for ${e.userDid}`,
           },
         ];
+      },
+    });
+  });
+
+  test('should work as expected: multiple claims + 1 step', async () => {
+    await runSingleTest({
+      requestedClaims: [
+        { type: 'profile', fullName: 'test', email: 'test@arcblock.io' },
+        { type: 'asset', asset: 'zNKmwG9a6EnHJSuNuV3BMLy686yFmBDHuffE' },
+      ],
+      onConnect: (ctx, e) => {
+        return [
+          [
+            {
+              type: 'profile',
+              fields: ['fullName', 'email', 'avatar'],
+              description: `Please give me your profile for ${e.userDid}`,
+            },
+            {
+              type: 'asset',
+              filters: [{ trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'] }],
+              description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
+            },
+          ],
+        ];
+      },
+      onApprove: (ctx, e) => {
+        return {
+          successMessage: `you connected account ${e.responseClaims[0].userDid} and provided asset ${e.responseClaims[1].asset}`,
+        };
+      },
+      onComplete: (ctx) => {
+        expect(ctx.requestedClaims.length).toBe(1);
+        expect(ctx.requestedClaims[0].length).toBe(2);
+        expect(ctx.responseClaims.length).toBe(1);
+        expect(ctx.responseClaims[0].length).toBe(2);
+        expect(ctx.approveResults.length).toBe(1);
       },
     });
   });
