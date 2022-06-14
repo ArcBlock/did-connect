@@ -191,20 +191,20 @@ const createStateMachine = ({
     socket.on(sid, (e) => {
       switch (e.status) {
         case 'walletScanned':
-          return dispatch({ type: 'WALLET_SCAN', didwallet: e.didwallet });
+          return dispatch({ ...e, type: 'WALLET_SCAN' });
         case 'walletConnected':
-          return dispatch({ type: 'WALLET_CONNECTED', currentConnected: pick(e, ['userDid', 'userPk', 'wallet']) });
+          return dispatch({ ...e, type: 'WALLET_CONNECTED' });
         case 'walletApproved':
-          return dispatch({ type: 'WALLET_APPROVE', ...pick(e, ['responseClaims', 'currentStep']) });
+          return dispatch({ ...e, type: 'WALLET_APPROVE' });
         case 'completed':
-          return dispatch({ type: 'COMPLETE' });
+          return dispatch({ ...e, type: 'COMPLETE' });
         case 'error':
           // Do not transit to error state when we receiver propagated error from relay
-          return e.source === 'app' ? null : dispatch({ type: 'ERROR', error: e.error });
+          return e.source === 'app' ? null : dispatch({ ...e, type: 'ERROR' });
         case 'rejected':
-          return dispatch({ type: 'WALLET_REJECT', error: e.error });
+          return dispatch({ ...e, type: 'WALLET_REJECT' });
         case 'timeout':
-          return dispatch({ type: 'TIMEOUT', error: e.error });
+          return dispatch({ ...e, type: 'TIMEOUT' });
         default:
           return null;
       }
@@ -403,11 +403,15 @@ const createStateMachine = ({
         onTimeout: _onTimeout,
         onError: _onError,
         saveAppInfo: assign({ appInfo: (ctx, e) => e.data }), // from client
-        saveConnectedUser: assign({ currentConnected: (ctx, e) => e.currentConnected }), // from server
+        saveConnectedUser: assign({ currentConnected: (ctx, e) => pick(e, ['userDid', 'userPk', 'wallet']) }), // from server
         saveRequestedClaims: assign({ requestedClaims: (ctx, e) => e.data }), // from client
         saveError: assign({ error: (ctx, e) => e.error }), // from server
         incrementCurrentStep: assign({ currentStep: (ctx) => ctx.currentStep + 1 }), // from server
-        saveResponseClaims: assign({ responseClaims: (ctx, e) => [...ctx.responseClaims, e.responseClaims] }), // from server
+        saveResponseClaims: assign({
+          responseClaims: (ctx, e) => [...ctx.responseClaims, e.responseClaims],
+          currentStep: (ctx, e) => e.currentStep,
+          challenge: (ctx, e) => e.challenge,
+        }), // from server
         saveApproveResult: assign({ approveResults: (ctx, e) => [...ctx.approveResults, e.data] }), // from client
         reportCancel: () =>
           doSignedRequest({

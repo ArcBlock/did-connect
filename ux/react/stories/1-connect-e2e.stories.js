@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
+import Button from '@arcblock/ux/lib/Button';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
@@ -13,6 +14,9 @@ const sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout)
 
 // TODO: deploy this to staging server
 const baseUrl = 'https://did-connect-relay-server-vwb-192-168-123-127.ip.abtnet.io';
+
+// TODO: make this usable
+const webWalletUrl = `${window.location.protocol}//www.abtnode.com`;
 
 const noop = () => undefined;
 const onStart = action('onStart');
@@ -29,7 +33,7 @@ const onCreate = async (ctx, e) => {
 
 const onConnect = async (ctx, e) => {
   action('onConnect')(ctx, e);
-  await sleep(2000);
+  await sleep(1000);
   return [
     {
       type: 'profile',
@@ -40,7 +44,7 @@ const onConnect = async (ctx, e) => {
 };
 const onApprove = async (ctx, e) => {
   action('onApprove')(ctx, e);
-  await sleep(2000);
+  await sleep(1000);
   return 'approved';
 };
 
@@ -73,23 +77,42 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm login on your DID Wallet',
             success: 'You profile accepted',
           }}
-          webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+          webWalletUrl={webWalletUrl}
           baseUrl={baseUrl}
         />
       </TestContainer>
     );
   })
   .add('Request DID Only', () => {
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('Connect');
+    const [connectedUser, setConnectedUser] = useState(null);
+    const handleClose = () => {
+      action('close');
+      setOpen(false);
+    };
+    const handleComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setMessage('You are now connected');
+      setConnectedUser(ctx.currentConnected);
+      setOpen(false);
+    };
     return (
-      <TestContainer width={720} height={780} resize="true">
+      <TestContainer height={780} resize="true">
+        <Button variant="contained" size="small" onClick={() => setOpen(true)}>
+          {message}
+        </Button>
+        {connectedUser && <p>DID: {connectedUser.userDid}</p>}
         <Connect
+          popup
+          open={open}
           onlyConnect
-          onClose={onClose}
+          onClose={handleClose}
           onStart={onStart}
           onCreate={onCreate}
           onConnect={noop}
           onApprove={onApprove}
-          onComplete={onComplete}
+          onComplete={handleComplete}
           onReject={onReject}
           onCancel={onCancel}
           onTimeout={onTimeout}
@@ -100,57 +123,134 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm operation on your DID Wallet',
             success: 'You have successfully connected!',
           }}
-          webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+          webWalletUrl={webWalletUrl}
           baseUrl={baseUrl}
         />
       </TestContainer>
     );
   })
   .add('Request Profile', () => {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('Login');
     const handleClose = () => {
-      action('login.close');
+      action('close');
+      setOpen(false);
+    };
+    const handleConnect = async (ctx, e) => {
+      action('onConnect')(ctx, e);
+      return [
+        {
+          type: 'profile',
+          fields: ['fullName', 'email', 'avatar'],
+          description: 'Please give me your profile',
+        },
+      ];
+    };
+    const handleComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setMessage(`Hello ${ctx.responseClaims[0][0].fullName}`);
       setOpen(false);
     };
     return (
-      <TestContainer width={100} height={100}>
-        <button type="button" onClick={() => setOpen(true)}>
-          Open
-        </button>
+      <TestContainer height={780} resize="true">
+        <Button variant="contained" size="small" onClick={() => setOpen(true)}>
+          {message}
+        </Button>
         <Connect
           popup
           open={open}
           onClose={handleClose}
-          onConnect={onConnect}
+          onConnect={handleConnect}
           onApprove={onApprove}
-          onComplete={onComplete}
+          onComplete={handleComplete}
           onReject={onReject}
           onCancel={onCancel}
           onTimeout={onTimeout}
           onError={onError}
-          messages={messages}
-          webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+          messages={{
+            title: 'Profile Required',
+            scan: 'You can manage and provide your profile in your DID Wallet',
+            confirm: 'Confirm on your DID Wallet',
+            success: 'Profile accepted',
+          }}
+          webWalletUrl={webWalletUrl}
           dialogStyle={{ height: 800 }}
           baseUrl={baseUrl}
         />
       </TestContainer>
     );
   })
-  .add('Request NFT', () => (
-    <TestContainer width={720} height={780}>
-      <Connect
-        popup
-        open
-        timeout={4000}
-        onClose={action('login.close')}
-        onConnect={onConnect}
-        onApprove={action('login.success')}
-        messages={messages}
-        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
-        baseUrl={baseUrl}
-      />
-    </TestContainer>
-  ))
+  .add('Request NFT', () => {
+    const [open, setOpen] = useState(false);
+    const [message] = useState('Prove NFT Ownership');
+    const [response, setResponse] = useState(null);
+    const handleClose = () => {
+      action('close');
+      setOpen(false);
+    };
+    const handleConnect = async (ctx, e) => {
+      action('onConnect')(ctx, e);
+      return [
+        {
+          type: 'asset',
+          filters: [
+            {
+              // https://launcher.staging.arcblock.io/
+              trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'],
+            },
+          ],
+          description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
+        },
+      ];
+    };
+
+    const handleApprove = async (ctx, e) => {
+      action('onApprove')(ctx, e);
+      // Verify the ownership of the NFT
+      setResponse({ ...e.responseClaims[0], challenge: e.challenge });
+    };
+
+    const handleComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setOpen(false);
+    };
+    return (
+      <TestContainer height={780} resize="true">
+        <p>
+          Please purchase a Server Ownership NFT from{' '}
+          <a href="https://launcher.staging.arcblock.io/" target="_blank" rel="noreferrer">
+            launcher.staging.arcblock.io
+          </a>{' '}
+          before click following button.
+        </p>
+        <Button variant="contained" size="small" onClick={() => setOpen(true)}>
+          {message}
+        </Button>
+        {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
+        <Connect
+          popup
+          open={open}
+          onClose={handleClose}
+          onConnect={handleConnect}
+          onApprove={handleApprove}
+          onComplete={handleComplete}
+          onReject={onReject}
+          onCancel={onCancel}
+          onTimeout={onTimeout}
+          onError={onError}
+          messages={{
+            title: 'NFT Required',
+            scan: 'Please provide a NFT acquired from https://launcher.staging.arcblock.io',
+            confirm: 'Confirm on your DID Wallet',
+            success: 'NFT accepted',
+          }}
+          webWalletUrl={webWalletUrl}
+          dialogStyle={{ height: 800 }}
+          baseUrl={baseUrl}
+        />
+      </TestContainer>
+    );
+  })
   .add('Request Verifiable Credential', () => (
     <TestContainer width={720} height={780}>
       <Connect

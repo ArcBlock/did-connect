@@ -181,7 +181,7 @@ storiesOf('DID-Connect/Connect', module)
           onClose={action('login.close')}
           onSuccess={action('login.success')}
           messages={messages}
-          webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+          webWalletUrl={webWalletUrl}
         />
       </TestContainer>
     );
@@ -205,7 +205,7 @@ storiesOf('DID-Connect/Connect', module)
           onClose={handleClose}
           onSuccess={action('login.success')}
           messages={messages}
-          webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+          webWalletUrl={webWalletUrl}
           dialogStyle={{ height: 800 }}
         />
       </TestContainer>
@@ -222,7 +222,7 @@ storiesOf('DID-Connect/Connect', module)
         onClose={action('login.close')}
         onSuccess={action('login.success')}
         messages={messages}
-        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+        webWalletUrl={webWalletUrl}
       />
     </TestContainer>
   ))
@@ -238,7 +238,7 @@ storiesOf('DID-Connect/Connect', module)
         onClose={action('login.close')}
         onSuccess={action('login.success')}
         messages={messages}
-        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+        webWalletUrl={webWalletUrl}
       />
     </TestContainer>
   ))
@@ -252,7 +252,7 @@ storiesOf('DID-Connect/Connect', module)
         onClose={action('login.close')}
         onSuccess={action('login.success')}
         messages={messages}
-        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+        webWalletUrl={webWalletUrl}
       />
     </TestContainer>
   ))
@@ -265,7 +265,7 @@ storiesOf('DID-Connect/Connect', module)
         checkFn={createFakeCheckFn('login')}
         onClose={action('login.close')}
         onSuccess={action('login.success')}
-        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
+        webWalletUrl={webWalletUrl}
         messages={{
           title: 'login',
           scan: 'Scan QR code with DID Wallet'.repeat(2),

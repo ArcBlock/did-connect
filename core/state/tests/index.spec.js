@@ -196,7 +196,7 @@ describe('StateMachine', () => {
           {
             type: 'profile',
             fields: ['fullName', 'email', 'avatar'],
-            description: `Please give me your profile for ${e.currentConnected.userDid}`,
+            description: `Please give me your profile for ${e.userDid}`,
           },
         ];
       },
@@ -248,7 +248,7 @@ describe('StateMachine', () => {
           {
             type: 'profile',
             fields: ['fullName', 'email', 'avatar'],
-            description: `Please give me your profile for ${e.currentConnected.userDid}`,
+            description: `Please give me your profile for ${e.userDid}`,
           },
         ];
       },
@@ -389,7 +389,7 @@ describe('StateMachine', () => {
           {
             type: 'profile',
             fields: ['fullName', 'email', 'avatar'],
-            description: `Please give me your profile for ${e.currentConnected.userDid}`,
+            description: `Please give me your profile for ${e.userDid}`,
           },
           {
             type: 'asset',
@@ -608,7 +608,7 @@ describe('StateMachine', () => {
           {
             type: 'profile',
             fields: ['fullName', 'email', 'avatar'],
-            description: `Please give me your profile for ${e.currentConnected.userDid}`,
+            description: `Please give me your profile for ${e.userDid}`,
           },
         ];
       },

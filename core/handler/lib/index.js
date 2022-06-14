@@ -305,6 +305,7 @@ function createHandlers({
           status: 'walletApproved',
           responseClaims: isEmpty(claims) ? [session.currentConnected] : claims,
           currentStep: session.currentStep,
+          challenge: session.challenge,
         });
         newSession = await waitForAppApprove(sessionId, locale);
         await storage.update(sessionId, { status: 'appApproved' });
