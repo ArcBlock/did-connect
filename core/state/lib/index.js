@@ -204,7 +204,8 @@ const createStateMachine = ({
         case 'rejected':
           return dispatch({ ...e, type: 'WALLET_REJECT' });
         case 'timeout':
-          return dispatch({ ...e, type: 'TIMEOUT' });
+          // let's turn server side timeout to errors
+          return dispatch({ ...e, type: 'ERROR' });
         default:
           return null;
       }
@@ -276,6 +277,7 @@ const createStateMachine = ({
             APP_CANCELED: { target: 'canceled' },
             ERROR: { target: 'error' },
             CANCEL: { target: 'canceled' },
+            TIMEOUT: { target: 'timeout' },
           },
           after: {
             WALLET_SCAN_TIMEOUT: { target: 'timeout' },
@@ -290,6 +292,7 @@ const createStateMachine = ({
             APP_CANCELED: { target: 'canceled' },
             ERROR: { target: 'error' },
             CANCEL: { target: 'canceled' },
+            TIMEOUT: { target: 'timeout' },
           },
           after: {
             WALLET_CONNECT_TIMEOUT: { target: 'timeout' },
@@ -315,6 +318,7 @@ const createStateMachine = ({
             APP_CANCELED: { target: 'canceled' },
             ERROR: { target: 'error' },
             CANCEL: { target: 'canceled' },
+            TIMEOUT: { target: 'timeout' },
           },
           entry: ['saveConnectedUser'],
           after: {
@@ -331,6 +335,7 @@ const createStateMachine = ({
             WALLET_REJECT: { target: 'rejected' },
             ERROR: { target: 'error' },
             CANCEL: { target: 'canceled' },
+            TIMEOUT: { target: 'timeout' },
           },
           after: {
             WALLET_APPROVE_TIMEOUT: { target: 'timeout' },
@@ -354,6 +359,7 @@ const createStateMachine = ({
           on: {
             ERROR: { target: 'error' },
             CANCEL: { target: 'canceled' },
+            TIMEOUT: { target: 'timeout' },
           },
           entry: ['saveResponseClaims'],
           exit: ['incrementCurrentStep'],
@@ -405,7 +411,7 @@ const createStateMachine = ({
         saveAppInfo: assign({ appInfo: (ctx, e) => e.data }), // from client
         saveConnectedUser: assign({ currentConnected: (ctx, e) => pick(e, ['userDid', 'userPk', 'wallet']) }), // from server
         saveRequestedClaims: assign({ requestedClaims: (ctx, e) => e.data }), // from client
-        saveError: assign({ error: (ctx, e) => e.error }), // from server
+        saveError: assign({ error: (ctx, e) => get(e, 'data.message') || e.error }), // from client or server
         incrementCurrentStep: assign({ currentStep: (ctx) => ctx.currentStep + 1 }), // from server
         saveResponseClaims: assign({
           responseClaims: (ctx, e) => [...ctx.responseClaims, e.responseClaims],
