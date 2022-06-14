@@ -6,6 +6,8 @@ import Button from '@arcblock/ux/lib/Button';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { toBase58 } from '@ocap/util';
+import Client from '@ocap/client';
+import { fromAddress, fromPublicKey } from '@ocap/wallet';
 import objectHash from 'object-hash';
 
 import Connect from '../src/Connect';
@@ -19,6 +21,8 @@ const baseUrl = 'https://did-connect-relay-server-vwb-192-168-123-127.ip.abtnet.
 
 // TODO: make this usable
 const webWalletUrl = `${window.location.protocol}//www.abtnode.com`;
+
+const chainHost = 'https://beta.abtnetwork.io/api/';
 
 const noop = () => undefined;
 const onStart = action('onStart');
@@ -353,6 +357,9 @@ storiesOf('DID-Connect/Examples', module)
 
     return (
       <TestContainer height={780} resize="true">
+        <Typography gutterBottom>
+          In some cases, app may want user to sign some text to authorize the app to do something.
+        </Typography>
         <Button variant="contained" size="small" onClick={() => setOpen(true)}>
           {message}
         </Button>
@@ -398,7 +405,7 @@ storiesOf('DID-Connect/Examples', module)
       return [
         {
           type: 'signature',
-          typeUrl: 'mine:text/html',
+          typeUrl: 'mime:text/plain',
           digest: toBase58(objectHash(data)),
           description: 'Please sign the data hash',
           meta: data,
@@ -418,6 +425,10 @@ storiesOf('DID-Connect/Examples', module)
 
     return (
       <TestContainer height={780} resize="true">
+        <Typography gutterBottom>
+          In some cases, when the data to be signed is too large to display in DID Wallet, the app shall request the
+          Wallet to sign the digest of the data.
+        </Typography>
         <Button variant="contained" size="small" onClick={() => setOpen(true)}>
           {message}
         </Button>
@@ -445,25 +456,89 @@ storiesOf('DID-Connect/Examples', module)
       </TestContainer>
     );
   })
-  .add('Request Transaction Signature', () => (
-    <TestContainer width={720} height={780}>
-      <Connect
-        popup
-        open
-        onClose={action('login.close')}
-        onConnect={onConnect}
-        onApprove={action('login.success')}
-        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
-        baseUrl={baseUrl}
-        messages={{
-          title: 'login',
-          scan: 'Scan QR code with DID Wallet'.repeat(2),
-          confirm: 'Confirm login on your DID Wallet'.repeat(2),
-          success: 'You have successfully signed in!'.repeat(2),
-        }}
-      />
-    </TestContainer>
-  ))
+  .add('Request Transaction Signature', () => {
+    const client = new Client(chainHost);
+    const [open, setOpen] = useState(false);
+    const [message] = useState('Sign Transaction');
+    const [response, setResponse] = useState(null);
+    const handleClose = () => {
+      action('close');
+      setOpen(false);
+    };
+    const handleConnect = async (ctx, e) => {
+      action('onConnect')(ctx, e);
+      const app = fromAddress(ctx.appInfo.publisher.split(':').pop());
+      const user = fromPublicKey(e.userPk);
+      const { buffer: tx } = await client.encodeTransferV2Tx({
+        tx: {
+          from: user.address,
+          pk: user.publicKey,
+          itx: {
+            to: app.address,
+            // https://beta.abtnetwork.io/explorer/tokens/z35n6UoHSi9MED4uaQy6ozFgKPaZj2UKrurBG/transactions
+            tokens: [
+              { address: 'z35n6UoHSi9MED4uaQy6ozFgKPaZj2UKrurBG', value: await client.fromTokenToUnit(1).toString(10) },
+            ],
+          },
+        },
+        wallet: user,
+      });
+
+      return [
+        {
+          type: 'signature',
+          typeUrl: 'fg:t:transaction',
+          origin: toBase58(tx),
+          description: 'Please sign this transaction to transfer 1 TBA to the app',
+          chainInfo: {
+            host: chainHost,
+          },
+        },
+      ];
+    };
+
+    const handleApprove = async (ctx, e) => {
+      action('onApprove')(ctx, e);
+      setResponse(e);
+    };
+
+    const handleComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setOpen(false);
+    };
+
+    return (
+      <TestContainer height={780} resize="true">
+        <Typography gutterBottom>
+          When the app needs user to sign some transaction that can be broadcast to arcblock chain.
+        </Typography>
+        <Button variant="contained" size="small" onClick={() => setOpen(true)}>
+          {message}
+        </Button>
+        {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
+        <Connect
+          popup
+          open={open}
+          onClose={handleClose}
+          onConnect={handleConnect}
+          onApprove={handleApprove}
+          onComplete={handleComplete}
+          onReject={onReject}
+          onCancel={onCancel}
+          onTimeout={onTimeout}
+          onError={onError}
+          messages={{
+            title: 'Signature Required',
+            scan: 'Please sign the transaction to send relay server 1 TBA',
+            confirm: 'Confirm on your DID Wallet',
+            success: 'Tx signed but not broadcasted',
+          }}
+          webWalletUrl={webWalletUrl}
+          baseUrl={baseUrl}
+        />
+      </TestContainer>
+    );
+  })
   .add('Request Ethereum Signature', () => (
     <TestContainer width={720} height={780}>
       <Connect
