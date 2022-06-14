@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Cookie from 'js-cookie';
 import joinUrl from 'url-join';
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';

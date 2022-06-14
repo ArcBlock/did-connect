@@ -13,7 +13,7 @@ module.exports = {
         corejs: 3,
       },
     ],
-    ['@babel/preset-react', { useBuiltIns: true }],
+    ['@babel/preset-react', { useBuiltIns: true, runtime: 'automatic' }],
   ],
   plugins: ['babel-plugin-styled-components', 'babel-plugin-inline-react-svg'],
 };

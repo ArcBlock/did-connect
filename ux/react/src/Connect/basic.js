@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import { useTheme } from '@mui/styles';
@@ -35,7 +35,7 @@ const getAppDid = (publisher) => {
 };
 
 function AppIcon({ appInfo, ...rest }) {
-  const [error, setError] = React.useState(false);
+  const [error, setError] = useState(false);
   if (error) {
     return <DidAvatar did={appInfo.publisher} size={32} />;
   }
