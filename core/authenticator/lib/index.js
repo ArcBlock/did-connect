@@ -12,6 +12,8 @@ const debug = require('debug')(`${require('../package.json').name}`);
 const DEFAULT_TIMEOUT = 8000;
 const DEFAULT_CHAIN_INFO = { host: 'none' };
 
+const isValidChainInfo = (x) => x && x.host;
+
 // User can set claims in following format
 // requestedClaims: [claim1, [claim2, claim3], claim4]
 const claimsValidator = Joi.array()
@@ -166,11 +168,14 @@ class Authenticator {
     tmp.searchParams.set('sid', sessionId);
     const nextUrl = tmp.href;
 
+    // TODO: perhaps we should set chainInfo in each claim
+    const claimWithChainInfo = claimList.find((x) => isValidChainInfo(x.chainInfo));
+
     const payload = {
       action: 'responseAuth',
       challenge,
       appInfo,
-      chainInfo: DEFAULT_CHAIN_INFO, // FIXME: get chainInfo from claim
+      chainInfo: claimWithChainInfo ? claimWithChainInfo.chainInfo : DEFAULT_CHAIN_INFO,
       requestedClaims: claimList,
       url: nextUrl,
     };
@@ -258,10 +263,6 @@ class Authenticator {
       throw new Error(`Wallet authenticator can not work with invalid appInfo: ${error.message}`);
     }
     return value;
-  }
-
-  _isValidChainInfo(x) {
-    return x && x.host;
   }
 
   _validateWallet(wallet) {
