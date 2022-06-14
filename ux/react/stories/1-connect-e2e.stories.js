@@ -208,10 +208,10 @@ storiesOf('DID-Connect/Examples', module)
       ];
     };
 
+    // Verify the ownership of the NFT
     const handleApprove = async (ctx, e) => {
       action('onApprove')(ctx, e);
-      // Verify the ownership of the NFT
-      setResponse({ ...e.responseClaims[0], challenge: e.challenge });
+      setResponse(e);
     };
 
     const handleComplete = (ctx, e) => {
@@ -254,20 +254,72 @@ storiesOf('DID-Connect/Examples', module)
       </TestContainer>
     );
   })
-  .add('Request Verifiable Credential', () => (
-    <TestContainer width={720} height={780}>
-      <Connect
-        popup
-        open
-        onClose={action('login.close')}
-        onConnect={onConnect}
-        onApprove={action('login.success')}
-        messages={messages}
-        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
-        baseUrl={baseUrl}
-      />
-    </TestContainer>
-  ))
+  .add('Request Verifiable Credential', () => {
+    const [open, setOpen] = useState(false);
+    const [message] = useState('Present Passport');
+    const [response, setResponse] = useState(null);
+    const handleClose = () => {
+      action('close');
+      setOpen(false);
+    };
+    const handleConnect = async (ctx, e) => {
+      action('onConnect')(ctx, e);
+      return [
+        {
+          type: 'verifiableCredential',
+          item: ['ABTNodePassport'],
+          trustedIssuers: ['zNKjT5VBGNEzh4p6V4dsaYE61e7Pxxn3vk4j'],
+          optional: false,
+          description: 'Please provide passport issued by Blocklet Server(Staging)',
+        },
+      ];
+    };
+
+    const handleApprove = async (ctx, e) => {
+      action('onApprove')(ctx, e);
+      setResponse(e);
+    };
+
+    const handleComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setOpen(false);
+    };
+    return (
+      <TestContainer height={780} resize="true">
+        <Typography gutterBottom>
+          Please admin a passport vc from{' '}
+          <a href="https://node-dev-1.arcblock.io/admin/" target="_blank" rel="noreferrer">
+            node-dev-1.arcblock.io
+          </a>{' '}
+          before click following button.
+        </Typography>
+        <Button variant="contained" size="small" onClick={() => setOpen(true)}>
+          {message}
+        </Button>
+        {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
+        <Connect
+          popup
+          open={open}
+          onClose={handleClose}
+          onConnect={handleConnect}
+          onApprove={handleApprove}
+          onComplete={handleComplete}
+          onReject={onReject}
+          onCancel={onCancel}
+          onTimeout={onTimeout}
+          onError={onError}
+          messages={{
+            title: 'VC Required',
+            scan: 'Please provide a NFT obtained from https://node-dev-1.arcblock.io/admin/',
+            confirm: 'Confirm on your DID Wallet',
+            success: 'VC accepted',
+          }}
+          webWalletUrl={webWalletUrl}
+          baseUrl={baseUrl}
+        />
+      </TestContainer>
+    );
+  })
   .add('Request Text Signature', () => (
     <TestContainer width={720} height={780}>
       <Connect
