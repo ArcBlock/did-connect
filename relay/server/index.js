@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
-const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const morgan = require('morgan');
+const express = require('express');
 const env = require('@blocklet/sdk/lib/env');
 const getWallet = require('@blocklet/sdk/lib/wallet');
 const SessionStorage = require('@did-connect/storage-nedb');
@@ -29,6 +30,7 @@ const logger = { info: console.info, error: console.error, warn: console.warn, d
 const handlers = createHandlers({ storage, authenticator, logger, timeout: 20000 });
 
 const app = express();
+app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
