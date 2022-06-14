@@ -1,5 +1,6 @@
 const pick = require('lodash/pick');
 const isEmpty = require('lodash/isEmpty');
+const isEqual = require('lodash/isEqual');
 const waitFor = require('p-wait-for');
 const Jwt = require('@arcblock/jwt');
 const objectHash = require('object-hash');
@@ -32,6 +33,10 @@ const errors = {
   userCanceled: {
     en: 'User has canceled the request from app',
     zh: '用户在应用端取消了请求',
+  },
+  claimMismatch: {
+    en: 'Claims provided by wallet do not match with requested claims',
+    zh: '提交的声明类型和请求的声明类型不匹配',
   },
 };
 
@@ -340,6 +345,15 @@ function createHandlers({
           wsServer.broadcast(sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
         }
         return signClaims(newSession.requestedClaims[session.currentStep], { ...context, session: newSession });
+      }
+
+      // Ensure submitted claims match with requested
+      const responseTypes = claims.map((x) => x.type);
+      let requestedClaims = session.requestedClaims[session.currentStep];
+      requestedClaims = Array.isArray(requestedClaims) ? requestedClaims : [requestedClaims];
+      const requestedTypes = requestedClaims.map((x) => x.type);
+      if (isEqual(responseTypes, requestedTypes) === false) {
+        throw new Error(errors.claimMismatch[locale]);
       }
 
       // Move to walletApproved state and wait for appApproved

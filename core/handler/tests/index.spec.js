@@ -922,6 +922,86 @@ describe('RelayAdapterExpress', () => {
     client.off(sessionId);
   });
 
+  test('should abort session when response claim mismatch', async () => {
+    let session = null;
+    let res = null;
+    let authInfo = null;
+    let completed = false;
+
+    const statusHistory = [];
+    const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
+
+    client.on(sessionId, async (e) => {
+      expect(e.status).toBeTruthy();
+      statusHistory.push(e.status);
+
+      if (e.status === 'walletConnected') {
+        session = await updateSession({
+          requestedClaims: [
+            {
+              type: 'profile',
+              fields: ['fullName', 'email', 'avatar'],
+              description: 'Please give me your profile',
+            },
+          ],
+        });
+      } else if (e.status === 'walletApproved') {
+        session = await updateSession({
+          approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
+        });
+      } else if (e.status === 'completed') {
+        completed = true;
+      }
+    });
+
+    // 1. create session
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    expect(session.sessionId).toEqual(sessionId);
+
+    // 2. simulate scan
+    res = await api.get(getAuthUrl(authUrl));
+    expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+    expect(authInfo.url).toEqual(authUrl);
+
+    // 3. submit auth principal
+    let claims = authInfo.requestedClaims;
+    let nextUrl = getAuthUrl(authUrl);
+    let challenge = authInfo.challenge; // eslint-disable-line
+    if (claims.find((x) => x.type === 'authPrincipal')) {
+      res = await api.post(getAuthUrl(authInfo.url), {
+        userPk: toBase58(user.publicKey),
+        userInfo: Jwt.sign(user.address, user.secretKey, {
+          requestedClaims: [],
+          challenge: authInfo.challenge,
+        }),
+      });
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.requestedClaims[0].type).toEqual('profile');
+      claims = authInfo.requestedClaims;
+      challenge = authInfo.challenge;
+      nextUrl = authInfo.url;
+    }
+
+    // 4. submit requested claims
+    res = await api.post(nextUrl, {
+      userPk: toBase58(user.publicKey),
+      userInfo: Jwt.sign(user.address, user.secretKey, {
+        requestedClaims: [{ type: 'asset', fullName: 'test', email: 'test@arcblock.io' }],
+        challenge,
+      }),
+    });
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.status).toEqual('error');
+    expect(authInfo.errorMessage).toMatch('do not match with requested claims');
+    expect(completed).toBe(false);
+
+    // 7. assert status history
+    expect(statusHistory).toEqual(['walletScanned', 'walletConnected', 'appConnected', 'error']);
+    client.off(sessionId);
+  });
+
   test('should abort session when session canceled', async () => {
     let session = null;
     let res = null;
