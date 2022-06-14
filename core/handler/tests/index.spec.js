@@ -1102,9 +1102,8 @@ describe('RelayAdapterExpress', () => {
     client.off(sessionId);
   });
 
-  test('should session create/update work and throw as expected', async () => {
+  const prepareEvilTest = async () => {
     let session = null;
-    let res = null;
 
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
@@ -1115,42 +1114,71 @@ describe('RelayAdapterExpress', () => {
     expect(session.strategy).toEqual('default');
     expect(session.status).toEqual('created');
 
-    // 2. signature
-    res = await updateSession({ status: 'error' }, evil);
-    expect(res.error).toEqual('Invalid updater');
+    return { sessionId, updaterPk, authUrl, updateSession };
+  };
 
-    res = await updateSession({ status: 'xxxx' });
-    expect(res.error).toEqual('Invalid session status');
+  test('should throw onUpdate when updater mismatch', async () => {
+    const { updateSession } = await prepareEvilTest();
+    const res = await updateSession({ status: 'error' }, evil);
+    expect(res.error).toMatch('Invalid updater');
+  });
 
-    res = await updateSession({ requestedClaims: [{ a: 'b' }] });
+  test('should throw onUpdate when status not valid', async () => {
+    const { updateSession } = await prepareEvilTest();
+    const res = await updateSession({ status: 'xxxx' });
+    expect(res.error).toMatch('Can only update session status');
+  });
+
+  test('should throw onUpdate when status not valid', async () => {
+    const { updateSession } = await prepareEvilTest();
+    const res = await updateSession({ requestedClaims: [{ a: 'b' }] });
     expect(res.error).toMatch('Invalid session');
     expect(res.error).toMatch('requestedClaims');
+  });
 
-    res = await updateSession({ status: 'error' }, updater, '');
-    expect(res.error).toEqual('Invalid updater pk');
+  test('should throw onUpdate when status not valid', async () => {
+    const { updateSession } = await prepareEvilTest();
+    const res = await updateSession({ status: 'error' }, updater, '');
+    expect(res.error).toMatch('Invalid updater pk');
+  });
 
-    res = await updateSession({ status: 'error' }, updater, undefined, '');
-    expect(res.error).toEqual('Invalid token');
+  test('should throw onUpdate when status not valid', async () => {
+    const { updateSession } = await prepareEvilTest();
+    const res = await updateSession({ status: 'error' }, updater, undefined, '');
+    expect(res.error).toMatch('Invalid token');
+  });
 
-    res = await updateSession({ status: 'error' }, updater, 'abc', 'def');
-    expect(res.error).toEqual('Invalid updater signature');
+  test('should throw onUpdate when status not valid', async () => {
+    const { updateSession } = await prepareEvilTest();
+    const res = await updateSession({ status: 'error' }, updater, 'abc', 'def');
+    expect(res.error).toMatch('Invalid updater signature');
+  });
 
-    res = await updateSession({ status: 'error' }, updater, undefined, undefined, 'abc');
-    expect(res.error).toEqual('Invalid payload hash');
+  test('should throw onUpdate when status not valid', async () => {
+    const { updateSession } = await prepareEvilTest();
+    const res = await updateSession({ status: 'error' }, updater, undefined, undefined, 'abc');
+    expect(res.error).toMatch('Invalid payload hash');
+  });
 
-    session = await updateSession({ status: 'error' });
-    expect(session.status).toEqual('error');
+  test('should now throw onUpdate when update to error', async () => {
+    const { updateSession } = await prepareEvilTest();
+    const session = await updateSession({ status: 'error' });
+    expect(session.status).toMatch('error');
+  });
 
-    res = await updateSession({ status: 'error' });
-    expect(res.error).toMatch('Session finalized');
-
-    // 3. invalid session
-    res = await doSignedRequest({ sessionId, updaterPk, authUrl, requestedClaims: [{ type: 'unknown' }] }, updater);
+  test('should throw onUpdate when requestedClaims not valid', async () => {
+    const { sessionId, updaterPk, authUrl } = await prepareEvilTest();
+    const res = await doSignedRequest(
+      { sessionId, updaterPk, authUrl, requestedClaims: [{ type: 'unknown' }] },
+      updater
+    );
     expect(res.error).toMatch('Invalid session');
     expect(res.error).toMatch('requestedClaims');
+  });
 
-    // 4. invalid sessionId
-    res = await doSignedRequest({ sessionId: 'abc', updaterPk, authUrl }, updater);
+  test('should throw onUpdate when sessionId valid', async () => {
+    const { updaterPk, authUrl } = await prepareEvilTest();
+    const res = await doSignedRequest({ sessionId: 'abc', updaterPk, authUrl }, updater);
     expect(res.error).toMatch('Invalid sessionId');
   });
 

@@ -178,6 +178,7 @@ describe('StateMachine', () => {
           }),
         });
         authInfo = Jwt.decode(res.data.authInfo);
+        console.log(authInfo);
         expect(authInfo.status).toEqual('ok');
       }
     } catch (err) {
@@ -261,7 +262,7 @@ describe('StateMachine', () => {
         expect(authInfo.successMessage).toMatch('you connected account');
         return [];
       },
-      onConnect: noop,
+      onConnect: () => [],
       onApprove: (ctx, e) => {
         return { successMessage: `you connected account ${e.responseClaims[0].userDid}` };
       },
@@ -276,20 +277,6 @@ describe('StateMachine', () => {
         'appApproved',
         'completed',
       ],
-    });
-  });
-
-  test('should work as expected: connect only', async () => {
-    await runSingleTest({
-      onConnect: (ctx, e) => {
-        return [
-          {
-            type: 'profile',
-            fields: ['fullName', 'email', 'avatar'],
-            description: `Please give me your profile for ${e.userDid}`,
-          },
-        ];
-      },
     });
   });
 
@@ -619,7 +606,7 @@ describe('StateMachine', () => {
         authInfo = Jwt.decode(res.data.authInfo);
         expect(authInfo.requestedClaims).toBeFalsy();
         expect(authInfo.status).toEqual('error');
-        expect(authInfo.errorMessage).toEqual('onConnect error');
+        expect(authInfo.errorMessage).toMatch('onConnect error');
       }
     } catch (err) {
       console.error(err);
@@ -706,7 +693,7 @@ describe('StateMachine', () => {
       });
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.status).toEqual('error');
-      expect(authInfo.errorMessage).toEqual('onApprove error');
+      expect(authInfo.errorMessage).toMatch('onApprove error');
     } catch (err) {
       console.error(err);
       expect(err).toBeFalsy();

@@ -150,6 +150,7 @@ function createHandlers({
       };
     }
 
+    logger.debug('session.created', sessionId);
     return storage.create(sessionId, value);
   };
 
@@ -157,39 +158,46 @@ function createHandlers({
     return storage.read(sessionId);
   };
 
-  const handleSessionUpdate = (context) => {
-    if (isValidContext(context) === false) {
-      return { error: 'Invalid context', code: 'CONTEXT_INVALID' };
-    }
+  const handleSessionUpdate = async (context) => {
+    const { body, session, sessionId } = context;
+    try {
+      if (isValidContext(context) === false) {
+        throw new CustomError('CONTEXT_INVALID', 'Invalid context');
+      }
 
-    const { body, session } = context;
-    if (storage.isFinalized(session.status)) {
-      return {
-        error: `Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`,
-        code: 'SESSION_FINALIZED',
-      };
-    }
+      if (storage.isFinalized(session.status)) {
+        throw new CustomError(
+          'SESSION_FINALIZED',
+          `Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`
+        );
+      }
 
-    const result = verifyUpdater(context, session.updaterPk);
-    if (result.error) {
-      return result;
-    }
+      const result = verifyUpdater(context, session.updaterPk);
+      if (result.error) {
+        throw new CustomError(result.code, result.error);
+      }
 
-    if (body.status && ['error', 'canceled'].includes(body.status) === false) {
-      return { error: 'Invalid session status', code: 'SESSION_STATUS_INVALID' };
-    }
+      if (body.status && ['error', 'canceled'].includes(body.status) === false) {
+        throw new CustomError('SESSION_STATUS_INVALID', 'Can only update session status to error or canceled');
+      }
 
-    const { error, value } = sessionSchema.validate({ ...session, ...body });
-    if (error) {
-      return {
-        error: `Invalid session updates: ${error.details.map((x) => x.message).join(', ')}`,
-        code: 'SESSION_UPDATE_INVALID',
-      };
-    }
+      const { error, value } = sessionSchema.validate({ ...session, ...body });
+      if (error) {
+        throw new CustomError(
+          'SESSION_UPDATE_INVALID',
+          `Invalid session updates: ${error.details.map((x) => x.message).join(', ')}`
+        );
+      }
 
-    const updates = pick(value, ['error', 'status', 'approveResults', 'requestedClaims']);
-    logger.info('update session', context.sessionId, updates);
-    return storage.update(context.sessionId, updates);
+      const updates = pick(value, ['error', 'status', 'approveResults', 'requestedClaims']);
+      logger.info('update session', context.sessionId, updates);
+      return storage.update(context.sessionId, updates);
+    } catch (err) {
+      logger.error(err);
+      wsServer.broadcast(sessionId, { status: 'error', error: err.message });
+      await storage.update(sessionId, { status: 'error', error: err.message });
+      return { error: err.message, code: err.code };
+    }
   };
 
   const handleClaimRequest = async (context) => {
@@ -210,6 +218,7 @@ function createHandlers({
 
       // if we are in created status, we should return authPrincipal claim
       if (session.status === 'created') {
+        logger.debug('session.walletScanned', sessionId);
         wsServer.broadcast(sessionId, { status: 'walletScanned', didwallet });
         await storage.update(sessionId, { status: 'walletScanned' });
 
@@ -302,6 +311,7 @@ function createHandlers({
       }
 
       const handleWalletApprove = async () => {
+        logger.debug('session.walletApproved', sessionId);
         await storage.update(sessionId, {
           status: 'walletApproved',
           responseClaims: [...session.responseClaims, claims],
@@ -324,12 +334,14 @@ function createHandlers({
       // move to walletConnected and wait for appConnected
       // once appConnected we return the first claim
       if (session.status === 'walletScanned') {
+        logger.debug('session.walletConnected', sessionId);
         await storage.update(sessionId, { status: 'walletConnected', currentConnected: { userDid, userPk } });
         wsServer.broadcast(sessionId, { status: 'walletConnected', userDid, userPk, wallet: didwallet });
 
         // If this is a connect-only session, end it: walletApprove --> appApprove --> complete
         if (session.onlyConnect) {
           await handleWalletApprove();
+          logger.debug('session.completed', sessionId);
           await storage.update(sessionId, { status: 'completed' });
           wsServer.broadcast(sessionId, { status: 'completed' });
           return signJson(newSession.approveResults[session.currentStep], context);
@@ -344,6 +356,7 @@ function createHandlers({
           await storage.update(sessionId, { status: 'appConnected' });
           wsServer.broadcast(sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
         }
+        logger.debug('session.appConnected', sessionId);
         return signClaims(newSession.requestedClaims[session.currentStep], { ...context, session: newSession });
       }
 
@@ -362,12 +375,14 @@ function createHandlers({
       // Return result if we've done
       const isDone = session.currentStep === session.requestedClaims.length - 1;
       if (isDone) {
+        logger.debug('session.completed', sessionId);
         await storage.update(sessionId, { status: 'completed' });
         wsServer.broadcast(sessionId, { status: 'completed' });
         return signJson(newSession.approveResults[session.currentStep], context);
       }
 
       // Move on to next step if we are not the last step
+      logger.debug('session.nextClaim', sessionId);
       const nextStep = session.currentStep + 1;
       const nextChallenge = getStepChallenge();
       newSession = await storage.update(sessionId, { currentStep: nextStep, challenge: nextChallenge });
@@ -377,18 +392,21 @@ function createHandlers({
 
       // error reported by dapp
       if (err.code === 'AppError') {
+        logger.debug('session.error', sessionId);
         wsServer.broadcast(sessionId, { status: 'error', error: err.message, source: 'app' });
         return signJson({ error: err.message }, context);
       }
 
       // error reported by dapp
       if (err.code === 'AppCanceled') {
+        logger.debug('session.canceled', sessionId);
         wsServer.broadcast(sessionId, { status: 'canceled', error: err.message, source: 'app' });
         return signJson({ error: err.message }, context);
       }
 
       // timeout error
       if (err.code === 'TimeoutError') {
+        logger.debug('session.timeout', sessionId);
         await storage.update(sessionId, { status: 'timeout', error: err.message });
         wsServer.broadcast(sessionId, { status: 'timeout', error: err.message, source: 'timer' });
         return signJson({ error: err.message }, context);
@@ -396,12 +414,14 @@ function createHandlers({
 
       // reject error
       if (err.code === 'RejectError') {
+        logger.debug('session.rejected', sessionId);
         await storage.update(sessionId, { status: 'rejected', error: err.message });
         wsServer.broadcast(sessionId, { status: 'rejected', error: err.message, source: 'wallet' });
         return signJson({}, context);
       }
 
       // anything else
+      logger.debug('session.error', sessionId);
       await storage.update(sessionId, { status: 'error', error: err.message });
       wsServer.broadcast(sessionId, { status: 'error', error: err.message, code: err.code });
       return signJson({ error: err.message }, context);
