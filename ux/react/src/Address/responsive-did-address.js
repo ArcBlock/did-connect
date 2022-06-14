@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, createRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import useMeasure from 'react-use/lib/useMeasure';
@@ -15,19 +15,19 @@ import DidAddress from './did-address';
  * - TODO: 初始化时, 在确定是否应该以 compact 模式渲染前, 隐藏显示, 避免闪烁问题
  */
 export default function ResponsiveDidAddress({ style, className, component, ...rest }) {
-  const [compact, setCompact] = React.useState(false);
+  const [compact, setCompact] = useState(false);
   // did address 完整显示时的宽度
-  const [addressFullWidth, setAddressFullWidth] = React.useState(null);
+  const [addressFullWidth, setAddressFullWidth] = useState(null);
   const [containerRef, { width: containerWidth }] = useMeasure();
-  const ref = React.createRef();
+  const ref = createRef();
   // 存储完整显示时 address 组件的宽度
-  React.useEffect(() => {
+  useEffect(() => {
     if (!compact && addressFullWidth === null) {
       setAddressFullWidth(ref.current.offsetWidth);
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (containerWidth && addressFullWidth) {
       setCompact(containerWidth < addressFullWidth);
     }

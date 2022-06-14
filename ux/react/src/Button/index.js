@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '@arcblock/ux/lib/Button';
 import ConnectLogo from '@arcblock/icons/lib/ConnectLogo';

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
@@ -14,7 +14,7 @@ import RefreshOverlay from './refresh-overlay';
  */
 export default function ConnectMobileWallet({ status, onRefresh, deepLink, ...rest }) {
   const iconSize = rest.layout === 'lr' ? [20, 34] : [40, 68];
-  const linkRef = React.useRef();
+  const linkRef = useRef();
   return (
     <Root {...rest} color="#A8B4C5" fontWeight={700} onClick={() => linkRef.current.click()}>
       <div>

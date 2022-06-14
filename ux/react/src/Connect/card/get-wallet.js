@@ -1,4 +1,4 @@
-import React from 'react';
+import { useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
@@ -8,7 +8,7 @@ import translations from '../assets/locale';
  * GetWallet
  */
 export default function GetWallet({ locale, ...rest }) {
-  const linkRef = React.useRef();
+  const linkRef = useRef();
 
   return (
     <Root {...rest} onClick={() => linkRef.current.click()}>

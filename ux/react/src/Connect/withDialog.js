@@ -1,4 +1,4 @@
-import React from 'react';
+import { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Dialog from '@mui/material/Dialog';
@@ -8,7 +8,7 @@ import { useTheme } from '@mui/styles';
 import Slide from '@mui/material/Slide';
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 
-const Transition = React.forwardRef(function Transition(props, ref) {
+const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 

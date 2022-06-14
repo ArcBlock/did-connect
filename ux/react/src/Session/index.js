@@ -1,4 +1,4 @@
-import React from 'react';
+import { createContext, Component } from 'react';
 import PropTypes from 'prop-types';
 import omit from 'lodash/omit';
 import Cookie from 'js-cookie';
@@ -12,7 +12,7 @@ import createService from '../Service';
 import createStorage from '../Storage';
 import { getAppId, updateConnectedInfo } from '../utils';
 
-export const SessionContext = React.createContext();
+export const SessionContext = createContext();
 const { Provider, Consumer } = SessionContext;
 
 const AUTH_SERVICE_PREFIX = '/.well-known/service';
@@ -80,7 +80,7 @@ export default function createSessionContext(
     removeToken();
   };
 
-  class SessionProvider extends React.Component {
+  class SessionProvider extends Component {
     constructor(props) {
       super(props);
 

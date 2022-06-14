@@ -1,6 +1,6 @@
 /* eslint-disable react/no-array-index-key  */
 /* eslint-disable react/jsx-no-bind */
-import React, { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { IconButton, ClickAwayListener, MenuList, MenuItem, Paper, Popper, SvgIcon, Button, Chip } from '@mui/material';
 import { makeStyles } from '@mui/styles';

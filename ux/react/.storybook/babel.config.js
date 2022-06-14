@@ -14,7 +14,7 @@ module.exports = {
         corejs: 3,
       },
     ],
-    ['@babel/preset-react', { useBuiltIns: true }],
+    ['@babel/preset-react', { useBuiltIns: true, runtime: 'automatic' }],
   ],
   plugins: [
     '@emotion',

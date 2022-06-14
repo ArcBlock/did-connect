@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import { createContext, useContext } from 'react';
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 
 /**
  * 浏览器环境 Context (方便在测试环境模拟浏览器环境)
  */
-const BrowserEnvContext = React.createContext({
+const BrowserEnvContext = createContext({
   isWalletWebview: false,
   isMobile: false,
 });

@@ -1,4 +1,4 @@
-import React, { useRef, useState, forwardRef } from 'react';
+import { useRef, useState, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import '@fontsource/ubuntu-mono/400.css';

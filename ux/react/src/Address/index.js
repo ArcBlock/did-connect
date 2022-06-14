@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import DidAddress from './did-address';
 import ResponsiveDidAddress from './responsive-did-address';
