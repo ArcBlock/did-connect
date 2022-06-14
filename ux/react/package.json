@@ -88,6 +88,7 @@
     "babel-plugin-styled-components": "^1.10.7",
     "eslint-plugin-react-hooks": "^4.2.0",
     "jest": "^28.1.1",
+    "object-hash": "^3.0.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"
   },

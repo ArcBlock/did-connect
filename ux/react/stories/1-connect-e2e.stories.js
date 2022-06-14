@@ -6,6 +6,7 @@ import Button from '@arcblock/ux/lib/Button';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { toBase58 } from '@ocap/util';
+import objectHash from 'object-hash';
 
 import Connect from '../src/Connect';
 import { BrowserEnvContext } from '../src/Connect/contexts/browser';
@@ -380,8 +381,13 @@ storiesOf('DID-Connect/Examples', module)
     );
   })
   .add('Request Digest Signature', () => {
+    const data = {
+      key: 'value',
+      key2: 'value2',
+    };
+
     const [open, setOpen] = useState(false);
-    const [message] = useState('Sign Digest for Data');
+    const [message] = useState('Sign Data Digest');
     const [response, setResponse] = useState(null);
     const handleClose = () => {
       action('close');
@@ -392,8 +398,10 @@ storiesOf('DID-Connect/Examples', module)
       return [
         {
           type: 'signature',
-          typeUrl: 'fg:t:transaction',
-          description: 'Please provide passport issued by Blocklet Server(Staging)',
+          typeUrl: 'mine:text/html',
+          digest: toBase58(objectHash(data)),
+          description: 'Please sign the data hash',
+          meta: data,
         },
       ];
     };
@@ -410,13 +418,6 @@ storiesOf('DID-Connect/Examples', module)
 
     return (
       <TestContainer height={780} resize="true">
-        <Typography gutterBottom>
-          Please admin a passport vc from{' '}
-          <a href="https://node-dev-1.arcblock.io/admin/" target="_blank" rel="noreferrer">
-            node-dev-1.arcblock.io
-          </a>{' '}
-          before click following button.
-        </Typography>
         <Button variant="contained" size="small" onClick={() => setOpen(true)}>
           {message}
         </Button>
@@ -433,10 +434,10 @@ storiesOf('DID-Connect/Examples', module)
           onTimeout={onTimeout}
           onError={onError}
           messages={{
-            title: 'VC Required',
-            scan: 'Please provide a NFT obtained from https://node-dev-1.arcblock.io/admin/',
+            title: 'Signature Required',
+            scan: 'Please sign the digest of a big piece of data',
             confirm: 'Confirm on your DID Wallet',
-            success: 'VC accepted',
+            success: 'Signature accepted',
           }}
           webWalletUrl={webWalletUrl}
           baseUrl={baseUrl}
@@ -526,6 +527,78 @@ storiesOf('DID-Connect/Examples', module)
           {message}
         </Button>
         {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
+        <Connect
+          popup
+          open={open}
+          onClose={handleClose}
+          onConnect={handleConnect}
+          onApprove={handleApprove}
+          onComplete={handleComplete}
+          onReject={onReject}
+          onCancel={onCancel}
+          onTimeout={onTimeout}
+          onError={onError}
+          messages={{
+            title: 'Profile and NFT Required',
+            scan: 'You must provide profile and NFT to continue',
+            confirm: 'Confirm on your DID Wallet',
+            success: 'Claims accepted',
+          }}
+          webWalletUrl={webWalletUrl}
+          baseUrl={baseUrl}
+        />
+      </TestContainer>
+    );
+  })
+  .add('Multiple Steps', () => {
+    const [open, setOpen] = useState(false);
+    const [message] = useState('Multiple Steps');
+    const [response1, setResponse1] = useState(null);
+    const [response2, setResponse2] = useState(null);
+    const handleClose = () => {
+      action('close');
+      setOpen(false);
+    };
+    const handleConnect = async (ctx, e) => {
+      action('onConnect')(ctx, e);
+      return [
+        {
+          type: 'profile',
+          fields: ['fullName', 'email', 'avatar'],
+          description: 'Please give me your profile',
+        },
+        {
+          // https://launcher.staging.arcblock.io/
+          type: 'asset',
+          filters: [{ trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'] }],
+          description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
+        },
+      ];
+    };
+
+    const handleApprove = async (ctx, e) => {
+      action('onApprove')(ctx, e);
+      if (e.currentStep === 0) {
+        setResponse1(e);
+      }
+      if (e.currentStep === 1) {
+        setResponse2(e);
+      }
+    };
+
+    const handleComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setOpen(false);
+    };
+
+    return (
+      <TestContainer height={780} resize="true">
+        <Typography gutterBottom>Request profile and then present NFT ownership.</Typography>
+        <Button variant="contained" size="small" onClick={() => setOpen(true)}>
+          {message}
+        </Button>
+        {response1 && <pre>{JSON.stringify(response1, null, 2)}</pre>}
+        {response2 && <pre>{JSON.stringify(response2, null, 2)}</pre>}
         <Connect
           popup
           open={open}
