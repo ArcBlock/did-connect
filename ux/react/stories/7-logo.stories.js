@@ -1,5 +1,3 @@
-import React from 'react';
-
 import Typography from '@mui/material/Typography';
 import { storiesOf } from '@storybook/react';
 import DidLogo from '../src/Logo';
