@@ -279,9 +279,6 @@ const createStateMachine = ({
             CANCEL: { target: 'canceled' },
             TIMEOUT: { target: 'timeout' },
           },
-          after: {
-            wallet: { target: 'timeout' },
-          },
         },
 
         // wallet has scanned the qrcode

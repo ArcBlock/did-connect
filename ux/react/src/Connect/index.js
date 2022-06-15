@@ -28,6 +28,7 @@ function Connect({
   webWalletUrl,
   baseUrl,
   autoConnect,
+  saveConnect,
   onlyConnect,
   ...rest
 }) {
@@ -46,6 +47,7 @@ function Connect({
     onClose,
     locale,
     autoConnect,
+    saveConnect,
     onlyConnect,
   });
 
@@ -85,6 +87,7 @@ Connect.propTypes = {
   webWalletUrl: PropTypes.string,
   baseUrl: PropTypes.string,
   autoConnect: PropTypes.bool,
+  saveConnect: PropTypes.bool,
   onlyConnect: PropTypes.bool,
 };
 
@@ -107,6 +110,7 @@ Connect.defaultProps = {
   webWalletUrl: '',
   baseUrl: '',
   autoConnect: true,
+  saveConnect: true,
   onlyConnect: false,
 };
 

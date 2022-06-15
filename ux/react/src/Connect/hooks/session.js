@@ -42,6 +42,7 @@ export default function useSession({
   onError = noop,
   baseUrl,
   autoConnect = true,
+  saveConnect = true,
   onlyConnect = false,
   timeout,
   // FIXME: support optional saveConnect
@@ -53,7 +54,7 @@ export default function useSession({
   const [retryCount, setRetryCount] = useState(0);
 
   const _onComplete = async (...args) => {
-    if (autoConnect && state.context.currentConnected) {
+    if (saveConnect && state.context.currentConnected) {
       updateConnectedInfo(state.context);
     }
     await onComplete(...args);

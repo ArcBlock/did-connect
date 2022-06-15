@@ -548,7 +548,7 @@ storiesOf('DID-Connect/Examples', module)
       </TestContainer>
     );
   })
-  .add('Request Multiple Claims', () => {
+  .add('Multiple Claims', () => {
     const [open, setOpen] = useState(false);
     const [message] = useState('Multiple Claims');
     const [response, setResponse] = useState(null);
@@ -687,25 +687,80 @@ storiesOf('DID-Connect/Examples', module)
       </TestContainer>
     );
   })
-  .add('Multiple Workflows', () => (
-    <TestContainer height={780}>
-      <Connect
-        popup
-        open
-        onClose={action('login.close')}
-        onConnect={onConnect}
-        onApprove={action('login.success')}
-        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
-        baseUrl={baseUrl}
-        messages={{
-          title: 'login',
-          scan: 'Scan QR code with DID Wallet'.repeat(2),
-          confirm: 'Confirm login on your DID Wallet'.repeat(2),
-          success: 'You have successfully signed in!'.repeat(2),
-        }}
-      />
-    </TestContainer>
-  ));
+  .add('Multiple Workflows', () => {
+    const [open, setOpen] = useState(false);
+    const [message] = useState('Multiple Workflows');
+    const [response1, setResponse1] = useState(null);
+    const [response2, setResponse2] = useState(null);
+
+    const handleClose = () => {
+      action('close');
+      setOpen(false);
+    };
+    const handleConnect = async (ctx, e) => {
+      action('onConnect')(ctx, e);
+      return [
+        {
+          type: 'profile',
+          fields: ['fullName', 'email', 'avatar'],
+          description: 'Please give me your profile',
+        },
+      ];
+    };
+
+    const handleApprove = async (ctx, e) => {
+      action('onApprove')(ctx, e);
+      if (e.currentStep === 0) {
+        setResponse1(e);
+      }
+      if (e.currentStep === 1) {
+        setResponse2(e);
+      }
+    };
+
+    // {
+    //   // https://launcher.staging.arcblock.io/
+    //   type: 'asset',
+    //   filters: [{ trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'] }],
+    //   description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
+    // },
+
+    const handleComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setOpen(false);
+    };
+
+    return (
+      <TestContainer height={780} resize="true">
+        <Typography gutterBottom>You can concat multiple workflows form different apps.</Typography>
+        <Button variant="contained" size="small" onClick={() => setOpen(true)}>
+          {message}
+        </Button>
+        {response1 && <pre>{JSON.stringify(response1, null, 2)}</pre>}
+        {response2 && <pre>{JSON.stringify(response2, null, 2)}</pre>}
+        <Connect
+          popup
+          open={open}
+          onClose={handleClose}
+          onConnect={handleConnect}
+          onApprove={handleApprove}
+          onComplete={handleComplete}
+          onReject={onReject}
+          onCancel={onCancel}
+          onTimeout={onTimeout}
+          onError={onError}
+          messages={{
+            title: 'Profile and NFT Required',
+            scan: 'You must provide profile and NFT to continue',
+            confirm: 'Confirm on your DID Wallet',
+            success: 'Claims accepted',
+          }}
+          webWalletUrl={webWalletUrl}
+          baseUrl={baseUrl}
+        />
+      </TestContainer>
+    );
+  });
 
 // 模拟最常见的 PC 的情况, 该环境会显示 connect with web wallet 和 scan with mobile wallet
 const defaultBrowserEnv = { isWalletWebview: false, isMobile: false };
