@@ -178,7 +178,6 @@ describe('StateMachine', () => {
           }),
         });
         authInfo = Jwt.decode(res.data.authInfo);
-        console.log(authInfo);
         expect(authInfo.status).toEqual('ok');
       }
     } catch (err) {

@@ -7,6 +7,5 @@ module.exports = {
     '@storybook/addon-viewport',
     '@storybook/addon-storysource',
     '@storybook/addon-docs',
-    // '@arcblock/storybook-addon-user-agent',
   ],
 };
