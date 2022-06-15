@@ -539,25 +539,15 @@ storiesOf('DID-Connect/Examples', module)
       </TestContainer>
     );
   })
-  .add('Request Ethereum Signature', () => (
-    <TestContainer width={720} height={780}>
-      <Connect
-        popup
-        open
-        onClose={action('login.close')}
-        onConnect={onConnect}
-        onApprove={action('login.success')}
-        webWalletUrl={`${window.location.protocol}//www.abtnode.com`}
-        baseUrl={baseUrl}
-        messages={{
-          title: 'login',
-          scan: 'Scan QR code with DID Wallet'.repeat(2),
-          confirm: 'Confirm login on your DID Wallet'.repeat(2),
-          success: 'You have successfully signed in!'.repeat(2),
-        }}
-      />
-    </TestContainer>
-  ))
+  .add('Request Ethereum Signature', () => {
+    return (
+      <TestContainer height={780}>
+        <Typography variant="p" gutterBottom>
+          TODO
+        </Typography>
+      </TestContainer>
+    );
+  })
   .add('Request Multiple Claims', () => {
     const [open, setOpen] = useState(false);
     const [message] = useState('Multiple Claims');
@@ -698,7 +688,7 @@ storiesOf('DID-Connect/Examples', module)
     );
   })
   .add('Multiple Workflows', () => (
-    <TestContainer width={720} height={780}>
+    <TestContainer height={780}>
       <Connect
         popup
         open

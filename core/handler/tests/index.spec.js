@@ -93,7 +93,7 @@ describe('RelayAdapterExpress', () => {
     const authenticator = new Authenticator({ wallet: app, appInfo, chainInfo });
     // eslint-disable-next-line no-console
     const logger = { info: noop, error: noop, warn: console.warn, debug: noop };
-    const handlers = createHandlers({ storage, authenticator, logger, timeout: 1000 });
+    const handlers = createHandlers({ storage, authenticator, logger });
 
     handlers.wsServer.attach(server.http);
     handlers.wsServer.attach(server.https);
@@ -709,7 +709,7 @@ describe('RelayAdapterExpress', () => {
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout: { app: 1000 } }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan
@@ -768,7 +768,7 @@ describe('RelayAdapterExpress', () => {
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout: { app: 1000 } }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan
@@ -853,7 +853,7 @@ describe('RelayAdapterExpress', () => {
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout: { app: 1000 } }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan

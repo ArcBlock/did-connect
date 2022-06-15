@@ -76,7 +76,11 @@ Connect.propTypes = {
   onReject: PropTypes.func,
   onError: PropTypes.func,
   prefix: PropTypes.string,
-  timeout: PropTypes.number,
+  timeout: PropTypes.object({
+    app: PropTypes.number,
+    relay: PropTypes.number,
+    wallet: PropTypes.number,
+  }),
   locale: PropTypes.oneOf(['en', 'zh']),
   webWalletUrl: PropTypes.string,
   baseUrl: PropTypes.string,
@@ -94,8 +98,11 @@ Connect.defaultProps = {
   onCancel: noop,
   onReject: noop,
   onError: noop,
-  // TODO: split this timeout or calculate
-  timeout: 60000, // 1 minute
+  timeout: {
+    app: 10 * 1000,
+    relay: 10 * 1000,
+    wallet: 60 * 1000,
+  },
   locale: 'en',
   webWalletUrl: '',
   baseUrl: '',

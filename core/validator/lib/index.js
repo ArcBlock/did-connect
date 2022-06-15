@@ -81,6 +81,15 @@ const session = Joi.object({
   responseClaims: Joi.array().items(Joi.array().items(Joi.any()).min(0)).default([]),
   approveResults: Joi.array().items(Joi.any()).default([]),
   error: Joi.string().optional().allow(''),
+  timeout: Joi.object({
+    app: Joi.number().positive(),
+    relay: Joi.number().positive(),
+    wallet: Joi.number().positive(),
+  }).default({
+    app: 10000,
+    relay: 10000,
+    wallet: 60000,
+  }),
 }).options({ stripUnknown: true, noDefaults: false });
 
 const context = Joi.object({

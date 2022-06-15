@@ -43,9 +43,8 @@ export default function useSession({
   baseUrl,
   autoConnect = true,
   onlyConnect = false,
+  timeout,
   // FIXME: support optional saveConnect
-  // FIXME: timeout does not work now
-  // timeout,
 }) {
   const browser = useBrowser();
   const existingSession = useMemo(() => parseExistingSession(), []);
@@ -88,9 +87,8 @@ export default function useSession({
         // do supervised authPrincipal and end the session
         onlyConnect,
 
-        // timeout: {
-        //   WALLET_SCAN_TIMEOUT: 10000,
-        // },
+        // timeout for each stage
+        timeout,
       }),
     [retryCount] // eslint-disable-line
   );

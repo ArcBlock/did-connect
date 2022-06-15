@@ -230,8 +230,7 @@ export default function BasicConnect({
                 lineHeight="24px"
                 color="#999"
                 fontSize={14}
-                fontWeight={400}
-              >
+                fontWeight={400}>
                 <Spinner size={12} style={{ color: colors.did.primary }} />
                 <Box display="flex" alignItems="center" ml={1} lineHeight={1}>
                   {translations[locale].connecting}

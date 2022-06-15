@@ -55,13 +55,7 @@ function createSocketServer(logger, pathname) {
 }
 
 // FIXME: i18n for errors
-function createHandlers({
-  storage,
-  authenticator,
-  logger = console,
-  timeout = 20 * 1000, // how long to wait when wait for app events
-  socketPathname = '/api/connect/relay/websocket',
-}) {
+function createHandlers({ storage, authenticator, logger = console, socketPathname = '/api/connect/relay/websocket' }) {
   const wsServer = createSocketServer(logger, socketPathname);
 
   const isValidContext = (x) => {
@@ -112,6 +106,7 @@ function createHandlers({
       autoConnect,
       onlyConnect,
       requestedClaims = [],
+      timeout,
     } = context.body;
 
     if (sessionId.length !== 21) {
@@ -139,6 +134,7 @@ function createHandlers({
       requestedClaims, // app requested claims, authPrincipal should not be listed here
       responseClaims: [], // wallet submitted claims
       approveResults: [],
+      timeout,
       error: '',
     };
 
@@ -245,7 +241,7 @@ function createHandlers({
     }
   };
 
-  const waitForSession = async (sessionId, checkFn, reason, locale) => {
+  const waitForSession = async (sessionId, timeout, checkFn, reason, locale) => {
     let session = null;
     try {
       await waitFor(
@@ -272,12 +268,19 @@ function createHandlers({
     }
   };
 
-  const waitForAppConnect = (sessionId, locale) =>
-    waitForSession(sessionId, (x) => x.requestedClaims.length > 0, 'Requested claims not provided by app', locale);
-
-  const waitForAppApprove = (sessionId, locale) =>
+  const waitForAppConnect = (sessionId, timeout, locale) =>
     waitForSession(
       sessionId,
+      timeout,
+      (x) => x.requestedClaims.length > 0,
+      'Requested claims not provided by app',
+      locale
+    );
+
+  const waitForAppApprove = (sessionId, timeout, locale) =>
+    waitForSession(
+      sessionId,
+      timeout,
       (x) => typeof x.approveResults[x.currentStep] !== 'undefined',
       'Response claims not handled by app',
       locale
@@ -322,7 +325,7 @@ function createHandlers({
           currentStep: session.currentStep,
           challenge: session.challenge,
         });
-        newSession = await waitForAppApprove(sessionId, locale);
+        newSession = await waitForAppApprove(sessionId, session.timeout.app, locale);
         await storage.update(sessionId, { status: 'appApproved' });
         wsServer.broadcast(sessionId, {
           status: 'appApproved',
@@ -352,7 +355,7 @@ function createHandlers({
           newSession = await storage.update(sessionId, { status: 'appConnected' });
           wsServer.broadcast(sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
         } else {
-          newSession = await waitForAppConnect(sessionId, locale);
+          newSession = await waitForAppConnect(sessionId, session.timeout.app, locale);
           await storage.update(sessionId, { status: 'appConnected' });
           wsServer.broadcast(sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
         }

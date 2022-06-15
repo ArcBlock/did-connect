@@ -383,9 +383,9 @@ export default function createSessionContext(
     messages: null,
   };
 
-  function withSession(Component) {
+  function withSession(InnerComponent) {
     return function WithSessionComponent(props) {
-      return <Consumer>{(sessionProps) => <Component {...props} {...sessionProps} />}</Consumer>;
+      return <Consumer>{(sessionProps) => <InnerComponent {...props} {...sessionProps} />}</Consumer>;
     };
   }
 

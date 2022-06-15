@@ -10,18 +10,10 @@ const { createConnection, destroyConnections } = require('./socket');
 
 const noop = () => undefined;
 
-const DEFAULT_APP_TIMEOUT = 20 * 1000;
-const DEFAULT_WALLET_TIMEOUT = 60 * 1000;
-
-// eslint-disable-next-line no-console
 const DEFAULT_TIMEOUT = {
-  START_TIMEOUT: DEFAULT_APP_TIMEOUT, // webapp-callback
-  CREATE_TIMEOUT: DEFAULT_APP_TIMEOUT, // relay-server
-  WALLET_SCAN_TIMEOUT: DEFAULT_WALLET_TIMEOUT, // user-wallet
-  WALLET_CONNECT_TIMEOUT: DEFAULT_WALLET_TIMEOUT, // user-wallet
-  WALLET_APPROVE_TIMEOUT: DEFAULT_WALLET_TIMEOUT, // user-wallet
-  APP_CONNECT_TIMEOUT: DEFAULT_APP_TIMEOUT, // webapp-callback
-  APP_APPROVE_TIMEOUT: DEFAULT_APP_TIMEOUT, // webapp-callback
+  app: 10 * 1000,
+  relay: 10 * 1000,
+  wallet: 60 * 1000,
 };
 
 class CustomError extends Error {
@@ -113,7 +105,15 @@ const createStateMachine = ({
       // Create new session
       session = await doSignedRequest({
         url: sessionApiUrl,
-        data: { sessionId: sid, updaterPk: pk, requestedClaims, autoConnect, onlyConnect, authUrl: authApiUrl },
+        data: {
+          sessionId: sid,
+          updaterPk: pk,
+          requestedClaims,
+          autoConnect,
+          onlyConnect,
+          authUrl: authApiUrl,
+          timeout,
+        },
         wallet: updater,
         method: 'POST',
       });
@@ -243,7 +243,7 @@ const createStateMachine = ({
             },
           },
           after: {
-            START_TIMEOUT: { target: 'timeout' },
+            app: { target: 'timeout' },
           },
         },
 
@@ -266,7 +266,7 @@ const createStateMachine = ({
             ERROR: { target: 'error' },
           },
           after: {
-            CREATE_TIMEOUT: { target: 'timeout' },
+            relay: { target: 'timeout' },
           },
         },
 
@@ -280,7 +280,7 @@ const createStateMachine = ({
             TIMEOUT: { target: 'timeout' },
           },
           after: {
-            WALLET_SCAN_TIMEOUT: { target: 'timeout' },
+            wallet: { target: 'timeout' },
           },
         },
 
@@ -295,7 +295,7 @@ const createStateMachine = ({
             TIMEOUT: { target: 'timeout' },
           },
           after: {
-            WALLET_CONNECT_TIMEOUT: { target: 'timeout' },
+            wallet: { target: 'timeout' },
           },
         },
 
@@ -322,7 +322,7 @@ const createStateMachine = ({
           },
           entry: ['saveConnectedUser'],
           after: {
-            APP_CONNECT_TIMEOUT: { target: 'timeout' },
+            app: { target: 'timeout' },
           },
         },
 
@@ -338,7 +338,7 @@ const createStateMachine = ({
             TIMEOUT: { target: 'timeout' },
           },
           after: {
-            WALLET_APPROVE_TIMEOUT: { target: 'timeout' },
+            wallet: { target: 'timeout' },
           },
         },
 
@@ -364,7 +364,7 @@ const createStateMachine = ({
           entry: ['saveResponseClaims'],
           exit: ['incrementCurrentStep'],
           after: {
-            APP_APPROVE_TIMEOUT: { target: 'timeout' },
+            app: { target: 'timeout' },
           },
         },
 
