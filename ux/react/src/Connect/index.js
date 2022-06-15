@@ -76,7 +76,7 @@ Connect.propTypes = {
   onReject: PropTypes.func,
   onError: PropTypes.func,
   prefix: PropTypes.string,
-  timeout: PropTypes.object({
+  timeout: PropTypes.shape({
     app: PropTypes.number,
     relay: PropTypes.number,
     wallet: PropTypes.number,

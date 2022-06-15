@@ -146,8 +146,7 @@ function SessionManager({
         variant="outlined"
         onClick={_onLogin}
         {...rest}
-        data-cy="sessionManager-login"
-      >
+        data-cy="sessionManager-login">
         <SvgIcon component={AccountOutline} />
         <span style={{ lineHeight: '25px' }}>{messages[locale].connect}</span>
       </Button>
@@ -207,8 +206,7 @@ function SessionManager({
         className={classes.root}
         {...rest}
         data-cy="sessionManager-logout-popup"
-        size="large"
-      >
+        size="large">
         <DidAvatar variant="circle" did={session.user.did} src={avatar} size={size} shape="circle" />
       </IconButton>
       {userAnchorRef.current && (
@@ -217,8 +215,7 @@ function SessionManager({
           open={userOpen}
           disablePortal
           anchorEl={userAnchorRef.current}
-          placement="bottom-end"
-        >
+          placement="bottom-end">
           <Paper className={`${classes.paper} ${dark && classes.darkPaper}`} variant="outlined">
             <ClickAwayListener onClickAway={onCloseUser}>
               <MenuList className={classes.menuList}>
@@ -247,8 +244,7 @@ function SessionManager({
                           ...menuItem,
                           icon: undefined,
                           label: undefined,
-                        }}
-                      >
+                        }}>
                         {menuItem.svgIcon
                           ? menuItem.svgIcon && <SvgIcon component={menuItem.svgIcon} className={classes.menuIcon} />
                           : menuItem.icon}
@@ -268,8 +264,7 @@ function SessionManager({
                     className={classes.menuItem}
                     data-cy="sessionManager-openInWallet"
                     href="https://www.abtwallet.io/"
-                    target="_blank"
-                  >
+                    target="_blank">
                     <SvgIcon component={OpenInIcon} className={classes.menuIcon} />
                     {messages[locale].openInWallet}
                   </MenuItem>
@@ -284,8 +279,7 @@ function SessionManager({
                   <MenuItem
                     className={classes.menuItem}
                     onClick={_onSwitchProfile}
-                    data-cy="sessionManager-switch-profile-trigger"
-                  >
+                    data-cy="sessionManager-switch-profile-trigger">
                     <SvgIcon component={SwitchProfileIcon} className={classes.menuIcon} />
                     {messages[locale].switchProfile}
                   </MenuItem>
@@ -294,8 +288,7 @@ function SessionManager({
                   <MenuItem
                     className={classes.menuItem}
                     onClick={_onSwitchPassport}
-                    data-cy="sessionManager-switch-passport-trigger"
-                  >
+                    data-cy="sessionManager-switch-passport-trigger">
                     <SvgIcon component={SwitchPassportIcon} className={classes.menuIcon} />
                     {messages[locale].switchPassport}
                   </MenuItem>
@@ -304,8 +297,7 @@ function SessionManager({
                   className={classes.menuItem}
                   onClick={_onLogout}
                   disabled={disableLogout}
-                  data-cy="sessionManager-logout-trigger"
-                >
+                  data-cy="sessionManager-logout-trigger">
                   <SvgIcon component={DisconnectIcon} className={classes.menuIcon} />
                   {messages[locale].disconnect}
                 </MenuItem>
