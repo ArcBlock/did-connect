@@ -1,0 +1,58 @@
+import {
+  ClaimType,
+  SignatureType,
+  ChainInfoSchema,
+  AppInfoSchema,
+  ContextSchema,
+  SessionSchema,
+  AuthPrincipalClaim,
+  ProfileClaim,
+  SignatureClaim,
+  PrepareTxClaim,
+  AgreementClaim,
+  VerifiableCredentialClaim,
+  AssetClaim,
+} from './schemas';
+
+import {
+  ChainInfoType,
+  AppInfoType,
+  ContextType,
+  SessionType,
+  AuthPrincipalClaimType,
+  ProfileClaimType,
+  SignatureClaimType,
+  PrepareTxClaimType,
+  AgreementClaimType,
+  VerifiableCredentialClaimType,
+  AssetClaimType,
+} from './types';
+
+export {
+  // types
+  ClaimType,
+  SignatureType,
+  ChainInfoType,
+  AppInfoType,
+  ContextType,
+  SessionType,
+  AuthPrincipalClaimType,
+  ProfileClaimType,
+  SignatureClaimType,
+  PrepareTxClaimType,
+  AgreementClaimType,
+  VerifiableCredentialClaimType,
+  AssetClaimType,
+  // validators
+  ChainInfoSchema,
+  AppInfoSchema,
+  ContextSchema,
+  SessionSchema,
+  AuthPrincipalClaim,
+  ProfileClaim,
+  SignatureClaim,
+  PrepareTxClaim,
+  AgreementClaim,
+  VerifiableCredentialClaim,
+  AssetClaim,
+};

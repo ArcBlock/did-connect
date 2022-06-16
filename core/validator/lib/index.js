@@ -1,114 +1,15 @@
-const Joi = require('@arcblock/validator');
-
-const createClaimsSchema = require('./claims');
-
-const chainInfo = Joi.object({
-  id: Joi.string().optional(),
-  host: Joi.string()
-    .uri({ scheme: ['http', 'https'] })
-    .required()
-    .allow('none'),
-}).options({ stripUnknown: true, noDefaults: false });
-
-const appInfo = Joi.object({
-  name: Joi.string().required(),
-  description: Joi.string().required(),
-  icon: Joi.string()
-    .uri({ scheme: ['http', 'https'] })
-    .required(),
-  link: Joi.string()
-    .uri({ scheme: ['http', 'https'] })
-    .optional(),
-  path: Joi.string()
-    .uri({ scheme: ['http', 'https'] })
-    .default('https://abtwallet.io/i/'),
-  publisher: Joi.string().optional(),
-  updateSubEndpoint: Joi.boolean().optional(),
-  subscriptionEndpoint: Joi.string().optional(),
-  nodeDid: Joi.DID().optional(),
-}).options({ stripUnknown: false, noDefaults: false });
-
-const claims = createClaimsSchema(chainInfo);
-
-const session = Joi.object({
-  status: Joi.string()
-    .valid(
-      'created',
-      'walletScanned',
-      'walletConnected',
-      'appConnected',
-      'walletApproved',
-      'appApproved',
-      'error',
-      'timeout',
-      'rejected',
-      'canceled',
-      'completed'
-    )
-    .required(),
-  updaterPk: Joi.string().required(),
-  strategy: Joi.alternatives().try(Joi.DID(), Joi.string().valid('default')),
-  authUrl: Joi.string()
-    .uri({ scheme: ['http', 'https'] })
-    .required(),
-  challenge: Joi.string().required(),
-  appInfo,
-  onlyConnect: Joi.boolean().default(false),
-  autoConnect: Joi.boolean().default(true),
-  previousConnected: Joi.object({
-    userDid: Joi.DID().required(),
-    userPk: Joi.string().required(),
-    wallet: Joi.any().required(),
-  })
-    .optional()
-    .allow(null),
-  currentConnected: Joi.object({
-    userDid: Joi.DID().required(),
-    userPk: Joi.string().required(),
-  })
-    .optional()
-    .allow(null),
-  currentStep: Joi.number().integer().min(0),
-  // FIXME: support multiple claim in single request
-  requestedClaims: Joi.array()
-    .items(
-      Joi.array()
-        .items(...Object.values(claims))
-        .min(1),
-      ...Object.values(claims)
-    )
-    .default([]),
-  responseClaims: Joi.array().items(Joi.array().items(Joi.any()).min(0)).default([]),
-  approveResults: Joi.array().items(Joi.any()).default([]),
-  error: Joi.string().optional().allow(''),
-  timeout: Joi.object({
-    app: Joi.number().positive(),
-    relay: Joi.number().positive(),
-    wallet: Joi.number().positive(),
-  }).default({
-    app: 10000,
-    relay: 10000,
-    wallet: 60000,
-  }),
-}).options({ stripUnknown: true, noDefaults: false });
-
-const context = Joi.object({
-  didwallet: Joi.object().optional(),
-  body: Joi.object().optional().default({}),
-  headers: Joi.object().required(),
-  sessionId: Joi.string().max(21).min(21).allow(''),
-  session: session.allow(null),
-  locale: Joi.string().required(),
-  signerPk: Joi.string().optional().allow(''),
-  signerToken: Joi.string().optional().allow(''),
-  previousConnected: Joi.object().optional().allow(null),
-}).options({ stripUnknown: true, noDefaults: false });
-
-module.exports = Object.freeze({
-  session,
-  context,
-  claims,
-  chainInfo,
-  appInfo,
-  Joi,
-});
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AssetClaim = exports.VerifiableCredentialClaim = exports.AgreementClaim = exports.PrepareTxClaim = exports.SignatureClaim = exports.ProfileClaim = exports.AuthPrincipalClaim = exports.SessionSchema = exports.ContextSchema = exports.AppInfoSchema = exports.ChainInfoSchema = void 0;
+const schemas_1 = require("./schemas");
+Object.defineProperty(exports, "ChainInfoSchema", { enumerable: true, get: function () { return schemas_1.ChainInfoSchema; } });
+Object.defineProperty(exports, "AppInfoSchema", { enumerable: true, get: function () { return schemas_1.AppInfoSchema; } });
+Object.defineProperty(exports, "ContextSchema", { enumerable: true, get: function () { return schemas_1.ContextSchema; } });
+Object.defineProperty(exports, "SessionSchema", { enumerable: true, get: function () { return schemas_1.SessionSchema; } });
+Object.defineProperty(exports, "AuthPrincipalClaim", { enumerable: true, get: function () { return schemas_1.AuthPrincipalClaim; } });
+Object.defineProperty(exports, "ProfileClaim", { enumerable: true, get: function () { return schemas_1.ProfileClaim; } });
+Object.defineProperty(exports, "SignatureClaim", { enumerable: true, get: function () { return schemas_1.SignatureClaim; } });
+Object.defineProperty(exports, "PrepareTxClaim", { enumerable: true, get: function () { return schemas_1.PrepareTxClaim; } });
+Object.defineProperty(exports, "AgreementClaim", { enumerable: true, get: function () { return schemas_1.AgreementClaim; } });
+Object.defineProperty(exports, "VerifiableCredentialClaim", { enumerable: true, get: function () { return schemas_1.VerifiableCredentialClaim; } });
+Object.defineProperty(exports, "AssetClaim", { enumerable: true, get: function () { return schemas_1.AssetClaim; } });

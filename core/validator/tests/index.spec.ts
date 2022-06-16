@@ -1,8 +1,8 @@
-const { claims } = require('../lib');
+const { VerifiableCredentialClaim } = require('../src');
 
 describe('Validator', () => {
   test('should trusted issuers work', () => {
-    const { error } = claims.verifiableCredential.validate({
+    const { error } = VerifiableCredentialClaim.validate({
       type: 'verifiableCredential',
       description: 'xxx',
       filters: [
