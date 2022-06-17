@@ -18,30 +18,21 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/did": "^1.16.15",
-    "@arcblock/jwt": "^1.16.15",
+    "@arcblock/did": "^1.17.0",
+    "@arcblock/jwt": "^1.17.0",
     "@did-connect/validator": "2.0.0",
-    "@ocap/util": "^1.16.15",
-    "@ocap/wallet": "^1.16.15",
+    "@ocap/util": "^1.17.0",
+    "@ocap/wallet": "^1.17.0",
     "debug": "^4.3.4",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@arcblock/eslint-config-ts": "0.2.2",
+    "eslint": "^8.16.0",
     "axios": "^0.27.2",
     "jest": "^28.1.1",
-    "remark-cli": "^10.0.1",
-    "remark-preset-github": "^4.0.1",
-    "tweetnacl": "^1.0.3"
-  },
-  "remarkConfig": {
-    "plugins": [
-      "preset-github",
-      [
-        {
-          "repository": "ArcBlock/did-connect"
-        }
-      ]
-    ]
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.3"
   },
   "homepage": "https://github.com/ArcBlock/did-connect",
   "keywords": [
@@ -58,18 +49,15 @@
     "url": "https://github.com/ArcBlock/did-connect"
   },
   "scripts": {
-    "lint": "eslint lib tests",
-    "lint:fix": "eslint --fix lib tests",
-    "docs": "yarn gen-dts && yarn gen-docs && yarn cleanup-docs && yarn format-docs",
-    "cleanup-docs": "node ../../scripts/cleanup-docs.js docs/README.md $npm_package_name",
-    "gen-docs": "jsdoc2md lib/**/*.js lib/**/**/*.js > docs/README.md",
-    "gen-dts": "j2d lib/index.js",
-    "format-docs": "remark . -o",
+    "lint": "eslint src tests",
+    "lint:fix": "eslint --fix src tests",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "clean": "rm -rf ./lib",
     "test": "jest --forceExit",
     "coverage": "yarn test --coverage"
   },
-  "resolutions": {
-    "tweetnacl": "1.0.3"
-  },
+  "resolutions": {},
   "gitHead": "87990c8b5e215107fc587c1ced0d6b3e2cd2483e"
 }
