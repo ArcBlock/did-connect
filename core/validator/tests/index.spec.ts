@@ -1,8 +1,8 @@
-const { VerifiableCredentialClaim } = require('../src');
+const { VerifiableCredentialRequest } = require('../src');
 
 describe('Validator', () => {
   test('should trusted issuers work', () => {
-    const { error } = VerifiableCredentialClaim.validate({
+    const { error } = VerifiableCredentialRequest.validate({
       type: 'verifiableCredential',
       description: 'xxx',
       filters: [

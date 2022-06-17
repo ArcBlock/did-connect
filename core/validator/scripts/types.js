@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 const { convertFromDirectory } = require('joi-to-typescript');
 
 async function types() {
@@ -6,6 +7,7 @@ async function types() {
 
   // Configure your settings here
   const result = await convertFromDirectory({
+    fileHeader: '/* eslint-disable @typescript-eslint/indent */',
     schemaDirectory: './src/schemas',
     typeOutputDirectory: './src/types',
     debug: true,
