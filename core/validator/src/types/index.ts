@@ -195,14 +195,24 @@ export interface ChainInfoType {
 
 export interface ContextType {
   body?: object;
-  didwallet?: object;
+  didwallet: DIDWalletInfoType;
   headers: object;
   locale: string;
-  previousConnected?: object | null;
+  previousConnected?: {
+    didwallet: 'ios' | 'android' | 'web';
+    userDid: string;
+    userPk: string;
+  } | null;
   session?: SessionType | null;
-  sessionId?: string;
+  sessionId: string;
   signerPk?: string;
   signerToken?: string;
+}
+
+export interface DIDWalletInfoType {
+  jwt: string;
+  os: 'ios' | 'android' | 'web';
+  version: string;
 }
 
 export interface PrepareTxRequestType {
@@ -261,9 +271,9 @@ export interface ProfileResponseType {
   type: 'profile';
 }
 
-export type RequestListType = (AnyRequestType[] | AnyRequestType)[];
+export type RequestListType = AnyRequestType[];
 
-export type ResponseListType = (AnyResponseType[] | AnyResponseType)[];
+export type ResponseListType = AnyResponseType[];
 
 export interface SessionType {
   appInfo?: AppInfoType;
@@ -272,11 +282,7 @@ export interface SessionType {
   autoConnect?: boolean;
   challenge: string;
   currentConnected?: {
-    didwallet: {
-      jwt: string;
-      os: string;
-      version: string;
-    };
+    didwallet: DIDWalletInfoType;
     userDid: string;
     userPk: string;
   } | null;
@@ -284,12 +290,12 @@ export interface SessionType {
   error?: string;
   onlyConnect?: boolean;
   previousConnected?: {
-    didwallet: string;
+    didwallet: 'ios' | 'android' | 'web';
     userDid: string;
     userPk: string;
   } | null;
-  requestedClaims?: RequestListType;
-  responseClaims?: ResponseListType;
+  requestedClaims?: (AnyRequestType[] | AnyRequestType)[];
+  responseClaims?: AnyResponseType[][];
   status:
     | 'created'
     | 'walletScanned'

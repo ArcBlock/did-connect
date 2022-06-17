@@ -1,10 +1,9 @@
 import {
   AppInfo,
   ChainInfo,
+  DIDWalletInfo,
   Context,
   Session,
-  RequestType,
-  SignatureType,
   AuthPrincipalRequest,
   ProfileRequest,
   SignatureRequest,
@@ -23,11 +22,15 @@ import {
   RequestList,
   AnyResponse,
   ResponseList,
+  LocaleType,
+  RequestType,
+  SignatureType,
 } from './schemas';
 
 import {
   AppInfoType,
   ChainInfoType,
+  DIDWalletInfoType,
   ContextType,
   SessionType,
   AuthPrincipalRequestType,
@@ -52,10 +55,12 @@ import {
 
 export {
   // types
+  LocaleType,
   RequestType,
   SignatureType,
   AppInfoType,
   ChainInfoType,
+  DIDWalletInfoType,
   ContextType,
   SessionType,
   AuthPrincipalRequestType,
@@ -79,6 +84,7 @@ export {
   // validators
   AppInfo,
   ChainInfo,
+  DIDWalletInfo,
   Context,
   Session,
   AuthPrincipalRequest,

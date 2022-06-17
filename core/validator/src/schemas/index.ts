@@ -6,6 +6,8 @@ import { types } from '@ocap/mcrypto';
 const options = { stripUnknown: true, noDefaults: false };
 const capitalize = (input: string): string => input.charAt(0).toUpperCase() + input.slice(1);
 
+type LocaleType = 'en' | 'zh';
+
 // Basic Types
 const ChainInfo: ObjectSchema = Joi.object({
   id: Joi.string().optional(),
@@ -36,6 +38,14 @@ const AppInfo: ObjectSchema = Joi.object({
 })
   .options(options)
   .meta({ unknownType: 'string', className: 'AppInfoType' });
+
+const DIDWalletInfo = Joi.object({
+  os: Joi.string().valid('ios', 'android', 'web').required(),
+  version: Joi.string().required(),
+  jwt: Joi.string().required(),
+})
+  .options(options)
+  .meta({ unknownType: 'string', className: 'DIDWalletInfoType' });
 
 // did-connect claim type utils
 type RequestType =
@@ -275,7 +285,7 @@ const AnyRequest = Joi.alternatives()
   .meta({ unknownType: 'string', className: 'AnyRequestType' });
 
 const RequestList = Joi.array()
-  .items(Joi.alternatives().try(Joi.array().items(AnyRequest).min(1), AnyRequest))
+  .items(AnyRequest)
   .default([])
   .meta({ unknownType: 'string', className: 'RequestListType' });
 
@@ -293,9 +303,17 @@ const AnyResponse = Joi.alternatives()
   .meta({ unknownType: 'string', className: 'AnyResponseType' });
 
 const ResponseList = Joi.array()
-  .items(Joi.alternatives().try(Joi.array().items(AnyResponse).min(1), AnyResponse))
+  .items(AnyResponse)
   .default([])
   .meta({ unknownType: 'string', className: 'ResponseListType' });
+
+const PreviousConnected = Joi.object({
+  userDid: Joi.DID().required(),
+  userPk: Joi.string().required(),
+  didwallet: Joi.string().valid('ios', 'android', 'web').required(),
+})
+  .optional()
+  .allow(null);
 
 // DID Connect session storage
 const Session: ObjectSchema = Joi.object({
@@ -323,27 +341,23 @@ const Session: ObjectSchema = Joi.object({
   appInfo: AppInfo,
   onlyConnect: Joi.boolean().default(false),
   autoConnect: Joi.boolean().default(true),
-  previousConnected: Joi.object({
-    userDid: Joi.DID().required(),
-    userPk: Joi.string().required(),
-    didwallet: Joi.string().required(),
-  })
-    .optional()
-    .allow(null),
+  previousConnected: PreviousConnected,
   currentConnected: Joi.object({
     userDid: Joi.DID().required(),
     userPk: Joi.string().required(),
-    didwallet: Joi.object({
-      os: Joi.string().required(),
-      version: Joi.string().required(),
-      jwt: Joi.string().required(),
-    }).required(),
+    didwallet: DIDWalletInfo.required(),
   })
     .optional()
     .allow(null),
   currentStep: Joi.number().integer().min(0),
-  requestedClaims: RequestList,
-  responseClaims: ResponseList,
+  // User can set claims in following format
+  // requestedClaims: [claim1, [claim2, claim3], claim4]
+  requestedClaims: Joi.array()
+    .items(Joi.alternatives().try(Joi.array().items(AnyRequest).min(1), AnyRequest))
+    .default([]),
+  // Always a 2 dimension array
+  responseClaims: Joi.array().items(Joi.array().items(AnyResponse).min(1)).default([]),
+  // Always a flat array
   approveResults: Joi.array().items(Joi.any()).default([]),
   error: Joi.string().optional().allow(''),
   timeout: Joi.object({
@@ -361,15 +375,15 @@ const Session: ObjectSchema = Joi.object({
 
 // DID Connect handler context
 const Context: ObjectSchema = Joi.object({
-  didwallet: Joi.object().optional(),
+  didwallet: DIDWalletInfo.required(),
   body: Joi.object().optional().default({}),
   headers: Joi.object().required(),
-  sessionId: Joi.string().max(21).min(21).allow(''),
+  sessionId: Joi.string().max(21).min(21).allow('').required(),
   session: Session.allow(null),
-  locale: Joi.string().required(),
+  locale: Joi.string().required().default('en'),
   signerPk: Joi.string().optional().allow(''),
   signerToken: Joi.string().optional().allow(''),
-  previousConnected: Joi.object().optional().allow(null),
+  previousConnected: PreviousConnected,
 })
   .options(options)
   .meta({ unknownType: 'string', className: 'ContextType' });
@@ -377,8 +391,10 @@ const Context: ObjectSchema = Joi.object({
 export {
   AppInfo,
   ChainInfo,
+  DIDWalletInfo,
   Context,
   Session,
+  LocaleType,
   RequestType,
   SignatureType,
   AuthPrincipalRequest,

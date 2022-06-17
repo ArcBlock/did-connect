@@ -1,6 +1,13 @@
-const { VerifiableCredentialRequest } = require('../src');
+const { ChainInfo, VerifiableCredentialRequest } = require('../src');
 
 describe('Validator', () => {
+  test('should chainInfo work', () => {
+    expect(ChainInfo.validate({ host: 'none' }).error).toBeFalsy();
+    expect(ChainInfo.validate({ host: 'none', id: 'none' }).error).toBeFalsy();
+    expect(ChainInfo.validate({ host: 'https://beta.abtnetwork.io' }).error).toBeFalsy();
+    expect(ChainInfo.validate({ host: 'https://beta.abtnetwork.io', id: 'beta' }).error).toBeFalsy();
+  });
+
   test('should trusted issuers work', () => {
     const { error } = VerifiableCredentialRequest.validate({
       type: 'verifiableCredential',
