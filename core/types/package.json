@@ -1,6 +1,6 @@
 {
-  "name": "@did-connect/validator",
-  "description": "Schema definition for did-connect protocol",
+  "name": "@did-connect/types",
+  "description": "Type definition and validator for did-connect protocol",
   "version": "2.0.0",
   "author": {
     "name": "wangshijun",
