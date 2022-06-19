@@ -17,7 +17,7 @@ module.exports = function attachHandlers(router, handlers, prefix = '/api/connec
       return {
         userDid,
         userPk: get(req, 'cookies.connected_pk', ''),
-        wallet: get(req, 'cookies.connected_wallet', ''),
+        didwallet: get(req, 'cookies.connected_wallet', ''),
       };
     }
 

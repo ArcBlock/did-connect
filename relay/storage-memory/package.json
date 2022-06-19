@@ -14,21 +14,11 @@
     "wangshijun <shijun@arcblock.io> (https://ocap.arcblock.io)"
   ],
   "devDependencies": {
-    "j2d": "^1.0.3-dev",
+    "@arcblock/eslint-config-ts": "0.2.2",
+    "eslint": "^8.16.0",
     "jest": "^28.1.1",
-    "remark-cli": "^10.0.1",
-    "remark-preset-github": "^4.0.1"
-  },
-  "remarkConfig": {
-    "plugins": [
-      "preset-github",
-      [
-        "validate-links",
-        {
-          "repository": "ArcBlock/did-connect"
-        }
-      ]
-    ]
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.3"
   },
   "homepage": "https://github.com/ArcBlock/did-connect/tree/master/packagesstorage-memory",
   "keywords": [
@@ -37,6 +27,7 @@
   ],
   "license": "Apache-2.0",
   "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
   "files": [
     "lib"
   ],
@@ -46,15 +37,14 @@
   },
   "scripts": {
     "lint": "eslint lib tests",
-    "docs": "yarn generate-dts && yarn generate-docs && yarn cleanup-docs && yarn format-docs",
-    "cleanup-docs": "node ../../tools/cleanup-docs.js docs/README.md $npm_package_name",
-    "generate-docs": "jsdoc2md lib/index.js > docs/README.md",
-    "generate-dts": "j2d lib/index.js",
-    "format-docs": "remark . -o",
     "precommit": "CI=1 yarn test",
     "prepush": "CI=1 yarn test",
     "test": "node tools/jest.js",
-    "coverage": "yarn test --coverage"
+    "coverage": "yarn test --coverage",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "clean": "rm -rf ./lib"
   },
   "gitHead": "570a366418890ded86422e168417bae0c9967e35",
   "dependencies": {

@@ -13,6 +13,7 @@ import {
   SessionType,
   ContextType,
   Context,
+  AnyRequestType,
   RequestList,
   RequestListType,
   ResponseListType,
@@ -26,12 +27,13 @@ type AuthenticatorOptions = {
 };
 
 export type AppResponse = {
-  response: any;
+  response?: any;
+  error?: string;
   errorMessage?: string;
   successMessage?: string;
   nextWorkflow?: string;
   [key: string]: any;
-};
+} | null;
 
 export type AppResponseSigned = {
   appPk: string;
@@ -90,7 +92,7 @@ export class Authenticator {
   signJson(data: AppResponse, context: ContextType): AppResponseSigned {
     const { error } = Context.validate(context);
     if (error) {
-      throw new Error(`Invalid context: ${error.details.map((x) => x.message).join(', ')}`);
+      throw new Error(`Invalid context: ${error.details.map((x: any) => x.message).join(', ')}`);
     }
 
     // eslint-disable-next-line no-param-reassign
@@ -149,12 +151,12 @@ export class Authenticator {
     const claimList: RequestListType = Array.isArray(claims) ? claims : [claims];
     let res = RequestList.validate(claimList);
     if (res.error) {
-      throw new Error(`Invalid claims: ${res.error.details.map((x) => x.message).join(', ')}`);
+      throw new Error(`Invalid claims: ${res.error.details.map((x: any) => x.message).join(', ')}`);
     }
 
     res = Context.validate(context);
     if (res.error) {
-      throw new Error(`Invalid context: ${res.error.details.map((x) => x.message).join(', ')}`);
+      throw new Error(`Invalid context: ${res.error.details.map((x: any) => x.message).join(', ')}`);
     }
 
     const { sessionId, session, didwallet } = context;
@@ -165,7 +167,7 @@ export class Authenticator {
     const nextUrl = tmp.href;
 
     // TODO: perhaps we should set chainInfo in each claim
-    const claimWithChainInfo = claimList.find((x) => x.chainInfo);
+    const claimWithChainInfo = claimList.find((x: AnyRequestType) => x.chainInfo);
 
     const payload = {
       action: 'responseAuth',

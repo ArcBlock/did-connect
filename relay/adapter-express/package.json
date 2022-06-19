@@ -26,19 +26,7 @@
     "@did-connect/storage-memory": "^2.0.0",
     "axios": "^0.27.2",
     "jest": "^28.1.1",
-    "nanoid": "3.x",
-    "remark-cli": "^10.0.1",
-    "remark-preset-github": "^4.0.1"
-  },
-  "remarkConfig": {
-    "plugins": [
-      "preset-github",
-      [
-        {
-          "repository": "ArcBlock/did-connect"
-        }
-      ]
-    ]
+    "nanoid": "3.x"
   },
   "homepage": "https://github.com/ArcBlock/did-connect",
   "keywords": [
@@ -47,6 +35,7 @@
   ],
   "license": "Apache-2.0",
   "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
   "files": [
     "lib"
   ],
@@ -57,11 +46,10 @@
   "scripts": {
     "lint": "eslint lib tests",
     "lint:fix": "eslint --fix lib tests",
-    "docs": "yarn gen-dts && yarn gen-docs && yarn cleanup-docs && yarn format-docs",
-    "cleanup-docs": "node ../../scripts/cleanup-docs.js docs/README.md $npm_package_name",
-    "gen-docs": "jsdoc2md lib/**/*.js lib/**/**/*.js > docs/README.md",
-    "gen-dts": "j2d lib/index.js",
-    "format-docs": "remark . -o",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "clean": "rm -rf ./lib",
     "test": "jest --forceExit",
     "coverage": "yarn test --coverage"
   },

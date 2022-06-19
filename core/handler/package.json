@@ -18,34 +18,27 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/did": "^1.16.15",
-    "@arcblock/jwt": "^1.16.15",
-    "@arcblock/ws": "^1.16.15",
-    "@did-connect/validator": "2.0.0",
-    "@ocap/mcrypto": "^1.16.15",
-    "@ocap/util": "^1.16.15",
+    "@arcblock/did": "^1.17.0",
+    "@arcblock/jwt": "^1.17.0",
+    "@arcblock/ws": "^1.17.0",
+    "@did-connect/types": "2.0.0",
+    "@did-connect/authenticator": "2.0.0",
+    "@did-connect/storage": "2.0.0",
+    "@ocap/mcrypto": "^1.17.0",
+    "@ocap/util": "^1.17.0",
     "lodash": "^4.17.21",
     "object-hash": "^3.0.0",
     "p-wait-for": "3.x",
     "semver": "^7.3.4"
   },
   "devDependencies": {
+    "@arcblock/eslint-config-ts": "0.2.2",
+    "@types/semver": "^7.3.10",
     "axios": "^0.27.2",
+    "eslint": "^8.16.0",
     "jest": "^28.1.1",
     "nanoid": "3.x",
-    "remark-cli": "^10.0.1",
-    "remark-preset-github": "^4.0.1",
     "tweetnacl": "^1.0.3"
-  },
-  "remarkConfig": {
-    "plugins": [
-      "preset-github",
-      [
-        {
-          "repository": "ArcBlock/did-connect"
-        }
-      ]
-    ]
   },
   "homepage": "https://github.com/ArcBlock/did-connect",
   "keywords": [
@@ -64,13 +57,12 @@
   "scripts": {
     "lint": "eslint lib tests",
     "lint:fix": "eslint --fix lib tests",
-    "docs": "yarn gen-dts && yarn gen-docs && yarn cleanup-docs && yarn format-docs",
-    "cleanup-docs": "node ../../scripts/cleanup-docs.js docs/README.md $npm_package_name",
-    "gen-docs": "jsdoc2md lib/**/*.js lib/**/**/*.js > docs/README.md",
-    "gen-dts": "j2d lib/index.js",
-    "format-docs": "remark . -o",
     "test": "jest --forceExit",
-    "coverage": "yarn test --coverage"
+    "coverage": "yarn test --coverage",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "clean": "rm -rf ./lib"
   },
   "resolutions": {
     "tweetnacl": "1.0.3"
