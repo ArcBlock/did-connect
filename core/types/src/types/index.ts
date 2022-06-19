@@ -276,26 +276,26 @@ export type RequestListType = AnyRequestType[];
 export type ResponseListType = AnyResponseType[];
 
 export interface SessionType {
-  appInfo?: AppInfoType;
-  approveResults?: any[];
+  appInfo: AppInfoType;
+  approveResults: any[];
   authUrl: string;
-  autoConnect?: boolean;
+  autoConnect: boolean;
   challenge: string;
   currentConnected?: {
     didwallet: DIDWalletInfoType;
     userDid: string;
     userPk: string;
   } | null;
-  currentStep?: number;
+  currentStep: number;
   error?: string;
-  onlyConnect?: boolean;
+  onlyConnect: boolean;
   previousConnected?: {
     didwallet: 'ios' | 'android' | 'web';
     userDid: string;
     userPk: string;
   } | null;
-  requestedClaims?: (AnyRequestType[] | AnyRequestType)[];
-  responseClaims?: AnyResponseType[][];
+  requestedClaims: (AnyRequestType[] | AnyRequestType)[];
+  responseClaims: AnyResponseType[][];
   status:
     | 'created'
     | 'walletScanned'
@@ -308,8 +308,8 @@ export interface SessionType {
     | 'rejected'
     | 'canceled'
     | 'completed';
-  strategy?: string | 'default';
-  timeout?: {
+  strategy: string | 'default';
+  timeout: {
     app?: number;
     relay?: number;
     wallet?: number;

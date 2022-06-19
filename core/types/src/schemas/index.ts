@@ -333,14 +333,14 @@ const Session: ObjectSchema = Joi.object({
     )
     .required(),
   updaterPk: Joi.string().required(),
-  strategy: Joi.alternatives().try(Joi.DID(), Joi.string().valid('default')),
+  strategy: Joi.alternatives().try(Joi.DID(), Joi.string().valid('default')).required(),
   authUrl: Joi.string()
     .uri({ scheme: ['http', 'https'] })
     .required(),
   challenge: Joi.string().required(),
-  appInfo: AppInfo,
-  onlyConnect: Joi.boolean().default(false),
-  autoConnect: Joi.boolean().default(true),
+  appInfo: AppInfo.required(),
+  onlyConnect: Joi.boolean().default(false).required(),
+  autoConnect: Joi.boolean().default(true).required(),
   previousConnected: PreviousConnected,
   currentConnected: Joi.object({
     userDid: Joi.DID().required(),
@@ -349,26 +349,29 @@ const Session: ObjectSchema = Joi.object({
   })
     .optional()
     .allow(null),
-  currentStep: Joi.number().integer().min(0),
+  currentStep: Joi.number().integer().min(0).default(0).required(),
   // User can set claims in following format
   // requestedClaims: [claim1, [claim2, claim3], claim4]
   requestedClaims: Joi.array()
     .items(Joi.alternatives().try(Joi.array().items(AnyRequest).min(1), AnyRequest))
-    .default([]),
+    .default([])
+    .required(),
   // Always a 2 dimension array
-  responseClaims: Joi.array().items(Joi.array().items(AnyResponse).min(1)).default([]),
+  responseClaims: Joi.array().items(Joi.array().items(AnyResponse).min(1)).default([]).required(),
   // Always a flat array
-  approveResults: Joi.array().items(Joi.any()).default([]),
+  approveResults: Joi.array().items(Joi.any()).default([]).required(),
   error: Joi.string().optional().allow(''),
   timeout: Joi.object({
     app: Joi.number().positive(),
     relay: Joi.number().positive(),
     wallet: Joi.number().positive(),
-  }).default({
-    app: 10000,
-    relay: 10000,
-    wallet: 60000,
-  }),
+  })
+    .default({
+      app: 10000,
+      relay: 10000,
+      wallet: 60000,
+    })
+    .required(),
 })
   .options(options)
   .meta({ unknownType: 'string', className: 'SessionType' });
