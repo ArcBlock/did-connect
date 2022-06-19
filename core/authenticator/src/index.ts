@@ -16,7 +16,7 @@ import {
   RequestList,
   RequestListType,
   ResponseListType,
-} from '@did-connect/validator';
+} from '@did-connect/types';
 
 type AuthenticatorOptions = {
   wallet: WalletObject;

@@ -20,7 +20,7 @@
   "dependencies": {
     "@arcblock/did": "^1.17.0",
     "@arcblock/jwt": "^1.17.0",
-    "@did-connect/validator": "2.0.0",
+    "@did-connect/types": "2.0.0",
     "@ocap/util": "^1.17.0",
     "@ocap/wallet": "^1.17.0",
     "debug": "^4.3.4",
