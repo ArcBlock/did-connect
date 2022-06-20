@@ -39,7 +39,7 @@
     "lint": "eslint lib tests",
     "precommit": "CI=1 yarn test",
     "prepush": "CI=1 yarn test",
-    "test": "node tools/jest.js",
+    "test": "jest",
     "coverage": "yarn test --coverage",
     "prebuild": "npm run clean",
     "build": "tsc",
@@ -48,6 +48,7 @@
   },
   "gitHead": "570a366418890ded86422e168417bae0c9967e35",
   "dependencies": {
+    "@did-connect/types": "2.0.0",
     "@did-connect/storage": "^2.0.0"
   }
 }
