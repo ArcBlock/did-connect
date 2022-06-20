@@ -40,6 +40,10 @@ export default class SessionStorage extends EventEmitter {
     throw new Error('SessionStorage.delete must be implemented in child class');
   }
 
+  clear(): Promise<void> {
+    throw new Error('SessionStorage.clear must be implemented in child class');
+  }
+
   isFinalized(status: string): boolean {
     return ['error', 'timeout', 'canceled', 'rejected', 'completed'].includes(status);
   }

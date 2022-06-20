@@ -32,7 +32,7 @@
     "url": "https://github.com/ArcBlock/did-connect/tree/master/packagesstorage-mongo"
   },
   "scripts": {
-    "lint": "eslint lib tests",
+    "lint": "eslint src tests",
     "precommit": "CI=1 yarn test",
     "prepush": "CI=1 yarn test",
     "test": "node tools/jest.js",

@@ -34,12 +34,14 @@ export default class MemoryStorage extends BaseStorage {
     return this.read(sessionId);
   }
 
+  // @ts-ignore
   delete(sessionId: string): void {
     this.emit('delete', storage[sessionId]);
     delete storage[sessionId];
   }
 
-  clear() {
+  // @ts-ignore
+  clear(): void {
     storage = {};
   }
 }
