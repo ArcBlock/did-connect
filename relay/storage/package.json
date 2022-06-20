@@ -42,7 +42,7 @@
     "lint": "eslint lib tests",
     "precommit": "CI=1 yarn test",
     "prepush": "CI=1 yarn test",
-    "test": "node tools/jest.js",
+    "test": "jest",
     "coverage": "yarn test --coverage",
     "prebuild": "npm run clean",
     "build": "tsc",

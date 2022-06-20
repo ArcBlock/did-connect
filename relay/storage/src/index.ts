@@ -11,20 +11,14 @@ export type SessionStorageOptions = {
  * Which is used to persist state during the DID Connect process between dApp and wallet
  *
  * @class SessionStorage
- * @see @did-connect/storage-firebase
+ * @see @did-connect/storage-memory
  * @see @did-connect/storage-mongo
- * @see @did-connect/storage-keystone
+ * @see @did-connect/storage-nedb
  * @extends {EventEmitter}
  */
 export default class SessionStorage extends EventEmitter {
   options: SessionStorageOptions;
 
-  /**
-   * Creates an instance of SessionStorage.
-   *
-   * @class
-   * @param {object} options
-   */
   constructor(options: SessionStorageOptions = {}) {
     super();
     this.options = options || {};
@@ -42,23 +36,28 @@ export default class SessionStorage extends EventEmitter {
     throw new Error('SessionStorage.update must be implemented in child class');
   }
 
-  delete(sessionId: string): void {
+  delete(sessionId: string): Promise<void> {
     throw new Error('SessionStorage.delete must be implemented in child class');
   }
 
-  isFinalized(status: string) {
+  isFinalized(status: string): boolean {
     return ['error', 'timeout', 'canceled', 'rejected', 'completed'].includes(status);
   }
 
-  deleteFinalized(sessionId: string) {
+  deleteFinalized(sessionId: string): Promise<boolean> {
     const { ttl = 8 * 1000 } = this.options;
     return new Promise((resolve) => {
-      setTimeout(() => {
+      setTimeout(async () => {
         if (process.env.NODE_ENV !== 'test') {
           // eslint-disable-next-line no-console
           console.info('delete finalized session', sessionId);
         }
-        resolve(this.delete(sessionId));
+        try {
+          await this.delete(sessionId);
+          resolve(true);
+        } catch {
+          resolve(false);
+        }
       }, ttl);
     });
   }
