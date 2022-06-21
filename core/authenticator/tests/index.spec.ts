@@ -42,6 +42,7 @@ const context: ContextType = {
   signerPk: '',
   signerToken: '',
   session: {
+    sessionId: 'xi2Vibd-wCdZZFxT_iYij',
     status: 'created',
     updaterPk: '0x4e919a3fb2d38c5357f78eea4a847cc6b45bc0b0fbf50ff49238624e9e284d47',
     strategy: 'default',
