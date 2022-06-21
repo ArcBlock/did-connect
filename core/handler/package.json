@@ -57,7 +57,7 @@
   "scripts": {
     "lint": "eslint lib tests",
     "lint:fix": "eslint --fix lib tests",
-    "test": "jest --forceExit",
+    "test": "jest",
     "coverage": "yarn test --coverage",
     "prebuild": "npm run clean",
     "build": "tsc",

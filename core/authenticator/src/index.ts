@@ -17,13 +17,14 @@ import {
   RequestList,
   RequestListType,
   ResponseListType,
+  I18nMessages,
 } from '@did-connect/types';
 
 type AuthenticatorOptions = {
   wallet: WalletObject;
   appInfo: AppInfoType | Function;
-  chainInfo: ChainInfoType;
-  timeout: number;
+  chainInfo?: ChainInfoType;
+  timeout?: number;
 };
 
 export type AppResponse = {
@@ -58,14 +59,37 @@ const debug = Debug('@did-connect/authenticator');
 const DEFAULT_TIMEOUT = 8000;
 const DEFAULT_CHAIN_INFO: ChainInfoType = { host: 'none' };
 
+const errors: I18nMessages = {
+  pkMissing: {
+    en: 'userPk is required to complete auth',
+    zh: 'userPk 参数缺失',
+  },
+  tokenMissing: {
+    en: 'userInfo is required to complete auth',
+    zh: 'JWT Token 参数缺失',
+  },
+  pkFormat: {
+    en: 'userPk should be either base58 or base16 format',
+    zh: 'userPk 无法解析',
+  },
+  tokenInvalid: {
+    en: 'Invalid JWT token',
+    zh: '签名无效',
+  },
+  timeInvalid: {
+    en: 'JWT token expired, make sure your device time in sync with network',
+    zh: '签名中的时间戳无效，请确保设备和网络时间同步',
+  },
+};
+
 export class Authenticator {
-  wallet: WalletObject;
+  readonly wallet: WalletObject;
 
-  appInfo: AppInfoType | Function;
+  readonly appInfo: AppInfoType | Function;
 
-  chainInfo: ChainInfoType;
+  readonly chainInfo: ChainInfoType;
 
-  timeout: number;
+  readonly timeout: number;
 
   /**
    * Creates an instance of DID Authenticator.
@@ -147,7 +171,7 @@ export class Authenticator {
    * @param {object} context - context
    * @returns {object} { appPk, authInfo }
    */
-  signClaims(claims: RequestListType, context: ContextType): AppResponseSigned {
+  signClaims(claims: AnyRequestType | AnyRequestType[], context: ContextType): AppResponseSigned {
     const claimList: RequestListType = Array.isArray(claims) ? claims : [claims];
     let res = RequestList.validate(claimList);
     if (res.error) {
@@ -187,7 +211,7 @@ export class Authenticator {
   /**
    * Determine appInfo on the fly
    */
-  async getAppInfo(context: ContextType): Promise<AppInfoType> {
+  async getAppInfo(context: ContextType & { baseUrl: string }): Promise<AppInfoType> {
     if (typeof this.appInfo === 'function') {
       // @ts-ignore
       const info: AppInfoType = await this.tryWithTimeout(() => this.appInfo(context));
@@ -281,29 +305,6 @@ export class Authenticator {
     return new Promise((resolve, reject) => {
       debug('verify', data, locale);
 
-      const errors = {
-        pkMissing: {
-          en: 'userPk is required to complete auth',
-          zh: 'userPk 参数缺失',
-        },
-        tokenMissing: {
-          en: 'userInfo is required to complete auth',
-          zh: 'JWT Token 参数缺失',
-        },
-        pkFormat: {
-          en: 'userPk should be either base58 or base16 format',
-          zh: 'userPk 无法解析',
-        },
-        tokenInvalid: {
-          en: 'Invalid JWT token',
-          zh: '签名无效',
-        },
-        timeInvalid: {
-          en: 'JWT token expired, make sure your device time in sync with network',
-          zh: '签名中的时间戳无效，请确保设备和网络时间同步',
-        },
-      };
-
       const pk = data.userPk;
       const info = data.userInfo;
       if (!pk) {
@@ -311,10 +312,6 @@ export class Authenticator {
       }
       if (!info) {
         return reject(new Error(errors.tokenMissing[locale]));
-      }
-
-      if (!pk) {
-        return reject(new Error(errors.pkFormat[locale]));
       }
 
       if (!verify(info, pk)) {

@@ -11,10 +11,12 @@ type LocaleType = 'en' | 'zh';
 // Basic Types
 const ChainInfo: ObjectSchema = Joi.object({
   id: Joi.string().optional(),
-  host: Joi.string()
-    .uri({ scheme: ['http', 'https'] })
-    .required()
-    .allow('none'),
+  host: Joi.alternatives().try(
+    Joi.string()
+      .uri({ scheme: ['http', 'https'] })
+      .required(),
+    Joi.string().valid('none').required()
+  ),
 })
   .options(options)
   .meta({ unknownType: 'string', className: 'ChainInfoType' });
@@ -40,8 +42,8 @@ const AppInfo: ObjectSchema = Joi.object({
   .meta({ unknownType: 'string', className: 'AppInfoType' });
 
 const DIDWalletInfo = Joi.object({
-  os: Joi.string().valid('ios', 'android', 'web').required(),
-  version: Joi.string().required(),
+  os: Joi.string().valid('ios', 'android', 'web').allow('').required(),
+  version: Joi.string().required().allow(''),
   jwt: Joi.string().required(),
 })
   .options(options)
@@ -94,7 +96,10 @@ const createClaimTypes = (type: RequestType, description: string): ObjectSchema[
         }).optional(),
         supervised: Joi.boolean().default(false),
       },
-      response: {},
+      response: {
+        userDid: Joi.DID().required(),
+        userPk: Joi.string().required(),
+      },
     },
     profile: {
       request: {
@@ -243,7 +248,7 @@ const createClaimTypes = (type: RequestType, description: string): ObjectSchema[
   const response: ObjectSchema = Joi.object({
     ...createStandardFields(type, description),
     ...claims[type].request,
-    ...claims[type].request,
+    ...claims[type].response,
   })
     .options(options)
     .meta({ unknownType: 'string', className: `${capitalize(type)}ResponseType` });
@@ -284,10 +289,7 @@ const AnyRequest = Joi.alternatives()
   )
   .meta({ unknownType: 'string', className: 'AnyRequestType' });
 
-const RequestList = Joi.array()
-  .items(AnyRequest)
-  .default([])
-  .meta({ unknownType: 'string', className: 'RequestListType' });
+const RequestList = Joi.array().items(AnyRequest).min(1).meta({ unknownType: 'string', className: 'RequestListType' });
 
 // Any claim request
 const AnyResponse = Joi.alternatives()
@@ -304,19 +306,20 @@ const AnyResponse = Joi.alternatives()
 
 const ResponseList = Joi.array()
   .items(AnyResponse)
-  .default([])
+  .min(1)
   .meta({ unknownType: 'string', className: 'ResponseListType' });
 
 const PreviousConnected = Joi.object({
   userDid: Joi.DID().required(),
   userPk: Joi.string().required(),
-  didwallet: Joi.string().valid('ios', 'android', 'web').required(),
+  didwallet: Joi.string().valid('ios', 'android', 'web').allow('').required(),
 })
   .optional()
   .allow(null);
 
 // DID Connect session storage
 const Session: ObjectSchema = Joi.object({
+  sessionId: Joi.string().required(),
   status: Joi.string()
     .valid(
       'created',
@@ -362,9 +365,9 @@ const Session: ObjectSchema = Joi.object({
   approveResults: Joi.array().items(Joi.any()).default([]).required(),
   error: Joi.string().optional().allow(''),
   timeout: Joi.object({
-    app: Joi.number().positive(),
-    relay: Joi.number().positive(),
-    wallet: Joi.number().positive(),
+    app: Joi.number().positive().required(),
+    relay: Joi.number().positive().required(),
+    wallet: Joi.number().positive().required(),
   })
     .default({
       app: 10000,
@@ -379,13 +382,13 @@ const Session: ObjectSchema = Joi.object({
 // DID Connect handler context
 const Context: ObjectSchema = Joi.object({
   didwallet: DIDWalletInfo.required(),
-  body: Joi.object().optional().default({}),
+  body: Joi.object().required(),
   headers: Joi.object().required(),
-  sessionId: Joi.string().max(21).min(21).allow('').required(),
-  session: Session.allow(null),
+  sessionId: Joi.string().max(21).min(21).required().allow(''),
+  session: Session.required().allow(null),
   locale: Joi.string().required().default('en'),
-  signerPk: Joi.string().optional().allow(''),
-  signerToken: Joi.string().optional().allow(''),
+  signerPk: Joi.string().required().allow(''),
+  signerToken: Joi.string().required().allow(''),
   previousConnected: PreviousConnected,
 })
   .options(options)

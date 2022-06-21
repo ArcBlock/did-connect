@@ -1,12 +1,12 @@
-import SessionStorage from '../src';
+import { BaseStorage } from '../src';
 
 describe('RelayStorage', () => {
   test('should be a function', () => {
-    expect(typeof SessionStorage).toEqual('function');
+    expect(typeof BaseStorage).toEqual('function');
   });
 
   test('should extends event emitter', () => {
-    const storage = new SessionStorage();
+    const storage = new BaseStorage();
     expect(typeof storage.on).toEqual('function');
     expect(typeof storage.emit).toEqual('function');
     expect(typeof storage.create).toEqual('function');
@@ -17,7 +17,7 @@ describe('RelayStorage', () => {
   });
 
   test('should extends event emitter', () => {
-    const storage = new SessionStorage();
+    const storage = new BaseStorage();
     expect(storage.isFinalized('error')).toEqual(true);
     expect(storage.isFinalized('timeout')).toEqual(true);
     expect(storage.isFinalized('rejected')).toEqual(true);
@@ -26,7 +26,7 @@ describe('RelayStorage', () => {
   });
 
   test('should throw error for not implemented methods', async () => {
-    const storage = new SessionStorage({ ttl: 100 });
+    const storage = new BaseStorage({ ttl: 100 });
     try {
       // @ts-ignore
       storage.create();

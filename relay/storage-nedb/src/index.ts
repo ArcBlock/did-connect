@@ -3,7 +3,7 @@
 import NeDB from '@nedb/core';
 // @ts-ignore
 import NedbMulti from '@nedb/multi';
-import BaseStorage, { SessionStorageOptions } from '@did-connect/storage';
+import { BaseStorage, SessionStorageOptions, SessionStorage } from '@did-connect/storage';
 import { SessionType } from '@did-connect/types';
 
 export type NedbStorageOptions = SessionStorageOptions & {
@@ -15,27 +15,25 @@ const debug = require('debug')(require('../package.json').name);
 
 type Callback = (...args: any[]) => void;
 
-interface NeDBInstance {
+export interface NedbInstance {
   loadDatabase(cb: Callback): Promise<void>;
+  closeDatabase(cb: Callback): Promise<void>;
+
   findOne(conditions: any, cb: Callback): Promise<any>;
+
   update(query: any, update: any, cb: Callback): Promise<any>;
   update(query: any, update: any, options: any, cb: Callback): Promise<any>;
+
   insert(doc: any, cb: Callback): Promise<any>;
   insert(doc: any, options: any, cb: Callback): Promise<any>;
+
   remove(conditions: any, cb: Callback): Promise<any>;
   remove(conditions: any, options: any, cb: Callback): Promise<any>;
 }
 
-export default class NedbStorage extends BaseStorage {
-  db: NeDBInstance;
+export class NedbStorage extends BaseStorage implements SessionStorage {
+  readonly db: NedbInstance;
 
-  /**
-   * Creates an instance of DiskSessionStorage.
-   *
-   * @class
-   * @param {Object} options { dbPath }
-   * @param {string} options.dbPath - where to store the database on disk
-   */
   constructor(options: NedbStorageOptions) {
     super(options);
 

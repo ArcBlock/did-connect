@@ -1,6 +1,6 @@
 const get = require('lodash/get');
 
-module.exports = function attachHandlers(router, handlers, prefix = '/api/connect/relay') {
+function attachHandlers(router, handlers, prefix = '/api/connect/relay') {
   const {
     handleSessionCreate,
     handleSessionRead,
@@ -56,8 +56,8 @@ module.exports = function attachHandlers(router, handlers, prefix = '/api/connec
         sessionId,
         session,
         locale,
-        signerPk: req.get('x-updater-pk'),
-        signerToken: req.get('x-updater-token'),
+        signerPk: req.get('x-updater-pk') || '',
+        signerToken: req.get('x-updater-token') || '',
         previousConnected: getPreviousConnected(req),
       };
 
@@ -98,4 +98,6 @@ module.exports = function attachHandlers(router, handlers, prefix = '/api/connec
     const result = await handleClaimResponse(req.context);
     res.jsonp(result);
   });
-};
+}
+
+module.exports = { attachHandlers };

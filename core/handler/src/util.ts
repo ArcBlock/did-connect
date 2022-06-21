@@ -9,7 +9,7 @@ const getStepChallenge = (): string => stripHexPrefix(getRandomBytes(16)).toUppe
 const parseWalletUA = (userAgent: string): DIDWalletInfoType => {
   const ua = (userAgent || '').toString().toLowerCase();
   let os = '';
-  let version = '0.1.0';
+  let version = '';
   if (ua.indexOf('android') > -1) {
     os = 'android';
   } else if (ua.indexOf('darwin') > -1) {

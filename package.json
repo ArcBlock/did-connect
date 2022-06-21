@@ -21,8 +21,17 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@arcblock/did": "^1.17.0",
     "@arcblock/eslint-config": "^0.2.2",
     "@arcblock/eslint-config-ts": "0.2.2",
+    "@arcblock/jwt": "^1.17.0",
+    "@arcblock/validator": "^1.17.0",
+    "@arcblock/ws": "^1.17.0",
+    "@ocap/asset": "^1.17.0",
+    "@ocap/client": "^1.17.0",
+    "@ocap/mcrypto": "^1.17.0",
+    "@ocap/util": "^1.17.0",
+    "@ocap/wallet": "^1.17.0",
     "body-parser": "^1.19.2",
     "cookie-parser": "^1.4.6",
     "create-cert": "^1.0.6",
@@ -31,16 +40,7 @@
     "lint-staged": "^12.4.3",
     "morgan": "^1.10.0",
     "pify": "^5.0.0",
-    "prettier": "^2.6.2",
-    "@arcblock/did": "^1.17.0",
-    "@arcblock/jwt": "^1.17.0",
-    "@arcblock/validator": "^1.17.0",
-    "@arcblock/ws": "^1.17.0",
-    "@ocap/asset": "^1.17.0",
-    "@ocap/client": "^1.17.0",
-    "@ocap/mcrypto": "^1.17.0",
-    "@ocap/util": "^1.17.0",
-    "@ocap/wallet": "^1.17.0"
+    "prettier": "^2.6.2"
   },
   "resolutions": {
     "@arcblock/did": "^1.17.0",
@@ -52,5 +52,8 @@
     "@ocap/mcrypto": "^1.17.0",
     "@ocap/util": "^1.17.0",
     "@ocap/wallet": "^1.17.0"
+  },
+  "dependencies": {
+    "@types/node": "^18.0.0"
   }
 }

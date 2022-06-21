@@ -1,44 +1,48 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-shadow */
-const omit = require('lodash/omit');
-const Mcrypto = require('@ocap/mcrypto');
-const Jwt = require('@arcblock/jwt');
-const { fromRandom, WalletType } = require('@ocap/wallet');
-const { toBase58 } = require('@ocap/util');
+import omit from 'lodash/omit';
+import { types } from '@ocap/mcrypto';
+import { verify, decode } from '@arcblock/jwt';
+import { fromRandom, WalletType } from '@ocap/wallet';
+import { toBase58 } from '@ocap/util';
+import { ContextType, RequestListType } from '@did-connect/types';
 
-const { Authenticator } = require('../src');
+import { Authenticator } from '../src';
 
 const type = WalletType({
-  role: Mcrypto.types.RoleType.ROLE_APPLICATION,
-  pk: Mcrypto.types.KeyType.ED25519,
-  hash: Mcrypto.types.HashType.SHA3,
+  role: types.RoleType.ROLE_APPLICATION,
+  pk: types.KeyType.ED25519,
+  hash: types.HashType.SHA3,
 });
 
 const wallet = fromRandom(type);
 const chainHost = 'https://beta.abtnetwork.io/api';
 const chainId = 'beta';
 
-const claims = [
+const sleep = (ms: number) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
+const claims: RequestListType = [
   {
     type: 'profile',
-    fields: ['fullName', 'email'],
+    items: ['fullName', 'email'],
     description: 'Please provide these info to continue',
   },
 ];
 
-const context = {
+const context: ContextType = {
   didwallet: { os: 'web', version: '1.1.0', jwt: '1.1.0' },
   body: {},
   headers: {},
   sessionId: 'xi2Vibd-wCdZZFxT_iYij',
   locale: 'en',
   previousConnected: null,
+  signerPk: '',
+  signerToken: '',
   session: {
     status: 'created',
-    _id: 'X0YPRAGv4EcFRniS',
-    createdAt: '2022-05-30T09:52:43.311Z',
-    updatedAt: '2022-05-30T09:52:43.341Z',
-    sessionId: 'xi2Vibd-wCdZZFxT_iYij',
     updaterPk: '0x4e919a3fb2d38c5357f78eea4a847cc6b45bc0b0fbf50ff49238624e9e284d47',
     strategy: 'default',
     authUrl:
@@ -58,23 +62,32 @@ const context = {
     previousConnected: null,
     currentConnected: null,
     currentStep: 0,
+    autoConnect: true,
+    onlyConnect: false,
     requestedClaims: [],
     responseClaims: [],
     approveResults: [],
     error: '',
+    timeout: {
+      app: 10000,
+      relay: 10000,
+      wallet: 10000,
+    },
   },
 };
 
 describe('Authenticator', () => {
   test('should throw error with invalid param', () => {
+    // @ts-ignore
     expect(() => new Authenticator({})).toThrow(/wallet/);
+    // @ts-ignore
     expect(() => new Authenticator({ wallet: { sk: '123', pk: '' } })).toThrow(/wallet/);
+    // @ts-ignore
     expect(() => new Authenticator({ wallet, appInfo: {} })).toThrow(/appInfo/);
   });
 
   const auth = new Authenticator({
     wallet,
-    baseUrl: 'http://beta.abtnetwork.io/webapp',
     appInfo: {
       name: 'DID Wallet Demo',
       description: 'Demo application to show the potential of DID Wallet',
@@ -85,6 +98,7 @@ describe('Authenticator', () => {
       host: chainHost,
       id: chainId,
     },
+    timeout: 100,
   });
 
   test('should create instance with certain methods', () => {
@@ -95,14 +109,16 @@ describe('Authenticator', () => {
 
   test('should throw if sign without claims', async () => {
     try {
-      const signed = await auth.signClaims([], {});
-      expect(signed.appPk).toEqual(toBase58(wallet.publicKey));
+      // @ts-ignore
+      await auth.signClaims([], context);
+      expect(true).toBeFalsy();
     } catch (err) {
       expect(err).toBeTruthy();
     }
     try {
-      const signed = await auth.signClaims(claims, {});
-      expect(signed.appPk).toEqual(toBase58(wallet.publicKey));
+      // @ts-ignore
+      await auth.signClaims(claims, {});
+      expect(true).toBeFalsy();
     } catch (err) {
       expect(err).toBeTruthy();
     }
@@ -111,7 +127,45 @@ describe('Authenticator', () => {
   test('should sign correct claims and verify those claims', async () => {
     const signed = await auth.signClaims(claims, context);
     expect(signed.appPk).toEqual(toBase58(wallet.publicKey));
-    expect(Jwt.verify(signed.authInfo, wallet.publicKey)).toBeTruthy();
+    expect(verify(signed.authInfo, wallet.publicKey)).toBeTruthy();
+  });
+
+  test('should signJson work as expected', async () => {
+    try {
+      // @ts-ignore
+      await auth.signJson({}, {});
+      expect(true).toBeFalsy();
+    } catch (e) {
+      expect(e).toBeTruthy();
+    }
+
+    let signed = await auth.signJson({}, context);
+    let decoded = decode(signed.authInfo);
+    expect(decoded.status).toEqual('ok');
+    expect(decoded.response).toEqual({});
+
+    signed = await auth.signJson({ key: 'value' }, context);
+    decoded = decode(signed.authInfo);
+    expect(decoded.status).toEqual('ok');
+    expect(decoded.response).toEqual({ key: 'value' });
+
+    signed = await auth.signJson({ error: 'value' }, context);
+    decoded = decode(signed.authInfo);
+    expect(decoded.status).toEqual('error');
+    expect(decoded.response).toEqual({});
+    expect(decoded.errorMessage).toEqual('value');
+
+    signed = await auth.signJson({ successMessage: 'value' }, context);
+    decoded = decode(signed.authInfo);
+    expect(decoded.status).toEqual('ok');
+    expect(decoded.response).toEqual({});
+    expect(decoded.successMessage).toEqual('value');
+
+    signed = await auth.signJson({ nextWorkflow: 'value' }, context);
+    decoded = decode(signed.authInfo);
+    expect(decoded.status).toEqual('ok');
+    expect(decoded.response).toEqual({});
+    expect(decoded.nextWorkflow).toEqual('value');
   });
 
   test('should be able to verify client signed', async () => {
@@ -121,10 +175,15 @@ describe('Authenticator', () => {
   });
 
   test('should _validateAppInfo work', () => {
+    // @ts-ignore
     expect(() => auth._validateAppInfo()).toThrow('without appInfo');
+    // @ts-ignore
     expect(() => auth._validateAppInfo({ key: 'abc' })).toThrow('name');
+    // @ts-ignore
     expect(() => auth._validateAppInfo({ name: 'abc' })).toThrow('description');
+    // @ts-ignore
     expect(() => auth._validateAppInfo({ name: 'abc', description: 'abc' })).toThrow('icon');
+    // @ts-ignore
     expect(() => auth._validateAppInfo({ name: 'abc', description: 'abc', icon: 'https://abc' })).not.toThrow();
   });
 
@@ -145,8 +204,10 @@ describe('Authenticator', () => {
       },
     });
 
+    // @ts-ignore
     expect(() => auth.tryWithTimeout(123)).toThrow(/valid function/);
 
+    // @ts-ignore
     auth.getAppInfo({}).catch((err: Error) => {
       expect(err).toBeTruthy();
       expect(err.message).toMatch(/did not complete within/);
@@ -155,27 +216,53 @@ describe('Authenticator', () => {
   });
 
   test('should _validateWallet work as expected', () => {
+    // @ts-ignore
     expect(() => auth._validateWallet()).toThrow('without wallet');
 
     const random = fromRandom();
     const json = random.toJSON();
 
     expect(auth._validateWallet(random)).toEqual(random);
+    // @ts-ignore
     expect(() => auth._validateWallet(omit(json, ['pk']))).toThrow();
+    // @ts-ignore
     expect(() => auth._validateWallet(omit(json, ['sk']))).toThrow();
+    // @ts-ignore
     expect(() => auth._validateWallet(omit(json, ['address']))).toThrow();
   });
 
   test('should _verify work as expected', (done) => {
     auth
-      ._verify({}, 'appPk', 'appInfo')
+      ._verify({ userPk: '', userInfo: '' })
       .catch((err: Error) => {
         expect(err).toBeTruthy();
-        return auth._verify({ appPk: 'abcd' }, 'appPk', 'appInfo');
+        return auth._verify({ userPk: 'abcd', userInfo: '' });
       })
       .catch((err: Error) => {
         expect(err).toBeTruthy();
         done();
       });
+  });
+
+  test('should tryWithTimeout work as expected', async () => {
+    try {
+      await auth.tryWithTimeout(async () => {
+        await sleep(200);
+      });
+      expect(false).toBeTruthy();
+    } catch (err: any) {
+      expect(err).toBeTruthy();
+      expect(err.message).toMatch(/did not complete within/);
+    }
+
+    try {
+      await auth.tryWithTimeout(async () => {
+        throw new Error('test');
+      });
+      expect(false).toBeTruthy();
+    } catch (err: any) {
+      expect(err).toBeTruthy();
+      expect(err.message).toMatch(/test/);
+    }
   });
 });

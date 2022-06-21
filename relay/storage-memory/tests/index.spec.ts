@@ -1,4 +1,4 @@
-import MemoryStorage from '../src';
+import { MemoryStorage } from '../src';
 
 const sleep = (ms: number) =>
   new Promise((resolve) => {

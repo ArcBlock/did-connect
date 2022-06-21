@@ -18,12 +18,12 @@
     "access": "public"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
-    "url-join": "^4.0.1"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@did-connect/handler": "2.0.0",
     "@did-connect/storage-memory": "^2.0.0",
+    "url-join": "^4.0.1",
     "axios": "^0.27.2",
     "jest": "^28.1.1",
     "nanoid": "3.x"

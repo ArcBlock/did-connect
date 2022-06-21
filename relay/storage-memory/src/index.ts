@@ -1,29 +1,25 @@
-import BaseStorage from '@did-connect/storage';
+import { BaseStorage, SessionStorage } from '@did-connect/storage';
 import { SessionType } from '@did-connect/types';
 
-type ExtendedSession = SessionType & {
-  sessionId: string;
-};
-
-interface SessionStorage {
-  [key: string]: ExtendedSession;
+interface StorageObject {
+  [key: string]: SessionType;
 }
 
-let storage: SessionStorage = {};
+let storage: StorageObject = {};
 
-export default class MemoryStorage extends BaseStorage {
-  read(sessionId: string): Promise<ExtendedSession> {
+export class MemoryStorage extends BaseStorage implements SessionStorage {
+  read(sessionId: string): Promise<SessionType> {
     return Promise.resolve(storage[sessionId]);
   }
 
-  create(sessionId: string, attributes: Partial<ExtendedSession>): Promise<ExtendedSession> {
+  create(sessionId: string, attributes: Partial<SessionType>): Promise<SessionType> {
     // @ts-ignore
     storage[sessionId] = { sessionId, ...attributes };
     this.emit('create', storage[sessionId]);
     return this.read(sessionId);
   }
 
-  update(sessionId: string, updates: Partial<ExtendedSession>): Promise<ExtendedSession> {
+  update(sessionId: string, updates: Partial<SessionType>): Promise<SessionType> {
     delete updates.sessionId;
     storage[sessionId] = Object.assign(storage[sessionId], updates);
     this.emit('update', storage[sessionId]);
@@ -35,13 +31,13 @@ export default class MemoryStorage extends BaseStorage {
   }
 
   // @ts-ignore
-  delete(sessionId: string): void {
+  delete(sessionId: string): Promise<void> {
     this.emit('delete', storage[sessionId]);
     delete storage[sessionId];
   }
 
   // @ts-ignore
-  clear(): void {
+  clear(): Promise<void> {
     storage = {};
   }
 }

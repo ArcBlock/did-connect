@@ -28,8 +28,9 @@
   },
   "devDependencies": {
     "@arcblock/eslint-config-ts": "0.2.2",
-    "eslint": "^8.16.0",
+    "@types/debug": "^4.1.7",
     "axios": "^0.27.2",
+    "eslint": "^8.16.0",
     "jest": "^28.1.1",
     "ts-jest": "^28.0.5",
     "typescript": "^4.7.3"

@@ -1,6 +1,6 @@
 import os from 'os';
 import path from 'path';
-import NedbStorage from '../src';
+import { NedbStorage } from '../src';
 
 const sleep = (ms: number) =>
   new Promise((resolve) => {

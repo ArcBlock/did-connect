@@ -6,18 +6,28 @@ export type SessionStorageOptions = {
   ttl?: number;
 };
 
+export interface SessionStorage {
+  create(sessionId: string, attributes: Partial<SessionType>): Promise<SessionType>;
+  read(sessionId: string): Promise<SessionType>;
+  update(sessionId: string, updates: Partial<SessionType>): Promise<SessionType>;
+  delete(sessionId: string): Promise<void>;
+  clear(): Promise<void>;
+  isFinalized(status: string): boolean;
+  deleteFinalized(sessionId: string): Promise<boolean>;
+}
+
 /**
  * Defines the interface of DID Connect Session Storage
  * Which is used to persist state during the DID Connect process between dApp and wallet
  *
- * @class SessionStorage
+ * @class BaseStorage
  * @see @did-connect/storage-memory
  * @see @did-connect/storage-mongo
  * @see @did-connect/storage-nedb
  * @extends {EventEmitter}
  */
-export default class SessionStorage extends EventEmitter {
-  options: SessionStorageOptions;
+export class BaseStorage extends EventEmitter implements SessionStorage {
+  readonly options: SessionStorageOptions;
 
   constructor(options: SessionStorageOptions = {}) {
     super();
@@ -25,23 +35,23 @@ export default class SessionStorage extends EventEmitter {
   }
 
   create(sessionId: string, attributes: Partial<SessionType>): Promise<SessionType> {
-    throw new Error('SessionStorage.create must be implemented in child class');
+    throw new Error('create must be implemented in child class');
   }
 
   read(sessionId: string): Promise<SessionType> {
-    throw new Error('SessionStorage.read must be implemented in child class');
+    throw new Error('read must be implemented in child class');
   }
 
   update(sessionId: string, updates: Partial<SessionType>): Promise<SessionType> {
-    throw new Error('SessionStorage.update must be implemented in child class');
+    throw new Error('update must be implemented in child class');
   }
 
   delete(sessionId: string): Promise<void> {
-    throw new Error('SessionStorage.delete must be implemented in child class');
+    throw new Error('delete must be implemented in child class');
   }
 
   clear(): Promise<void> {
-    throw new Error('SessionStorage.clear must be implemented in child class');
+    throw new Error('clear must be implemented in child class');
   }
 
   isFinalized(status: string): boolean {

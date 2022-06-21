@@ -1,4 +1,4 @@
-const { parseWalletUA, getStepChallenge, formatDisplay } = require('../lib/util');
+import { parseWalletUA, getStepChallenge, formatDisplay } from '../src/util';
 
 describe('#parseWalletUA', () => {
   describe('#android', () => {
@@ -33,7 +33,7 @@ describe('#parseWalletUA', () => {
       expect(wallet).toEqual({ os: '', version: '', jwt: '1.0.0' });
     });
 
-    test('should parse "ArcWallet/ iPhone12,3 iOS/13.0 CFNetwork/1098.7 Darwin/19.0.0" corcorrectlyrect', async () => {
+    test('should parse "ArcWallet/ iPhone12,3 iOS/13.0 CFNetwork/1098.7 Darwin/19.0.0" correctly', async () => {
       const wallet = parseWalletUA('ArcWallet/ iPhone12,3 iOS/13.0 CFNetwork/1098.7 Darwin/19.0.0');
       expect(wallet).toEqual({ os: 'ios', version: '', jwt: '1.0.0' });
     });
@@ -71,8 +71,11 @@ describe('formatDisplay', () => {
   test('should formatDisplay work as expected', () => {
     const fn = formatDisplay;
     expect(fn('')).toEqual('');
+    // @ts-ignore
     expect(fn(null)).toEqual('');
+    // @ts-ignore
     expect(fn(undefined)).toEqual('');
+    // @ts-ignore
     expect(fn(0)).toEqual('');
     expect(fn('abc')).toEqual('');
     expect(fn({ type: 'url', content: 'https://www.arcblock.io' })).toEqual(

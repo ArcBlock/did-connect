@@ -1,5 +1,4 @@
 const get = require('lodash/get');
-const pick = require('lodash/pick');
 const isFunction = require('lodash/isFunction');
 const isArray = require('lodash/isArray');
 const { nanoid } = require('nanoid');
@@ -406,7 +405,7 @@ const createStateMachine = ({
         onTimeout: _onTimeout,
         onError: _onError,
         saveAppInfo: assign({ appInfo: (ctx, e) => e.data }), // from client
-        saveConnectedUser: assign({ currentConnected: (ctx, e) => pick(e, ['userDid', 'userPk', 'wallet']) }), // from server
+        saveConnectedUser: assign({ currentConnected: (ctx, e) => e.currentConnected }), // from server
         saveRequestedClaims: assign({ requestedClaims: (ctx, e) => e.data }), // from client
         saveError: assign({ error: (ctx, e) => get(e, 'data.message') || e.error }), // from client or server
         incrementCurrentStep: assign({ currentStep: (ctx) => ctx.currentStep + 1 }), // from server

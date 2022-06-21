@@ -3,10 +3,12 @@ import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 import waitFor from 'p-wait-for';
 import { verify, decode } from '@arcblock/jwt';
+// @ts-ignore
 import objectHash from 'object-hash';
+// @ts-ignore
 import { WsServer } from '@arcblock/ws';
 import { isValid } from '@arcblock/did';
-import SessionStorage from '@did-connect/storage/src';
+import { SessionStorage } from '@did-connect/storage';
 import {
   Session,
   SessionType,
@@ -18,12 +20,11 @@ import {
   AnyResponseType,
   AnyRequestType,
   CustomError,
+  AuthPrincipalRequestType,
+  AuthPrincipalResponseType,
   I18nMessages,
 } from '@did-connect/types';
 import { Authenticator, AppResponseSigned, WalletResponseSigned } from '@did-connect/authenticator';
-
-// eslint-disable-next-line
-// const debug = require('debug')(`${require('../package.json').name}`);
 
 import { getStepChallenge, parseWalletUA } from './util';
 
@@ -76,11 +77,7 @@ export interface HandlersType {
 }
 
 export type SessionCreateContext = ContextType & {
-  session: null;
-  body: SessionType & {
-    sessionId: string;
-    onlyConnect?: boolean;
-  };
+  body: SessionType;
 };
 
 export type SessionUpdateContext = ContextType & {
@@ -99,23 +96,23 @@ export type WalletHandlerContext = ContextType & {
   locale: LocaleType;
 };
 
-// FIXME: i18n for errors
+// FIXME: i18n for all errors
 export function createHandlers({
-  storage, // FIXME:
-  authenticator, // FIXME:
+  storage,
+  authenticator,
   logger = console,
   socketPathname = '/api/connect/relay/websocket',
 }: {
   storage: SessionStorage;
   authenticator: Authenticator;
-  logger: LoggerType;
-  socketPathname: string;
+  logger?: LoggerType;
+  socketPathname?: string;
 }): HandlersType {
   const wsServer = createSocketServer(logger, socketPathname);
 
-  const isValidContext = (x: any): boolean => {
+  const isValidContext = (x: ContextType): boolean => {
     const { error } = Context.validate(x);
-    // if (error) logger.error(error);
+    if (error) logger.error(error);
     return !error;
   };
 
@@ -158,8 +155,8 @@ export function createHandlers({
       updaterPk,
       strategy = 'default',
       authUrl,
-      autoConnect,
-      onlyConnect,
+      autoConnect = true,
+      onlyConnect = false,
       requestedClaims = [],
       timeout,
     } = context.body;
@@ -173,7 +170,8 @@ export function createHandlers({
       return result;
     }
 
-    const session = {
+    const session: SessionType = {
+      sessionId,
       status: 'created',
       updaterPk,
       strategy,
@@ -196,7 +194,7 @@ export function createHandlers({
     const { value, error } = Session.validate(session);
     if (error) {
       return {
-        error: `Invalid session updates: ${error.details.map((x) => x.message).join(', ')}`,
+        error: `Invalid session updates: ${error.details.map((x: any) => x.message).join(', ')}`,
         code: 'SESSION_UPDATE_INVALID',
       };
     }
@@ -242,13 +240,23 @@ export function createHandlers({
 
       const updates = pick(value, ['error', 'status', 'approveResults', 'requestedClaims']);
       logger.info('update session', context.sessionId, updates);
-      return storage.update(context.sessionId, updates);
+      return await storage.update(context.sessionId, updates);
     } catch (err: any) {
       logger.error(err);
       wsServer.broadcast(sessionId, { status: 'error', error: err.message });
       await storage.update(sessionId, { status: 'error', error: err.message });
       return { error: err.message, code: err.code };
     }
+  };
+
+  const getAuthPrincipalRequest = (session: SessionType): AuthPrincipalRequestType => {
+    const { strategy, previousConnected, onlyConnect } = session;
+    return {
+      type: 'authPrincipal',
+      description: 'select the principal to be used for authentication',
+      target: isValid(strategy) ? strategy : '',
+      supervised: onlyConnect || !!previousConnected,
+    };
   };
 
   const handleClaimRequest = async (context: WalletHandlerContext): Promise<AppResponseSigned> => {
@@ -259,7 +267,6 @@ export function createHandlers({
         throw new CustomError('CONTEXT_INVALID', 'Invalid context');
       }
 
-      const { strategy, previousConnected, onlyConnect, currentStep } = session;
       if (storage.isFinalized(session.status)) {
         throw new CustomError(
           'SESSION_FINALIZED',
@@ -273,21 +280,11 @@ export function createHandlers({
         wsServer.broadcast(sessionId, { status: 'walletScanned', didwallet });
         await storage.update(sessionId, { status: 'walletScanned' });
 
-        return signClaims(
-          [
-            {
-              type: 'authPrincipal',
-              description: 'select the principal to be used for authentication',
-              target: isValid(strategy) ? strategy : '',
-              supervised: onlyConnect || !!previousConnected,
-            },
-          ],
-          context
-        );
+        return signClaims([getAuthPrincipalRequest(session)], context);
       }
 
       // else we should perform a step by step style
-      return signClaims(session.requestedClaims[currentStep], context);
+      return signClaims(session.requestedClaims[session.currentStep], context);
     } catch (err: any) {
       logger.error(err);
       wsServer.broadcast(sessionId, { status: 'error', error: err.message });
@@ -302,7 +299,7 @@ export function createHandlers({
     checkFn: Function,
     reason: string,
     locale: LocaleType
-  ): Promise<void> => {
+  ): Promise<SessionType> => {
     let session: Partial<SessionType> = {};
     try {
       await waitFor(
@@ -319,7 +316,7 @@ export function createHandlers({
         },
         { interval: 200, timeout }
       );
-      return storage.read(sessionId);
+      return await storage.read(sessionId);
     } catch (err) {
       if (session && ['error', 'canceled'].includes(session.status as string) === false) {
         throw new CustomError('TimeoutError', `${reason} within ${timeout}ms`);
@@ -329,7 +326,7 @@ export function createHandlers({
     }
   };
 
-  const waitForAppConnect = (sessionId: string, timeout: number, locale: LocaleType) =>
+  const waitForAppConnect = (sessionId: string, timeout: number, locale: LocaleType): Promise<SessionType> =>
     waitForSession(
       sessionId,
       timeout,
@@ -338,7 +335,7 @@ export function createHandlers({
       locale
     );
 
-  const waitForAppApprove = (sessionId: string, timeout: number, locale: LocaleType) =>
+  const waitForAppApprove = (sessionId: string, timeout: number, locale: LocaleType): Promise<SessionType> =>
     waitForSession(
       sessionId,
       timeout,
@@ -362,7 +359,6 @@ export function createHandlers({
       }
 
       const { userDid, userPk, action, challenge, claims } = await authenticator.verify(body, locale);
-      let newSession: SessionType;
 
       // Ensure user approval
       if (action === 'declineAuth') {
@@ -374,37 +370,45 @@ export function createHandlers({
         throw new Error(errors.challengeMismatch[locale]);
       }
 
-      const handleWalletApprove = async () => {
+      const handleWalletApprove = async (): Promise<SessionType> => {
         logger.debug('session.walletApproved', sessionId);
+        const justifiedClaims = isEmpty(claims)
+          ? [{ ...(getAuthPrincipalRequest(session) as AuthPrincipalResponseType), ...session.currentConnected }]
+          : claims;
         await storage.update(sessionId, {
           status: 'walletApproved',
-          responseClaims: [...session.responseClaims, claims],
+          responseClaims: [...session.responseClaims, justifiedClaims],
         });
         wsServer.broadcast(sessionId, {
           status: 'walletApproved',
-          responseClaims: isEmpty(claims) ? [session.currentConnected] : claims,
+          responseClaims: justifiedClaims,
           currentStep: session.currentStep,
           challenge: session.challenge,
         });
-        newSession = await waitForAppApprove(sessionId, session.timeout.app, locale);
-        await storage.update(sessionId, { status: 'appApproved' });
-        wsServer.broadcast(sessionId, {
-          status: 'appApproved',
-          approveResult: newSession.approveResults[session.currentStep],
-        });
+        await waitForAppApprove(sessionId, session.timeout.app, locale);
+        wsServer.broadcast(sessionId, { status: 'appApproved' });
+        return storage.update(sessionId, { status: 'appApproved' });
       };
+
+      let newSession: SessionType;
 
       // If wallet is submitting authPrincipal claim,
       // move to walletConnected and wait for appConnected
       // once appConnected we return the first claim
       if (session.status === 'walletScanned') {
         logger.debug('session.walletConnected', sessionId);
-        await storage.update(sessionId, { status: 'walletConnected', currentConnected: { userDid, userPk } });
-        wsServer.broadcast(sessionId, { status: 'walletConnected', userDid, userPk, wallet: didwallet });
+        await storage.update(sessionId, {
+          status: 'walletConnected',
+          currentConnected: { userDid, userPk, didwallet },
+        });
+        wsServer.broadcast(sessionId, {
+          status: 'walletConnected',
+          currentConnected: { userDid, userPk, didwallet },
+        });
 
         // If this is a connect-only session, end it: walletApprove --> appApprove --> complete
         if (session.onlyConnect) {
-          await handleWalletApprove();
+          newSession = await handleWalletApprove();
           logger.debug('session.completed', sessionId);
           await storage.update(sessionId, { status: 'completed' });
           wsServer.broadcast(sessionId, { status: 'completed' });
@@ -414,12 +418,11 @@ export function createHandlers({
         // If our claims are populated already, move to appConnected without waiting
         if (session.requestedClaims.length > 0) {
           newSession = await storage.update(sessionId, { status: 'appConnected' });
-          wsServer.broadcast(sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
         } else {
           newSession = await waitForAppConnect(sessionId, session.timeout.app, locale);
           await storage.update(sessionId, { status: 'appConnected' });
-          wsServer.broadcast(sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
         }
+        wsServer.broadcast(sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
         logger.debug('session.appConnected', sessionId);
         return signClaims(newSession.requestedClaims[session.currentStep], { ...context, session: newSession });
       }
@@ -434,7 +437,7 @@ export function createHandlers({
       }
 
       // Move to walletApproved state and wait for appApproved
-      await handleWalletApprove();
+      newSession = await handleWalletApprove();
 
       // Return result if we've done
       const isDone = session.currentStep === session.requestedClaims.length - 1;

@@ -1,33 +1,50 @@
 /* eslint-disable import/no-extraneous-dependencies */
-const axios = require('axios');
-const Jwt = require('@arcblock/jwt');
-const { nanoid } = require('nanoid');
-const { WsClient } = require('@arcblock/ws');
-const { fromRandom } = require('@ocap/wallet');
-const { toBase58 } = require('@ocap/util');
-const objectHash = require('object-hash');
-const waitFor = require('p-wait-for');
-const joinUrl = require('url-join');
-const Mcrypto = require('@ocap/mcrypto');
-const MemoryStorage = require('@did-connect/storage-memory');
+import axios from 'axios';
+import * as Jwt from '@arcblock/jwt';
+import { types } from '@ocap/mcrypto';
+import { nanoid } from 'nanoid';
+// @ts-ignore
+import { WsClient } from '@arcblock/ws';
+import { fromRandom, WalletObject } from '@ocap/wallet';
+import { toBase58 } from '@ocap/util';
+// @ts-ignore
+import objectHash from 'object-hash';
+// @ts-ignore
+import waitFor from 'p-wait-for';
+// @ts-ignore
+import joinUrl from 'url-join';
 
-const Authenticator = require('@did-connect/authenticator');
-const attachHandlers = require('@did-connect/relay-adapter-express');
+import {
+  AnyObject,
+  SessionType,
+  AnyRequestType,
+  AuthPrincipalRequestType,
+  AuthPrincipalResponseType,
+  ProfileResponseType,
+  AssetResponseType,
+  AnyResponseType,
+} from '@did-connect/types';
+import { MemoryStorage } from '@did-connect/storage-memory';
+import { Authenticator } from '@did-connect/authenticator';
+// @ts-ignore
+import { attachHandlers } from '@did-connect/relay-adapter-express';
+import { createHandlers } from '../src';
+
+// @ts-ignore
 const createTestServer = require('../../../scripts/create-test-server');
-const createHandlers = require('..');
 
 const noop = () => null;
 const user = fromRandom();
 const updater = fromRandom();
 const evil = fromRandom();
-const app = fromRandom({ role: Mcrypto.types.RoleType.ROLE_APPLICATION });
+const app = fromRandom({ role: types.RoleType.ROLE_APPLICATION });
 
 const chainInfo = {
   host: 'https://beta.abtnetwork.io/api',
   id: 'beta',
 };
 
-const appInfo = ({ baseUrl }) => ({
+const appInfo = ({ baseUrl }: any) => ({
   name: 'DID Wallet Demo',
   description: 'Demo application to show the potential of DID Wallet',
   icon: 'https://arcblock.oss-cn-beijing.aliyuncs.com/images/wallet-round.png',
@@ -37,34 +54,82 @@ const appInfo = ({ baseUrl }) => ({
   nodeDid: 'z1Zg7PUWJX2NS9cRhpjuMtvjjLK5W2E3Wsh',
 });
 
+type AuthInfo = {
+  requestedClaims: AnyRequestType[];
+  challenge: string;
+  url: string;
+  [key: string]: any;
+};
+
+type ApiResult = {
+  data: {
+    appPk: string;
+    authInfo: string;
+  };
+};
+
+type TestSession = Partial<SessionType>;
+
+type RelayEvent = SessionType & {
+  responseClaims: AnyResponseType[];
+};
+
+const timeout = { app: 10000, relay: 10000, wallet: 60000 };
+
+const profileRequest = {
+  type: 'profile',
+  items: ['fullName', 'email', 'avatar'],
+  description: 'Please give me your profile',
+};
+const profileResponse = { type: 'profile', description: 'xxx', fullName: 'test', email: 'test@arcblock.io' };
+
+const assetRequest = {
+  type: 'asset',
+  description: 'Please prove that you own asset',
+  target: user.address,
+};
+const assetResponse = {
+  type: 'asset',
+  asset: user.address,
+  description: 'xxx',
+  ownerDid: user.address,
+  ownerPk: user.publicKey,
+  ownerProof: 'abc',
+};
+
 describe('RelayAdapterExpress', () => {
-  let server;
-  let api;
-  let client;
-  let baseUrl;
+  let server: any;
+  let api: any;
+  let client: any;
+  let baseUrl: string;
 
   // eslint-disable-next-line consistent-return
   const doSignedRequest = async (
-    data,
-    wallet,
-    url = '/api/connect/relay/session',
-    method = 'POST',
-    pk = undefined,
-    token = undefined,
-    hash = undefined
+    data: any,
+    wallet: WalletObject,
+    url: string = '/api/connect/relay/session',
+    method: string = 'POST',
+    pk?: any,
+    token?: any,
+    hash?: any
   ) => {
-    const headers = {};
+    const headers: AnyObject = {};
     headers['x-updater-pk'] = typeof pk === 'undefined' ? wallet.publicKey : pk;
     headers['x-updater-token'] =
       typeof token === 'undefined'
         ? Jwt.sign(wallet.address, wallet.secretKey, { hash: typeof hash === 'undefined' ? objectHash(data) : hash })
         : token;
 
-    const res = await api({ method, url, data, headers });
+    const res = await api({
+      method,
+      url,
+      data,
+      headers,
+    });
     return res.data;
   };
 
-  const getWsClient = async (endpoint) => {
+  const getWsClient = async (endpoint: string) => {
     if (!client) {
       client = new WsClient(`${endpoint}/api/connect/relay`, { heartbeatIntervalMs: 10 * 1000 });
     }
@@ -78,7 +143,7 @@ describe('RelayAdapterExpress', () => {
         resolve(client);
       });
 
-      client.onError((err) => {
+      client.onError((err: any) => {
         reject(new Error(`Failed to connect to daemon socket server: ${err.message}`));
       });
 
@@ -91,8 +156,7 @@ describe('RelayAdapterExpress', () => {
 
     const storage = new MemoryStorage();
     const authenticator = new Authenticator({ wallet: app, appInfo, chainInfo });
-    // eslint-disable-next-line no-console
-    const logger = { info: noop, error: noop, warn: console.warn, debug: noop };
+    const logger = { info: noop, error: console.error, warn: console.warn, debug: noop };
     const handlers = createHandlers({ storage, authenticator, logger });
 
     handlers.wsServer.attach(server.http);
@@ -110,26 +174,36 @@ describe('RelayAdapterExpress', () => {
     const updaterPk = updater.publicKey;
 
     const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${sessionId}`);
-    const updateSession = (updates, wallet = updater, pk = undefined, token = undefined, hash = undefined) =>
+    const updateSession = (updates: any, wallet: WalletObject = updater, pk?: any, token?: any, hash?: any) =>
       doSignedRequest(updates, wallet, `/api/connect/relay/session?sid=${sessionId}`, 'PUT', pk, token, hash);
-    const getSession = () => api.get(`/api/connect/relay/session?sid=${sessionId}`).then((x) => x.data);
+    const getSession = () => api.get(`/api/connect/relay/session?sid=${sessionId}`).then((x: ApiResult) => x.data);
 
     return { sessionId, updaterPk, authUrl, updateSession, getSession };
   };
 
-  const getAuthUrl = (authUrl) => {
+  const getAuthUrl = (authUrl: string): string => {
     const obj = new URL(authUrl);
     obj.searchParams.set('user-agent', 'ArcWallet/3.0.0');
     return obj.href;
   };
 
-  const runSingleTest = async (authUrl, statusHistory, args) => {
-    let res = null;
-    let authInfo = null;
+  const runSingleTest = async (authUrl: string, statusHistory: string[], args: any) => {
+    let res: ApiResult = {
+      data: {
+        appPk: '',
+        authInfo: '',
+      },
+    };
+    let authInfo: AuthInfo = {
+      requestedClaims: [],
+      challenge: '',
+      url: '',
+    };
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
     expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
     expect(authInfo.url).toEqual(authUrl);
@@ -146,6 +220,7 @@ describe('RelayAdapterExpress', () => {
           challenge: authInfo.challenge,
         }),
       });
+      // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.requestedClaims[0].type).toEqual('profile');
       claims = authInfo.requestedClaims;
@@ -157,10 +232,11 @@ describe('RelayAdapterExpress', () => {
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
       userInfo: Jwt.sign(user.address, user.secretKey, {
-        requestedClaims: [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
+        requestedClaims: [profileResponse],
         challenge,
       }),
     });
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('ok');
     expect(authInfo.response).toMatch(/profile test/);
@@ -172,10 +248,11 @@ describe('RelayAdapterExpress', () => {
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
       userInfo: Jwt.sign(user.address, user.secretKey, {
-        requestedClaims: [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
+        requestedClaims: [profileResponse],
         challenge,
       }),
     });
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('error');
     expect(authInfo.errorMessage).toMatch(/Session finalized/);
@@ -195,28 +272,20 @@ describe('RelayAdapterExpress', () => {
   };
 
   test('should connect complete when everything is working: single', async () => {
-    let session = null;
+    let session: TestSession = {};
 
     const { sessionId, updaterPk, authUrl, updateSession, getSession } = prepareTest();
     const args = { completed: false, sessionId };
-    const statusHistory = [];
-    client.on(sessionId, async (e) => {
+    const statusHistory: string[] = [];
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
       if (e.status === 'walletConnected') {
-        session = await updateSession({
-          requestedClaims: [
-            {
-              type: 'profile',
-              fields: ['fullName', 'email', 'avatar'],
-              description: 'Please give me your profile',
-            },
-          ],
-        });
+        session = await updateSession({ requestedClaims: [profileRequest] });
       } else if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
+          approveResults: [`you provided profile ${(e.responseClaims[0] as ProfileResponseType).fullName}`],
         });
       } else if (e.status === 'completed') {
         args.completed = true;
@@ -224,7 +293,7 @@ describe('RelayAdapterExpress', () => {
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     await runSingleTest(authUrl, statusHistory, args);
@@ -240,20 +309,20 @@ describe('RelayAdapterExpress', () => {
     expect(authInfo.errorMessage).toMatch('Session finalized');
   });
 
-  test('should connect complete when everything is working: single + prepopulated', async () => {
-    let session = null;
+  test('should connect complete when everything is working: single + pre-populated', async () => {
+    let session: TestSession = {};
 
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
     const args = { completed: false, sessionId };
-    const statusHistory = [];
-    client.on(sessionId, async (e) => {
+    const statusHistory: string[] = [];
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
       if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
+          approveResults: [`you provided profile ${(e.responseClaims[0] as ProfileResponseType).fullName}`],
         });
       }
       if (e.status === 'completed') {
@@ -263,18 +332,7 @@ describe('RelayAdapterExpress', () => {
 
     // 1. create session
     session = await doSignedRequest(
-      {
-        sessionId,
-        updaterPk,
-        authUrl,
-        requestedClaims: [
-          {
-            type: 'profile',
-            fields: ['fullName', 'email', 'avatar'],
-            description: 'Please give me your profile',
-          },
-        ],
-      },
+      { sessionId, updaterPk, authUrl, timeout, requestedClaims: [profileRequest] },
       updater
     );
     expect(session.sessionId).toEqual(sessionId);
@@ -282,13 +340,23 @@ describe('RelayAdapterExpress', () => {
     await runSingleTest(authUrl, statusHistory, args);
   });
 
-  const runMultiStepTest = async (authUrl, statusHistory, args) => {
-    let res = null;
-    let authInfo = null;
+  const runMultiStepTest = async (authUrl: string, statusHistory: string[], args: any) => {
+    let res: ApiResult = {
+      data: {
+        appPk: '',
+        authInfo: '',
+      },
+    };
+    let authInfo: AuthInfo = {
+      requestedClaims: [],
+      challenge: '',
+      url: '',
+    };
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
     expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
     expect(authInfo.url).toEqual(authUrl);
@@ -305,6 +373,7 @@ describe('RelayAdapterExpress', () => {
           challenge: authInfo.challenge,
         }),
       });
+      // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.requestedClaims[0].type).toEqual('profile');
       claims = authInfo.requestedClaims;
@@ -316,10 +385,11 @@ describe('RelayAdapterExpress', () => {
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
       userInfo: Jwt.sign(user.address, user.secretKey, {
-        requestedClaims: [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
+        requestedClaims: [profileResponse],
         challenge,
       }),
     });
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('asset');
     claims = authInfo.requestedClaims;
@@ -330,10 +400,11 @@ describe('RelayAdapterExpress', () => {
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
       userInfo: Jwt.sign(user.address, user.secretKey, {
-        requestedClaims: [{ type: 'asset', address: user.address }],
+        requestedClaims: [assetResponse],
         challenge,
       }),
     });
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('ok');
     expect(authInfo.response).toMatch(/you provided asset/);
@@ -357,40 +428,31 @@ describe('RelayAdapterExpress', () => {
   };
 
   test('should connect complete when everything is working: multiple step', async () => {
-    let session = null;
+    let session: TestSession = {};
 
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
     const args = { completed: false, sessionId };
-    const statusHistory = [];
-    client.on(sessionId, async (e) => {
+    const statusHistory: string[] = [];
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
       if (e.status === 'walletConnected') {
-        session = await updateSession({
-          requestedClaims: [
-            {
-              type: 'profile',
-              fields: ['fullName', 'email', 'avatar'],
-              description: 'Please give me your profile',
-            },
-            {
-              type: 'asset',
-              description: 'Please prove that you own asset',
-              target: user.address,
-            },
-          ],
-        });
+        session = await updateSession({ requestedClaims: [profileRequest, assetRequest] });
       } else if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
+            approveResults: [`you provided profile ${(e.responseClaims[0] as ProfileResponseType).fullName}`],
           });
         }
         if (e.currentStep === 1) {
           session = await updateSession({
-            approveResults: [...session.approveResults, `you provided asset ${e.responseClaims[0].address}`],
+            approveResults: [
+              // @ts-ignore
+              ...session.approveResults,
+              `you provided asset ${(e.responseClaims[0] as AssetResponseType).asset}`,
+            ],
           });
         }
       } else if (e.status === 'completed') {
@@ -399,32 +461,35 @@ describe('RelayAdapterExpress', () => {
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     await runMultiStepTest(authUrl, statusHistory, args);
   });
 
-  test('should connect complete when everything is working: multiple step + prepopulated', async () => {
-    let session = null;
+  test('should connect complete when everything is working: multiple step + pre-populated', async () => {
+    let session: TestSession = {};
 
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
-    const statusHistory = [];
+    const statusHistory: string[] = [];
     const args = { completed: false, sessionId };
-    client.on(sessionId, async (e) => {
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
       if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
+            approveResults: [`you provided profile ${(e.responseClaims[0] as ProfileResponseType).fullName}`],
           });
         }
         if (e.currentStep === 1) {
           session = await updateSession({
-            approveResults: [...session.approveResults, `you provided asset ${e.responseClaims[0].address}`],
+            approveResults: [
+              ...session.approveResults,
+              `you provided asset ${(e.responseClaims[0] as AssetResponseType).asset}`,
+            ],
           });
         }
       } else if (e.status === 'completed') {
@@ -438,18 +503,8 @@ describe('RelayAdapterExpress', () => {
         sessionId,
         updaterPk,
         authUrl,
-        requestedClaims: [
-          {
-            type: 'profile',
-            fields: ['fullName', 'email', 'avatar'],
-            description: 'Please give me your profile',
-          },
-          {
-            type: 'asset',
-            description: 'Please prove that you own asset',
-            target: user.address,
-          },
-        ],
+        requestedClaims: [profileRequest, assetRequest],
+        timeout,
       },
       updater
     );
@@ -459,26 +514,36 @@ describe('RelayAdapterExpress', () => {
   });
 
   test('should abort session when wallet rejected', async () => {
-    let session = null;
-    let res = null;
-    let authInfo = null;
+    let session: TestSession = {};
+    let res: ApiResult = {
+      data: {
+        appPk: '',
+        authInfo: '',
+      },
+    };
+    let authInfo: AuthInfo = {
+      requestedClaims: [],
+      challenge: '',
+      url: '',
+    };
 
-    const statusHistory = [];
+    const statusHistory: string[] = [];
 
     const { sessionId, updaterPk, authUrl } = prepareTest();
 
-    client.on(sessionId, async (e) => {
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
     expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
     expect(authInfo.url).toEqual(authUrl);
@@ -495,6 +560,7 @@ describe('RelayAdapterExpress', () => {
           challenge: authInfo.challenge,
         }),
       });
+      // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.requestedClaims).toBeFalsy();
     }
@@ -506,26 +572,36 @@ describe('RelayAdapterExpress', () => {
   });
 
   test('should abort session when or challenge mismatch', async () => {
-    let session = null;
-    let res = null;
-    let authInfo = null;
+    let session: TestSession = {};
+    let res: ApiResult = {
+      data: {
+        appPk: '',
+        authInfo: '',
+      },
+    };
+    let authInfo: AuthInfo = {
+      requestedClaims: [],
+      challenge: '',
+      url: '',
+    };
 
-    const statusHistory = [];
+    const statusHistory: string[] = [];
 
     const { sessionId, updaterPk, authUrl } = prepareTest();
 
-    client.on(sessionId, async (e) => {
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
     expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
     expect(authInfo.url).toEqual(authUrl);
@@ -541,6 +617,7 @@ describe('RelayAdapterExpress', () => {
           challenge: 'abcd',
         }),
       });
+      // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.status).toEqual('error');
       expect(authInfo.errorMessage).toEqual('Challenge mismatch');
@@ -553,15 +630,24 @@ describe('RelayAdapterExpress', () => {
   });
 
   test('should abort session when error thrown on app connect', async () => {
-    let session = null;
-    let res = null;
-    let authInfo = null;
+    let session: TestSession = {};
+    let res: ApiResult = {
+      data: {
+        appPk: '',
+        authInfo: '',
+      },
+    };
+    let authInfo: AuthInfo = {
+      requestedClaims: [],
+      challenge: '',
+      url: '',
+    };
     let completed = false;
 
-    const statusHistory = [];
+    const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
-    client.on(sessionId, async (e) => {
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
@@ -576,12 +662,13 @@ describe('RelayAdapterExpress', () => {
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
     expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
     expect(authInfo.url).toEqual(authUrl);
@@ -596,6 +683,7 @@ describe('RelayAdapterExpress', () => {
           challenge: authInfo.challenge,
         }),
       });
+      // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.status).toBe('error');
       expect(authInfo.response).toEqual({});
@@ -610,28 +698,29 @@ describe('RelayAdapterExpress', () => {
   });
 
   test('should abort session when error thrown on app approve', async () => {
-    let session = null;
-    let res = null;
-    let authInfo = null;
+    let session: TestSession = {};
+    let res: ApiResult = {
+      data: {
+        appPk: '',
+        authInfo: '',
+      },
+    };
+    let authInfo: AuthInfo = {
+      requestedClaims: [],
+      challenge: '',
+      url: '',
+    };
     let completed = false;
 
-    const statusHistory = [];
+    const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
-    client.on(sessionId, async (e) => {
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
       if (e.status === 'walletConnected') {
-        session = await updateSession({
-          requestedClaims: [
-            {
-              type: 'profile',
-              fields: ['fullName', 'email', 'avatar'],
-              description: 'Please give me your profile',
-            },
-          ],
-        });
+        session = await updateSession({ requestedClaims: [profileRequest] });
       } else if (e.status === 'walletApproved') {
         session = await updateSession({
           status: 'error',
@@ -643,12 +732,13 @@ describe('RelayAdapterExpress', () => {
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
     expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
     expect(authInfo.url).toEqual(authUrl);
@@ -665,6 +755,7 @@ describe('RelayAdapterExpress', () => {
           challenge: authInfo.challenge,
         }),
       });
+      // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.requestedClaims[0].type).toEqual('profile');
       claims = authInfo.requestedClaims;
@@ -676,10 +767,11 @@ describe('RelayAdapterExpress', () => {
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
       userInfo: Jwt.sign(user.address, user.secretKey, {
-        requestedClaims: [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
+        requestedClaims: [{ type: 'profile', description: 'xxx', fullName: 'test', email: 'test@arcblock.io' }],
         challenge,
       }),
     });
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('error');
     expect(authInfo.response).toEqual({});
@@ -692,14 +784,23 @@ describe('RelayAdapterExpress', () => {
   });
 
   test('should timeout when client not connect properly', async () => {
-    let session = null;
-    let res = null;
-    let authInfo = null;
+    let session: TestSession = {};
+    let res: ApiResult = {
+      data: {
+        appPk: '',
+        authInfo: '',
+      },
+    };
+    let authInfo: AuthInfo = {
+      requestedClaims: [],
+      challenge: '',
+      url: '',
+    };
 
-    const statusHistory = [];
+    const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl } = prepareTest();
 
-    client.on(sessionId, async (e) => {
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
@@ -709,12 +810,13 @@ describe('RelayAdapterExpress', () => {
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout: { app: 1000 } }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout: { ...timeout, app: 1000 } }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
     expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
     expect(authInfo.url).toEqual(authUrl);
@@ -729,6 +831,7 @@ describe('RelayAdapterExpress', () => {
           challenge: authInfo.challenge,
         }),
       });
+      // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.status).toEqual('error');
       expect(authInfo.errorMessage).toMatch('Requested claims not provided');
@@ -741,14 +844,23 @@ describe('RelayAdapterExpress', () => {
   });
 
   test('should timeout when client not approve properly', async () => {
-    let session = null;
-    let res = null;
-    let authInfo = null;
+    let session: TestSession = {};
+    let res: ApiResult = {
+      data: {
+        appPk: '',
+        authInfo: '',
+      },
+    };
+    let authInfo: AuthInfo = {
+      requestedClaims: [],
+      challenge: '',
+      url: '',
+    };
 
-    const statusHistory = [];
+    const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
-    client.on(sessionId, async (e) => {
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
@@ -757,7 +869,7 @@ describe('RelayAdapterExpress', () => {
           requestedClaims: [
             {
               type: 'profile',
-              fields: ['fullName', 'email', 'avatar'],
+              items: ['fullName', 'email', 'avatar'],
               description: 'Please give me your profile',
             },
           ],
@@ -768,12 +880,13 @@ describe('RelayAdapterExpress', () => {
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout: { app: 1000 } }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout: { ...timeout, app: 1000 } }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
     expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
     expect(authInfo.url).toEqual(authUrl);
@@ -790,6 +903,7 @@ describe('RelayAdapterExpress', () => {
           challenge: authInfo.challenge,
         }),
       });
+      // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.requestedClaims[0].type).toEqual('profile');
       claims = authInfo.requestedClaims;
@@ -801,10 +915,11 @@ describe('RelayAdapterExpress', () => {
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
       userInfo: Jwt.sign(user.address, user.secretKey, {
-        requestedClaims: [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
+        requestedClaims: [{ type: 'profile', description: 'xx', fullName: 'test', email: 'test@arcblock.io' }],
         challenge,
       }),
     });
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('error');
     expect(authInfo.errorMessage).toMatch('Response claims not handled');
@@ -816,49 +931,46 @@ describe('RelayAdapterExpress', () => {
   });
 
   test('should timeout when client not approve: multiple step', async () => {
-    let session = null;
-    let res = null;
-    let authInfo = null;
+    let session: TestSession = {};
+    let res: ApiResult = {
+      data: {
+        appPk: '',
+        authInfo: '',
+      },
+    };
+    let authInfo: AuthInfo = {
+      requestedClaims: [],
+      challenge: '',
+      url: '',
+    };
 
-    const statusHistory = [];
+    const statusHistory: string[] = [];
 
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
-    client.on(sessionId, async (e) => {
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
       if (e.status === 'walletConnected') {
-        session = await updateSession({
-          requestedClaims: [
-            {
-              type: 'profile',
-              fields: ['fullName', 'email', 'avatar'],
-              description: 'Please give me your profile',
-            },
-            {
-              type: 'asset',
-              description: 'Please prove that you own asset',
-              target: user.address,
-            },
-          ],
-        });
+        session = await updateSession({ requestedClaims: [profileRequest, assetRequest] });
       } else if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
+            approveResults: [`you provided profile ${(e.responseClaims[0] as ProfileResponseType).fullName}`],
           });
         }
       }
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout: { app: 1000 } }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout: { ...timeout, app: 1000 } }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
     expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
     expect(authInfo.url).toEqual(authUrl);
@@ -875,6 +987,7 @@ describe('RelayAdapterExpress', () => {
           challenge: authInfo.challenge,
         }),
       });
+      // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.requestedClaims[0].type).toEqual('profile');
       claims = authInfo.requestedClaims;
@@ -886,10 +999,11 @@ describe('RelayAdapterExpress', () => {
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
       userInfo: Jwt.sign(user.address, user.secretKey, {
-        requestedClaims: [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
+        requestedClaims: [profileResponse],
         challenge,
       }),
     });
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('asset');
     claims = authInfo.requestedClaims;
@@ -900,10 +1014,11 @@ describe('RelayAdapterExpress', () => {
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
       userInfo: Jwt.sign(user.address, user.secretKey, {
-        requestedClaims: [{ type: 'asset', address: user.address }],
+        requestedClaims: [assetResponse],
         challenge,
       }),
     });
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('error');
     expect(authInfo.errorMessage).toMatch('Response claims not handled');
@@ -923,31 +1038,32 @@ describe('RelayAdapterExpress', () => {
   });
 
   test('should abort session when response claim mismatch', async () => {
-    let session = null;
-    let res = null;
-    let authInfo = null;
+    let session: TestSession = {};
+    let res: ApiResult = {
+      data: {
+        appPk: '',
+        authInfo: '',
+      },
+    };
+    let authInfo: AuthInfo = {
+      requestedClaims: [],
+      challenge: '',
+      url: '',
+    };
     let completed = false;
 
-    const statusHistory = [];
+    const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
-    client.on(sessionId, async (e) => {
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
       if (e.status === 'walletConnected') {
-        session = await updateSession({
-          requestedClaims: [
-            {
-              type: 'profile',
-              fields: ['fullName', 'email', 'avatar'],
-              description: 'Please give me your profile',
-            },
-          ],
-        });
+        session = await updateSession({ requestedClaims: [profileRequest] });
       } else if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [`you provided profile ${e.responseClaims[0].fullName}`],
+          approveResults: [`you provided profile ${(e.responseClaims[0] as ProfileResponseType).fullName}`],
         });
       } else if (e.status === 'completed') {
         completed = true;
@@ -955,12 +1071,13 @@ describe('RelayAdapterExpress', () => {
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
     expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
     expect(authInfo.url).toEqual(authUrl);
@@ -977,6 +1094,7 @@ describe('RelayAdapterExpress', () => {
           challenge: authInfo.challenge,
         }),
       });
+      // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.requestedClaims[0].type).toEqual('profile');
       claims = authInfo.requestedClaims;
@@ -988,10 +1106,11 @@ describe('RelayAdapterExpress', () => {
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
       userInfo: Jwt.sign(user.address, user.secretKey, {
-        requestedClaims: [{ type: 'asset', fullName: 'test', email: 'test@arcblock.io' }],
+        requestedClaims: [assetResponse],
         challenge,
       }),
     });
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('error');
     expect(authInfo.errorMessage).toMatch('do not match with requested claims');
@@ -1003,14 +1122,23 @@ describe('RelayAdapterExpress', () => {
   });
 
   test('should abort session when session canceled', async () => {
-    let session = null;
-    let res = null;
-    let authInfo = null;
+    let session: TestSession = {};
+    let res: ApiResult = {
+      data: {
+        appPk: '',
+        authInfo: '',
+      },
+    };
+    let authInfo: AuthInfo = {
+      requestedClaims: [],
+      challenge: '',
+      url: '',
+    };
 
-    const statusHistory = [];
+    const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
-    client.on(sessionId, async (e) => {
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
@@ -1022,12 +1150,13 @@ describe('RelayAdapterExpress', () => {
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout }, updater);
     expect(session.sessionId).toEqual(sessionId);
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
     expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
     expect(authInfo.url).toEqual(authUrl);
@@ -1042,6 +1171,7 @@ describe('RelayAdapterExpress', () => {
           challenge: authInfo.challenge,
         }),
       });
+      // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.status).toEqual('error');
       expect(authInfo.errorMessage).toMatch('canceled');
@@ -1054,35 +1184,47 @@ describe('RelayAdapterExpress', () => {
   });
 
   test('should complete session when in onlyConnect mode', async () => {
-    let session = null;
-    let res = null;
-    let authInfo = null;
+    let session: TestSession = {};
+    let res: ApiResult = {
+      data: {
+        appPk: '',
+        authInfo: '',
+      },
+    };
+    let authInfo: AuthInfo = {
+      requestedClaims: [],
+      challenge: '',
+      url: '',
+    };
 
-    const statusHistory = [];
+    const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
-    client.on(sessionId, async (e) => {
+    client.on(sessionId, async (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
       if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [{ successMessage: `you connected account ${e.responseClaims[0].userDid}` }],
+          approveResults: [
+            { successMessage: `you connected account ${(e.responseClaims[0] as AuthPrincipalResponseType).userDid}` },
+          ],
         });
       }
     });
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl, onlyConnect: true }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout, onlyConnect: true }, updater);
     expect(session.sessionId).toEqual(sessionId);
     expect(session.onlyConnect).toEqual(true);
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
     expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
-    expect(authInfo.requestedClaims[0].supervised).toEqual(true);
+    expect((authInfo.requestedClaims[0] as AuthPrincipalRequestType).supervised).toEqual(true);
     expect(authInfo.url).toEqual(authUrl);
 
     // 3. submit auth principal
@@ -1093,6 +1235,7 @@ describe('RelayAdapterExpress', () => {
         challenge: authInfo.challenge,
       }),
     });
+    // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('ok');
     expect(authInfo.successMessage).toMatch('you connected account');
@@ -1103,12 +1246,12 @@ describe('RelayAdapterExpress', () => {
   });
 
   const prepareEvilTest = async () => {
-    let session = null;
+    let session: TestSession = {};
 
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
 
     // 1. create session
-    session = await doSignedRequest({ sessionId, updaterPk, authUrl }, updater);
+    session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout }, updater);
     expect(session.sessionId).toEqual(sessionId);
     expect(session.updaterPk).toEqual(updaterPk);
     expect(session.strategy).toEqual('default');

@@ -11,11 +11,13 @@ export interface AgreementRequestType {
 }
 
 export interface AgreementResponseType {
+  agreed: boolean;
   chainInfo?: ChainInfoType;
   description: string;
   digest: string;
   meta?: any;
   method?: 'keccak' | 'sha3' | 'keccak_384' | 'sha3_384' | 'keccak_512' | 'sha3_512' | 'sha2';
+  sig?: string;
   type: 'agreement';
   uri: string;
 }
@@ -82,6 +84,7 @@ export interface AssetRequestType {
 
 export interface AssetResponseType {
   address?: string;
+  asset: string;
   chainInfo?: ChainInfoType;
   description: string;
   filters?: {
@@ -98,6 +101,9 @@ export interface AssetResponseType {
   }[];
   meta?: any;
   optional?: boolean;
+  ownerDid: string;
+  ownerPk: string;
+  ownerProof: string;
   tag?: string;
   trustedIssuers?: (
     | {
@@ -186,32 +192,34 @@ export interface AuthPrincipalResponseType {
       | 'any';
   };
   type: 'authPrincipal';
+  userDid: string;
+  userPk: string;
 }
 
 export interface ChainInfoType {
-  host: 'none';
+  host?: string | 'none';
   id?: string;
 }
 
 export interface ContextType {
-  body?: object;
+  body: object;
   didwallet: DIDWalletInfoType;
   headers: object;
   locale: string;
   previousConnected?: {
-    didwallet: 'ios' | 'android' | 'web';
+    didwallet: 'ios' | 'android' | 'web' | '';
     userDid: string;
     userPk: string;
   } | null;
-  session?: SessionType | null;
+  session: SessionType | null;
   sessionId: string;
-  signerPk?: string;
-  signerToken?: string;
+  signerPk: string;
+  signerToken: string;
 }
 
 export interface DIDWalletInfoType {
   jwt: string;
-  os: 'ios' | 'android' | 'web';
+  os: 'ios' | 'android' | 'web' | '';
   version: string;
 }
 
@@ -239,6 +247,7 @@ export interface PrepareTxResponseType {
   chainInfo?: ChainInfoType;
   description: string;
   display?: string;
+  finalTx: string;
   meta?: any;
   partialTx: string;
   requirement: {
@@ -264,10 +273,16 @@ export interface ProfileRequestType {
 }
 
 export interface ProfileResponseType {
+  avatar?: string;
+  birthday?: string;
   chainInfo?: ChainInfoType;
   description: string;
+  email?: string;
+  fullName?: string;
   items?: ('fullName' | 'email' | 'phone' | 'signature' | 'avatar' | 'birthday')[];
   meta?: any;
+  phone?: string;
+  signature?: string;
   type: 'profile';
 }
 
@@ -290,12 +305,13 @@ export interface SessionType {
   error?: string;
   onlyConnect: boolean;
   previousConnected?: {
-    didwallet: 'ios' | 'android' | 'web';
+    didwallet: 'ios' | 'android' | 'web' | '';
     userDid: string;
     userPk: string;
   } | null;
   requestedClaims: (AnyRequestType[] | AnyRequestType)[];
   responseClaims: AnyResponseType[][];
+  sessionId: string;
   status:
     | 'created'
     | 'walletScanned'
@@ -310,9 +326,9 @@ export interface SessionType {
     | 'completed';
   strategy: string | 'default';
   timeout: {
-    app?: number;
-    relay?: number;
-    wallet?: number;
+    app: number;
+    relay: number;
+    wallet: number;
   };
   updaterPk: string;
 }
@@ -337,6 +353,7 @@ export interface SignatureResponseType {
   meta?: any;
   method?: 'none' | 'keccak' | 'sha3' | 'keccak_384' | 'sha3_384' | 'keccak_512' | 'sha3_512' | 'sha2';
   origin?: string;
+  sig: string;
   type: 'signature';
   typeUrl: 'fg:t:transaction' | 'mime:text/plain' | 'mime:text/html' | 'eth:transaction';
 }
@@ -389,6 +406,7 @@ export interface VerifiableCredentialResponseType {
   item?: string[];
   meta?: any;
   optional?: boolean;
+  presentation: string;
   tag?: string;
   target?: string;
   trustedIssuers?: (
