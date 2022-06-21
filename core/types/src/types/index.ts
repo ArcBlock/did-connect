@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/indent */
 
-export interface AgreementRequestType {
-  chainInfo?: ChainInfoType;
+export interface TAgreementRequest {
+  chainInfo?: TChainInfo;
   description: string;
   digest: string;
   meta?: any;
@@ -10,9 +10,9 @@ export interface AgreementRequestType {
   uri: string;
 }
 
-export interface AgreementResponseType {
+export interface TAgreementResponse {
   agreed: boolean;
-  chainInfo?: ChainInfoType;
+  chainInfo?: TChainInfo;
   description: string;
   digest: string;
   meta?: any;
@@ -22,25 +22,25 @@ export interface AgreementResponseType {
   uri: string;
 }
 
-export type AnyRequestType =
-  | AuthPrincipalRequestType
-  | ProfileRequestType
-  | SignatureRequestType
-  | PrepareTxRequestType
-  | AgreementRequestType
-  | VerifiableCredentialRequestType
-  | AssetRequestType;
+export type TAnyRequest =
+  | TAuthPrincipalRequest
+  | TProfileRequest
+  | TSignatureRequest
+  | TPrepareTxRequest
+  | TAgreementRequest
+  | TVerifiableCredentialRequest
+  | TAssetRequest;
 
-export type AnyResponseType =
-  | AuthPrincipalResponseType
-  | ProfileResponseType
-  | SignatureResponseType
-  | PrepareTxResponseType
-  | AgreementResponseType
-  | VerifiableCredentialResponseType
-  | AssetResponseType;
+export type TAnyResponse =
+  | TAuthPrincipalResponse
+  | TProfileResponse
+  | TSignatureResponse
+  | TPrepareTxResponse
+  | TAgreementResponse
+  | TVerifiableCredentialResponse
+  | TAssetResponse;
 
-export interface AppInfoType {
+export interface TAppInfo {
   description: string;
   icon: string;
   link?: string;
@@ -52,9 +52,9 @@ export interface AppInfoType {
   updateSubEndpoint?: boolean;
 }
 
-export interface AssetRequestType {
+export interface TAssetRequest {
   address?: string;
-  chainInfo?: ChainInfoType;
+  chainInfo?: TChainInfo;
   description: string;
   filters?: {
     address?: string;
@@ -82,10 +82,10 @@ export interface AssetRequestType {
   type: 'asset';
 }
 
-export interface AssetResponseType {
+export interface TAssetResponse {
   address?: string;
   asset: string;
-  chainInfo?: ChainInfoType;
+  chainInfo?: TChainInfo;
   description: string;
   filters?: {
     address?: string;
@@ -116,8 +116,8 @@ export interface AssetResponseType {
   type: 'asset';
 }
 
-export interface AuthPrincipalRequestType {
-  chainInfo?: ChainInfoType;
+export interface TAuthPrincipalRequest {
+  chainInfo?: TChainInfo;
   declareParams?: {
     issuer: string;
     moniker: string;
@@ -155,8 +155,8 @@ export interface AuthPrincipalRequestType {
   type: 'authPrincipal';
 }
 
-export interface AuthPrincipalResponseType {
-  chainInfo?: ChainInfoType;
+export interface TAuthPrincipalResponse {
+  chainInfo?: TChainInfo;
   declareParams?: {
     issuer: string;
     moniker: string;
@@ -196,14 +196,14 @@ export interface AuthPrincipalResponseType {
   userPk: string;
 }
 
-export interface ChainInfoType {
+export interface TChainInfo {
   host?: string | 'none';
   id?: string;
 }
 
-export interface ContextType {
+export interface TContext {
   body: object;
-  didwallet: DIDWalletInfoType;
+  didwallet: TDidWalletInfo;
   headers: object;
   locale: string;
   previousConnected?: {
@@ -211,20 +211,20 @@ export interface ContextType {
     userDid: string;
     userPk: string;
   } | null;
-  session: SessionType | null;
+  session: TSession | null;
   sessionId: string;
   signerPk: string;
   signerToken: string;
 }
 
-export interface DIDWalletInfoType {
+export interface TDidWalletInfo {
   jwt: string;
   os: 'ios' | 'android' | 'web' | '';
   version: string;
 }
 
-export interface PrepareTxRequestType {
-  chainInfo?: ChainInfoType;
+export interface TPrepareTxRequest {
+  chainInfo?: TChainInfo;
   description: string;
   display?: string;
   meta?: any;
@@ -243,8 +243,8 @@ export interface PrepareTxRequestType {
   type: 'prepareTx';
 }
 
-export interface PrepareTxResponseType {
-  chainInfo?: ChainInfoType;
+export interface TPrepareTxResponse {
+  chainInfo?: TChainInfo;
   description: string;
   display?: string;
   finalTx: string;
@@ -264,18 +264,18 @@ export interface PrepareTxResponseType {
   type: 'prepareTx';
 }
 
-export interface ProfileRequestType {
-  chainInfo?: ChainInfoType;
+export interface TProfileRequest {
+  chainInfo?: TChainInfo;
   description: string;
   items?: ('fullName' | 'email' | 'phone' | 'signature' | 'avatar' | 'birthday')[];
   meta?: any;
   type: 'profile';
 }
 
-export interface ProfileResponseType {
+export interface TProfileResponse {
   avatar?: string;
   birthday?: string;
-  chainInfo?: ChainInfoType;
+  chainInfo?: TChainInfo;
   description: string;
   email?: string;
   fullName?: string;
@@ -286,18 +286,18 @@ export interface ProfileResponseType {
   type: 'profile';
 }
 
-export type RequestListType = AnyRequestType[];
+export type TRequestList = TAnyRequest[];
 
-export type ResponseListType = AnyResponseType[];
+export type TResponseList = TAnyResponse[];
 
-export interface SessionType {
-  appInfo: AppInfoType;
+export interface TSession {
+  appInfo: TAppInfo;
   approveResults: any[];
   authUrl: string;
   autoConnect: boolean;
   challenge: string;
   currentConnected?: {
-    didwallet: DIDWalletInfoType;
+    didwallet: TDidWalletInfo;
     userDid: string;
     userPk: string;
   } | null;
@@ -309,8 +309,8 @@ export interface SessionType {
     userDid: string;
     userPk: string;
   } | null;
-  requestedClaims: (AnyRequestType[] | AnyRequestType)[];
-  responseClaims: AnyResponseType[][];
+  requestedClaims: (TAnyRequest[] | TAnyRequest)[];
+  responseClaims: TAnyResponse[][];
   sessionId: string;
   status:
     | 'created'
@@ -333,8 +333,8 @@ export interface SessionType {
   updaterPk: string;
 }
 
-export interface SignatureRequestType {
-  chainInfo?: ChainInfoType;
+export interface TSignatureRequest {
+  chainInfo?: TChainInfo;
   description: string;
   digest?: string;
   display?: string;
@@ -345,8 +345,8 @@ export interface SignatureRequestType {
   typeUrl: 'fg:t:transaction' | 'mime:text/plain' | 'mime:text/html' | 'eth:transaction';
 }
 
-export interface SignatureResponseType {
-  chainInfo?: ChainInfoType;
+export interface TSignatureResponse {
+  chainInfo?: TChainInfo;
   description: string;
   digest?: string;
   display?: string;
@@ -358,8 +358,8 @@ export interface SignatureResponseType {
   typeUrl: 'fg:t:transaction' | 'mime:text/plain' | 'mime:text/html' | 'eth:transaction';
 }
 
-export interface VerifiableCredentialRequestType {
-  chainInfo?: ChainInfoType;
+export interface TVerifiableCredentialRequest {
+  chainInfo?: TChainInfo;
   description: string;
   filters?: {
     tag?: string;
@@ -388,8 +388,8 @@ export interface VerifiableCredentialRequestType {
   type: 'verifiableCredential';
 }
 
-export interface VerifiableCredentialResponseType {
-  chainInfo?: ChainInfoType;
+export interface TVerifiableCredentialResponse {
+  chainInfo?: TChainInfo;
   description: string;
   filters?: {
     tag?: string;

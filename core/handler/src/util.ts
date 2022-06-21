@@ -2,11 +2,11 @@ import semver from 'semver';
 import pick from 'lodash/pick';
 import { getRandomBytes } from '@ocap/mcrypto';
 import { stripHexPrefix } from '@ocap/util';
-import { DIDWalletInfoType } from '@did-connect/types';
+import { TDidWalletInfo } from '@did-connect/types';
 
 const getStepChallenge = (): string => stripHexPrefix(getRandomBytes(16)).toUpperCase();
 
-const parseWalletUA = (userAgent: string): DIDWalletInfoType => {
+const parseWalletUA = (userAgent: string): TDidWalletInfo => {
   const ua = (userAgent || '').toString().toLowerCase();
   let os = '';
   let version = '';

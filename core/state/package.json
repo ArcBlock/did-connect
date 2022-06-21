@@ -21,6 +21,8 @@
     "@arcblock/jwt": "^1.17.0",
     "@arcblock/ws": "^1.17.0",
     "@ocap/wallet": "^1.17.0",
+    "@ocap/util": "^1.17.0",
+    "@did-connect/types": "^2.0.0",
     "axios": "^0.27.2",
     "debug": "^4.3.4",
     "lodash": "^4.17.21",
@@ -31,7 +33,11 @@
     "xstate": "^4.32.1"
   },
   "devDependencies": {
-    "jest": "^28.1.1"
+    "@arcblock/eslint-config-ts": "0.2.2",
+    "eslint": "^8.16.0",
+    "jest": "^28.1.1",
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.3"
   },
   "homepage": "https://github.com/ArcBlock/did-connect",
   "keywords": [
@@ -49,8 +55,8 @@
     "url": "https://github.com/ArcBlock/did-connect"
   },
   "scripts": {
-    "lint": "eslint lib tests",
-    "lint:fix": "eslint --fix lib tests",
+    "lint": "eslint src tests",
+    "lint:fix": "eslint --fix src tests",
     "prebuild": "npm run clean",
     "build": "tsc",
     "check": "tsc --noEmit",

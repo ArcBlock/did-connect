@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { EventEmitter } from 'events';
-import { SessionType } from '@did-connect/types';
+import { TSession } from '@did-connect/types';
 
 export type SessionStorageOptions = {
   ttl?: number;
 };
 
 export interface SessionStorage {
-  create(sessionId: string, attributes: Partial<SessionType>): Promise<SessionType>;
-  read(sessionId: string): Promise<SessionType>;
-  update(sessionId: string, updates: Partial<SessionType>): Promise<SessionType>;
+  create(sessionId: string, attributes: Partial<TSession>): Promise<TSession>;
+  read(sessionId: string): Promise<TSession>;
+  update(sessionId: string, updates: Partial<TSession>): Promise<TSession>;
   delete(sessionId: string): Promise<void>;
   clear(): Promise<void>;
   isFinalized(status: string): boolean;
@@ -34,15 +34,15 @@ export class BaseStorage extends EventEmitter implements SessionStorage {
     this.options = options || {};
   }
 
-  create(sessionId: string, attributes: Partial<SessionType>): Promise<SessionType> {
+  create(sessionId: string, attributes: Partial<TSession>): Promise<TSession> {
     throw new Error('create must be implemented in child class');
   }
 
-  read(sessionId: string): Promise<SessionType> {
+  read(sessionId: string): Promise<TSession> {
     throw new Error('read must be implemented in child class');
   }
 
-  update(sessionId: string, updates: Partial<SessionType>): Promise<SessionType> {
+  update(sessionId: string, updates: Partial<TSession>): Promise<TSession> {
     throw new Error('update must be implemented in child class');
   }
 

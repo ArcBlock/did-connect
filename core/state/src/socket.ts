@@ -1,10 +1,12 @@
-const { WsClient } = require('@arcblock/ws');
+import { WsClient } from '@arcblock/ws';
+
+type Connections = { [key: string]: WsClient };
 
 // cache for all connections
-const connections = {};
+const connections: Connections = {};
 
 // create new connection
-const createConnection = (endpoint) => {
+export const createConnection = (endpoint: string): Promise<WsClient> => {
   if (!connections[endpoint]) {
     connections[endpoint] = new WsClient(endpoint, { heartbeatIntervalMs: 10 * 1000 });
   }
@@ -18,7 +20,7 @@ const createConnection = (endpoint) => {
       resolve(connections[endpoint]);
     });
 
-    connections[endpoint].onError((err) => {
+    connections[endpoint].onError((err: any) => {
       reject(new Error(`Failed to connect to socket ${endpoint}: ${err.message}`));
     });
 
@@ -26,16 +28,11 @@ const createConnection = (endpoint) => {
   });
 };
 
-const destroyConnections = () => {
+export const destroyConnections = () => {
   Object.keys(connections).forEach((key) => {
     if (connections[key].isConnected()) {
       connections[key].disconnect();
     }
     connections[key] = null;
   });
-};
-
-module.exports = {
-  createConnection,
-  destroyConnections,
 };

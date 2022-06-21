@@ -5,7 +5,7 @@ import { types } from '@ocap/mcrypto';
 import { verify, decode } from '@arcblock/jwt';
 import { fromRandom, WalletType } from '@ocap/wallet';
 import { toBase58 } from '@ocap/util';
-import { ContextType, RequestListType } from '@did-connect/types';
+import { TContext, TRequestList } from '@did-connect/types';
 
 import { Authenticator } from '../src';
 
@@ -24,7 +24,7 @@ const sleep = (ms: number) =>
     setTimeout(resolve, ms);
   });
 
-const claims: RequestListType = [
+const claims: TRequestList = [
   {
     type: 'profile',
     items: ['fullName', 'email'],
@@ -32,7 +32,7 @@ const claims: RequestListType = [
   },
 ];
 
-const context: ContextType = {
+const context: TContext = {
   didwallet: { os: 'web', version: '1.1.0', jwt: '1.1.0' },
   body: {},
   headers: {},

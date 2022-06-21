@@ -1,25 +1,25 @@
 import { BaseStorage, SessionStorage } from '@did-connect/storage';
-import { SessionType } from '@did-connect/types';
+import { TSession } from '@did-connect/types';
 
 interface StorageObject {
-  [key: string]: SessionType;
+  [key: string]: TSession;
 }
 
 let storage: StorageObject = {};
 
 export class MemoryStorage extends BaseStorage implements SessionStorage {
-  read(sessionId: string): Promise<SessionType> {
+  read(sessionId: string): Promise<TSession> {
     return Promise.resolve(storage[sessionId]);
   }
 
-  create(sessionId: string, attributes: Partial<SessionType>): Promise<SessionType> {
+  create(sessionId: string, attributes: Partial<TSession>): Promise<TSession> {
     // @ts-ignore
     storage[sessionId] = { sessionId, ...attributes };
     this.emit('create', storage[sessionId]);
     return this.read(sessionId);
   }
 
-  update(sessionId: string, updates: Partial<SessionType>): Promise<SessionType> {
+  update(sessionId: string, updates: Partial<TSession>): Promise<TSession> {
     delete updates.sessionId;
     storage[sessionId] = Object.assign(storage[sessionId], updates);
     this.emit('update', storage[sessionId]);

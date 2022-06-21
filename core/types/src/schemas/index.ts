@@ -19,7 +19,7 @@ const ChainInfo: ObjectSchema = Joi.object({
   ),
 })
   .options(options)
-  .meta({ unknownType: 'string', className: 'ChainInfoType' });
+  .meta({ unknownType: 'string', className: 'TChainInfo' });
 
 const AppInfo: ObjectSchema = Joi.object({
   name: Joi.string().required(),
@@ -39,7 +39,7 @@ const AppInfo: ObjectSchema = Joi.object({
   nodeDid: Joi.DID().optional(),
 })
   .options(options)
-  .meta({ unknownType: 'string', className: 'AppInfoType' });
+  .meta({ unknownType: 'string', className: 'TAppInfo' });
 
 const DIDWalletInfo = Joi.object({
   os: Joi.string().valid('ios', 'android', 'web').allow('').required(),
@@ -47,7 +47,7 @@ const DIDWalletInfo = Joi.object({
   jwt: Joi.string().required(),
 })
   .options(options)
-  .meta({ unknownType: 'string', className: 'DIDWalletInfoType' });
+  .meta({ unknownType: 'string', className: 'TDidWalletInfo' });
 
 // did-connect claim type utils
 type RequestType =
@@ -243,7 +243,7 @@ const createClaimTypes = (type: RequestType, description: string): ObjectSchema[
     ...claims[type].request,
   })
     .options(options)
-    .meta({ unknownType: 'string', className: `${capitalize(type)}RequestType` });
+    .meta({ unknownType: 'string', className: `T${capitalize(type)}Request` });
 
   const response: ObjectSchema = Joi.object({
     ...createStandardFields(type, description),
@@ -251,7 +251,7 @@ const createClaimTypes = (type: RequestType, description: string): ObjectSchema[
     ...claims[type].response,
   })
     .options(options)
-    .meta({ unknownType: 'string', className: `${capitalize(type)}ResponseType` });
+    .meta({ unknownType: 'string', className: `T${capitalize(type)}Response` });
 
   return [request, response];
 };
@@ -287,9 +287,9 @@ const AnyRequest = Joi.alternatives()
     VerifiableCredentialRequest,
     AssetRequest
   )
-  .meta({ unknownType: 'string', className: 'AnyRequestType' });
+  .meta({ unknownType: 'string', className: 'TAnyRequest' });
 
-const RequestList = Joi.array().items(AnyRequest).min(1).meta({ unknownType: 'string', className: 'RequestListType' });
+const RequestList = Joi.array().items(AnyRequest).min(1).meta({ unknownType: 'string', className: 'TRequestList' });
 
 // Any claim request
 const AnyResponse = Joi.alternatives()
@@ -302,12 +302,9 @@ const AnyResponse = Joi.alternatives()
     VerifiableCredentialResponse,
     AssetResponse
   )
-  .meta({ unknownType: 'string', className: 'AnyResponseType' });
+  .meta({ unknownType: 'string', className: 'TAnyResponse' });
 
-const ResponseList = Joi.array()
-  .items(AnyResponse)
-  .min(1)
-  .meta({ unknownType: 'string', className: 'ResponseListType' });
+const ResponseList = Joi.array().items(AnyResponse).min(1).meta({ unknownType: 'string', className: 'TResponseList' });
 
 const PreviousConnected = Joi.object({
   userDid: Joi.DID().required(),
@@ -377,7 +374,7 @@ const Session: ObjectSchema = Joi.object({
     .required(),
 })
   .options(options)
-  .meta({ unknownType: 'string', className: 'SessionType' });
+  .meta({ unknownType: 'string', className: 'TSession' });
 
 // DID Connect handler context
 const Context: ObjectSchema = Joi.object({
@@ -392,7 +389,7 @@ const Context: ObjectSchema = Joi.object({
   previousConnected: PreviousConnected,
 })
   .options(options)
-  .meta({ unknownType: 'string', className: 'ContextType' });
+  .meta({ unknownType: 'string', className: 'TContext' });
 
 export {
   AppInfo,
@@ -403,20 +400,20 @@ export {
   LocaleType,
   RequestType,
   SignatureType,
-  AuthPrincipalRequest,
-  ProfileRequest,
-  SignatureRequest,
-  PrepareTxRequest,
   AgreementRequest,
-  VerifiableCredentialRequest,
-  AssetRequest,
-  AuthPrincipalResponse,
-  ProfileResponse,
-  SignatureResponse,
-  PrepareTxResponse,
   AgreementResponse,
-  VerifiableCredentialResponse,
+  AssetRequest,
   AssetResponse,
+  AuthPrincipalRequest,
+  AuthPrincipalResponse,
+  PrepareTxRequest,
+  PrepareTxResponse,
+  ProfileRequest,
+  ProfileResponse,
+  SignatureRequest,
+  SignatureResponse,
+  VerifiableCredentialRequest,
+  VerifiableCredentialResponse,
   AnyRequest,
   RequestList,
   AnyResponse,

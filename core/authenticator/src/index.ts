@@ -8,33 +8,26 @@ import { isValid, WalletObject } from '@ocap/wallet';
 import {
   LocaleType,
   AppInfo,
-  AppInfoType,
-  ChainInfoType,
-  SessionType,
-  ContextType,
+  TAppInfo,
+  TAppResponse,
+  TAuthResponse,
+  TChainInfo,
+  TSession,
+  TContext,
   Context,
-  AnyRequestType,
+  TAnyRequest,
   RequestList,
-  RequestListType,
-  ResponseListType,
-  I18nMessages,
+  TRequestList,
+  TResponseList,
+  TI18nMessages,
 } from '@did-connect/types';
 
 type AuthenticatorOptions = {
   wallet: WalletObject;
-  appInfo: AppInfoType | Function;
-  chainInfo?: ChainInfoType;
+  appInfo: TAppInfo | Function;
+  chainInfo?: TChainInfo;
   timeout?: number;
 };
-
-export type AppResponse = {
-  response?: any;
-  error?: string;
-  errorMessage?: string;
-  successMessage?: string;
-  nextWorkflow?: string;
-  [key: string]: any;
-} | null;
 
 export type AppResponseSigned = {
   appPk: string;
@@ -44,7 +37,7 @@ export type AppResponseSigned = {
 export type WalletResponse = {
   userDid: string;
   userPk: string;
-  claims: ResponseListType;
+  claims: TResponseList;
   action: string;
   challenge: string;
 };
@@ -57,9 +50,9 @@ export type WalletResponseSigned = {
 const debug = Debug('@did-connect/authenticator');
 
 const DEFAULT_TIMEOUT = 8000;
-const DEFAULT_CHAIN_INFO: ChainInfoType = { host: 'none' };
+const DEFAULT_CHAIN_INFO: TChainInfo = { host: 'none' };
 
-const errors: I18nMessages = {
+const errors: TI18nMessages = {
   pkMissing: {
     en: 'userPk is required to complete auth',
     zh: 'userPk 参数缺失',
@@ -85,9 +78,9 @@ const errors: I18nMessages = {
 export class Authenticator {
   readonly wallet: WalletObject;
 
-  readonly appInfo: AppInfoType | Function;
+  readonly appInfo: TAppInfo | Function;
 
-  readonly chainInfo: ChainInfoType;
+  readonly chainInfo: TChainInfo;
 
   readonly timeout: number;
 
@@ -113,7 +106,7 @@ export class Authenticator {
    * @param {object} context
    * @returns {object} { appPk, authInfo }
    */
-  signJson(data: AppResponse, context: ContextType): AppResponseSigned {
+  signJson(data: TAppResponse, context: TContext): AppResponseSigned {
     const { error } = Context.validate(context);
     if (error) {
       throw new Error(`Invalid context: ${error.details.map((x: any) => x.message).join(', ')}`);
@@ -122,7 +115,7 @@ export class Authenticator {
     // eslint-disable-next-line no-param-reassign
     data = data || {};
 
-    const final: AppResponse = { response: data.response ? data.response : data };
+    const final: TAppResponse = { response: data.response ? data.response : data };
 
     // Attach protocol fields to the root
     if (data.error || data.errorMessage) {
@@ -144,22 +137,18 @@ export class Authenticator {
     const { response = {}, errorMessage = '', successMessage = '', nextWorkflow = '' } = final;
     const { didwallet, session } = context;
 
+    const payload: TAuthResponse = {
+      appInfo: session?.appInfo,
+      status: errorMessage ? 'error' : 'ok',
+      errorMessage: errorMessage || '',
+      successMessage: successMessage || '',
+      nextWorkflow: nextWorkflow || '',
+      response,
+    };
+
     return {
       appPk: toBase58(this.wallet.publicKey),
-      authInfo: sign(
-        this.wallet.address,
-        this.wallet.secretKey,
-        {
-          appInfo: session?.appInfo,
-          status: errorMessage ? 'error' : 'ok',
-          errorMessage: errorMessage || '',
-          successMessage: successMessage || '',
-          nextWorkflow: nextWorkflow || '',
-          response,
-        },
-        true,
-        didwallet ? didwallet.jwt : undefined
-      ),
+      authInfo: sign(this.wallet.address, this.wallet.secretKey, payload, true, didwallet ? didwallet.jwt : undefined),
     };
   }
 
@@ -171,8 +160,8 @@ export class Authenticator {
    * @param {object} context - context
    * @returns {object} { appPk, authInfo }
    */
-  signClaims(claims: AnyRequestType | AnyRequestType[], context: ContextType): AppResponseSigned {
-    const claimList: RequestListType = Array.isArray(claims) ? claims : [claims];
+  signClaims(claims: TAnyRequest | TAnyRequest[], context: TContext): AppResponseSigned {
+    const claimList: TRequestList = Array.isArray(claims) ? claims : [claims];
     let res = RequestList.validate(claimList);
     if (res.error) {
       throw new Error(`Invalid claims: ${res.error.details.map((x: any) => x.message).join(', ')}`);
@@ -184,16 +173,16 @@ export class Authenticator {
     }
 
     const { sessionId, session, didwallet } = context;
-    const { authUrl, challenge, appInfo } = session as SessionType;
+    const { authUrl, challenge, appInfo } = session as TSession;
 
     const tmp = new URL(authUrl);
     tmp.searchParams.set('sid', sessionId);
     const nextUrl = tmp.href;
 
     // TODO: perhaps we should set chainInfo in each claim
-    const claimWithChainInfo = claimList.find((x: AnyRequestType) => x.chainInfo);
+    const claimWithChainInfo = claimList.find((x: TAnyRequest) => x.chainInfo);
 
-    const payload = {
+    const payload: TAuthResponse = {
       action: 'responseAuth',
       challenge,
       appInfo,
@@ -211,10 +200,10 @@ export class Authenticator {
   /**
    * Determine appInfo on the fly
    */
-  async getAppInfo(context: ContextType & { baseUrl: string }): Promise<AppInfoType> {
+  async getAppInfo(context: TContext & { baseUrl: string }): Promise<TAppInfo> {
     if (typeof this.appInfo === 'function') {
       // @ts-ignore
-      const info: AppInfoType = await this.tryWithTimeout(() => this.appInfo(context));
+      const info: TAppInfo = await this.tryWithTimeout(() => this.appInfo(context));
       if (!info.publisher) {
         info.publisher = `did:abt:${this.wallet.address}`;
       }
@@ -264,7 +253,7 @@ export class Authenticator {
     });
   }
 
-  _validateAppInfo(info: AppInfoType | Function): AppInfoType | Function {
+  _validateAppInfo(info: TAppInfo | Function): TAppInfo | Function {
     if (typeof info === 'function') {
       return info;
     }
@@ -328,7 +317,7 @@ export class Authenticator {
     });
   }
 
-  tryWithTimeout(asyncFn: Function): Promise<AppInfoType> {
+  tryWithTimeout(asyncFn: Function): Promise<TAppInfo> {
     if (typeof asyncFn !== 'function') {
       throw new Error('asyncFn must be a valid function');
     }

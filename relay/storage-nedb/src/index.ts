@@ -4,7 +4,7 @@ import NeDB from '@nedb/core';
 // @ts-ignore
 import NedbMulti from '@nedb/multi';
 import { BaseStorage, SessionStorageOptions, SessionStorage } from '@did-connect/storage';
-import { SessionType } from '@did-connect/types';
+import { TSession } from '@did-connect/types';
 
 export type NedbStorageOptions = SessionStorageOptions & {
   dbPath: string;
@@ -63,7 +63,7 @@ export class NedbStorage extends BaseStorage implements SessionStorage {
     // TODO: we may need a ready state if the database file is too large
   }
 
-  read(sessionId: string): Promise<SessionType> {
+  read(sessionId: string): Promise<TSession> {
     return new Promise((resolve, reject) => {
       this.db.findOne({ sessionId }, (err, doc) => {
         if (err) {
@@ -75,7 +75,7 @@ export class NedbStorage extends BaseStorage implements SessionStorage {
     });
   }
 
-  create(sessionId: string, attributes: Partial<SessionType>): Promise<SessionType> {
+  create(sessionId: string, attributes: Partial<TSession>): Promise<TSession> {
     return new Promise((resolve, reject) => {
       this.db.insert({ sessionId, ...attributes }, (err, doc) => {
         if (err) {
@@ -89,7 +89,7 @@ export class NedbStorage extends BaseStorage implements SessionStorage {
     });
   }
 
-  update(sessionId: string, updates: Partial<SessionType>): Promise<SessionType> {
+  update(sessionId: string, updates: Partial<TSession>): Promise<TSession> {
     return new Promise((resolve, reject) => {
       this.db.update(
         { sessionId },

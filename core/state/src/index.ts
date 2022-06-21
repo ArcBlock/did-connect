@@ -1,55 +1,97 @@
-const get = require('lodash/get');
-const pick = require('lodash/pick');
-const isFunction = require('lodash/isFunction');
-const isArray = require('lodash/isArray');
-const { nanoid } = require('nanoid');
-const { createMachine, assign } = require('xstate');
+/* eslint-disable @typescript-eslint/naming-convention */
+import get from 'lodash/get';
+import isFunction from 'lodash/isFunction';
+import isArray from 'lodash/isArray';
+import { nanoid } from 'nanoid';
+import { createMachine, assign, StateMachine } from 'xstate';
+import {
+  SessionTimeout,
+  CustomError,
+  TAppResponse,
+  TSession,
+  TRequestList,
+  TAnyResponse,
+  TAnyObject,
+} from '@did-connect/types';
 
-const { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, getUpdater } = require('./util');
-const { createConnection, destroyConnections } = require('./socket');
+import { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, getUpdater } from './util';
+import { createConnection, destroyConnections } from './socket';
 
 const noop = () => undefined;
 
-const DEFAULT_TIMEOUT = {
-  app: 10 * 1000,
-  relay: 10 * 1000,
-  wallet: 60 * 1000,
+export type TEvent = TSession & {
+  type: string;
+  data: any;
+  responseClaims: TAnyResponse[];
+  source?: string;
 };
 
-class CustomError extends Error {
-  constructor(code, message) {
-    super(message);
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, CustomError);
-    }
-    this.code = code;
-  }
-}
+export type SessionEventCallback = (context: TSession, e: TEvent) => void;
+export type SessionConnectCallback = (context: TSession, e: TEvent) => TRequestList;
+export type SessionApproveCallback = (context: TSession, e: TEvent) => TAppResponse;
 
-const createStateMachine = ({
-  baseUrl = '/api/connect/relay',
-  initial = 'start', // we maybe reusing existing session
-  sessionId, // we maybe reusing existing session
-  strategy = 'default',
-  dispatch, // handle events emitted from websocket relay
-  onStart = noop,
-  onCreate = noop,
-  onConnect,
-  onApprove,
-  onComplete = noop,
-  onReject = noop,
-  onCancel = noop,
-  onTimeout = noop,
-  onError = noop,
-  autoConnect = true,
-  onlyConnect = false,
-  timeout = DEFAULT_TIMEOUT,
-}) => {
+export type SessionStateOptions = {
+  baseUrl?: string;
+  initial?: 'start';
+  sessionId?: string;
+  strategy?: string;
+  dispatch: (...args: any[]) => void;
+  onStart?: SessionEventCallback;
+  onCreate?: SessionEventCallback;
+  onConnect: SessionConnectCallback;
+  onApprove: SessionApproveCallback;
+  onComplete?: SessionEventCallback;
+  onReject?: SessionEventCallback;
+  onCancel?: SessionEventCallback;
+  onTimeout?: SessionEventCallback;
+  onError?: SessionEventCallback;
+  autoConnect?: boolean;
+  onlyConnect?: boolean;
+  timeout?: typeof SessionTimeout;
+};
+
+type TSessionState = {
+  deepLink: string;
+  machine: StateMachine<TSession, any, TEvent>;
+  sessionId: string;
+};
+
+export function createStateMachine(options: SessionStateOptions): TSessionState {
+  const {
+    baseUrl = '/api/connect/relay',
+    initial = 'start', // we maybe reusing existing session
+    sessionId, // we maybe reusing existing session
+    strategy = 'default',
+    dispatch, // handle events emitted from websocket relay
+    onStart = noop,
+    onCreate = noop,
+    onConnect,
+    onApprove,
+    onComplete = noop,
+    onReject = noop,
+    onCancel = noop,
+    onTimeout = noop,
+    onError = noop,
+    autoConnect = true,
+    onlyConnect = false,
+    timeout = SessionTimeout,
+  } = options;
+
   if (sessionId && sessionId.length !== 21) {
     throw new CustomError('INVALID_SESSION_ID', 'Invalid sessionId, which must be a valid 21 char nanoid');
   }
 
-  const fns = { dispatch, onStart, onCreate, onApprove, onComplete, onReject, onCancel, onTimeout, onError };
+  const fns: TAnyObject = {
+    dispatch,
+    onStart,
+    onCreate,
+    onApprove,
+    onComplete,
+    onReject,
+    onCancel,
+    onTimeout,
+    onError,
+  };
   Object.keys(fns).forEach((x) => {
     if (isFunction(fns[x]) === false) {
       throw new CustomError('INVALID_CALLBACK', `Invalid ${x}, which must be a function`);
@@ -61,23 +103,23 @@ const createStateMachine = ({
     throw new CustomError('INVALID_CALLBACK', 'Invalid onConnect, which must be a function or an object or an array');
   }
 
-  let requestedClaims = [];
+  let requestedClaims: TRequestList = [];
   if (typeof onConnect !== 'function') {
     requestedClaims = onConnect;
   }
 
   const updater = getUpdater();
   const sid = sessionId || nanoid();
-  const pk = updater.publicKey;
+  const pk = updater.publicKey.toString();
 
   const authApiUrl = createApiUrl(baseUrl, sid, '/auth');
   const sessionApiUrl = createApiUrl(baseUrl, sid, '/session');
 
-  const _onStart = async (ctx, e) => {
+  const _onStart = async (ctx: TSession, e: TEvent) => {
     await onStart(ctx, e);
   };
 
-  const _createOrRestoreSession = async (ctx, e) => {
+  const createOrRestoreSession = async (ctx: TSession, e: TEvent) => {
     const isExistingSession = sid === sessionId;
     let session = null;
     if (isExistingSession) {
@@ -94,7 +136,7 @@ const createStateMachine = ({
             `Invalid existing session status, expecting created, got ${session.status}`
           );
         }
-      } catch (err) {
+      } catch (err: any) {
         if (err.name === 'AxiosError') {
           throw new CustomError(get(err, 'response.data.code'), get(err, 'response.data.error'));
         }
@@ -123,7 +165,8 @@ const createStateMachine = ({
     return session.appInfo;
   };
 
-  const _onConnect = async (ctx, e) => {
+  // FIXME: any
+  const _onConnect = async (ctx: TSession, e: TEvent): Promise<any> => {
     if (ctx.requestedClaims.length) {
       return ctx.requestedClaims;
     }
@@ -138,10 +181,10 @@ const createStateMachine = ({
     return result.requestedClaims;
   };
 
-  const _onApprove = async (ctx, e) => {
+  const _onApprove = async (ctx: TSession, e: TEvent): Promise<TAppResponse> => {
     let approveResult = await onApprove(ctx, e);
     if (typeof approveResult === 'undefined') {
-      approveResult = null;
+      approveResult = {};
     }
 
     await doSignedRequest({
@@ -153,25 +196,25 @@ const createStateMachine = ({
     return approveResult;
   };
 
-  const _onComplete = async (...args) => {
-    await onComplete(...args);
+  const _onComplete = async (ctx: TSession, e: TEvent) => {
+    await onComplete(ctx, e);
   };
 
-  const _onReject = async (...args) => {
-    await onReject(...args);
+  const _onReject = async (ctx: TSession, e: TEvent) => {
+    await onReject(ctx, e);
   };
 
   // FIXME: report timeout events to server
-  const _onTimeout = async (...args) => {
-    await onTimeout(...args);
+  const _onTimeout = async (ctx: TSession, e: TEvent) => {
+    await onTimeout(ctx, e);
   };
 
-  const _onCancel = async (...args) => {
-    await onCancel(...args);
+  const _onCancel = async (ctx: TSession, e: TEvent) => {
+    await onCancel(ctx, e);
   };
 
   // report some client error to relay, and execute callback
-  const _onError = async (ctx, e) => {
+  const _onError = async (ctx: TSession, e: TEvent) => {
     if (e.data) {
       console.error('Client', e.data);
       if (['SESSION_NOT_FOUND', 'SESSION_FINALIZED'].includes(e.data.code) === false) {
@@ -188,7 +231,7 @@ const createStateMachine = ({
 
   // TODO: fallback to polling when socket connection failed
   createConnection(createSocketEndpoint(baseUrl)).then((socket) => {
-    socket.on(sid, (e) => {
+    socket.on(sid, (e: TEvent) => {
       switch (e.status) {
         case 'walletScanned':
           return dispatch({ ...e, type: 'WALLET_SCAN' });
@@ -231,6 +274,7 @@ const createStateMachine = ({
       states: {
         // we can do some pre-check here, error thrown from here will halt the process
         start: {
+          // @ts-ignore
           invoke: {
             id: 'startSession',
             src: _onStart,
@@ -250,9 +294,10 @@ const createStateMachine = ({
         // generate a session in relay-server by sending a request
         // and get back deep-link to display as qrcode
         loading: {
+          // @ts-ignore
           invoke: {
             id: 'createSession',
-            src: _createOrRestoreSession,
+            src: createOrRestoreSession,
             onDone: {
               target: 'created',
               actions: ['saveAppInfo'],
@@ -298,6 +343,7 @@ const createStateMachine = ({
 
         // wallet confirmed the ownership of did for the session
         walletConnected: {
+          // @ts-ignore
           invoke: {
             id: 'onConnect',
             src: _onConnect,
@@ -341,6 +387,7 @@ const createStateMachine = ({
 
         // wallet has approved the request, can be triggered multiple times
         walletApproved: {
+          // @ts-ignore
           invoke: {
             id: 'onApprove',
             src: _onApprove,
@@ -405,17 +452,17 @@ const createStateMachine = ({
         onCancel: _onCancel,
         onTimeout: _onTimeout,
         onError: _onError,
-        saveAppInfo: assign({ appInfo: (ctx, e) => e.data }), // from client
-        saveConnectedUser: assign({ currentConnected: (ctx, e) => pick(e, ['userDid', 'userPk', 'wallet']) }), // from server
-        saveRequestedClaims: assign({ requestedClaims: (ctx, e) => e.data }), // from client
-        saveError: assign({ error: (ctx, e) => get(e, 'data.message') || e.error }), // from client or server
-        incrementCurrentStep: assign({ currentStep: (ctx) => ctx.currentStep + 1 }), // from server
+        saveAppInfo: assign({ appInfo: (ctx: TSession, e: TEvent) => e.data }), // from client
+        saveConnectedUser: assign({ currentConnected: (ctx: TSession, e: TEvent) => e.currentConnected }), // from server
+        saveRequestedClaims: assign({ requestedClaims: (ctx: TSession, e: TEvent) => e.data }), // from client
+        saveError: assign({ error: (ctx: TSession, e: TEvent) => get(e, 'data.message') || e.error }), // from client or server
+        incrementCurrentStep: assign({ currentStep: (ctx: TSession) => ctx.currentStep + 1 }), // from server
         saveResponseClaims: assign({
-          responseClaims: (ctx, e) => [...ctx.responseClaims, e.responseClaims],
-          currentStep: (ctx, e) => e.currentStep,
-          challenge: (ctx, e) => e.challenge,
+          responseClaims: (ctx: TSession, e: TEvent) => [...ctx.responseClaims, e.responseClaims],
+          currentStep: (ctx: TSession, e: TEvent) => e.currentStep,
+          challenge: (ctx: TSession, e: TEvent) => e.challenge,
         }), // from server
-        saveApproveResult: assign({ approveResults: (ctx, e) => [...ctx.approveResults, e.data] }), // from client
+        saveApproveResult: assign({ approveResults: (ctx: TSession, e: TEvent) => [...ctx.approveResults, e.data] }), // from client
         reportCancel: () =>
           doSignedRequest({
             url: sessionApiUrl,
@@ -424,16 +471,12 @@ const createStateMachine = ({
             method: 'PUT',
           }),
       },
-      delays: { ...DEFAULT_TIMEOUT, ...timeout },
+      delays: { ...SessionTimeout, ...timeout },
       guards: {},
     }
   );
 
   return { sessionId: sid, machine, deepLink: createDeepLink(baseUrl, sid) };
-};
+}
 
-module.exports = {
-  createMachine: createStateMachine,
-  createDeepLink,
-  destroyConnections,
-};
+export { createDeepLink, destroyConnections };

@@ -1,26 +1,29 @@
+/* eslint-disable import/first */
 /* eslint-disable import/no-extraneous-dependencies */
-require('node-localstorage/register'); // polyfill ls
-const { types } = require('@ocap/mcrypto');
-const { fromRandom } = require('@ocap/wallet');
-const { interpret } = require('xstate');
-const { nanoid } = require('nanoid');
-const last = require('lodash/last');
-const axios = require('axios');
-const Jwt = require('@arcblock/jwt');
-const { toBase58 } = require('@ocap/util');
-const waitFor = require('p-wait-for');
-const joinUrl = require('url-join');
+import('node-localstorage/register'); // polyfill ls
+import { types } from '@ocap/mcrypto';
+import { fromRandom } from '@ocap/wallet';
+import { interpret } from 'xstate';
+import { nanoid } from 'nanoid';
+import last from 'lodash/last';
+import axios from 'axios';
+import Jwt from '@arcblock/jwt';
+import { toBase58 } from '@ocap/util';
+import waitFor from 'p-wait-for';
+import joinUrl from 'url-join';
 
-const MemoryStorage = require('@did-connect/storage-memory');
-const Authenticator = require('@did-connect/authenticator');
-const createHandlers = require('@did-connect/handler');
-const attachHandlers = require('@did-connect/relay-adapter-express');
+import { MemoryStorage } from '@did-connect/storage-memory';
+import { Authenticator } from '@did-connect/authenticator';
+import { createHandlers } from '@did-connect/handler';
+import { attachHandlers } from '@did-connect/relay-adapter-express';
+import { TSession } from '@did-connect/types';
 
-const createTestServer = require('../../../scripts/create-test-server');
-const { createMachine, destroyConnections } = require('..');
+// eslint-disable-next-line import/no-relative-packages
+import createTestServer from '../../../scripts/create-test-server';
+import { createStateMachine, destroyConnections, TEvent } from '../src';
 
 // eslint-disable-next-line
-const sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const noop = () => null;
 const user = fromRandom();
@@ -29,7 +32,7 @@ const app = fromRandom({ role: types.RoleType.ROLE_APPLICATION });
 const storage = new MemoryStorage();
 const authenticator = new Authenticator({
   wallet: app,
-  appInfo: ({ baseUrl }) => ({
+  appInfo: ({ baseUrl }: any) => ({
     name: 'DID Wallet Demo',
     description: 'Demo application to show the potential of DID Wallet',
     icon: 'https://arcblock.oss-cn-beijing.aliyuncs.com/images/wallet-round.png',
@@ -44,22 +47,22 @@ const authenticator = new Authenticator({
   },
 });
 
-const getAuthUrl = (authUrl) => {
+const getAuthUrl = (authUrl: string): string => {
   const obj = new URL(authUrl);
   obj.searchParams.set('user-agent', 'ArcWallet/3.0.0');
   return obj.href;
 };
 
 describe('StateMachine', () => {
-  let server;
-  let baseUrl;
+  let server: any;
+  let baseUrl: string;
 
   beforeAll(async () => {
     server = await createTestServer();
 
     // eslint-disable-next-line no-console
     const logger = { info: console.info, error: console.error, warn: console.warn, debug: noop };
-    const handlers = createHandlers({ storage, authenticator, logger, timeout: 1000 });
+    const handlers = createHandlers({ storage, authenticator, logger });
     handlers.wsServer.attach(server.http);
     handlers.wsServer.attach(server.https);
 
@@ -69,10 +72,14 @@ describe('StateMachine', () => {
   });
 
   test('should throw on invalid sessionId', () => {
-    expect(() => createMachine({ sessionId: 'abc' })).toThrow(/Invalid sessionId/);
-    expect(() => createMachine({ dispatch: 'abc' })).toThrow(/Invalid dispatch/);
-    expect(() => createMachine({ dispatch: noop })).toThrow(/Invalid onApprove/);
-    expect(() => createMachine({ dispatch: noop, onApprove: noop })).toThrow(/Invalid onConnect/);
+    // @ts-ignore
+    expect(() => createStateMachine({ sessionId: 'abc' })).toThrow(/Invalid sessionId/);
+    // @ts-ignore
+    expect(() => createStateMachine({ dispatch: 'abc' })).toThrow(/Invalid dispatch/);
+    // @ts-ignore
+    expect(() => createStateMachine({ dispatch: noop })).toThrow(/Invalid onApprove/);
+    // @ts-ignore
+    expect(() => createStateMachine({ dispatch: noop, onApprove: noop })).toThrow(/Invalid onConnect/);
   });
 
   const defaultConnectHandler = (authInfo) => {
@@ -83,11 +90,11 @@ describe('StateMachine', () => {
     return [claims, challenge, nextUrl];
   };
 
-  const defaultApproveHandler = (ctx, e) => {
+  const defaultApproveHandler = (ctx: TSession, e: TEvent) => {
     return `approved with result ${e.responseClaims[0].fullName}`;
   };
 
-  const defaultCompleteHandler = (ctx) => {
+  const defaultCompleteHandler = (ctx: TSession) => {
     expect(ctx.requestedClaims.length).toBe(1);
     expect(ctx.responseClaims.length).toBe(1);
     expect(ctx.responseClaims[0].length).toBe(1);
@@ -117,12 +124,12 @@ describe('StateMachine', () => {
       'completed',
     ],
   }) => {
-    let res;
-    let authInfo;
+    let res: any;
+    let authInfo: any;
 
     const stateHistory = [];
 
-    const { machine } = createMachine({
+    const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       ...sessionProps,
@@ -286,7 +293,7 @@ describe('StateMachine', () => {
 
     const stateHistory = [];
 
-    const { machine } = createMachine({
+    const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect,
@@ -448,7 +455,7 @@ describe('StateMachine', () => {
 
     const stateHistory = [];
 
-    const { machine } = createMachine({
+    const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect: () => {},
@@ -505,7 +512,7 @@ describe('StateMachine', () => {
 
     const stateHistory = [];
 
-    const { machine } = createMachine({
+    const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect: () => {},
@@ -563,7 +570,7 @@ describe('StateMachine', () => {
 
     const stateHistory = [];
 
-    const { machine } = createMachine({
+    const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect: () => {
@@ -624,7 +631,7 @@ describe('StateMachine', () => {
 
     const stateHistory = [];
 
-    const { machine } = createMachine({
+    const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect: (ctx, e) => {
@@ -721,7 +728,7 @@ describe('StateMachine', () => {
 
     const stateHistory = [];
 
-    const { machine } = createMachine({
+    const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect: (ctx, e) => {
@@ -786,7 +793,7 @@ describe('StateMachine', () => {
     const stateHistory = [];
     const nonExistingSession = nanoid();
     let hasError = false;
-    const { machine } = createMachine({
+    const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       sessionId: nonExistingSession,
       dispatch: (...args) => service.send.call(service, ...args),
@@ -812,7 +819,7 @@ describe('StateMachine', () => {
   test('should abort session when reuse finalized session', async () => {
     const stateHistory = [];
     let hasError = false;
-    const { machine } = createMachine({
+    const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       sessionId: finalizedSessionId,
       dispatch: (...args) => service.send.call(service, ...args),

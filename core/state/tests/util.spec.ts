@@ -1,20 +1,25 @@
-require('node-localstorage/register');
+// @ts-ignore
+import { createSocketEndpoint, createApiUrl, createDeepLink, doSignedRequest, getUpdater } from '../src/util';
 
-const { createSocketEndpoint, createApiUrl, createDeepLink, doSignedRequest, getUpdater } = require('../lib/util');
+// @ts-ignore
+import('node-localstorage/register');
 
 describe('Util', () => {
   const mockWindow = () => {
     global.window = {
+      // @ts-ignore
       location: new URL('https://www.arcblock.io'),
     };
   };
 
   const resetWindow = () => {
+    // @ts-ignore
     global.window = undefined;
   };
 
   describe('createSocketEndpoint', () => {
     test('should return socket endpoint for absolute', () => {
+      // @ts-ignore
       expect(() => createSocketEndpoint()).toThrow();
       expect(() => createSocketEndpoint('/api/connect/relay')).toThrow();
       const endpoint = createSocketEndpoint('https://www.arcblock.io');

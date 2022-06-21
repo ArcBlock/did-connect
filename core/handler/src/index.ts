@@ -11,24 +11,24 @@ import { isValid } from '@arcblock/did';
 import { SessionStorage } from '@did-connect/storage';
 import {
   Session,
-  SessionType,
+  TSession,
   Context,
-  ContextType,
-  DIDWalletInfoType,
+  TContext,
+  TDidWalletInfo,
   LocaleType,
-  AnyObject,
-  AnyResponseType,
-  AnyRequestType,
+  TAnyObject,
+  TAnyResponse,
+  TAnyRequest,
   CustomError,
-  AuthPrincipalRequestType,
-  AuthPrincipalResponseType,
-  I18nMessages,
+  TAuthPrincipalRequest,
+  TAuthPrincipalResponse,
+  TI18nMessages,
 } from '@did-connect/types';
 import { Authenticator, AppResponseSigned, WalletResponseSigned } from '@did-connect/authenticator';
 
 import { getStepChallenge, parseWalletUA } from './util';
 
-const errors: I18nMessages = {
+const errors: TI18nMessages = {
   sessionNotFound: {
     en: 'Session not found or expired',
     zh: '会话不存在或已过期',
@@ -67,31 +67,31 @@ export function createSocketServer(logger: LoggerType, pathname: string) {
 }
 
 export interface HandlersType {
-  handleSessionCreate(context: ContextType): Promise<SessionUpdateResult>;
+  handleSessionCreate(context: TContext): Promise<SessionUpdateResult>;
   handleSessionRead(sessionId: string): Promise<SessionUpdateResult>;
-  handleSessionUpdate(context: ContextType): Promise<SessionUpdateResult>;
-  handleClaimRequest(context: ContextType): Promise<AppResponseSigned>;
-  handleClaimResponse(context: ContextType): Promise<AppResponseSigned>;
-  parseWalletUA(ua: string): DIDWalletInfoType;
+  handleSessionUpdate(context: TContext): Promise<SessionUpdateResult>;
+  handleClaimRequest(context: TContext): Promise<AppResponseSigned>;
+  handleClaimResponse(context: TContext): Promise<AppResponseSigned>;
+  parseWalletUA(ua: string): TDidWalletInfo;
   wsServer: any;
 }
 
-export type SessionCreateContext = ContextType & {
-  body: SessionType;
+export type SessionCreateContext = TContext & {
+  body: TSession;
 };
 
-export type SessionUpdateContext = ContextType & {
-  session: SessionType;
-  body: SessionType & {
+export type SessionUpdateContext = TContext & {
+  session: TSession;
+  body: TSession & {
     status?: 'error' | 'canceled';
     error?: string;
   };
 };
 
-export type SessionUpdateResult = SessionType | { error: string; code: string };
+export type SessionUpdateResult = TSession | { error: string; code: string };
 
-export type WalletHandlerContext = ContextType & {
-  session: SessionType;
+export type WalletHandlerContext = TContext & {
+  session: TSession;
   body: WalletResponseSigned;
   locale: LocaleType;
 };
@@ -110,7 +110,7 @@ export function createHandlers({
 }): HandlersType {
   const wsServer = createSocketServer(logger, socketPathname);
 
-  const isValidContext = (x: ContextType): boolean => {
+  const isValidContext = (x: TContext): boolean => {
     const { error } = Context.validate(x);
     if (error) logger.error(error);
     return !error;
@@ -119,7 +119,7 @@ export function createHandlers({
   const signJson = authenticator.signJson.bind(authenticator);
   const signClaims = authenticator.signClaims.bind(authenticator);
 
-  const verifyUpdater = (params: AnyObject, updaterPk?: string): { error: string; code: string } => {
+  const verifyUpdater = (params: TAnyObject, updaterPk?: string): { error: string; code: string } => {
     const { body, signerPk, signerToken } = params;
     if (!signerPk) {
       return { error: 'Invalid updater pk', code: 'UPDATER_PK_EMPTY' };
@@ -170,7 +170,7 @@ export function createHandlers({
       return result;
     }
 
-    const session: SessionType = {
+    const session: TSession = {
       sessionId,
       status: 'created',
       updaterPk,
@@ -249,7 +249,7 @@ export function createHandlers({
     }
   };
 
-  const getAuthPrincipalRequest = (session: SessionType): AuthPrincipalRequestType => {
+  const getAuthPrincipalRequest = (session: TSession): TAuthPrincipalRequest => {
     const { strategy, previousConnected, onlyConnect } = session;
     return {
       type: 'authPrincipal',
@@ -299,8 +299,8 @@ export function createHandlers({
     checkFn: Function,
     reason: string,
     locale: LocaleType
-  ): Promise<SessionType> => {
-    let session: Partial<SessionType> = {};
+  ): Promise<TSession> => {
+    let session: Partial<TSession> = {};
     try {
       await waitFor(
         async () => {
@@ -326,20 +326,20 @@ export function createHandlers({
     }
   };
 
-  const waitForAppConnect = (sessionId: string, timeout: number, locale: LocaleType): Promise<SessionType> =>
+  const waitForAppConnect = (sessionId: string, timeout: number, locale: LocaleType): Promise<TSession> =>
     waitForSession(
       sessionId,
       timeout,
-      (x: SessionType) => x.requestedClaims.length > 0,
+      (x: TSession) => x.requestedClaims.length > 0,
       'Requested claims not provided by app',
       locale
     );
 
-  const waitForAppApprove = (sessionId: string, timeout: number, locale: LocaleType): Promise<SessionType> =>
+  const waitForAppApprove = (sessionId: string, timeout: number, locale: LocaleType): Promise<TSession> =>
     waitForSession(
       sessionId,
       timeout,
-      (x: SessionType) => Array.isArray(x.approveResults) && typeof x.approveResults[x.currentStep] !== 'undefined',
+      (x: TSession) => Array.isArray(x.approveResults) && typeof x.approveResults[x.currentStep] !== 'undefined',
       'Response claims not handled by app',
       locale
     );
@@ -370,10 +370,10 @@ export function createHandlers({
         throw new Error(errors.challengeMismatch[locale]);
       }
 
-      const handleWalletApprove = async (): Promise<SessionType> => {
+      const handleWalletApprove = async (): Promise<TSession> => {
         logger.debug('session.walletApproved', sessionId);
         const justifiedClaims = isEmpty(claims)
-          ? [{ ...(getAuthPrincipalRequest(session) as AuthPrincipalResponseType), ...session.currentConnected }]
+          ? [{ ...(getAuthPrincipalRequest(session) as TAuthPrincipalResponse), ...session.currentConnected }]
           : claims;
         await storage.update(sessionId, {
           status: 'walletApproved',
@@ -390,7 +390,7 @@ export function createHandlers({
         return storage.update(sessionId, { status: 'appApproved' });
       };
 
-      let newSession: SessionType;
+      let newSession: TSession;
 
       // If wallet is submitting authPrincipal claim,
       // move to walletConnected and wait for appConnected
@@ -428,10 +428,10 @@ export function createHandlers({
       }
 
       // Ensure submitted claims match with requested
-      const responseTypes = claims.map((x: AnyResponseType) => x.type);
+      const responseTypes = claims.map((x: TAnyResponse) => x.type);
       let requestedClaims = session.requestedClaims[session.currentStep];
       requestedClaims = Array.isArray(requestedClaims) ? requestedClaims : [requestedClaims];
-      const requestedTypes = requestedClaims.map((x: AnyRequestType) => x.type);
+      const requestedTypes = requestedClaims.map((x: TAnyRequest) => x.type);
       if (isEqual(responseTypes, requestedTypes) === false) {
         throw new Error(errors.claimMismatch[locale]);
       }

@@ -15,14 +15,14 @@ import waitFor from 'p-wait-for';
 import joinUrl from 'url-join';
 
 import {
-  AnyObject,
-  SessionType,
-  AnyRequestType,
-  AuthPrincipalRequestType,
-  AuthPrincipalResponseType,
-  ProfileResponseType,
-  AssetResponseType,
-  AnyResponseType,
+  TAnyObject,
+  TSession,
+  TAnyRequest,
+  TAuthPrincipalRequest,
+  TAuthPrincipalResponse,
+  TProfileResponse,
+  TAssetResponse,
+  TAnyResponse,
 } from '@did-connect/types';
 import { MemoryStorage } from '@did-connect/storage-memory';
 import { Authenticator } from '@did-connect/authenticator';
@@ -55,7 +55,7 @@ const appInfo = ({ baseUrl }: any) => ({
 });
 
 type AuthInfo = {
-  requestedClaims: AnyRequestType[];
+  requestedClaims: TAnyRequest[];
   challenge: string;
   url: string;
   [key: string]: any;
@@ -68,10 +68,10 @@ type ApiResult = {
   };
 };
 
-type TestSession = Partial<SessionType>;
+type TestSession = Partial<TSession>;
 
-type RelayEvent = SessionType & {
-  responseClaims: AnyResponseType[];
+type RelayEvent = TSession & {
+  responseClaims: TAnyResponse[];
 };
 
 const timeout = { app: 10000, relay: 10000, wallet: 60000 };
@@ -113,7 +113,7 @@ describe('RelayAdapterExpress', () => {
     token?: any,
     hash?: any
   ) => {
-    const headers: AnyObject = {};
+    const headers: TAnyObject = {};
     headers['x-updater-pk'] = typeof pk === 'undefined' ? wallet.publicKey : pk;
     headers['x-updater-token'] =
       typeof token === 'undefined'
@@ -285,7 +285,7 @@ describe('RelayAdapterExpress', () => {
         session = await updateSession({ requestedClaims: [profileRequest] });
       } else if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [`you provided profile ${(e.responseClaims[0] as ProfileResponseType).fullName}`],
+          approveResults: [`you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}`],
         });
       } else if (e.status === 'completed') {
         args.completed = true;
@@ -322,7 +322,7 @@ describe('RelayAdapterExpress', () => {
 
       if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [`you provided profile ${(e.responseClaims[0] as ProfileResponseType).fullName}`],
+          approveResults: [`you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}`],
         });
       }
       if (e.status === 'completed') {
@@ -443,7 +443,7 @@ describe('RelayAdapterExpress', () => {
       } else if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${(e.responseClaims[0] as ProfileResponseType).fullName}`],
+            approveResults: [`you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}`],
           });
         }
         if (e.currentStep === 1) {
@@ -451,7 +451,7 @@ describe('RelayAdapterExpress', () => {
             approveResults: [
               // @ts-ignore
               ...session.approveResults,
-              `you provided asset ${(e.responseClaims[0] as AssetResponseType).asset}`,
+              `you provided asset ${(e.responseClaims[0] as TAssetResponse).asset}`,
             ],
           });
         }
@@ -481,14 +481,14 @@ describe('RelayAdapterExpress', () => {
       if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${(e.responseClaims[0] as ProfileResponseType).fullName}`],
+            approveResults: [`you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}`],
           });
         }
         if (e.currentStep === 1) {
           session = await updateSession({
             approveResults: [
               ...session.approveResults,
-              `you provided asset ${(e.responseClaims[0] as AssetResponseType).asset}`,
+              `you provided asset ${(e.responseClaims[0] as TAssetResponse).asset}`,
             ],
           });
         }
@@ -957,7 +957,7 @@ describe('RelayAdapterExpress', () => {
       } else if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${(e.responseClaims[0] as ProfileResponseType).fullName}`],
+            approveResults: [`you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}`],
           });
         }
       }
@@ -1063,7 +1063,7 @@ describe('RelayAdapterExpress', () => {
         session = await updateSession({ requestedClaims: [profileRequest] });
       } else if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [`you provided profile ${(e.responseClaims[0] as ProfileResponseType).fullName}`],
+          approveResults: [`you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}`],
         });
       } else if (e.status === 'completed') {
         completed = true;
@@ -1207,7 +1207,7 @@ describe('RelayAdapterExpress', () => {
       if (e.status === 'walletApproved') {
         session = await updateSession({
           approveResults: [
-            { successMessage: `you connected account ${(e.responseClaims[0] as AuthPrincipalResponseType).userDid}` },
+            { successMessage: `you connected account ${(e.responseClaims[0] as TAuthPrincipalResponse).userDid}` },
           ],
         });
       }
@@ -1224,7 +1224,7 @@ describe('RelayAdapterExpress', () => {
     // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
-    expect((authInfo.requestedClaims[0] as AuthPrincipalRequestType).supervised).toEqual(true);
+    expect((authInfo.requestedClaims[0] as TAuthPrincipalRequest).supervised).toEqual(true);
     expect(authInfo.url).toEqual(authUrl);
 
     // 3. submit auth principal
