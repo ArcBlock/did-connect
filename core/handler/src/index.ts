@@ -9,22 +9,22 @@ import objectHash from 'object-hash';
 import { WsServer } from '@arcblock/ws';
 import { isValid } from '@arcblock/did';
 import { SessionStorage } from '@did-connect/storage';
-import {
-  Session,
+import { Session, Context, CustomError } from '@did-connect/types';
+import { Authenticator } from '@did-connect/authenticator';
+
+import type { AppResponseSigned, WalletResponseSigned } from '@did-connect/authenticator';
+import type {
   TSession,
-  Context,
   TContext,
-  TDidWalletInfo,
-  LocaleType,
+  TWalletInfo,
+  TLocaleCode,
   TAnyObject,
   TAnyResponse,
   TAnyRequest,
-  CustomError,
   TAuthPrincipalRequest,
   TAuthPrincipalResponse,
   TI18nMessages,
 } from '@did-connect/types';
-import { Authenticator, AppResponseSigned, WalletResponseSigned } from '@did-connect/authenticator';
 
 import { getStepChallenge, parseWalletUA } from './util';
 
@@ -72,7 +72,7 @@ export interface HandlersType {
   handleSessionUpdate(context: TContext): Promise<SessionUpdateResult>;
   handleClaimRequest(context: TContext): Promise<AppResponseSigned>;
   handleClaimResponse(context: TContext): Promise<AppResponseSigned>;
-  parseWalletUA(ua: string): TDidWalletInfo;
+  parseWalletUA(ua: string): TWalletInfo;
   wsServer: any;
 }
 
@@ -93,7 +93,7 @@ export type SessionUpdateResult = TSession | { error: string; code: string };
 export type WalletHandlerContext = TContext & {
   session: TSession;
   body: WalletResponseSigned;
-  locale: LocaleType;
+  locale: TLocaleCode;
 };
 
 // FIXME: i18n for all errors
@@ -298,7 +298,7 @@ export function createHandlers({
     timeout: number,
     checkFn: Function,
     reason: string,
-    locale: LocaleType
+    locale: TLocaleCode
   ): Promise<TSession> => {
     let session: Partial<TSession> = {};
     try {
@@ -326,7 +326,7 @@ export function createHandlers({
     }
   };
 
-  const waitForAppConnect = (sessionId: string, timeout: number, locale: LocaleType): Promise<TSession> =>
+  const waitForAppConnect = (sessionId: string, timeout: number, locale: TLocaleCode): Promise<TSession> =>
     waitForSession(
       sessionId,
       timeout,
@@ -335,7 +335,7 @@ export function createHandlers({
       locale
     );
 
-  const waitForAppApprove = (sessionId: string, timeout: number, locale: LocaleType): Promise<TSession> =>
+  const waitForAppApprove = (sessionId: string, timeout: number, locale: TLocaleCode): Promise<TSession> =>
     waitForSession(
       sessionId,
       timeout,
@@ -429,9 +429,7 @@ export function createHandlers({
 
       // Ensure submitted claims match with requested
       const responseTypes = claims.map((x: TAnyResponse) => x.type);
-      let requestedClaims = session.requestedClaims[session.currentStep];
-      requestedClaims = Array.isArray(requestedClaims) ? requestedClaims : [requestedClaims];
-      const requestedTypes = requestedClaims.map((x: TAnyRequest) => x.type);
+      const requestedTypes = session.requestedClaims[session.currentStep].map((x: TAnyRequest) => x.type);
       if (isEqual(responseTypes, requestedTypes) === false) {
         throw new Error(errors.claimMismatch[locale]);
       }

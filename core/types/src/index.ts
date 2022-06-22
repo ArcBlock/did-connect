@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/indent */
 import { LiteralUnion } from 'type-fest';
-import { TAppInfo, TChainInfo, TRequestList } from './types';
+import { TAppInfo, TChainInfo, TAnyRequest } from './types';
 
 export * from './schemas';
 export * from './types';
@@ -26,17 +26,15 @@ export type TAppResponse = Partial<{
 }>;
 
 // Types for authenticator internal
-export type TAuthResponse = Partial<
-  TAppResponse & {
-    status: LiteralUnion<['ok', 'error'], string>;
-    action: LiteralUnion<['responseAuth'], string>;
-    challenge: string;
-    appInfo: TAppInfo;
-    chainInfo: TChainInfo;
-    requestedClaims: TRequestList;
-    url: string;
-  }
->;
+export type TAuthResponse = TAppResponse & {
+  status: LiteralUnion<'ok' | 'error', string>;
+  action: LiteralUnion<'responseAuth' | 'declineAuth', string>;
+  challenge: string;
+  appInfo: TAppInfo;
+  chainInfo?: TChainInfo;
+  requestedClaims: TAnyRequest[];
+  url: string;
+};
 
 export class CustomError extends Error {
   code: string;

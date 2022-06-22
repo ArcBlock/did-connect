@@ -14,14 +14,15 @@ import waitFor from 'p-wait-for';
 // @ts-ignore
 import joinUrl from 'url-join';
 
-import {
+import { SessionTimeout } from '@did-connect/types';
+import type {
   TAnyObject,
   TSession,
-  TAnyRequest,
   TAuthPrincipalRequest,
   TAuthPrincipalResponse,
   TProfileResponse,
   TAssetResponse,
+  TAuthResponse,
   TAnyResponse,
 } from '@did-connect/types';
 import { MemoryStorage } from '@did-connect/storage-memory';
@@ -54,27 +55,13 @@ const appInfo = ({ baseUrl }: any) => ({
   nodeDid: 'z1Zg7PUWJX2NS9cRhpjuMtvjjLK5W2E3Wsh',
 });
 
-type AuthInfo = {
-  requestedClaims: TAnyRequest[];
-  challenge: string;
-  url: string;
-  [key: string]: any;
-};
-
-type ApiResult = {
-  data: {
-    appPk: string;
-    authInfo: string;
-  };
-};
-
 type TestSession = Partial<TSession>;
 
 type RelayEvent = TSession & {
   responseClaims: TAnyResponse[];
 };
 
-const timeout = { app: 10000, relay: 10000, wallet: 60000 };
+const timeout = SessionTimeout;
 
 const profileRequest = {
   type: 'profile',
@@ -176,7 +163,7 @@ describe('RelayAdapterExpress', () => {
     const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${sessionId}`);
     const updateSession = (updates: any, wallet: WalletObject = updater, pk?: any, token?: any, hash?: any) =>
       doSignedRequest(updates, wallet, `/api/connect/relay/session?sid=${sessionId}`, 'PUT', pk, token, hash);
-    const getSession = () => api.get(`/api/connect/relay/session?sid=${sessionId}`).then((x: ApiResult) => x.data);
+    const getSession = () => api.get(`/api/connect/relay/session?sid=${sessionId}`).then((x: any) => x.data);
 
     return { sessionId, updaterPk, authUrl, updateSession, getSession };
   };
@@ -188,17 +175,9 @@ describe('RelayAdapterExpress', () => {
   };
 
   const runSingleTest = async (authUrl: string, statusHistory: string[], args: any) => {
-    let res: ApiResult = {
-      data: {
-        appPk: '',
-        authInfo: '',
-      },
-    };
-    let authInfo: AuthInfo = {
-      requestedClaims: [],
-      challenge: '',
-      url: '',
-    };
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
@@ -239,7 +218,7 @@ describe('RelayAdapterExpress', () => {
     // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('ok');
-    expect(authInfo.response).toMatch(/profile test/);
+    expect(authInfo.response.message).toMatch(/profile test/);
 
     // 6. wait for complete
     await waitFor(() => args.completed);
@@ -282,10 +261,10 @@ describe('RelayAdapterExpress', () => {
       statusHistory.push(e.status);
 
       if (e.status === 'walletConnected') {
-        session = await updateSession({ requestedClaims: [profileRequest] });
+        session = await updateSession({ requestedClaims: [[profileRequest]] });
       } else if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [`you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}`],
+          approveResults: [{ message: `you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}` }],
         });
       } else if (e.status === 'completed') {
         args.completed = true;
@@ -322,7 +301,7 @@ describe('RelayAdapterExpress', () => {
 
       if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [`you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}`],
+          approveResults: [{ message: `you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}` }],
         });
       }
       if (e.status === 'completed') {
@@ -332,7 +311,7 @@ describe('RelayAdapterExpress', () => {
 
     // 1. create session
     session = await doSignedRequest(
-      { sessionId, updaterPk, authUrl, timeout, requestedClaims: [profileRequest] },
+      { sessionId, updaterPk, authUrl, timeout, requestedClaims: [[profileRequest]] },
       updater
     );
     expect(session.sessionId).toEqual(sessionId);
@@ -341,17 +320,9 @@ describe('RelayAdapterExpress', () => {
   });
 
   const runMultiStepTest = async (authUrl: string, statusHistory: string[], args: any) => {
-    let res: ApiResult = {
-      data: {
-        appPk: '',
-        authInfo: '',
-      },
-    };
-    let authInfo: AuthInfo = {
-      requestedClaims: [],
-      challenge: '',
-      url: '',
-    };
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
 
     // 2. simulate scan
     res = await api.get(getAuthUrl(authUrl));
@@ -407,7 +378,7 @@ describe('RelayAdapterExpress', () => {
     // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('ok');
-    expect(authInfo.response).toMatch(/you provided asset/);
+    expect(authInfo.response.message).toMatch(/you provided asset/);
 
     // 6. wait for complete
     await waitFor(() => args.completed);
@@ -439,11 +410,11 @@ describe('RelayAdapterExpress', () => {
       statusHistory.push(e.status);
 
       if (e.status === 'walletConnected') {
-        session = await updateSession({ requestedClaims: [profileRequest, assetRequest] });
+        session = await updateSession({ requestedClaims: [[profileRequest], [assetRequest]] });
       } else if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}`],
+            approveResults: [{ message: `you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}` }],
           });
         }
         if (e.currentStep === 1) {
@@ -451,7 +422,7 @@ describe('RelayAdapterExpress', () => {
             approveResults: [
               // @ts-ignore
               ...session.approveResults,
-              `you provided asset ${(e.responseClaims[0] as TAssetResponse).asset}`,
+              { message: `you provided asset ${(e.responseClaims[0] as TAssetResponse).asset}` },
             ],
           });
         }
@@ -481,14 +452,14 @@ describe('RelayAdapterExpress', () => {
       if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}`],
+            approveResults: [{ message: `you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}` }],
           });
         }
         if (e.currentStep === 1) {
           session = await updateSession({
             approveResults: [
               ...session.approveResults,
-              `you provided asset ${(e.responseClaims[0] as TAssetResponse).asset}`,
+              { message: `you provided asset ${(e.responseClaims[0] as TAssetResponse).asset}` },
             ],
           });
         }
@@ -503,7 +474,7 @@ describe('RelayAdapterExpress', () => {
         sessionId,
         updaterPk,
         authUrl,
-        requestedClaims: [profileRequest, assetRequest],
+        requestedClaims: [[profileRequest], [assetRequest]],
         timeout,
       },
       updater
@@ -515,17 +486,9 @@ describe('RelayAdapterExpress', () => {
 
   test('should abort session when wallet rejected', async () => {
     let session: TestSession = {};
-    let res: ApiResult = {
-      data: {
-        appPk: '',
-        authInfo: '',
-      },
-    };
-    let authInfo: AuthInfo = {
-      requestedClaims: [],
-      challenge: '',
-      url: '',
-    };
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
 
     const statusHistory: string[] = [];
 
@@ -573,17 +536,9 @@ describe('RelayAdapterExpress', () => {
 
   test('should abort session when or challenge mismatch', async () => {
     let session: TestSession = {};
-    let res: ApiResult = {
-      data: {
-        appPk: '',
-        authInfo: '',
-      },
-    };
-    let authInfo: AuthInfo = {
-      requestedClaims: [],
-      challenge: '',
-      url: '',
-    };
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
 
     const statusHistory: string[] = [];
 
@@ -631,17 +586,9 @@ describe('RelayAdapterExpress', () => {
 
   test('should abort session when error thrown on app connect', async () => {
     let session: TestSession = {};
-    let res: ApiResult = {
-      data: {
-        appPk: '',
-        authInfo: '',
-      },
-    };
-    let authInfo: AuthInfo = {
-      requestedClaims: [],
-      challenge: '',
-      url: '',
-    };
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
     let completed = false;
 
     const statusHistory: string[] = [];
@@ -699,17 +646,9 @@ describe('RelayAdapterExpress', () => {
 
   test('should abort session when error thrown on app approve', async () => {
     let session: TestSession = {};
-    let res: ApiResult = {
-      data: {
-        appPk: '',
-        authInfo: '',
-      },
-    };
-    let authInfo: AuthInfo = {
-      requestedClaims: [],
-      challenge: '',
-      url: '',
-    };
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
     let completed = false;
 
     const statusHistory: string[] = [];
@@ -720,7 +659,7 @@ describe('RelayAdapterExpress', () => {
       statusHistory.push(e.status);
 
       if (e.status === 'walletConnected') {
-        session = await updateSession({ requestedClaims: [profileRequest] });
+        session = await updateSession({ requestedClaims: [[profileRequest]] });
       } else if (e.status === 'walletApproved') {
         session = await updateSession({
           status: 'error',
@@ -785,17 +724,9 @@ describe('RelayAdapterExpress', () => {
 
   test('should timeout when client not connect properly', async () => {
     let session: TestSession = {};
-    let res: ApiResult = {
-      data: {
-        appPk: '',
-        authInfo: '',
-      },
-    };
-    let authInfo: AuthInfo = {
-      requestedClaims: [],
-      challenge: '',
-      url: '',
-    };
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
 
     const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl } = prepareTest();
@@ -845,17 +776,9 @@ describe('RelayAdapterExpress', () => {
 
   test('should timeout when client not approve properly', async () => {
     let session: TestSession = {};
-    let res: ApiResult = {
-      data: {
-        appPk: '',
-        authInfo: '',
-      },
-    };
-    let authInfo: AuthInfo = {
-      requestedClaims: [],
-      challenge: '',
-      url: '',
-    };
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
 
     const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
@@ -866,13 +789,7 @@ describe('RelayAdapterExpress', () => {
 
       if (e.status === 'walletConnected') {
         session = await updateSession({
-          requestedClaims: [
-            {
-              type: 'profile',
-              items: ['fullName', 'email', 'avatar'],
-              description: 'Please give me your profile',
-            },
-          ],
+          requestedClaims: [[profileRequest]],
         });
       } else if (e.status === 'walletApproved') {
         // Do nothing to trigger timeout
@@ -932,17 +849,9 @@ describe('RelayAdapterExpress', () => {
 
   test('should timeout when client not approve: multiple step', async () => {
     let session: TestSession = {};
-    let res: ApiResult = {
-      data: {
-        appPk: '',
-        authInfo: '',
-      },
-    };
-    let authInfo: AuthInfo = {
-      requestedClaims: [],
-      challenge: '',
-      url: '',
-    };
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
 
     const statusHistory: string[] = [];
 
@@ -953,11 +862,11 @@ describe('RelayAdapterExpress', () => {
       statusHistory.push(e.status);
 
       if (e.status === 'walletConnected') {
-        session = await updateSession({ requestedClaims: [profileRequest, assetRequest] });
+        session = await updateSession({ requestedClaims: [[profileRequest], [assetRequest]] });
       } else if (e.status === 'walletApproved') {
         if (e.currentStep === 0) {
           session = await updateSession({
-            approveResults: [`you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}`],
+            approveResults: [{ message: `you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}` }],
           });
         }
       }
@@ -1039,17 +948,9 @@ describe('RelayAdapterExpress', () => {
 
   test('should abort session when response claim mismatch', async () => {
     let session: TestSession = {};
-    let res: ApiResult = {
-      data: {
-        appPk: '',
-        authInfo: '',
-      },
-    };
-    let authInfo: AuthInfo = {
-      requestedClaims: [],
-      challenge: '',
-      url: '',
-    };
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
     let completed = false;
 
     const statusHistory: string[] = [];
@@ -1060,10 +961,10 @@ describe('RelayAdapterExpress', () => {
       statusHistory.push(e.status);
 
       if (e.status === 'walletConnected') {
-        session = await updateSession({ requestedClaims: [profileRequest] });
+        session = await updateSession({ requestedClaims: [[profileRequest]] });
       } else if (e.status === 'walletApproved') {
         session = await updateSession({
-          approveResults: [`you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}`],
+          approveResults: [{ message: `you provided profile ${(e.responseClaims[0] as TProfileResponse).fullName}` }],
         });
       } else if (e.status === 'completed') {
         completed = true;
@@ -1123,17 +1024,9 @@ describe('RelayAdapterExpress', () => {
 
   test('should abort session when session canceled', async () => {
     let session: TestSession = {};
-    let res: ApiResult = {
-      data: {
-        appPk: '',
-        authInfo: '',
-      },
-    };
-    let authInfo: AuthInfo = {
-      requestedClaims: [],
-      challenge: '',
-      url: '',
-    };
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
 
     const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
@@ -1185,17 +1078,9 @@ describe('RelayAdapterExpress', () => {
 
   test('should complete session when in onlyConnect mode', async () => {
     let session: TestSession = {};
-    let res: ApiResult = {
-      data: {
-        appPk: '',
-        authInfo: '',
-      },
-    };
-    let authInfo: AuthInfo = {
-      requestedClaims: [],
-      challenge: '',
-      url: '',
-    };
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
 
     const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();

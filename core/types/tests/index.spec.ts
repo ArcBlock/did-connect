@@ -1,4 +1,3 @@
-import { Joi } from '@arcblock/validator';
 import { ChainInfo, VerifiableCredentialRequest, Context, Session, AnyRequest } from '../src';
 
 const session = {
@@ -29,12 +28,14 @@ const session = {
   },
   currentStep: 0,
   requestedClaims: [
-    {
-      type: 'profile',
-      items: ['fullName', 'email', 'avatar'],
-      description: 'Please give me your profile',
-      meta: {},
-    },
+    [
+      {
+        type: 'profile',
+        items: ['fullName', 'email', 'avatar'],
+        description: 'Please give me your profile',
+        meta: {},
+      },
+    ],
   ],
   responseClaims: [],
   approveResults: [],
@@ -88,61 +89,11 @@ describe('Validator', () => {
   test('should Session work', () => {
     expect(Session.validate({ ...session }).error).toBeFalsy();
     expect(Session.validate({ ...session, requestedClaims: [] }).error).toBeFalsy();
-    expect(Session.validate({ ...session, responseClaims: [session.requestedClaims] }).error).toBeFalsy();
+    expect(Session.validate({ ...session, responseClaims: session.requestedClaims }).error).toBeFalsy();
   });
 
   test('should AnyRequest work', () => {
-    expect(
-      AnyRequest.validate({
-        type: 'profile',
-        items: ['fullName'],
-        description: 'xxx',
-      }).error
-    ).toBeFalsy();
-
-    const requestedClaims = Joi.array()
-      .items(Joi.alternatives().try(Joi.array().items(AnyRequest).min(1), AnyRequest))
-      .min(1)
-      .required();
-
-    expect(
-      requestedClaims.validate({
-        type: 'profile',
-        items: ['fullName'],
-        description: 'xxx',
-      }).error
-    ).toBeTruthy();
-
-    expect(
-      requestedClaims.validate([
-        {
-          type: 'profile',
-          items: ['fullName'],
-          description: 'xxx',
-        },
-      ]).error
-    ).toBeFalsy();
-
-    expect(
-      requestedClaims.validate([
-        {
-          type: 'xxx',
-          items: ['fullName'],
-          description: 'xxx',
-        },
-      ]).error
-    ).toBeTruthy();
-
-    expect(
-      requestedClaims.validate([
-        [
-          {
-            type: 'profile',
-            items: ['fullName'],
-            description: 'xxx',
-          },
-        ],
-      ]).error
-    ).toBeFalsy();
+    expect(AnyRequest.validate({ type: 'profile', items: ['fullName'], description: 'xxx' }).error).toBeFalsy();
+    expect(AnyRequest.validate({ type: 'xxx', items: ['fullName'], description: 'xxx' }).error).toBeTruthy();
   });
 });

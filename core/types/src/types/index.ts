@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/indent */
+// FIXME: convert union types to literal-union with type-fest
 
 export interface TAgreementRequest {
   chainInfo?: TChainInfo;
@@ -203,7 +204,7 @@ export interface TChainInfo {
 
 export interface TContext {
   body: object;
-  didwallet: TDidWalletInfo;
+  didwallet: TWalletInfo;
   headers: object;
   locale: string;
   previousConnected?: {
@@ -215,12 +216,6 @@ export interface TContext {
   sessionId: string;
   signerPk: string;
   signerToken: string;
-}
-
-export interface TDidWalletInfo {
-  jwt: string;
-  os: 'ios' | 'android' | 'web' | '';
-  version: string;
 }
 
 export interface TPrepareTxRequest {
@@ -286,18 +281,14 @@ export interface TProfileResponse {
   type: 'profile';
 }
 
-export type TRequestList = TAnyRequest[];
-
-export type TResponseList = TAnyResponse[];
-
 export interface TSession {
   appInfo: TAppInfo;
-  approveResults: any[];
+  approveResults: object[];
   authUrl: string;
   autoConnect: boolean;
   challenge: string;
   currentConnected?: {
-    didwallet: TDidWalletInfo;
+    didwallet: TWalletInfo;
     userDid: string;
     userPk: string;
   } | null;
@@ -309,7 +300,7 @@ export interface TSession {
     userDid: string;
     userPk: string;
   } | null;
-  requestedClaims: (TAnyRequest[] | TAnyRequest)[];
+  requestedClaims: TAnyRequest[][];
   responseClaims: TAnyResponse[][];
   sessionId: string;
   status:
@@ -417,4 +408,10 @@ export interface TVerifiableCredentialResponse {
     | string
   )[];
   type: 'verifiableCredential';
+}
+
+export interface TWalletInfo {
+  jwt: string;
+  os: 'ios' | 'android' | 'web' | '';
+  version: string;
 }

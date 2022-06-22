@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable import/first */
 /* eslint-disable import/no-extraneous-dependencies */
 import('node-localstorage/register'); // polyfill ls
@@ -16,7 +17,15 @@ import { MemoryStorage } from '@did-connect/storage-memory';
 import { Authenticator } from '@did-connect/authenticator';
 import { createHandlers } from '@did-connect/handler';
 import { attachHandlers } from '@did-connect/relay-adapter-express';
-import { TSession } from '@did-connect/types';
+import type {
+  TSession,
+  TAnyRequest,
+  TAuthResponse,
+  TAnyObject,
+  TAppResponse,
+  TProfileRequest,
+  TProfileResponse,
+} from '@did-connect/types';
 
 // eslint-disable-next-line import/no-relative-packages
 import createTestServer from '../../../scripts/create-test-server';
@@ -28,6 +37,27 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const noop = () => null;
 const user = fromRandom();
 const app = fromRandom({ role: types.RoleType.ROLE_APPLICATION });
+
+const profileRequest = {
+  type: 'profile',
+  items: ['fullName', 'email', 'avatar'],
+  description: 'Please give me your profile',
+};
+const profileResponse = { type: 'profile', description: 'xxx', fullName: 'test', email: 'test@arcblock.io' };
+
+const assetRequest = {
+  type: 'asset',
+  description: 'Please prove that you own asset',
+  target: user.address,
+};
+const assetResponse = {
+  type: 'asset',
+  asset: user.address,
+  description: 'xxx',
+  ownerDid: user.address,
+  ownerPk: user.publicKey,
+  ownerProof: 'abc',
+};
 
 const storage = new MemoryStorage();
 const authenticator = new Authenticator({
@@ -82,7 +112,7 @@ describe('StateMachine', () => {
     expect(() => createStateMachine({ dispatch: noop, onApprove: noop })).toThrow(/Invalid onConnect/);
   });
 
-  const defaultConnectHandler = (authInfo) => {
+  const defaultConnectHandler = (authInfo: TAuthResponse): [TAnyRequest[], string, string] => {
     expect(authInfo.requestedClaims[0].type).toEqual('profile');
     const claims = authInfo.requestedClaims;
     const { challenge } = authInfo;
@@ -90,8 +120,9 @@ describe('StateMachine', () => {
     return [claims, challenge, nextUrl];
   };
 
-  const defaultApproveHandler = (ctx: TSession, e: TEvent) => {
-    return `approved with result ${e.responseClaims[0].fullName}`;
+  const defaultApproveHandler = (ctx: TSession, e: TEvent): TAppResponse => {
+    const response: TProfileResponse = e.responseClaims[0];
+    return { successMessage: `approved with result ${response.fullName}` };
   };
 
   const defaultCompleteHandler = (ctx: TSession) => {
@@ -111,7 +142,7 @@ describe('StateMachine', () => {
     onConnect,
     onApprove = defaultApproveHandler,
     onComplete = defaultCompleteHandler,
-    requestedClaims = [{ type: 'profile', fullName: 'test', email: 'test@arcblock.io' }],
+    requestedClaims = [profileResponse],
     expectedStatusHistory = [
       'start',
       'loading',
@@ -124,10 +155,10 @@ describe('StateMachine', () => {
       'completed',
     ],
   }) => {
-    let res: any;
-    let authInfo: any;
+    let res: TAnyObject;
+    let authInfo: TAuthResponse;
 
-    const stateHistory = [];
+    const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
@@ -164,7 +195,7 @@ describe('StateMachine', () => {
       let claims = authInfo.requestedClaims;
       let nextUrl = getAuthUrl(authUrl);
       let challenge = authInfo.challenge; // eslint-disable-line
-      if (claims.find((x) => x.type === 'authPrincipal')) {
+      if (claims.find((x: TAnyRequest) => x.type === 'authPrincipal')) {
         res = await axios.post(getAuthUrl(authInfo.url), {
           userPk: toBase58(user.publicKey),
           userInfo: Jwt.sign(user.address, user.secretKey, {
@@ -197,34 +228,22 @@ describe('StateMachine', () => {
     service.stop();
   };
 
-  test('should work as expected: 1 claim + 1 step', async () => {
+  test.only('should work as expected: 1 claim + 1 step', async () => {
     await runSingleTest({
       onConnect: (ctx, e) => {
-        return [
-          {
-            type: 'profile',
-            fields: ['fullName', 'email', 'avatar'],
-            description: `Please give me your profile for ${e.userDid}`,
-          },
-        ];
+        return [profileRequest];
       },
     });
   });
 
   test('should work as expected: multiple claims + 1 step', async () => {
     await runSingleTest({
-      requestedClaims: [
-        { type: 'profile', fullName: 'test', email: 'test@arcblock.io' },
-        { type: 'asset', asset: 'zNKmwG9a6EnHJSuNuV3BMLy686yFmBDHuffE' },
-      ],
+      requestedClaims: [profileResponse, assetResponse],
       onConnect: (ctx, e) => {
         return [
           [
-            {
-              type: 'profile',
-              fields: ['fullName', 'email', 'avatar'],
-              description: `Please give me your profile for ${e.userDid}`,
-            },
+            profileRequest,
+            assetRequest,
             {
               type: 'asset',
               filters: [{ trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'] }],
@@ -266,7 +285,7 @@ describe('StateMachine', () => {
       handleWalletConnect: (authInfo) => {
         expect(authInfo.status).toEqual('ok');
         expect(authInfo.successMessage).toMatch('you connected account');
-        return [];
+        return [[], '', ''];
       },
       onConnect: () => [],
       onApprove: (ctx, e) => {
@@ -287,24 +306,23 @@ describe('StateMachine', () => {
   });
 
   const runMultiStepTest = async ({ onConnect }) => {
-    let res;
-    let authInfo;
-    let currentStep;
+    let res: TAnyObject;
+    let authInfo: TAuthResponse;
+    let currentStep: number;
 
-    const stateHistory = [];
+    const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect,
-
       onApprove: (ctx, e) => {
         currentStep = e.currentStep;
         if (e.currentStep === 0) {
-          return `approved with profile ${e.responseClaims[0].fullName}`;
+          return { successMessage: `approved with profile ${e.responseClaims[0].fullName}` };
         }
 
-        return `approved with asset ${e.responseClaims[0].address}`;
+        return { successMessage: `approved with asset ${e.responseClaims[0].asset}` };
       },
 
       // eslint-disable-next-line no-unused-vars
@@ -416,50 +434,28 @@ describe('StateMachine', () => {
   test('should work as expected: 1 claim + 2 steps', async () => {
     await runMultiStepTest({
       onConnect: (ctx, e) => {
-        return [
-          {
-            type: 'profile',
-            fields: ['fullName', 'email', 'avatar'],
-            description: `Please give me your profile for ${e.userDid}`,
-          },
-          {
-            type: 'asset',
-            description: 'Please prove that you own asset',
-            target: user.address,
-          },
-        ];
+        return [profileRequest, assetRequest];
       },
     });
   });
 
   test('should work as expected: 1 claim + 2 steps + pre-populated', async () => {
     await runMultiStepTest({
-      onConnect: [
-        {
-          type: 'profile',
-          fields: ['fullName', 'email', 'avatar'],
-          description: 'Please give me your profile',
-        },
-        {
-          type: 'asset',
-          description: 'Please prove that you own asset',
-          target: user.address,
-        },
-      ],
+      onConnect: [profileRequest, assetRequest],
     });
   });
 
   test('should abort session when challenge mismatch', async () => {
-    let res;
-    let authInfo;
+    let res: TAnyObject;
+    let authInfo: TAuthResponse;
 
-    const stateHistory = [];
+    const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
-      onConnect: () => {},
-      onApprove: () => {},
+      onConnect: () => [],
+      onApprove: () => ({}),
       onComplete: () => {},
     });
 
@@ -507,16 +503,16 @@ describe('StateMachine', () => {
   });
 
   test('should abort session when wallet rejected', async () => {
-    let res;
-    let authInfo;
+    let res: TAnyObject;
+    let authInfo: TAuthResponse;
 
-    const stateHistory = [];
+    const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
-      onConnect: () => {},
-      onApprove: () => {},
+      onConnect: () => [],
+      onApprove: () => ({}),
       onComplete: () => {},
     });
 
@@ -565,10 +561,10 @@ describe('StateMachine', () => {
   });
 
   test('should abort session when onConnect throws', async () => {
-    let res;
-    let authInfo;
+    let res: TAnyObject;
+    let authInfo: TAuthResponse;
 
-    const stateHistory = [];
+    const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
@@ -576,7 +572,7 @@ describe('StateMachine', () => {
       onConnect: () => {
         throw new Error('onConnect error');
       },
-      onApprove: () => {},
+      onApprove: () => ({}),
       onComplete: () => {},
     });
 
@@ -625,23 +621,17 @@ describe('StateMachine', () => {
   });
 
   test('should abort session when onApprove throws', async () => {
-    let res;
-    let authInfo;
+    let res: TAnyObject;
+    let authInfo: TAuthResponse;
     let hasError = false;
 
-    const stateHistory = [];
+    const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       dispatch: (...args) => service.send.call(service, ...args),
       onConnect: (ctx, e) => {
-        return [
-          {
-            type: 'profile',
-            fields: ['fullName', 'email', 'avatar'],
-            description: `Please give me your profile for ${e.userDid}`,
-          },
-        ];
+        return [profileRequest];
       },
       onApprove: () => {
         throw new Error('onApprove error');
@@ -720,13 +710,13 @@ describe('StateMachine', () => {
     service.stop();
   });
 
-  let finalizedSessionId = null;
+  let finalizedSessionId: string = '';
   test('should abort session when app canceled', async () => {
-    let res;
-    let authInfo;
+    let res: TAnyObject;
+    let authInfo: TAuthResponse;
     let hasCanceled = false;
 
-    const stateHistory = [];
+    const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
@@ -734,8 +724,9 @@ describe('StateMachine', () => {
       onConnect: (ctx, e) => {
         expect(e.type).toBe('WALLET_CONNECTED');
         service.send({ type: 'CANCEL' });
+        return [];
       },
-      onApprove: () => {},
+      onApprove: () => ({}),
       onComplete: () => {},
       onCancel: (ctx, e) => {
         expect(e.type).toBe('CANCEL');
@@ -790,15 +781,15 @@ describe('StateMachine', () => {
   });
 
   test('should abort session when reuse non-existing session', async () => {
-    const stateHistory = [];
+    const stateHistory: string[] = [];
     const nonExistingSession = nanoid();
     let hasError = false;
     const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       sessionId: nonExistingSession,
       dispatch: (...args) => service.send.call(service, ...args),
-      onConnect: () => {},
-      onApprove: () => {},
+      onConnect: () => [],
+      onApprove: () => ({}),
       onError: () => {
         hasError = true;
       },
@@ -817,14 +808,14 @@ describe('StateMachine', () => {
   });
 
   test('should abort session when reuse finalized session', async () => {
-    const stateHistory = [];
+    const stateHistory: string[] = [];
     let hasError = false;
     const { machine } = createStateMachine({
       baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
       sessionId: finalizedSessionId,
       dispatch: (...args) => service.send.call(service, ...args),
-      onConnect: () => {},
-      onApprove: () => {},
+      onConnect: () => [],
+      onApprove: () => ({}),
       onError: (ctx, e) => {
         expect(e.data.code).toBe('INVALID_SESSION');
         hasError = true;

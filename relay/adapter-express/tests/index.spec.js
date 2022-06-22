@@ -8,18 +8,18 @@ const { toBase58 } = require('@ocap/util');
 const objectHash = require('object-hash');
 const waitFor = require('p-wait-for');
 const joinUrl = require('url-join');
-const Mcrypto = require('@ocap/mcrypto');
-const MemoryStorage = require('@did-connect/storage-memory');
-const Authenticator = require('@did-connect/authenticator');
-const createHandlers = require('@did-connect/handler');
+const { types } = require('@ocap/mcrypto');
+const { MemoryStorage } = require('@did-connect/storage-memory');
+const { Authenticator } = require('@did-connect/authenticator');
+const { createHandlers } = require('@did-connect/handler');
 
 const createTestServer = require('../../../scripts/create-test-server');
-const attachHandlers = require('../lib');
+const { attachHandlers } = require('../lib');
 
 const noop = () => null;
 const user = fromRandom();
 const updater = fromRandom();
-const app = fromRandom({ role: Mcrypto.types.RoleType.ROLE_APPLICATION });
+const app = fromRandom({ role: types.RoleType.ROLE_APPLICATION });
 
 const chainInfo = {
   host: 'https://beta.abtnetwork.io/api',
@@ -219,7 +219,7 @@ describe('RelayAdapterExpress', () => {
     });
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('ok');
-    expect(authInfo.response).toMatch(/profile test/);
+    expect(authInfo.response.message).toMatch(/profile test/);
 
     // 6. wait for complete
     await waitFor(() => completed);
@@ -346,7 +346,7 @@ describe('RelayAdapterExpress', () => {
     res = await api.get(obj.href);
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('ok');
-    expect(authInfo.response).toMatch(/you provided asset/);
+    expect(authInfo.response.message).toMatch(/you provided asset/);
 
     // 6. wait for complete
     await waitFor(() => completed);

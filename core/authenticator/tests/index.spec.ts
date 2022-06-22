@@ -5,7 +5,7 @@ import { types } from '@ocap/mcrypto';
 import { verify, decode } from '@arcblock/jwt';
 import { fromRandom, WalletType } from '@ocap/wallet';
 import { toBase58 } from '@ocap/util';
-import { TContext, TRequestList } from '@did-connect/types';
+import { TContext, TAnyRequest } from '@did-connect/types';
 
 import { Authenticator } from '../src';
 
@@ -24,7 +24,7 @@ const sleep = (ms: number) =>
     setTimeout(resolve, ms);
   });
 
-const claims: TRequestList = [
+const claims: TAnyRequest[] = [
   {
     type: 'profile',
     items: ['fullName', 'email'],

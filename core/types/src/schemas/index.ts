@@ -1,12 +1,14 @@
+// TODO: make enum values in schema to LiteralUnion for better DX
 import { ObjectSchema } from 'joi';
 import { Joi } from '@arcblock/validator';
 import { types } from '@ocap/mcrypto';
+import type { LiteralUnion } from 'type-fest';
 
 // shared schema options
 const options = { stripUnknown: true, noDefaults: false };
 const capitalize = (input: string): string => input.charAt(0).toUpperCase() + input.slice(1);
 
-type LocaleType = 'en' | 'zh';
+type TLocaleCode = LiteralUnion<'en' | 'zh', string>;
 
 // Basic Types
 const ChainInfo: ObjectSchema = Joi.object({
@@ -47,18 +49,12 @@ const DIDWalletInfo = Joi.object({
   jwt: Joi.string().required(),
 })
   .options(options)
-  .meta({ unknownType: 'string', className: 'TDidWalletInfo' });
+  .meta({ unknownType: 'string', className: 'TWalletInfo' });
 
 // did-connect claim type utils
-type RequestType =
-  | 'authPrincipal'
-  | 'profile'
-  | 'signature'
-  | 'prepareTx'
-  | 'agreement'
-  | 'verifiableCredential'
-  | 'asset';
-type SignatureType = 'fg:g:transaction' | 'eth:transaction' | 'mime:text/html' | 'mime:text/plain';
+type TRequest = LiteralUnion<'authPrincipal' | 'profile' | 'signature' | 'prepareTx' | 'agreement' | 'verifiableCredential' | 'asset', string>; // prettier-ignore
+type TSignature = LiteralUnion<'fg:g:transaction' | 'eth:transaction' | 'mime:text/html' | 'mime:text/plain', string>; // prettier-ignore
+
 const createStandardFields = (type: string, description: string) => ({
   type: Joi.string().valid(type).required(),
   description: Joi.string().min(1).required().default(description),
@@ -74,8 +70,8 @@ const TrustedIssuer = Joi.alternatives().try(
   }),
   Joi.DID().required()
 );
-const createClaimTypes = (type: RequestType, description: string): ObjectSchema[] => {
-  const claims = {
+const createClaimTypes = (type: TRequest, description: string): ObjectSchema[] => {
+  const claims: { [key in TRequest]: { request: any; response: any } } = {
     authPrincipal: {
       request: {
         target: Joi.DID().optional().allow('').default(''),
@@ -289,8 +285,6 @@ const AnyRequest = Joi.alternatives()
   )
   .meta({ unknownType: 'string', className: 'TAnyRequest' });
 
-const RequestList = Joi.array().items(AnyRequest).min(1).meta({ unknownType: 'string', className: 'TRequestList' });
-
 // Any claim request
 const AnyResponse = Joi.alternatives()
   .try(
@@ -303,8 +297,6 @@ const AnyResponse = Joi.alternatives()
     AssetResponse
   )
   .meta({ unknownType: 'string', className: 'TAnyResponse' });
-
-const ResponseList = Joi.array().items(AnyResponse).min(1).meta({ unknownType: 'string', className: 'TResponseList' });
 
 const PreviousConnected = Joi.object({
   userDid: Joi.DID().required(),
@@ -351,15 +343,12 @@ const Session: ObjectSchema = Joi.object({
     .allow(null),
   currentStep: Joi.number().integer().min(0).default(0).required(),
   // User can set claims in following format
-  // requestedClaims: [claim1, [claim2, claim3], claim4]
-  requestedClaims: Joi.array()
-    .items(Joi.alternatives().try(Joi.array().items(AnyRequest).min(1), AnyRequest))
-    .default([])
-    .required(),
+  // requestedClaims: [[claim1], [claim2, claim3], [claim4]]
+  requestedClaims: Joi.array().items(Joi.array().items(AnyRequest).min(1)).default([]).required(),
   // Always a 2 dimension array
   responseClaims: Joi.array().items(Joi.array().items(AnyResponse).min(1)).default([]).required(),
   // Always a flat array
-  approveResults: Joi.array().items(Joi.any()).default([]).required(),
+  approveResults: Joi.array().items(Joi.object()).default([]).required(),
   error: Joi.string().optional().allow(''),
   timeout: Joi.object({
     app: Joi.number().positive().required(),
@@ -397,9 +386,6 @@ export {
   DIDWalletInfo,
   Context,
   Session,
-  LocaleType,
-  RequestType,
-  SignatureType,
   AgreementRequest,
   AgreementResponse,
   AssetRequest,
@@ -415,7 +401,8 @@ export {
   VerifiableCredentialRequest,
   VerifiableCredentialResponse,
   AnyRequest,
-  RequestList,
   AnyResponse,
-  ResponseList,
+  TLocaleCode,
+  TRequest,
+  TSignature,
 };

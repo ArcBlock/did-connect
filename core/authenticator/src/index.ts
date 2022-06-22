@@ -5,20 +5,17 @@ import { sign, verify, decode, JwtBody } from '@arcblock/jwt';
 import { toBase58 } from '@ocap/util';
 import { toAddress } from '@arcblock/did';
 import { isValid, WalletObject } from '@ocap/wallet';
-import {
-  LocaleType,
-  AppInfo,
+import { AppInfo } from '@did-connect/types';
+import type {
+  TLocaleCode,
   TAppInfo,
   TAppResponse,
   TAuthResponse,
   TChainInfo,
   TSession,
   TContext,
-  Context,
   TAnyRequest,
-  RequestList,
-  TRequestList,
-  TResponseList,
+  TAnyResponse,
   TI18nMessages,
 } from '@did-connect/types';
 
@@ -37,7 +34,7 @@ export type AppResponseSigned = {
 export type WalletResponse = {
   userDid: string;
   userPk: string;
-  claims: TResponseList;
+  claims: TAnyResponse[];
   action: string;
   challenge: string;
 };
@@ -107,14 +104,6 @@ export class Authenticator {
    * @returns {object} { appPk, authInfo }
    */
   signJson(data: TAppResponse, context: TContext): AppResponseSigned {
-    const { error } = Context.validate(context);
-    if (error) {
-      throw new Error(`Invalid context: ${error.details.map((x: any) => x.message).join(', ')}`);
-    }
-
-    // eslint-disable-next-line no-param-reassign
-    data = data || {};
-
     const final: TAppResponse = { response: data.response ? data.response : data };
 
     // Attach protocol fields to the root
@@ -137,8 +126,8 @@ export class Authenticator {
     const { response = {}, errorMessage = '', successMessage = '', nextWorkflow = '' } = final;
     const { didwallet, session } = context;
 
-    const payload: TAuthResponse = {
-      appInfo: session?.appInfo,
+    const payload: Partial<TAuthResponse> = {
+      appInfo: (session as TSession).appInfo,
       status: errorMessage ? 'error' : 'ok',
       errorMessage: errorMessage || '',
       successMessage: successMessage || '',
@@ -160,18 +149,7 @@ export class Authenticator {
    * @param {object} context - context
    * @returns {object} { appPk, authInfo }
    */
-  signClaims(claims: TAnyRequest | TAnyRequest[], context: TContext): AppResponseSigned {
-    const claimList: TRequestList = Array.isArray(claims) ? claims : [claims];
-    let res = RequestList.validate(claimList);
-    if (res.error) {
-      throw new Error(`Invalid claims: ${res.error.details.map((x: any) => x.message).join(', ')}`);
-    }
-
-    res = Context.validate(context);
-    if (res.error) {
-      throw new Error(`Invalid context: ${res.error.details.map((x: any) => x.message).join(', ')}`);
-    }
-
+  signClaims(claims: TAnyRequest[], context: TContext): AppResponseSigned {
     const { sessionId, session, didwallet } = context;
     const { authUrl, challenge, appInfo } = session as TSession;
 
@@ -179,15 +157,15 @@ export class Authenticator {
     tmp.searchParams.set('sid', sessionId);
     const nextUrl = tmp.href;
 
-    // TODO: perhaps we should set chainInfo in each claim
-    const claimWithChainInfo = claimList.find((x: TAnyRequest) => x.chainInfo);
+    // TODO: perhaps we should set and respect chainInfo in each claim
+    const claimWithChainInfo = claims.find((x: TAnyRequest) => x.chainInfo);
 
-    const payload: TAuthResponse = {
+    const payload: Partial<TAuthResponse> = {
       action: 'responseAuth',
       challenge,
       appInfo,
       chainInfo: claimWithChainInfo ? claimWithChainInfo.chainInfo : DEFAULT_CHAIN_INFO,
-      requestedClaims: claimList,
+      requestedClaims: claims,
       url: nextUrl,
     };
 
@@ -224,7 +202,7 @@ export class Authenticator {
    */
   verify(
     data: WalletResponseSigned,
-    locale: LocaleType = 'en',
+    locale: TLocaleCode = 'en',
     enforceTimestamp: boolean = true
   ): Promise<WalletResponse> {
     // eslint-disable-next-line no-async-promise-executor
@@ -290,7 +268,7 @@ export class Authenticator {
    * @param {boolean} [enforceTimestamp=true]
    * @returns Promise<boolean>
    */
-  _verify(data: WalletResponseSigned, locale: LocaleType = 'en', enforceTimestamp: boolean = true): Promise<JwtBody> {
+  _verify(data: WalletResponseSigned, locale: TLocaleCode = 'en', enforceTimestamp: boolean = true): Promise<JwtBody> {
     return new Promise((resolve, reject) => {
       debug('verify', data, locale);
 

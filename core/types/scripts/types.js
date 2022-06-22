@@ -7,7 +7,8 @@ async function types() {
 
   // Configure your settings here
   const result = await convertFromDirectory({
-    fileHeader: '/* eslint-disable @typescript-eslint/indent */',
+    fileHeader:
+      '/* eslint-disable @typescript-eslint/indent */\n// FIXME: convert union types to literal-union with type-fest',
     schemaDirectory: './src/schemas',
     typeOutputDirectory: './src/types',
     debug: true,

@@ -11,6 +11,7 @@ build:
 	@cd relay/storage-nedb && npm run build
 	@cd core/authenticator && npm run build
 	@cd core/handler && npm run build
+	@cd core/state && npm run build
 
 init: install dep env
 	@echo "Initializing the repo..."

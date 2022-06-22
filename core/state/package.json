@@ -20,15 +20,16 @@
   "dependencies": {
     "@arcblock/jwt": "^1.17.0",
     "@arcblock/ws": "^1.17.0",
-    "@ocap/wallet": "^1.17.0",
-    "@ocap/util": "^1.17.0",
     "@did-connect/types": "^2.0.0",
+    "@ocap/util": "^1.17.0",
+    "@ocap/wallet": "^1.17.0",
     "axios": "^0.27.2",
     "debug": "^4.3.4",
     "lodash": "^4.17.21",
     "nanoid": "3.x",
     "node-localstorage": "^2.2.1",
     "object-hash": "^3.0.0",
+    "type-fest": "^2.13.1",
     "url-join": "^4.0.1",
     "xstate": "^4.32.1"
   },

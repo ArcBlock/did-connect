@@ -1,3 +1,4 @@
+// @ts-ignore
 import { WsClient } from '@arcblock/ws';
 
 type Connections = { [key: string]: WsClient };
