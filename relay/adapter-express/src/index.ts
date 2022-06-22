@@ -1,6 +1,19 @@
-const get = require('lodash/get');
+/* eslint-disable @typescript-eslint/indent */
+import get from 'lodash/get';
+import type { THandlers, TSessionUpdateResult } from '@did-connect/handler';
+import type { Request, Response, NextFunction } from 'express';
+import type { TContext, TLocaleCode, TSession, TWalletInfo, TAnyObject } from '@did-connect/types';
 
-function attachHandlers(router, handlers, prefix = '/api/connect/relay') {
+export interface TRequest extends Request {
+  query: TAnyObject;
+  body: TAnyObject;
+  cookies: TAnyObject;
+  context: TContext;
+}
+
+export interface TResponse extends Response {}
+
+export function attachHandlers(router: any, handlers: THandlers, prefix: string = '/api/connect/relay') {
   const {
     handleSessionCreate,
     handleSessionRead,
@@ -10,7 +23,7 @@ function attachHandlers(router, handlers, prefix = '/api/connect/relay') {
     parseWalletUA,
   } = handlers;
 
-  const getPreviousConnected = (req) => {
+  const getPreviousConnected = (req: TRequest): any => {
     const userDid = get(req, 'cookies.connected_did', '');
 
     if (userDid) {
@@ -26,9 +39,11 @@ function attachHandlers(router, handlers, prefix = '/api/connect/relay') {
 
   const ensureContext =
     (isSessionRequired = true) =>
-    async (req, res, next) => {
-      let sessionId = '';
-      let session = null;
+    async (req: TRequest, res: TResponse, next: NextFunction) => {
+      let sessionId: string = '';
+
+      // @ts-ignore
+      let session: TSession = null;
 
       if (isSessionRequired) {
         sessionId = req.query.sid;
@@ -46,10 +61,12 @@ function attachHandlers(router, handlers, prefix = '/api/connect/relay') {
       }
 
       // extra context
-      const didwallet = parseWalletUA(req.query['user-agent'] || req.headers['user-agent']);
-      const locale = (req.query.locale || req.acceptsLanguages('en-US', 'zh-CN') || 'en-US').split('-').shift();
+      const didwallet: TWalletInfo = parseWalletUA(req.query['user-agent'] || req.headers['user-agent']);
+      const locale: TLocaleCode = (req.query.locale || req.acceptsLanguages('en-US', 'zh-CN') || 'en-US')
+        .split('-')
+        .shift();
 
-      req.context = {
+      const context: TContext = {
         didwallet,
         body: req.method === 'GET' ? req.query : req.body,
         headers: req.headers,
@@ -61,43 +78,43 @@ function attachHandlers(router, handlers, prefix = '/api/connect/relay') {
         previousConnected: getPreviousConnected(req),
       };
 
+      req.context = context;
+
       return next();
     };
 
   // web: create new session
-  router.post(`${prefix}/session`, ensureContext(false), async (req, res) => {
-    const result = await handleSessionCreate(req.context);
+  router.post(`${prefix}/session`, ensureContext(false), async (req: TRequest, res: TResponse) => {
+    const result: TSessionUpdateResult = await handleSessionCreate(req.context);
     res.jsonp(result);
   });
 
   // web: get session
-  router.get(`${prefix}/session`, ensureContext(true), (req, res) => {
+  router.get(`${prefix}/session`, ensureContext(true), (req: TRequest, res: TResponse) => {
     res.jsonp(req.context.session);
   });
 
   // web: update session
-  router.put(`${prefix}/session`, ensureContext(true), async (req, res) => {
-    const result = await handleSessionUpdate(req.context);
+  router.put(`${prefix}/session`, ensureContext(true), async (req: TRequest, res: TResponse) => {
+    const result: TSessionUpdateResult = await handleSessionUpdate(req.context);
     res.jsonp(result);
   });
 
   // wallet: get requested claims
-  router.get(`${prefix}/auth`, ensureContext(true), async (req, res) => {
+  router.get(`${prefix}/auth`, ensureContext(true), async (req: TRequest, res: TResponse) => {
     const result = await handleClaimRequest(req.context);
     res.jsonp(result);
   });
 
   // Wallet: submit requested claims
-  router.post(`${prefix}/auth`, ensureContext(true), async (req, res) => {
+  router.post(`${prefix}/auth`, ensureContext(true), async (req: TRequest, res: TResponse) => {
     const result = await handleClaimResponse(req.context);
     res.jsonp(result);
   });
 
   // Wallet: submit auth response for web wallet
-  router.get(`${prefix}/auth/submit`, ensureContext(true), async (req, res) => {
+  router.get(`${prefix}/auth/submit`, ensureContext(true), async (req: TRequest, res: TResponse) => {
     const result = await handleClaimResponse(req.context);
     res.jsonp(result);
   });
 }
-
-module.exports = { attachHandlers };

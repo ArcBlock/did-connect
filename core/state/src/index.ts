@@ -1,14 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import type { Promisable } from 'type-fest';
-import type {
-  TAppResponse,
-  TSession,
-  TAnyRequest,
-  TAnyResponse,
-  TAnyObject,
-  TWalletInfo,
-  TSessionStatus,
-} from '@did-connect/types';
+import type { TAppResponse, TSession, TAnyRequest, TAnyObject, TSessionStatus, TEvent } from '@did-connect/types';
 
 import get from 'lodash/get';
 import isFunction from 'lodash/isFunction';
@@ -21,14 +13,6 @@ import { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, ge
 import { createConnection, destroyConnections } from './socket';
 
 const noop = () => undefined;
-
-export interface TEvent extends Omit<TSession, 'responseClaims'> {
-  type: string;
-  data: any;
-  responseClaims: TAnyResponse[];
-  didwallet?: TWalletInfo;
-  source?: string;
-}
 
 export type TEventCallback = (context: TSession, event: TEvent) => Promisable<void>;
 export type TConnectCallback = (context: TSession, event: TEvent) => Promisable<TAnyRequest[][]>;

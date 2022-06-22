@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/indent */
 import { LiteralUnion } from 'type-fest';
-import { TAppInfo, TChainInfo, TAnyRequest } from './types';
+import { TAppInfo, TChainInfo, TWalletInfo, TSession, TAnyResponse, TAnyRequest } from './types';
 
 export * from './schemas';
 export * from './types';
@@ -35,6 +35,14 @@ export type TAuthResponse = TAppResponse & {
   requestedClaims: TAnyRequest[];
   url: string;
 };
+
+export interface TEvent extends Omit<TSession, 'responseClaims'> {
+  type: string;
+  data: any;
+  responseClaims: TAnyResponse[];
+  didwallet?: TWalletInfo;
+  source?: string;
+}
 
 export class CustomError extends Error {
   code: string;

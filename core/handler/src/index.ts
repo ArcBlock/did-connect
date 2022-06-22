@@ -12,7 +12,8 @@ import { SessionStorage } from '@did-connect/storage';
 import { Session, Context, CustomError } from '@did-connect/types';
 import { Authenticator } from '@did-connect/authenticator';
 
-import type { AppResponseSigned, WalletResponseSigned } from '@did-connect/authenticator';
+import type { Promisable } from 'type-fest';
+import type { TAppResponseSigned, TWalletResponseSigned } from '@did-connect/authenticator';
 import type {
   TSession,
   TContext,
@@ -55,32 +56,28 @@ const errors: TI18nMessages = {
   },
 };
 
-export type LoggerType = {
+export type TLogger = {
   debug(...args: any[]): void;
   info(...args: any[]): void;
   error(...args: any[]): void;
   warn(...args: any[]): void;
 };
 
-export function createSocketServer(logger: LoggerType, pathname: string) {
-  return new WsServer({ logger, pathname });
-}
-
-export interface HandlersType {
-  handleSessionCreate(context: TContext): Promise<SessionUpdateResult>;
-  handleSessionRead(sessionId: string): Promise<SessionUpdateResult>;
-  handleSessionUpdate(context: TContext): Promise<SessionUpdateResult>;
-  handleClaimRequest(context: TContext): Promise<AppResponseSigned>;
-  handleClaimResponse(context: TContext): Promise<AppResponseSigned>;
+export interface THandlers {
+  handleSessionCreate(context: TContext): Promisable<TSessionUpdateResult>;
+  handleSessionRead(sessionId: string): Promisable<TSession>;
+  handleSessionUpdate(context: TContext): Promisable<TSessionUpdateResult>;
+  handleClaimRequest(context: TContext): Promisable<TAppResponseSigned>;
+  handleClaimResponse(context: TContext): Promisable<TAppResponseSigned>;
   parseWalletUA(ua: string): TWalletInfo;
   wsServer: any;
 }
 
-export type SessionCreateContext = TContext & {
+export type TSessionCreateContext = TContext & {
   body: TSession;
 };
 
-export type SessionUpdateContext = TContext & {
+export type TSessionUpdateContext = TContext & {
   session: TSession;
   body: TSession & {
     status?: 'error' | 'canceled';
@@ -88,13 +85,17 @@ export type SessionUpdateContext = TContext & {
   };
 };
 
-export type SessionUpdateResult = TSession | { error: string; code: string };
+export type TSessionUpdateResult = TSession | { error: string; code: string };
 
-export type WalletHandlerContext = TContext & {
+export type TWalletHandlerContext = TContext & {
   session: TSession;
-  body: WalletResponseSigned;
+  body: TWalletResponseSigned;
   locale: TLocaleCode;
 };
+
+export function createSocketServer(logger: TLogger, pathname: string) {
+  return new WsServer({ logger, pathname });
+}
 
 // FIXME: i18n for all errors
 export function createHandlers({
@@ -105,9 +106,9 @@ export function createHandlers({
 }: {
   storage: SessionStorage;
   authenticator: Authenticator;
-  logger?: LoggerType;
+  logger?: TLogger;
   socketPathname?: string;
-}): HandlersType {
+}): THandlers {
   const wsServer = createSocketServer(logger, socketPathname);
 
   const isValidContext = (x: TContext): boolean => {
@@ -145,7 +146,7 @@ export function createHandlers({
     return { error: '', code: 'OK' };
   };
 
-  const handleSessionCreate = async (context: SessionCreateContext): Promise<SessionUpdateResult> => {
+  const handleSessionCreate = async (context: TSessionCreateContext): Promise<TSessionUpdateResult> => {
     if (isValidContext(context) === false) {
       return { error: 'Invalid context', code: 'CONTEXT_INVALID' };
     }
@@ -203,11 +204,11 @@ export function createHandlers({
     return storage.create(sessionId, value);
   };
 
-  const handleSessionRead = async (sessionId: string): Promise<SessionUpdateResult> => {
+  const handleSessionRead = async (sessionId: string): Promise<TSession> => {
     return storage.read(sessionId);
   };
 
-  const handleSessionUpdate = async (context: SessionUpdateContext): Promise<SessionUpdateResult> => {
+  const handleSessionUpdate = async (context: TSessionUpdateContext): Promise<TSessionUpdateResult> => {
     const { body, session, sessionId } = context;
     try {
       if (isValidContext(context) === false) {
@@ -259,7 +260,7 @@ export function createHandlers({
     };
   };
 
-  const handleClaimRequest = async (context: WalletHandlerContext): Promise<AppResponseSigned> => {
+  const handleClaimRequest = async (context: TWalletHandlerContext): Promise<TAppResponseSigned> => {
     const { sessionId, session, didwallet } = context;
 
     try {
@@ -344,7 +345,7 @@ export function createHandlers({
       locale
     );
 
-  const handleClaimResponse = async (context: WalletHandlerContext): Promise<AppResponseSigned> => {
+  const handleClaimResponse = async (context: TWalletHandlerContext): Promise<TAppResponseSigned> => {
     const { sessionId, session, body, locale, didwallet } = context;
     try {
       if (isValidContext(context) === false) {

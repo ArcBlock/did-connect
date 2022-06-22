@@ -18,15 +18,24 @@
     "access": "public"
   },
   "dependencies": {
+    "@did-connect/authenticator": "2.0.0",
+    "@did-connect/handler": "2.0.0",
+    "@did-connect/storage": "2.0.0",
+    "@did-connect/types": "2.0.0",
+    "@types/express": "^4.17.13",
+    "express": "^4.18.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@did-connect/handler": "2.0.0",
+    "@arcblock/eslint-config-ts": "0.2.2",
     "@did-connect/storage-memory": "^2.0.0",
-    "url-join": "^4.0.1",
     "axios": "^0.27.2",
+    "eslint": "^8.16.0",
     "jest": "^28.1.1",
-    "nanoid": "3.x"
+    "nanoid": "3.x",
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.3",
+    "url-join": "^4.0.1"
   },
   "homepage": "https://github.com/ArcBlock/did-connect",
   "keywords": [
@@ -53,8 +62,6 @@
     "test": "jest --forceExit",
     "coverage": "yarn test --coverage"
   },
-  "resolutions": {
-    "tweetnacl": "1.0.3"
-  },
+  "resolutions": {},
   "gitHead": "87990c8b5e215107fc587c1ced0d6b3e2cd2483e"
 }

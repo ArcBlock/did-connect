@@ -26,7 +26,7 @@ type AuthenticatorOptions = {
   timeout?: number;
 };
 
-export type AppResponseSigned = {
+export type TAppResponseSigned = {
   appPk: string;
   authInfo: string;
 };
@@ -39,7 +39,7 @@ export type WalletResponse = {
   challenge: string;
 };
 
-export type WalletResponseSigned = {
+export type TWalletResponseSigned = {
   userPk: string;
   userInfo: string;
 };
@@ -103,7 +103,7 @@ export class Authenticator {
    * @param {object} context
    * @returns {object} { appPk, authInfo }
    */
-  signJson(data: TAppResponse, context: TContext): AppResponseSigned {
+  signJson(data: TAppResponse, context: TContext): TAppResponseSigned {
     const final: TAppResponse = { response: data.response ? data.response : data };
 
     // Attach protocol fields to the root
@@ -149,7 +149,7 @@ export class Authenticator {
    * @param {object} context - context
    * @returns {object} { appPk, authInfo }
    */
-  signClaims(claims: TAnyRequest[], context: TContext): AppResponseSigned {
+  signClaims(claims: TAnyRequest[], context: TContext): TAppResponseSigned {
     const { sessionId, session, didwallet } = context;
     const { authUrl, challenge, appInfo } = session as TSession;
 
@@ -201,7 +201,7 @@ export class Authenticator {
    * Verify a DID connect response sent from DID Wallet
    */
   verify(
-    data: WalletResponseSigned,
+    data: TWalletResponseSigned,
     locale: TLocaleCode = 'en',
     enforceTimestamp: boolean = true
   ): Promise<WalletResponse> {
@@ -268,7 +268,7 @@ export class Authenticator {
    * @param {boolean} [enforceTimestamp=true]
    * @returns Promise<boolean>
    */
-  _verify(data: WalletResponseSigned, locale: TLocaleCode = 'en', enforceTimestamp: boolean = true): Promise<JwtBody> {
+  _verify(data: TWalletResponseSigned, locale: TLocaleCode = 'en', enforceTimestamp: boolean = true): Promise<JwtBody> {
     return new Promise((resolve, reject) => {
       debug('verify', data, locale);
 

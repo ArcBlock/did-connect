@@ -7,6 +7,7 @@ import('node-localstorage/register'); // polyfill ls
 
 import type {
   TSession,
+  TEvent,
   TAuthResponse,
   TAnyObject,
   TAnyRequest,
@@ -41,7 +42,7 @@ import { attachHandlers } from '@did-connect/relay-adapter-express';
 // @ts-ignore
 // eslint-disable-next-line import/no-relative-packages
 import createTestServer from '../../../scripts/create-test-server';
-import type { TEvent, TApproveCallback, TConnectCallback, TEventCallback } from '../src/index';
+import type { TApproveCallback, TConnectCallback, TEventCallback } from '../src/index';
 import { createStateMachine, destroyConnections } from '../src/index';
 
 // eslint-disable-next-line
