@@ -283,7 +283,7 @@ export interface TProfileResponse {
 
 export interface TSession {
   appInfo: TAppInfo;
-  approveResults: object[];
+  approveResults: any[];
   authUrl: string;
   autoConnect: boolean;
   challenge: string;

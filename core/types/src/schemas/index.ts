@@ -9,6 +9,7 @@ const options = { stripUnknown: true, noDefaults: false };
 const capitalize = (input: string): string => input.charAt(0).toUpperCase() + input.slice(1);
 
 type TLocaleCode = LiteralUnion<'en' | 'zh', string>;
+type TSessionStatus = LiteralUnion<'created' | 'walletScanned' | 'walletConnected' | 'appConnected' | 'walletApproved' | 'appApproved' | 'error' | 'timeout' | 'rejected' | 'canceled' | 'completed', string>; // prettier-ignore
 
 // Basic Types
 const ChainInfo: ObjectSchema = Joi.object({
@@ -348,7 +349,7 @@ const Session: ObjectSchema = Joi.object({
   // Always a 2 dimension array
   responseClaims: Joi.array().items(Joi.array().items(AnyResponse).min(1)).default([]).required(),
   // Always a flat array
-  approveResults: Joi.array().items(Joi.object()).default([]).required(),
+  approveResults: Joi.array().items(Joi.any()).default([]).required(),
   error: Joi.string().optional().allow(''),
   timeout: Joi.object({
     app: Joi.number().positive().required(),
@@ -403,6 +404,7 @@ export {
   AnyRequest,
   AnyResponse,
   TLocaleCode,
+  TSessionStatus,
   TRequest,
   TSignature,
 };

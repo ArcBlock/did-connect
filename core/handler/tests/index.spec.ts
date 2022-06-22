@@ -20,7 +20,9 @@ import type {
   TSession,
   TAuthPrincipalRequest,
   TAuthPrincipalResponse,
+  TProfileRequest,
   TProfileResponse,
+  TAssetRequest,
   TAssetResponse,
   TAuthResponse,
   TAnyResponse,
@@ -63,24 +65,30 @@ type RelayEvent = TSession & {
 
 const timeout = SessionTimeout;
 
-const profileRequest = {
+const profileRequest: TProfileRequest = {
   type: 'profile',
   items: ['fullName', 'email', 'avatar'],
   description: 'Please give me your profile',
 };
-const profileResponse = { type: 'profile', description: 'xxx', fullName: 'test', email: 'test@arcblock.io' };
+const profileResponse: TProfileResponse = {
+  type: 'profile',
+  description: 'Please give me your profile',
+  fullName: 'test',
+  email: 'test@arcblock.io',
+  avatar: '123',
+};
 
-const assetRequest = {
+const assetRequest: TAssetRequest = {
   type: 'asset',
   description: 'Please prove that you own asset',
-  target: user.address,
+  address: user.address,
 };
-const assetResponse = {
+const assetResponse: TAssetResponse = {
   type: 'asset',
   asset: user.address,
-  description: 'xxx',
+  description: 'Please prove that you own asset',
   ownerDid: user.address,
-  ownerPk: user.publicKey,
+  ownerPk: user.publicKey.toString(),
   ownerProof: 'abc',
 };
 

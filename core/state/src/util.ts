@@ -3,7 +3,7 @@ import axios from 'axios';
 import joinUrl from 'url-join';
 // @ts-ignore
 import objectHash from 'object-hash';
-import Jwt from '@arcblock/jwt';
+import { sign } from '@arcblock/jwt';
 import { toHex } from '@ocap/util';
 import { TAnyObject, TSession } from '@did-connect/types';
 import { fromRandom, fromSecretKey, WalletObject } from '@ocap/wallet';
@@ -74,7 +74,7 @@ export const createDeepLink = (baseUrl: string, sessionId: string): string => {
 export const doSignedRequest = async ({ data, wallet, url, method = 'POST' }: RequestArgs): Promise<TAnyObject> => {
   const headers: TAnyObject = {};
   headers['x-updater-pk'] = wallet.publicKey;
-  headers['x-updater-token'] = Jwt.sign(wallet.address, wallet.secretKey, { hash: objectHash(data) });
+  headers['x-updater-token'] = sign(wallet.address, wallet.secretKey, { hash: objectHash(data) });
   const res = await axios({ method, url, data, headers, timeout: 8000 });
   return res.data;
 };

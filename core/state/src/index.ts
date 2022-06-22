@@ -1,4 +1,15 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import type { Promisable } from 'type-fest';
+import type {
+  TAppResponse,
+  TSession,
+  TAnyRequest,
+  TAnyResponse,
+  TAnyObject,
+  TWalletInfo,
+  TSessionStatus,
+} from '@did-connect/types';
+
 import get from 'lodash/get';
 import isFunction from 'lodash/isFunction';
 import isArray from 'lodash/isArray';
@@ -6,40 +17,38 @@ import { nanoid } from 'nanoid';
 import { createMachine, assign, StateMachine } from 'xstate';
 import { SessionTimeout, CustomError } from '@did-connect/types';
 
-import type { Promisable } from 'type-fest';
-import type { TAppResponse, TSession, TAnyRequest, TAnyResponse, TAnyObject } from '@did-connect/types';
-
 import { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, getUpdater } from './util';
 import { createConnection, destroyConnections } from './socket';
 
 const noop = () => undefined;
 
-export type TEvent = TSession & {
+export interface TEvent extends Omit<TSession, 'responseClaims'> {
   type: string;
   data: any;
   responseClaims: TAnyResponse[];
+  didwallet?: TWalletInfo;
   source?: string;
-};
+}
 
-export type SessionEventCallback = (context: TSession, e: TEvent) => Promisable<void>;
-export type SessionConnectCallback = (context: TSession, e: TEvent) => Promisable<TAnyRequest[][]>;
-export type SessionApproveCallback = (context: TSession, e: TEvent) => Promisable<TAppResponse>;
+export type TEventCallback = (context: TSession, event: TEvent) => Promisable<void>;
+export type TConnectCallback = (context: TSession, event: TEvent) => Promisable<TAnyRequest[][]>;
+export type TApproveCallback = (context: TSession, event: TEvent) => Promisable<TAppResponse>;
 
 export type SessionStateOptions = {
   baseUrl?: string;
-  initial?: 'start';
+  initial?: TSessionStatus;
   sessionId?: string;
   strategy?: string;
   dispatch: (...args: any[]) => void;
-  onStart?: SessionEventCallback;
-  onCreate?: SessionEventCallback;
-  onConnect: SessionConnectCallback;
-  onApprove: SessionApproveCallback;
-  onComplete?: SessionEventCallback;
-  onReject?: SessionEventCallback;
-  onCancel?: SessionEventCallback;
-  onTimeout?: SessionEventCallback;
-  onError?: SessionEventCallback;
+  onStart?: TEventCallback;
+  onCreate?: TEventCallback;
+  onConnect: TConnectCallback;
+  onApprove: TApproveCallback;
+  onComplete?: TEventCallback;
+  onReject?: TEventCallback;
+  onCancel?: TEventCallback;
+  onTimeout?: TEventCallback;
+  onError?: TEventCallback;
   autoConnect?: boolean;
   onlyConnect?: boolean;
   timeout?: typeof SessionTimeout;
@@ -47,7 +56,7 @@ export type SessionStateOptions = {
 
 type TSessionState = {
   deepLink: string;
-  machine: StateMachine<TSession, any, TEvent, { value: string; context: TSession }>;
+  machine: StateMachine<TSession, any, TEvent, { value: TSessionStatus; context: TSession }>;
   sessionId: string;
 };
 

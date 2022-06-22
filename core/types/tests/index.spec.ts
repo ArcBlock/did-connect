@@ -1,4 +1,19 @@
-import { ChainInfo, VerifiableCredentialRequest, Context, Session, AnyRequest } from '../src';
+import { ChainInfo, Context, Session, AnyRequest, AnyResponse, VerifiableCredentialRequest } from '../src';
+
+const request = {
+  type: 'profile',
+  items: ['fullName', 'email', 'avatar'],
+  description: 'Please give me your profile',
+  meta: {},
+};
+
+const response = {
+  type: 'profile',
+  avatar: '123',
+  description: 'Please give me your profile',
+  email: 'test@arcblock.io',
+  fullName: 'test',
+};
 
 const session = {
   sessionId: '4V7cETiWKk3eimLMbe-WN',
@@ -27,17 +42,8 @@ const session = {
     didwallet: { os: 'web', version: '3.0.0', jwt: '1.1.0' },
   },
   currentStep: 0,
-  requestedClaims: [
-    [
-      {
-        type: 'profile',
-        items: ['fullName', 'email', 'avatar'],
-        description: 'Please give me your profile',
-        meta: {},
-      },
-    ],
-  ],
-  responseClaims: [],
+  requestedClaims: [[request]],
+  responseClaims: [[response]],
   approveResults: [],
   timeout: { app: 10000, relay: 10000, wallet: 60000 },
   error: '',
@@ -95,5 +101,9 @@ describe('Validator', () => {
   test('should AnyRequest work', () => {
     expect(AnyRequest.validate({ type: 'profile', items: ['fullName'], description: 'xxx' }).error).toBeFalsy();
     expect(AnyRequest.validate({ type: 'xxx', items: ['fullName'], description: 'xxx' }).error).toBeTruthy();
+  });
+
+  test('should AnyResponse work', () => {
+    expect(AnyResponse.validate(response).error).toBeFalsy();
   });
 });
