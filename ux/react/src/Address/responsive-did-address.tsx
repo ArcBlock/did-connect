@@ -1,8 +1,17 @@
 import { useState, createRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'styl... Remove this comment to see the full error message
 import styled from 'styled-components';
 import useMeasure from 'react-use/lib/useMeasure';
 import DidAddress from './did-address';
+
+type OwnProps = {
+  style?: any;
+  className?: string;
+  component?: string;
+};
+
+// @ts-expect-error ts-migrate(2565) FIXME: Property 'defaultProps' is used before being assig... Remove this comment to see the full error message
+type Props = OwnProps & typeof ResponsiveDidAddress.defaultProps;
 
 /**
  * 根据父容器宽度自动切换 compact 模式
@@ -14,7 +23,7 @@ import DidAddress from './did-address';
  * - 监听容器宽度变化, 当容器宽度变化时, 对比容器宽度和 did address full-width, => 切换 compact 模式
  * - TODO: 初始化时, 在确定是否应该以 compact 模式渲染前, 隐藏显示, 避免闪烁问题
  */
-export default function ResponsiveDidAddress({ style, className, component, ...rest }) {
+export default function ResponsiveDidAddress({ style, className, component, ...rest }: Props) {
   const [compact, setCompact] = useState(false);
   // did address 完整显示时的宽度
   const [addressFullWidth, setAddressFullWidth] = useState(null);
@@ -23,7 +32,7 @@ export default function ResponsiveDidAddress({ style, className, component, ...r
   // 存储完整显示时 address 组件的宽度
   useEffect(() => {
     if (!compact && addressFullWidth === null) {
-      setAddressFullWidth(ref.current.offsetWidth);
+      setAddressFullWidth((ref as any).current.offsetWidth);
     }
   }, []);
 
@@ -33,17 +42,11 @@ export default function ResponsiveDidAddress({ style, className, component, ...r
     }
   }, [containerWidth, addressFullWidth]);
   return (
-    <Root as={component} inline={rest.inline} ref={containerRef} style={style} className={className}>
+    <Root as={component} inline={(rest as any).inline} ref={containerRef} style={style} className={className}>
       <StyledDidAddress {...rest} component={component} inline compact={compact} ref={ref} />
     </Root>
   );
 }
-
-ResponsiveDidAddress.propTypes = {
-  style: PropTypes.object,
-  className: PropTypes.string,
-  component: PropTypes.string,
-};
 
 ResponsiveDidAddress.defaultProps = {
   style: {},
@@ -54,7 +57,7 @@ ResponsiveDidAddress.defaultProps = {
 const Root = styled.div`
   display: block;
   overflow: hidden;
-  ${({ inline }) =>
+  ${({ inline }: any) =>
     inline &&
     `
     display: inline-block;

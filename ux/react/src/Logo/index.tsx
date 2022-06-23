@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import DidLogoIcon from '@arcblock/icons/lib/DidLogo';
 
 const defaultStyle = {
@@ -7,7 +7,13 @@ const defaultStyle = {
   fill: 'currentColor',
 };
 
-export default function DidLogo({ style, size, className }) {
+interface DidLogoProps {
+  style?: object;
+  size?: string | number;
+  className?: string;
+}
+
+export default function DidLogo({ style, size, className }: DidLogoProps) {
   const height = Number(size) > 0 ? `${Number(size)}px` : size;
   return (
     <DidLogoIcon
@@ -16,12 +22,6 @@ export default function DidLogo({ style, size, className }) {
     />
   );
 }
-
-DidLogo.propTypes = {
-  style: PropTypes.object,
-  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  className: PropTypes.string,
-};
 
 DidLogo.defaultProps = {
   style: defaultStyle,

@@ -1,10 +1,13 @@
-import PropTypes from 'prop-types';
 import DidAddress from './did-address';
 import ResponsiveDidAddress from './responsive-did-address';
 
-export const formatAddress = (str) => str.split(':').pop();
+export const formatAddress = (str: any) => str.split(':').pop();
 
-function DidAddressWrapper({ responsive, ...rest }) {
+interface DidAddressWrapperProps {
+  responsive?: boolean;
+}
+
+function DidAddressWrapper({ responsive, ...rest }: DidAddressWrapperProps) {
   if (responsive) {
     return <ResponsiveDidAddress {...rest} />;
   }
@@ -12,10 +15,6 @@ function DidAddressWrapper({ responsive, ...rest }) {
 }
 
 export default DidAddressWrapper;
-
-DidAddressWrapper.propTypes = {
-  responsive: PropTypes.bool,
-};
 
 DidAddressWrapper.defaultProps = {
   responsive: true,

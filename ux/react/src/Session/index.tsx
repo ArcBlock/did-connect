@@ -3,8 +3,11 @@ import PropTypes from 'prop-types';
 import omit from 'lodash/omit';
 import Cookie from 'js-cookie';
 
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import { getCookieOptions } from '@arcblock/ux/lib/Util';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import Center from '@arcblock/ux/lib/Center';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import Spinner from '@arcblock/ux/lib/Spinner';
 
 import Connect from '../Connect';
@@ -12,6 +15,7 @@ import createService from '../Service';
 import createStorage from '../Storage';
 import { getAppId, updateConnectedInfo } from '../utils';
 
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 export const SessionContext = createContext();
 const { Provider, Consumer } = SessionContext;
 
@@ -62,6 +66,7 @@ const translations = {
   },
 };
 
+// @ts-expect-error ts-migrate(4060) FIXME: Return type of exported function has or is using p... Remove this comment to see the full error message
 export default function createSessionContext(
   storageKey = 'login_token',
   storageEngine = 'ls',
@@ -81,7 +86,11 @@ export default function createSessionContext(
   };
 
   class SessionProvider extends Component {
-    constructor(props) {
+    listeners: any;
+
+    service: any;
+
+    constructor(props: any) {
       super(props);
 
       this.service = createService(props.serviceHost, storage);
@@ -107,26 +116,28 @@ export default function createSessionContext(
     }
 
     get fullPrefix() {
-      if (appendAuthServicePrefix || this.props.appendAuthServicePrefix) {
-        return `${AUTH_SERVICE_PREFIX}${this.props.prefix}`;
+      if (appendAuthServicePrefix || (this.props as any).appendAuthServicePrefix) {
+        return `${AUTH_SERVICE_PREFIX}${(this.props as any).prefix}`;
       }
-      return this.props.prefix;
+      return (this.props as any).prefix;
     }
 
     // 不可以直接个性 props.autoConnect (readonly)
     get autoConnect() {
       // for backward compatibility
-      if (typeof this.props.autoConnect === 'boolean') {
-        return this.props.autoConnect;
+      if (typeof (this.props as any).autoConnect === 'boolean') {
+        return (this.props as any).autoConnect;
       }
       // eslint-disable-next-line react/prop-types
-      return !!this.props.autoLogin;
+      return !!(this.props as any).autoLogin;
     }
 
     componentDidMount() {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'autoDisconnect' does not exist on type '... Remove this comment to see the full error message
       const { autoDisconnect } = this.props;
       // ensure we are in the same app
       const connectedApp = Cookie.get('connected_app');
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
       const actualApp = getAppId();
       if (autoDisconnect && connectedApp && actualApp && connectedApp !== actualApp) {
         clearSession();
@@ -149,7 +160,7 @@ export default function createSessionContext(
           this.refresh(true, true);
 
           url.searchParams.delete('loginToken');
-          window.history.replaceState({}, window.title, url.href);
+          window.history.replaceState({}, (window as any).title, url.href);
           return;
         }
       }
@@ -159,7 +170,7 @@ export default function createSessionContext(
 
     async refresh(showProgress = false, setInitialized = false) {
       try {
-        if (this.state.loading) {
+        if ((this.state as any).loading) {
           console.warn('SessionProvider.refresh is currently in progress, call it will be noop');
           return;
         }
@@ -208,9 +219,9 @@ export default function createSessionContext(
       } catch (err) {
         console.error('SessionProvider.refresh error', err);
         if (showProgress) {
-          this.setState({ error: err.message, loading: false, open: false });
+          this.setState({ error: (err as any).message, loading: false, open: false });
         } else {
-          this.setState({ error: err.message, open: false });
+          this.setState({ error: (err as any).message, open: false });
         }
       } finally {
         if (setInitialized) {
@@ -219,8 +230,8 @@ export default function createSessionContext(
       }
     }
 
-    login(done) {
-      if (this.state.user) {
+    login(done: any) {
+      if ((this.state as any).user) {
         return;
       }
       if (typeof done === 'function') {
@@ -229,7 +240,7 @@ export default function createSessionContext(
       this.setState({ open: true, action: 'login' });
     }
 
-    logout(done) {
+    logout(done: any) {
       // 避免 disconnect 后自动连接
       const cookieOptions = getCookieOptions({ returnDomain: false });
       Cookie.remove('connected_wallet_os', cookieOptions);
@@ -238,13 +249,13 @@ export default function createSessionContext(
       this.setState({ user: null, error: '', open: false, loading: false }, done);
     }
 
-    switchDid(done) {
+    switchDid(done: any) {
       clearSession();
       this.setState({ user: null, error: '', open: false, loading: false }, done);
     }
 
-    switchProfile(done) {
-      if (!this.state.user) {
+    switchProfile(done: any) {
+      if (!(this.state as any).user) {
         return;
       }
       if (typeof done === 'function') {
@@ -253,8 +264,8 @@ export default function createSessionContext(
       this.setState({ open: true, action: 'switch-profile' });
     }
 
-    switchPassport(done) {
-      if (!this.state.user) {
+    switchPassport(done: any) {
+      if (!(this.state as any).user) {
         return;
       }
       if (typeof done === 'function') {
@@ -263,7 +274,7 @@ export default function createSessionContext(
       this.setState({ open: true, action: 'switch-passport' });
     }
 
-    onLogin(result, decrypt) {
+    onLogin(result: any, decrypt: any) {
       const { loginToken, sessionToken } = result;
       const token = loginToken || sessionToken;
       if (token) {
@@ -288,14 +299,16 @@ export default function createSessionContext(
       });
     }
 
-    onClose(action) {
+    onClose(action: any) {
       this.setState({ open: false });
       this.listeners[action] = [];
     }
 
     render() {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'children' does not exist on type 'Readon... Remove this comment to see the full error message
       const { children, locale, timeout, extraParams, webWalletUrl, messages, ...rest } = this.props;
       const { autoConnect } = this;
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'action' does not exist on type 'Readonly... Remove this comment to see the full error message
       const { action, user, open, initialized, loading } = this.state;
 
       const prefix = this.fullPrefix;
@@ -323,6 +336,7 @@ export default function createSessionContext(
         );
       }
 
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       const connectMessages = messages || translations[action];
       const callbacks = {
         login: this.onLogin,
@@ -338,6 +352,7 @@ export default function createSessionContext(
             locale={locale}
             checkFn={this.service.get}
             onClose={() => this.onClose(action)}
+            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             onSuccess={callbacks[action]}
             extraParams={extraParams}
             checkTimeout={timeout}
@@ -355,7 +370,7 @@ export default function createSessionContext(
     }
   }
 
-  SessionProvider.propTypes = {
+  (SessionProvider as any).propTypes = {
     children: PropTypes.any.isRequired,
     serviceHost: PropTypes.string.isRequired,
     action: PropTypes.string,
@@ -363,14 +378,14 @@ export default function createSessionContext(
     appendAuthServicePrefix: PropTypes.bool,
     locale: PropTypes.string,
     timeout: PropTypes.number,
-    autoConnect: PropTypes.bool, // should we open connect dialog when session not found
-    autoDisconnect: PropTypes.bool, // should we auto disconnect on appId mismatch
+    autoConnect: PropTypes.bool,
+    autoDisconnect: PropTypes.bool,
     extraParams: PropTypes.object,
     webWalletUrl: PropTypes.string,
     messages: PropTypes.object,
   };
 
-  SessionProvider.defaultProps = {
+  (SessionProvider as any).defaultProps = {
     locale: 'en',
     action: 'login',
     prefix: '/api/did',
@@ -383,8 +398,9 @@ export default function createSessionContext(
     messages: null,
   };
 
-  function withSession(InnerComponent) {
-    return function WithSessionComponent(props) {
+  function withSession(InnerComponent: any) {
+    return function WithSessionComponent(props: any) {
+      // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       return <Consumer>{(sessionProps) => <InnerComponent {...props} {...sessionProps} />}</Consumer>;
     };
   }
@@ -392,6 +408,7 @@ export default function createSessionContext(
   return { SessionProvider, SessionConsumer: Consumer, SessionContext, withSession };
 }
 
+// @ts-expect-error ts-migrate(4060) FIXME: Return type of exported function has or is using p... Remove this comment to see the full error message
 export function createAuthServiceSessionContext({ storageEngine = 'cookie' } = {}) {
   const storageKey = 'login_token';
 
@@ -399,8 +416,8 @@ export function createAuthServiceSessionContext({ storageEngine = 'cookie' } = {
     let path = '/';
 
     if (typeof window !== 'undefined') {
-      const env = window.env || {};
-      const blocklet = window.blocklet || {};
+      const env = (window as any).env || {};
+      const blocklet = (window as any).blocklet || {};
 
       path = env.groupPathPrefix || blocklet.groupPrefix || blocklet.prefix || '';
       path = path.replace(/\/+$/, '');

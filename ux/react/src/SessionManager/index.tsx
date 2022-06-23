@@ -1,16 +1,19 @@
 /* eslint-disable react/no-array-index-key  */
 /* eslint-disable react/jsx-no-bind */
 import { useMemo, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import { IconButton, ClickAwayListener, MenuList, MenuItem, Paper, Popper, SvgIcon, Button, Chip } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import AccountOutline from 'mdi-material-ui/AccountOutline';
 import ShieldCheck from 'mdi-material-ui/ShieldCheck';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import OpenInIcon from '@arcblock/icons/lib/OpenIn';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import DisconnectIcon from '@arcblock/icons/lib/Disconnect';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import SwitchDidIcon from '@arcblock/icons/lib/Switch';
 import SwitchProfileIcon from '@mui/icons-material/PersonOutline';
 import SwitchPassportIcon from '@mui/icons-material/VpnKeyOutlined';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 
 import DidAvatar from '../Avatar';
@@ -45,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
   userName: {
     fontSize: 20,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'dark' does not exist on type '{}'.
     color: ({ dark }) => (dark ? '#aaa' : '#222'),
     fontWeight: 'bold',
     marginBottom: 10,
@@ -68,16 +72,16 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 16,
   },
   popper: {
-    zIndex: theme.zIndex.tooltip,
+    zIndex: (theme as any).zIndex.tooltip,
   },
   paper: {
     borderColor: '#F0F0F0',
     boxShadow: '0px 8px 12px rgba(92, 92, 92, 0.04)',
-    borderRadius: theme.spacing(2),
+    borderRadius: (theme as any).spacing(2),
     overflow: 'hidden',
     maxWidth: 'calc(100vw - 10px)',
     '& .MuiChip-root .MuiChip-icon': {
-      color: theme.palette.success.main,
+      color: (theme as any).palette.success.main,
     },
   },
   darkPaper: {
@@ -107,6 +111,45 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type OwnSessionManagerProps = {
+  session: {
+    user?: {
+      did: string;
+      role: string;
+      fullName?: string;
+      avatar?: string;
+      passports?: {
+        name: string;
+        title: string;
+      }[];
+    };
+    login: (...args: any[]) => any;
+    logout: (...args: any[]) => any;
+    switchDid: (...args: any[]) => any;
+    switchProfile: (...args: any[]) => any;
+    switchPassport: (...args: any[]) => any;
+  };
+  locale?: string;
+  showText?: boolean;
+  showRole?: boolean;
+  switchDid?: boolean;
+  switchProfile?: boolean;
+  switchPassport?: boolean;
+  disableLogout?: boolean;
+  onLogin?: (...args: any[]) => any;
+  onLogout?: (...args: any[]) => any;
+  onSwitchDid?: (...args: any[]) => any;
+  onSwitchProfile?: (...args: any[]) => any;
+  onSwitchPassport?: (...args: any[]) => any;
+  menu?: any[];
+  menuRender?: (...args: any[]) => any;
+  dark?: boolean;
+  size?: number;
+};
+
+// @ts-expect-error ts-migrate(2565) FIXME: Property 'defaultProps' is used before being assig... Remove this comment to see the full error message
+type SessionManagerProps = OwnSessionManagerProps & typeof SessionManager.defaultProps;
+
 function SessionManager({
   session,
   locale,
@@ -126,7 +169,7 @@ function SessionManager({
   dark,
   size,
   ...rest
-}) {
+}: SessionManagerProps) {
   const userAnchorRef = useRef(null);
   const classes = useStyles({ dark });
   const [userOpen, setUserOpen] = useState(false);
@@ -134,6 +177,7 @@ function SessionManager({
   // base64 img maybe have some blank char, need encodeURIComponent to transform it
   const avatar = session.user?.avatar?.replace(/\s/g, encodeURIComponent(' '));
   const currentRole = useMemo(
+    // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
     () => session.user?.passports?.find((item) => item.name === session.user.role),
     [session.user]
   );
@@ -148,6 +192,7 @@ function SessionManager({
         {...rest}
         data-cy="sessionManager-login">
         <SvgIcon component={AccountOutline} />
+        {/* @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message */}
         <span style={{ lineHeight: '25px' }}>{messages[locale].connect}</span>
       </Button>
     ) : (
@@ -162,8 +207,8 @@ function SessionManager({
     setUserOpen((prevOpen) => !prevOpen);
   }
 
-  function onCloseUser(e) {
-    if (userAnchorRef.current && userAnchorRef.current.contains(e.target)) {
+  function onCloseUser(e: any) {
+    if (userAnchorRef.current && (userAnchorRef.current as any).contains(e.target)) {
       return;
     }
     setUserOpen(false);
@@ -173,26 +218,26 @@ function SessionManager({
     session.login(onLogin);
   }
   function _onLogout() {
-    session.logout((...args) => {
+    session.logout((...args: any[]) => {
       setUserOpen(false);
       onLogout(...args);
     });
   }
   function _onSwitchDid() {
-    session.switchDid((...args) => {
+    session.switchDid((...args: any[]) => {
       setUserOpen(false);
       onSwitchDid(...args);
     });
   }
   function _onSwitchProfile() {
-    session.switchProfile((...args) => {
+    session.switchProfile((...args: any[]) => {
       setUserOpen(false);
       onSwitchProfile(...args);
     });
   }
   function _onSwitchPassport() {
     setUserOpen(false);
-    session.switchPassport((...args) => {
+    session.switchPassport((...args: any[]) => {
       setUserOpen(false);
       onSwitchPassport(...args);
     });
@@ -228,10 +273,12 @@ function SessionManager({
                         size="small"
                         variant="outlined"
                         className={classes.role}
+                        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
                         icon={<SvgIcon component={ShieldCheck} size="small" />}
                       />
                     )}
                   </div>
+                  {/* @ts-expect-error ts-migrate(2322) FIXME: Type '{ children: string; responsive: false; }' is... Remove this comment to see the full error message */}
                   <DidAddress responsive={false}>{session.user.did}</DidAddress>
                 </div>
                 {Array.isArray(menu) &&
@@ -266,12 +313,14 @@ function SessionManager({
                     href="https://www.abtwallet.io/"
                     target="_blank">
                     <SvgIcon component={OpenInIcon} className={classes.menuIcon} />
+                    {/* @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message */}
                     {messages[locale].openInWallet}
                   </MenuItem>
                 )}
                 {!!switchDid && (
                   <MenuItem className={classes.menuItem} onClick={_onSwitchDid} data-cy="sessionManager-switch-trigger">
                     <SvgIcon component={SwitchDidIcon} className={classes.menuIcon} />
+                    {/* @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message */}
                     {messages[locale].switchDid}
                   </MenuItem>
                 )}
@@ -281,6 +330,7 @@ function SessionManager({
                     onClick={_onSwitchProfile}
                     data-cy="sessionManager-switch-profile-trigger">
                     <SvgIcon component={SwitchProfileIcon} className={classes.menuIcon} />
+                    {/* @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message */}
                     {messages[locale].switchProfile}
                   </MenuItem>
                 )}
@@ -290,6 +340,7 @@ function SessionManager({
                     onClick={_onSwitchPassport}
                     data-cy="sessionManager-switch-passport-trigger">
                     <SvgIcon component={SwitchPassportIcon} className={classes.menuIcon} />
+                    {/* @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message */}
                     {messages[locale].switchPassport}
                   </MenuItem>
                 )}
@@ -299,6 +350,7 @@ function SessionManager({
                   disabled={disableLogout}
                   data-cy="sessionManager-logout-trigger">
                   <SvgIcon component={DisconnectIcon} className={classes.menuIcon} />
+                  {/* @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message */}
                   {messages[locale].disconnect}
                 </MenuItem>
               </MenuList>
@@ -309,44 +361,6 @@ function SessionManager({
     </>
   );
 }
-
-SessionManager.propTypes = {
-  session: PropTypes.shape({
-    user: PropTypes.shape({
-      did: PropTypes.string.isRequired,
-      role: PropTypes.string.isRequired,
-      fullName: PropTypes.string,
-      avatar: PropTypes.string,
-      passports: PropTypes.arrayOf(
-        PropTypes.shape({
-          name: PropTypes.string.isRequired,
-          title: PropTypes.string.isRequired,
-        })
-      ),
-    }),
-    login: PropTypes.func.isRequired,
-    logout: PropTypes.func.isRequired,
-    switchDid: PropTypes.func.isRequired,
-    switchProfile: PropTypes.func.isRequired,
-    switchPassport: PropTypes.func.isRequired,
-  }).isRequired,
-  locale: PropTypes.string,
-  showText: PropTypes.bool,
-  showRole: PropTypes.bool,
-  switchDid: PropTypes.bool,
-  switchProfile: PropTypes.bool,
-  switchPassport: PropTypes.bool,
-  disableLogout: PropTypes.bool,
-  onLogin: PropTypes.func,
-  onLogout: PropTypes.func,
-  onSwitchDid: PropTypes.func,
-  onSwitchProfile: PropTypes.func,
-  onSwitchPassport: PropTypes.func,
-  menu: PropTypes.array,
-  menuRender: PropTypes.func,
-  dark: PropTypes.bool,
-  size: PropTypes.number,
-};
 
 const noop = () => {};
 

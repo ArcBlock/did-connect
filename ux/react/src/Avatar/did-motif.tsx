@@ -1,8 +1,20 @@
 import { useRef, useLayoutEffect } from 'react';
-import PropTypes from 'prop-types';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import { update } from '@arcblock/did-motif';
 
-function DIDMotif({ did, size, animation, shape, responsive, ...rest }) {
+type OwnProps = {
+  did: string;
+  size?: number;
+  animation?: boolean;
+  responsive?: boolean;
+  shape?: number;
+};
+
+// @ts-expect-error ts-migrate(2565) FIXME: Property 'defaultProps' is used before being assig... Remove this comment to see the full error message
+type Props = OwnProps & typeof DIDMotif.defaultProps;
+
+// @ts-expect-error ts-migrate(2700) FIXME: Rest types may only be created from object types.
+function DIDMotif({ did, size, animation, shape, responsive, ...rest }: Props) {
   const svgRef = useRef(null);
 
   useLayoutEffect(() => {
@@ -19,15 +31,6 @@ function DIDMotif({ did, size, animation, shape, responsive, ...rest }) {
     </span>
   );
 }
-
-DIDMotif.propTypes = {
-  did: PropTypes.string.isRequired,
-  size: PropTypes.number,
-  animation: PropTypes.bool,
-  // 直接返回 svg 元素, svg 尺寸由父窗口决定 (撑满父窗口)
-  responsive: PropTypes.bool,
-  shape: PropTypes.number,
-};
 
 DIDMotif.defaultProps = {
   size: 200,

@@ -1,11 +1,16 @@
-import PropTypes from 'prop-types';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'styl... Remove this comment to see the full error message
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
+
+interface CardProps {
+  children: any;
+}
 
 /**
  * Card
  */
-export default function Card({ children, ...rest }) {
+export default function Card({ children, ...rest }: CardProps) {
+  // @ts-expect-error ts-migrate(2365) FIXME: Operator '<' cannot be applied to types 'boolean' ... Remove this comment to see the full error message
   return <Root {...rest}>{children}</Root>;
 }
 
@@ -20,30 +25,29 @@ const Root = styled(Box)`
   transform: translateZ(0);
 `;
 
-Card.propTypes = {
-  children: PropTypes.any.isRequired,
-};
+interface ResponsiveCardProps {
+  // 两种布局: 上下, 左右 (适用于移动端)
+  layout?: 'tb' | 'lr';
+  children?: any;
+}
 
 // ResponsiveCard, 支持两种布局: 上下, 左右 (适用于移动端)
-export function ResponsiveCard({ children, layout, ...rest }) {
+export function ResponsiveCard({ children, layout, ...rest }: ResponsiveCardProps) {
   if (!children) {
     return null;
   }
   const [child1, child2, ...extras] = children;
   return (
+    // @ts-expect-error ts-migrate(2749) FIXME: 'ResponsiveCardRoot' refers to a value, but is bei... Remove this comment to see the full error message
     <ResponsiveCardRoot layout={layout} {...rest}>
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'div'.
       <div>{child1}</div>
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'div'.
       <div>{child2}</div>
       {extras}
     </ResponsiveCardRoot>
   );
 }
-
-ResponsiveCard.propTypes = {
-  // 两种布局: 上下, 左右 (适用于移动端)
-  layout: PropTypes.oneOf(['tb', 'lr']),
-  children: PropTypes.any,
-};
 
 ResponsiveCard.defaultProps = {
   layout: 'tb',
@@ -52,15 +56,15 @@ ResponsiveCard.defaultProps = {
 
 const ResponsiveCardRoot = styled(Card)`
   display: flex;
-  flex-direction: ${(props) => (props.layout === 'tb' ? 'column' : 'row')};
+  flex-direction: ${(props: any) => (props.layout === 'tb' ? 'column' : 'row')};
   justify-content: space-between;
   > div {
     flex: 0 0 auto;
-    ${(props) => (props.layout === 'lr' ? 'align-self: center;' : '')}
+    ${(props: any) => (props.layout === 'lr' ? 'align-self: center;' : '')}
   }
 
   /* web wallet provider 内容可能比较长, 窄屏下需要支持 shrink, 并且与右边的 icon 保持间距 */
-  ${({ layout }) =>
+  ${({ layout }: any) =>
     layout !== 'tb' &&
     `
       > div:first-child {

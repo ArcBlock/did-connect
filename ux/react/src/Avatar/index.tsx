@@ -1,11 +1,14 @@
 /* eslint-disable react/no-unused-prop-types */
 import { useState, useMemo } from 'react';
-import PropTypes from 'prop-types';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'styl... Remove this comment to see the full error message
 import styled from 'styled-components';
 import { ErrorBoundary } from 'react-error-boundary';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import Img from '@arcblock/ux/lib/Img';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import { mergeProps } from '@arcblock/ux/lib/Util';
 import { makeStyles } from '@mui/styles';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import { Shape } from '@arcblock/did-motif';
 import { Box } from '@mui/system';
 import DIDMotif from './did-motif';
@@ -26,7 +29,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 // 参考: asset-chain @arcblock/did
-const isEthereumDid = (did) => {
+const isEthereumDid = (did: any) => {
   const address = did.replace('did:abt:', '');
   // check if it has the basic requirements of an address
   if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
@@ -35,8 +38,19 @@ const isEthereumDid = (did) => {
   return true;
 };
 
+type OwnAvatarProps = {
+  did: string;
+  size?: number;
+  variant?: 'circle' | 'rounded' | 'default';
+  animation?: boolean;
+  shape?: '' | 'rectangle' | 'square' | 'hexagon' | 'circle';
+};
+
+// @ts-expect-error ts-migrate(2565) FIXME: Property 'defaultProps' is used before being assig... Remove this comment to see the full error message
+type AvatarProps = OwnAvatarProps & typeof Avatar.defaultProps;
+
 // 参考: https://github.com/blocklet/block-explorer/issues/478#issuecomment-1038954976
-function Avatar(props) {
+function Avatar(props: AvatarProps) {
   const classes = useStyles();
   const [imgError, setImgError] = useState(false);
   const newProps = mergeProps(props, Avatar, []);
@@ -92,16 +106,6 @@ function Avatar(props) {
   throw new Error(`Invalid DID: ${did}`);
 }
 
-Avatar.propTypes = {
-  did: PropTypes.string.isRequired,
-  size: PropTypes.number,
-  variant: PropTypes.oneOf(['circle', 'rounded', 'default']),
-  // animation 仅对 did motif 有效
-  animation: PropTypes.bool,
-  // shape 仅对 did motif 有效, 明确指定 motif shape, 而非由 did role type 自动推断 shape
-  shape: PropTypes.oneOf(['', 'rectangle', 'square', 'hexagon', 'circle']),
-};
-
 Avatar.defaultProps = {
   size: 36,
   variant: 'default',
@@ -110,16 +114,16 @@ Avatar.defaultProps = {
 };
 
 const BlockyIconContainer = styled.div`
-  width: ${(props) => props.$size / 0.7}px;
-  height: ${(props) => props.$size}px;
+  width: ${(props: any) => props.$size / 0.7}px;
+  height: ${(props: any) => props.$size}px;
   padding: 2px 0;
   overflow: hidden;
-  border-radius: ${(props) => Math.min(10, Math.floor(0.1 * props.$size + 2))}px;
+  border-radius: ${(props: any) => Math.min(10, Math.floor(0.1 * props.$size + 2))}px;
   text-align: center;
   background: #ddd;
 `;
 
-export default function AvatarWithErrorBoundary(props) {
+export default function AvatarWithErrorBoundary(props: any) {
   const classes = useStyles();
   const size = props.size || 36;
   return (
@@ -131,11 +135,8 @@ export default function AvatarWithErrorBoundary(props) {
           bgcolor="grey.300"
           className={`${classes.img} avatar-img--${props.variant || 'default'}`}
         />
-      )}
-    >
+      )}>
       <Avatar {...props} />
     </ErrorBoundary>
   );
 }
-
-AvatarWithErrorBoundary.propTypes = Avatar.propTypes;

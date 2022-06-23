@@ -1,9 +1,11 @@
 export default class LocalStorageEngine {
-  constructor(storageKey) {
+  storageKey: any;
+
+  constructor(storageKey: any) {
     this.storageKey = storageKey;
   }
 
-  setToken(token) {
+  setToken(token: any) {
     if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') {
       return undefined;
     }

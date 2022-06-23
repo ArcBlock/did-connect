@@ -1,17 +1,24 @@
-import PropTypes from 'prop-types';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'styl... Remove this comment to see the full error message
 import styled from 'styled-components';
 import Refresh from '@mui/icons-material/Refresh';
 
+interface RefreshOverlayProps {
+  onRefresh(...args: unknown[]): unknown;
+}
+
 // 需要父元素设置 relative position
-export default function RefreshOverlay({ onRefresh, ...rest }) {
-  const handleOnRefresh = (e) => {
+export default function RefreshOverlay({ onRefresh, ...rest }: RefreshOverlayProps) {
+  const handleOnRefresh = (e: any) => {
     e.stopPropagation();
     onRefresh();
   };
 
   return (
     <Root {...rest} onClick={handleOnRefresh}>
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'span'.
       <span>
+        // @ts-expect-error ts-migrate(2749) FIXME: 'Refresh' refers to a value, but is being used as ... Remove this
+        comment to see the full error message
         <Refresh />
       </span>
     </Root>
@@ -44,7 +51,3 @@ const Root = styled.div`
     font-size: 28px;
   }
 `;
-
-RefreshOverlay.propTypes = {
-  onRefresh: PropTypes.func.isRequired,
-};

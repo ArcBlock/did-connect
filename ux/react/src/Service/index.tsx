@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export default function createService(baseURL, storage, timeout = 10000) {
+export default function createService(baseURL: any, storage: any, timeout = 10000) {
   const service = axios.create({ baseURL, timeout });
 
   service.interceptors.request.use(
@@ -8,6 +8,7 @@ export default function createService(baseURL, storage, timeout = 10000) {
       if (storage.engine === 'ls') {
         const token = storage.getToken();
         if (token) {
+          // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
           config.headers.authorization = `Bearer ${encodeURIComponent(token)}`;
         }
       }

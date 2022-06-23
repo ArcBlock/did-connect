@@ -8,6 +8,7 @@ export default function createStorage(storageKey = 'did.auth.token', storageEngi
 
   let storage = null;
   if (storageEngine === 'ls') {
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 2.
     storage = new LocalStorageEngine(storageKey, storageOptions);
   } else if (storageEngine === 'cookie') {
     storage = new CookieEngine(storageKey, storageOptions);

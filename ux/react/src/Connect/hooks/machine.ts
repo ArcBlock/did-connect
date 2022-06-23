@@ -2,14 +2,21 @@
 import { useState, useEffect, useMemo } from 'react';
 import { interpret, State } from 'xstate';
 
-export default function useMachine(machine, options = {}) {
+export default function useMachine(machine: any, options = {}) {
   const {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'context' does not exist on type '{}'.
     context,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'guards' does not exist on type '{}'.
     guards,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'actions' does not exist on type '{}'.
     actions,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'activities' does not exist on type '{}'.
     activities,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'services' does not exist on type '{}'.
     services,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'delays' does not exist on type '{}'.
     delays,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'state' does not exist on type '{}'.
     state: rehydratedState,
     ...interpreterOptions
   } = options;
@@ -55,10 +62,12 @@ export default function useMachine(machine, options = {}) {
   // This mutation assignment is safe because the service instance is only used
   // in one place -- this hook's caller.
   useEffect(() => {
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     Object.assign(service.machine.options.actions, actions);
   }, [service, actions]);
 
   useEffect(() => {
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     Object.assign(service.machine.options.services, services);
   }, [service, services]);
 

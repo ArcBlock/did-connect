@@ -97,6 +97,7 @@
     "object-hash": "^3.0.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "ts-migrate": "^0.1.29",
     "typescript": "^4.7.4"
   },
   "gitHead": "e8a64a410287cda986b687d2edc9daf200185b99"

@@ -1,14 +1,19 @@
 import { useState, useEffect, useMemo } from 'react';
-import PropTypes from 'prop-types';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'styl... Remove this comment to see the full error message
 import styled, { css } from 'styled-components';
 import { useTheme } from '@mui/styles';
 import Cookie from 'js-cookie';
 import Box from '@mui/material/Box';
 import useMeasure from 'react-use/lib/useMeasure';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import Img from '@arcblock/ux/lib/Img';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import { openWebWallet } from '@arcblock/ux/lib/Util';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import Spinner from '@arcblock/ux/lib/Spinner';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import colors from '@arcblock/ux/lib/Colors';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import DidWalletLogo from '@arcblock/icons/lib/DidWalletLogo';
 import { useBrowserEnvContext } from './contexts/browser';
 import translations from './assets/locale';
@@ -27,14 +32,18 @@ import {
 // #442, 页面初始化时的可见性, 如果不可见 (比如通过在某个页面中右键在新标签页中打开的一个基于 did-connect 登录页) 则禁止自动弹出 web wallet 窗口
 const initialDocVisible = !document.hidden;
 
-const getAppDid = (publisher) => {
+const getAppDid = (publisher: any) => {
   if (!publisher) {
     return '';
   }
   return publisher.split(':').pop();
 };
 
-function AppIcon({ appInfo, ...rest }) {
+type AppIconProps = {
+  appInfo: any;
+};
+
+function AppIcon({ appInfo, ...rest }: AppIconProps) {
   const [error, setError] = useState(false);
   if (error) {
     return <DidAvatar did={appInfo.publisher} size={32} />;
@@ -42,9 +51,28 @@ function AppIcon({ appInfo, ...rest }) {
   return <Img src={appInfo.icon} alt={appInfo.title} width={32} height={32} {...rest} onError={() => setError(true)} />;
 }
 
-AppIcon.propTypes = {
-  appInfo: PropTypes.object.isRequired,
+type OwnBasicConnectProps = {
+  locale?: 'en' | 'zh';
+  qrcodeSize?: number;
+  webWalletUrl?: string;
+  messages: {
+    title: string;
+    scan: string;
+    confirm: string;
+    success: any;
+  };
+  showDownload?: boolean;
+  session: any;
+  generate: (...args: any[]) => any;
+  cancel: (...args: any[]) => any;
+  enabledConnectTypes?: any[];
+  onRecreateSession?: (...args: any[]) => any;
+  extraContent?: any;
+  loadingEle?: any;
 };
+
+// @ts-expect-error ts-migrate(2565) FIXME: Property 'defaultProps' is used before being assig... Remove this comment to see the full error message
+type BasicConnectProps = OwnBasicConnectProps & typeof BasicConnect.defaultProps;
 
 // FIXME: reuse existing session is not working
 export default function BasicConnect({
@@ -61,7 +89,7 @@ export default function BasicConnect({
   extraContent,
   loadingEle,
   ...rest
-}) {
+}: BasicConnectProps) {
   const { context, status, deepLink } = session;
 
   // eslint-disable-next-line no-param-reassign
@@ -110,13 +138,13 @@ export default function BasicConnect({
     const link = getDeepLink();
     if (status === 'created' && link && !isNativeCalled) {
       import('dsbridge').then((jsBridge) => {
-        jsBridge.call('authAction', { action: 'auth', link });
+        (jsBridge as any).call('authAction', { action: 'auth', link });
       });
       setNativeCalled(true);
     }
   }, [session]); // eslint-disable-line
 
-  const onGoWebWallet = (url) => {
+  const onGoWebWallet = (url: any) => {
     openWebWallet({ webWalletUrl, url, locale });
   };
 
@@ -305,36 +333,6 @@ export default function BasicConnect({
   );
 }
 
-BasicConnect.propTypes = {
-  locale: PropTypes.oneOf(['en', 'zh']),
-  qrcodeSize: PropTypes.number,
-  webWalletUrl: PropTypes.string,
-  messages: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    scan: PropTypes.string.isRequired,
-    confirm: PropTypes.string.isRequired,
-    success: PropTypes.any.isRequired,
-  }).isRequired,
-  showDownload: PropTypes.bool,
-
-  session: PropTypes.object.isRequired,
-  generate: PropTypes.func.isRequired,
-  cancel: PropTypes.func.isRequired,
-
-  // web, mobile 开关, 默认都启用
-  enabledConnectTypes: PropTypes.array,
-  // 以下 3 种情况下 (需要重新创建 session) onRecreateSession 会被调用
-  // 1. auth 过程中产生错误且用户点击了 retry 按钮
-  // 2. 钱包扫码后中断 auth 流程, 且用户点击了 Back 按钮
-  // 3. token 过期且用户点击了刷新按钮
-  // 如果 did connect 接入的是一个 existingSession, 调用方可以使用该回调来处理 session 的重新创建
-  onRecreateSession: PropTypes.func,
-  // did connect 初始界面附加内容 (获取 did wallet 文本下面的区域)
-  extraContent: PropTypes.any,
-  //  支持loadingEle prop, 允许传入自定义的 spinner 元素
-  loadingEle: PropTypes.any,
-};
-
 BasicConnect.defaultProps = {
   locale: 'en',
   qrcodeSize: 184,
@@ -435,7 +433,7 @@ const ActionInfo = styled.div`
     font-size: 18px;
     color: #9397a1;
   }
-  ${(props) => props.theme.breakpoints.down('md')} {
+  ${(props: any) => props.theme.breakpoints.down('md')} {
     .action-info_title {
       font-size: 24px;
     }

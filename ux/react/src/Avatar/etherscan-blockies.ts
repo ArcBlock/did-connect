@@ -2,7 +2,7 @@
 /* eslint-disable no-bitwise */
 // copy from https://etherscan.io/jss/blockies.js
 const randseed = new Array(4);
-function seedrand(seed) {
+function seedrand(seed: any) {
   for (let i = 0; i < randseed.length; i++) {
     randseed[i] = 0;
   }
@@ -25,7 +25,7 @@ function createColor() {
   const color = `hsl(${h},${s},${l})`;
   return color;
 }
-function createImageData(size) {
+function createImageData(size: any) {
   const width = size;
   const height = size;
   const dataWidth = Math.ceil(width / 2);
@@ -45,26 +45,31 @@ function createImageData(size) {
   }
   return data;
 }
-function createCanvas(imageData, color, scale, bgcolor, spotcolor) {
+function createCanvas(imageData: any, color: any, scale: any, bgcolor: any, spotcolor: any) {
   const c = document.createElement('canvas');
   const width = Math.sqrt(imageData.length);
   // eslint-disable-next-line no-multi-assign
   c.width = c.height = width * scale;
   const cc = c.getContext('2d');
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   cc.fillStyle = bgcolor;
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   cc.fillRect(0, 0, c.width, c.height);
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   cc.fillStyle = color;
   for (let i = 0; i < imageData.length; i++) {
     const row = Math.floor(i / width);
     const col = i % width;
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     cc.fillStyle = imageData[i] === 1 ? color : spotcolor;
     if (imageData[i]) {
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       cc.fillRect(col * scale, row * scale, scale, scale);
     }
   }
   return c;
 }
-function createIcon(opts) {
+function createIcon(opts: any) {
   // eslint-disable-next-line no-param-reassign
   opts = opts || {};
   const size = opts.size || 8;
