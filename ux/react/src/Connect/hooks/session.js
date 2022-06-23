@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import Cookie from 'js-cookie';
 import joinUrl from 'url-join';
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
-import { createMachine } from '@did-connect/state';
+import { createStateMachine } from '@did-connect/state';
 
 import { decodeConnectUrl, parseTokenFromConnectUrl, updateConnectedInfo } from '../../utils';
 import useMachine from './machine';

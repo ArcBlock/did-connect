@@ -5,12 +5,12 @@ const morgan = require('morgan');
 const express = require('express');
 const env = require('@blocklet/sdk/lib/env');
 const getWallet = require('@blocklet/sdk/lib/wallet');
-const SessionStorage = require('@did-connect/storage-nedb');
-const Authenticator = require('@did-connect/authenticator');
-const createHandlers = require('@did-connect/handler');
-const attachHandlers = require('@did-connect/relay-adapter-express');
+const { NedbStorage } = require('@did-connect/storage-nedb');
+const { Authenticator } = require('@did-connect/authenticator');
+const { createHandlers } = require('@did-connect/handler');
+const { attachHandlers } = require('@did-connect/relay-adapter-express');
 
-const storage = new SessionStorage({ dbPath: path.join(env.dataDir, 'sessions.db'), ttl: 60 * 1000 });
+const storage = new NedbStorage({ dbPath: path.join(env.dataDir, 'sessions.db'), ttl: 60 * 1000 });
 const authenticator = new Authenticator({
   wallet: getWallet(),
   appInfo: {
@@ -27,7 +27,7 @@ const authenticator = new Authenticator({
 
 const noop = () => null;
 const logger = { info: console.info, error: console.error, warn: console.warn, debug: noop };
-const handlers = createHandlers({ storage, authenticator, logger, timeout: 20000 });
+const handlers = createHandlers({ storage, authenticator, logger });
 
 const app = express();
 app.use(morgan('combined'));

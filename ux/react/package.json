@@ -47,6 +47,7 @@
     "@mui/icons-material": "^5.8.2",
     "@mui/material": "^5.8.2",
     "@mui/styles": "^5.8.0",
+    "@types/node": "^18.0.0",
     "axios": "^0.27.2",
     "copy-to-clipboard": "^3.3.1",
     "core-js": "^3.6.4",
@@ -86,13 +87,17 @@
     "@storybook/addons": "^6.5.9",
     "@storybook/react": "^6.5.9",
     "@storybook/source-loader": "^6.5.9",
+    "@types/jest": "^28.1.3",
+    "@types/react": "^18.0.14",
+    "@types/react-dom": "^18.0.5",
     "babel-plugin-inline-react-svg": "^2.0.1",
     "babel-plugin-styled-components": "^1.10.7",
     "eslint-plugin-react-hooks": "^4.2.0",
     "jest": "^28.1.1",
     "object-hash": "^3.0.0",
     "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+    "react-dom": "^18.1.0",
+    "typescript": "^4.7.4"
   },
   "gitHead": "e8a64a410287cda986b687d2edc9daf200185b99"
 }
