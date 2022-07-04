@@ -2,7 +2,7 @@
 /* eslint-disable no-shadow */
 import omit from 'lodash/omit';
 import { types } from '@ocap/mcrypto';
-import { verify, decode } from '@arcblock/jwt';
+import { verify, decode, JwtBody } from '@arcblock/jwt';
 import { fromRandom, WalletType } from '@ocap/wallet';
 import { toBase58 } from '@ocap/util';
 import { TContext, TAnyRequest } from '@did-connect/types';
@@ -141,7 +141,7 @@ describe('Authenticator', () => {
     }
 
     let signed = await auth.signJson({}, context);
-    let decoded = decode(signed.authInfo);
+    let decoded: JwtBody = decode(signed.authInfo);
     expect(decoded.status).toEqual('ok');
     expect(decoded.response).toEqual({});
 

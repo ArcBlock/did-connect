@@ -12,6 +12,7 @@ import { SessionStorage } from '@did-connect/storage';
 import { Session, Context, CustomError } from '@did-connect/types';
 import { Authenticator } from '@did-connect/authenticator';
 
+import type { JwtBody } from '@arcblock/jwt';
 import type { Promisable } from 'type-fest';
 import type { TAppResponseSigned, TWalletResponseSigned } from '@did-connect/authenticator';
 import type {
@@ -138,7 +139,7 @@ export function createHandlers({
     }
 
     const hash = objectHash(body);
-    const decoded = decode(signerToken);
+    const decoded: JwtBody = decode(signerToken);
     if (decoded.hash !== hash) {
       return { error: 'Invalid payload hash', code: 'PAYLOAD_HASH_MISMATCH' };
     }

@@ -26,7 +26,7 @@ import { interpret } from 'xstate';
 import { nanoid } from 'nanoid';
 import last from 'lodash/last';
 import axios from 'axios';
-import { sign, verify, decode } from '@arcblock/jwt';
+import { sign, verify, decode, JwtBody } from '@arcblock/jwt';
 import { toBase58 } from '@ocap/util';
 import waitFor from 'p-wait-for';
 // @ts-ignore
@@ -231,7 +231,7 @@ describe('StateMachine', () => {
       if (claims.find((x: TAnyRequest) => x.type === 'authPrincipal')) {
         res = await axios.post(getAuthUrl(authInfo.url), {
           userPk: toBase58(user.publicKey),
-          userInfo: Jwt.sign(user.address, user.secretKey, {
+          userInfo: Jwt.sign(user.address, user.secretKey as string, {
             requestedClaims: [],
             challenge: authInfo.challenge,
           }),
@@ -243,7 +243,7 @@ describe('StateMachine', () => {
       if (nextUrl) {
         res = await axios.post(nextUrl, {
           userPk: toBase58(user.publicKey),
-          userInfo: Jwt.sign(user.address, user.secretKey, {
+          userInfo: Jwt.sign(user.address, user.secretKey as string, {
             requestedClaims,
             challenge,
           }),
@@ -395,7 +395,7 @@ describe('StateMachine', () => {
       if (claims.find((x: TAnyRequest) => x.type === 'authPrincipal')) {
         res = await axios.post(getAuthUrl(authInfo.url), {
           userPk: toBase58(user.publicKey),
-          userInfo: Jwt.sign(user.address, user.secretKey, {
+          userInfo: Jwt.sign(user.address, user.secretKey as string, {
             requestedClaims: [],
             challenge: authInfo.challenge,
           }),
@@ -410,7 +410,7 @@ describe('StateMachine', () => {
       // 4. submit profile claim: return asset claim
       res = await axios.post(nextUrl, {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [profileResponse],
           challenge,
         }),
@@ -426,7 +426,7 @@ describe('StateMachine', () => {
       // 5. submit asset claim
       res = await axios.post(nextUrl, {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [assetResponse],
           challenge,
         }),
@@ -508,7 +508,7 @@ describe('StateMachine', () => {
       if (claims.find((x: TAnyRequest) => x.type === 'authPrincipal')) {
         res = await axios.post(getAuthUrl(authInfo.url), {
           userPk: toBase58(user.publicKey),
-          userInfo: Jwt.sign(user.address, user.secretKey, {
+          userInfo: Jwt.sign(user.address, user.secretKey as string, {
             requestedClaims: [],
             challenge: 'abcd',
           }),
@@ -567,7 +567,7 @@ describe('StateMachine', () => {
         const nextUrl = getAuthUrl(authInfo.url);
         res = await axios.post(nextUrl, {
           userPk: toBase58(user.publicKey),
-          userInfo: Jwt.sign(user.address, user.secretKey, {
+          userInfo: Jwt.sign(user.address, user.secretKey as string, {
             action: 'declineAuth',
             requestedClaims: [],
             challenge: authInfo.challenge,
@@ -627,7 +627,7 @@ describe('StateMachine', () => {
       if (claims.find((x: TAnyRequest) => x.type === 'authPrincipal')) {
         res = await axios.post(getAuthUrl(authInfo.url), {
           userPk: toBase58(user.publicKey),
-          userInfo: Jwt.sign(user.address, user.secretKey, {
+          userInfo: Jwt.sign(user.address, user.secretKey as string, {
             requestedClaims: [],
             challenge: authInfo.challenge,
           }),
@@ -696,7 +696,7 @@ describe('StateMachine', () => {
       if (claims.find((x: TAnyRequest) => x.type === 'authPrincipal')) {
         res = await axios.post(getAuthUrl(authInfo.url), {
           userPk: toBase58(user.publicKey),
-          userInfo: Jwt.sign(user.address, user.secretKey, {
+          userInfo: Jwt.sign(user.address, user.secretKey as string, {
             requestedClaims: [],
             challenge,
           }),
@@ -710,7 +710,7 @@ describe('StateMachine', () => {
 
       res = await axios.post(nextUrl, {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [profileResponse],
           challenge,
         }),
@@ -790,7 +790,7 @@ describe('StateMachine', () => {
       if (claims.find((x: TAnyRequest) => x.type === 'authPrincipal')) {
         res = await axios.post(getAuthUrl(authInfo.url), {
           userPk: toBase58(user.publicKey),
-          userInfo: Jwt.sign(user.address, user.secretKey, {
+          userInfo: Jwt.sign(user.address, user.secretKey as string, {
             requestedClaims: [],
             challenge: authInfo.challenge,
           }),

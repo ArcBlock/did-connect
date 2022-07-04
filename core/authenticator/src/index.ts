@@ -137,7 +137,13 @@ export class Authenticator {
 
     return {
       appPk: toBase58(this.wallet.publicKey),
-      authInfo: sign(this.wallet.address, this.wallet.secretKey, payload, true, didwallet ? didwallet.jwt : undefined),
+      authInfo: sign(
+        this.wallet.address,
+        this.wallet.secretKey as string,
+        payload,
+        true,
+        didwallet ? didwallet.jwt : undefined
+      ),
     };
   }
 
@@ -171,7 +177,7 @@ export class Authenticator {
 
     return {
       appPk: toBase58(this.wallet.publicKey),
-      authInfo: sign(this.wallet.address, this.wallet.secretKey, payload, true, didwallet.jwt),
+      authInfo: sign(this.wallet.address, this.wallet.secretKey as string, payload, true, didwallet.jwt),
     };
   }
 
@@ -215,15 +221,17 @@ export class Authenticator {
           requestedClaims,
         } = await this._verify(data, locale, enforceTimestamp);
 
+        const userDid = toAddress(iss as string);
+
         resolve({
-          userDid: toAddress(iss),
+          userDid,
           userPk: data.userPk,
           claims: requestedClaims,
           action,
           challenge,
         });
 
-        debug('verify.context', { userPk: data.userPk, userDid: toAddress(iss), action, challenge });
+        debug('verify.context', { userPk: data.userPk, userDid, action, challenge });
         debug('verify.claims', requestedClaims);
       } catch (err) {
         reject(err);

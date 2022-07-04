@@ -112,7 +112,7 @@ describe('RelayAdapterExpress', () => {
     headers['x-updater-pk'] = typeof pk === 'undefined' ? wallet.publicKey : pk;
     headers['x-updater-token'] =
       typeof token === 'undefined'
-        ? Jwt.sign(wallet.address, wallet.secretKey, { hash: typeof hash === 'undefined' ? objectHash(data) : hash })
+        ? Jwt.sign(wallet.address, wallet.secretKey as string, { hash: typeof hash === 'undefined' ? objectHash(data) : hash })
         : token;
 
     const res = await api({
@@ -202,7 +202,7 @@ describe('RelayAdapterExpress', () => {
     if (claims.find((x) => x.type === 'authPrincipal')) {
       res = await api.post(getAuthUrl(authInfo.url), {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [],
           challenge: authInfo.challenge,
         }),
@@ -218,7 +218,7 @@ describe('RelayAdapterExpress', () => {
     // 4. submit requested claims
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
-      userInfo: Jwt.sign(user.address, user.secretKey, {
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [profileResponse],
         challenge,
       }),
@@ -234,7 +234,7 @@ describe('RelayAdapterExpress', () => {
     // 7. try to submit to a finalized session
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
-      userInfo: Jwt.sign(user.address, user.secretKey, {
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [profileResponse],
         challenge,
       }),
@@ -291,7 +291,7 @@ describe('RelayAdapterExpress', () => {
 
     // try to scan a finalized session
     const res = await api.get(getAuthUrl(authUrl));
-    const authInfo = Jwt.decode(res.data.authInfo);
+    const authInfo: Jwt.JwtBody = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('error');
     expect(authInfo.errorMessage).toMatch('Session finalized');
   });
@@ -347,7 +347,7 @@ describe('RelayAdapterExpress', () => {
     if (claims.find((x) => x.type === 'authPrincipal')) {
       res = await api.post(getAuthUrl(authInfo.url), {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [],
           challenge: authInfo.challenge,
         }),
@@ -363,7 +363,7 @@ describe('RelayAdapterExpress', () => {
     // 4. submit profile claim
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
-      userInfo: Jwt.sign(user.address, user.secretKey, {
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [profileResponse],
         challenge,
       }),
@@ -378,7 +378,7 @@ describe('RelayAdapterExpress', () => {
     // 4. submit asset claim
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
-      userInfo: Jwt.sign(user.address, user.secretKey, {
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [assetResponse],
         challenge,
       }),
@@ -525,7 +525,7 @@ describe('RelayAdapterExpress', () => {
       const nextUrl = getAuthUrl(authInfo.url);
       res = await api.post(nextUrl, {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           action: 'declineAuth',
           requestedClaims: [],
           challenge: authInfo.challenge,
@@ -575,7 +575,7 @@ describe('RelayAdapterExpress', () => {
       const nextUrl = getAuthUrl(authInfo.url);
       res = await api.post(nextUrl, {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [],
           challenge: 'abcd',
         }),
@@ -633,7 +633,7 @@ describe('RelayAdapterExpress', () => {
     if (claims.find((x) => x.type === 'authPrincipal')) {
       res = await api.post(getAuthUrl(authInfo.url), {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [],
           challenge: authInfo.challenge,
         }),
@@ -697,7 +697,7 @@ describe('RelayAdapterExpress', () => {
     if (claims.find((x) => x.type === 'authPrincipal')) {
       res = await api.post(getAuthUrl(authInfo.url), {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [],
           challenge: authInfo.challenge,
         }),
@@ -713,7 +713,7 @@ describe('RelayAdapterExpress', () => {
     // 4. submit requested claims
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
-      userInfo: Jwt.sign(user.address, user.secretKey, {
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [{ type: 'profile', description: 'xxx', fullName: 'test', email: 'test@arcblock.io' }],
         challenge,
       }),
@@ -765,7 +765,7 @@ describe('RelayAdapterExpress', () => {
     if (claims.find((x) => x.type === 'authPrincipal')) {
       res = await api.post(getAuthUrl(authInfo.url), {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [],
           challenge: authInfo.challenge,
         }),
@@ -823,7 +823,7 @@ describe('RelayAdapterExpress', () => {
     if (claims.find((x) => x.type === 'authPrincipal')) {
       res = await api.post(getAuthUrl(authInfo.url), {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [],
           challenge: authInfo.challenge,
         }),
@@ -839,7 +839,7 @@ describe('RelayAdapterExpress', () => {
     // 4. submit requested claims
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
-      userInfo: Jwt.sign(user.address, user.secretKey, {
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [{ type: 'profile', description: 'xx', fullName: 'test', email: 'test@arcblock.io' }],
         challenge,
       }),
@@ -899,7 +899,7 @@ describe('RelayAdapterExpress', () => {
     if (claims.find((x) => x.type === 'authPrincipal')) {
       res = await api.post(getAuthUrl(authInfo.url), {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [],
           challenge: authInfo.challenge,
         }),
@@ -915,7 +915,7 @@ describe('RelayAdapterExpress', () => {
     // 4. submit profile claim
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
-      userInfo: Jwt.sign(user.address, user.secretKey, {
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [profileResponse],
         challenge,
       }),
@@ -930,7 +930,7 @@ describe('RelayAdapterExpress', () => {
     // 4. submit asset claim
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
-      userInfo: Jwt.sign(user.address, user.secretKey, {
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [assetResponse],
         challenge,
       }),
@@ -998,7 +998,7 @@ describe('RelayAdapterExpress', () => {
     if (claims.find((x) => x.type === 'authPrincipal')) {
       res = await api.post(getAuthUrl(authInfo.url), {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [],
           challenge: authInfo.challenge,
         }),
@@ -1014,7 +1014,7 @@ describe('RelayAdapterExpress', () => {
     // 4. submit requested claims
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
-      userInfo: Jwt.sign(user.address, user.secretKey, {
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [assetResponse],
         challenge,
       }),
@@ -1067,7 +1067,7 @@ describe('RelayAdapterExpress', () => {
     if (claims.find((x) => x.type === 'authPrincipal')) {
       res = await api.post(getAuthUrl(authInfo.url), {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [],
           challenge: authInfo.challenge,
         }),
@@ -1123,7 +1123,7 @@ describe('RelayAdapterExpress', () => {
     // 3. submit auth principal
     res = await api.post(getAuthUrl(authInfo.url), {
       userPk: toBase58(user.publicKey),
-      userInfo: Jwt.sign(user.address, user.secretKey, {
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [],
         challenge: authInfo.challenge,
       }),

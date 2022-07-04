@@ -74,7 +74,7 @@ export const createDeepLink = (baseUrl: string, sessionId: string): string => {
 export const doSignedRequest = async ({ data, wallet, url, method = 'POST' }: RequestArgs): Promise<TAnyObject> => {
   const headers: TAnyObject = {};
   headers['x-updater-pk'] = wallet.publicKey;
-  headers['x-updater-token'] = sign(wallet.address, wallet.secretKey, { hash: objectHash(data) });
+  headers['x-updater-token'] = sign(wallet.address, wallet.secretKey as string, { hash: objectHash(data) });
   const res = await axios({ method, url, data, headers, timeout: 8000 });
   return res.data;
 };
