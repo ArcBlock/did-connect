@@ -1,3 +1,4 @@
+import { FC } from 'react';
 import { SessionTimeout } from '@did-connect/types';
 
 import BasicConnect from './basic';
@@ -5,7 +6,7 @@ import { BrowserEnvProvider } from './contexts/browser';
 import withDialog from './withDialog';
 import { withWebWalletSWKeeper } from '../WebWalletSWKeeper';
 import useSession from './hooks/session';
-import type { ConnectProps } from './types';
+import { ConnectProps } from './types';
 
 import '@fontsource/lato/400.css';
 import '@fontsource/lato/700.css';
@@ -31,7 +32,7 @@ const defaultProps = {
 };
 
 // TODO: more props to BasicConnect
-function Connect(props: ConnectProps) {
+const Connect: FC<ConnectProps> = (props) => {
   const {
     onStart,
     onCreate,
@@ -88,6 +89,6 @@ function Connect(props: ConnectProps) {
       <BasicConnect key={session.context.sessionId} {...connectProps} />
     </BrowserEnvProvider>
   );
-}
+};
 
 export default withWebWalletSWKeeper(withDialog(Connect));

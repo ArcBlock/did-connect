@@ -285,26 +285,26 @@ const [AssetRequest, AssetResponse] = createClaimTypes('asset', 'Please provide 
 // Any claim request
 const AnyRequest = Joi.alternatives()
   .try(
+    AgreementRequest,
+    AssetRequest,
     AuthPrincipalRequest,
+    PrepareTxRequest,
     ProfileRequest,
     SignatureRequest,
-    PrepareTxRequest,
-    AgreementRequest,
-    VerifiableCredentialRequest,
-    AssetRequest
+    VerifiableCredentialRequest
   )
   .meta({ unknownType: 'string', className: 'TAnyRequest' });
 
 // Any claim request
 const AnyResponse = Joi.alternatives()
   .try(
+    AgreementResponse,
+    AssetResponse,
     AuthPrincipalResponse,
+    PrepareTxResponse,
     ProfileResponse,
     SignatureResponse,
-    PrepareTxResponse,
-    AgreementResponse,
-    VerifiableCredentialResponse,
-    AssetResponse
+    VerifiableCredentialResponse
   )
   .meta({ unknownType: 'string', className: 'TAnyResponse' });
 

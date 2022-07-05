@@ -53,6 +53,7 @@
     "lint:fix": "eslint --fix src tests",
     "prebuild": "npm run clean",
     "build": "npm run types && tsc",
+    "watch": "tsc -b --watch",
     "types": "ts-node scripts/types.js && /usr/bin/sed -i '' 's/unknown/string/g' ./src/types/index.ts && prettier --write ./src/types/index.ts",
     "check": "tsc --noEmit",
     "clean": "rm -rf ./lib",

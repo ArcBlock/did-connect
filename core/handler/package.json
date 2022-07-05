@@ -64,6 +64,7 @@
     "coverage": "yarn test --coverage",
     "prebuild": "npm run clean",
     "build": "tsc",
+    "watch": "tsc -b --watch",
     "check": "tsc --noEmit",
     "clean": "rm -rf ./lib"
   },

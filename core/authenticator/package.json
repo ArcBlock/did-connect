@@ -55,6 +55,7 @@
     "lint:fix": "eslint --fix src tests",
     "prebuild": "npm run clean",
     "build": "tsc",
+    "watch": "tsc -b --watch",
     "check": "tsc --noEmit",
     "clean": "rm -rf ./lib",
     "test": "jest --forceExit",

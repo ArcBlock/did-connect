@@ -1,7 +1,7 @@
 import type { TEventCallback, TConnectCallback, TApproveCallback } from '@did-connect/state';
 import { SessionTimeout } from '@did-connect/types';
 
-export type ConnectProps = {
+export interface ConnectProps {
   onConnect: TConnectCallback;
   onApprove: TApproveCallback;
   messages: { [key: string]: string };
@@ -29,4 +29,4 @@ export type ConnectProps = {
   extraContent?: any;
   showDownload?: boolean;
   qrcodeSize?: number;
-};
+}

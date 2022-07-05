@@ -471,6 +471,7 @@ storiesOf('DID-Connect/Examples', module)
       action('onConnect')(ctx, e);
       const app = fromAddress(ctx.appInfo.publisher.split(':').pop());
       const user = fromPublicKey(e.userPk);
+      const value = (await client.fromTokenToUnit(1)).toString(10);
       const { buffer: tx } = await client.encodeTransferV2Tx({
         tx: {
           from: user.address,
@@ -478,9 +479,7 @@ storiesOf('DID-Connect/Examples', module)
           itx: {
             to: app.address,
             // https://beta.abtnetwork.io/explorer/tokens/z35n6UoHSi9MED4uaQy6ozFgKPaZj2UKrurBG/transactions
-            tokens: [
-              { address: 'z35n6UoHSi9MED4uaQy6ozFgKPaZj2UKrurBG', value: await client.fromTokenToUnit(1).toString(10) },
-            ],
+            tokens: [{ address: 'z35n6UoHSi9MED4uaQy6ozFgKPaZj2UKrurBG', value }],
           },
         },
         wallet: user,
@@ -536,6 +535,94 @@ storiesOf('DID-Connect/Examples', module)
             scan: 'Please sign the transaction to send relay server 1 TBA',
             confirm: 'Confirm on your DID Wallet',
             success: 'Tx signed but not broadcasted',
+          }}
+          webWalletUrl={webWalletUrl}
+          baseUrl={baseUrl}
+        />
+      </TestContainer>
+    );
+  })
+  .add('Request Payment', () => {
+    const client = new Client(chainHost);
+    const [open, setOpen] = useState(false);
+    const [message] = useState('Pay 1 TBA');
+    const [response, setResponse] = useState(null);
+    const handleClose = () => {
+      action('close');
+      setOpen(false);
+    };
+    const handleConnect = async (ctx, e) => {
+      action('onConnect')(ctx, e);
+      const app = fromAddress(ctx.appInfo.publisher.split(':').pop());
+      const user = fromPublicKey(e.userPk);
+      const value = (await client.fromTokenToUnit(1)).toString(10);
+      const { buffer: tx } = await client.encodeTransferV2Tx({
+        tx: {
+          itx: {
+            to: app.address,
+            // https://beta.abtnetwork.io/explorer/tokens/z35n6UoHSi9MED4uaQy6ozFgKPaZj2UKrurBG/transactions
+            tokens: [{ address: 'z35n6UoHSi9MED4uaQy6ozFgKPaZj2UKrurBG', value }],
+          },
+        },
+        wallet: user,
+      });
+
+      return [
+        [
+          {
+            type: 'prepareTx',
+            partialTx: toBase58(tx),
+            description: 'Please sign this transaction to transfer 1 TBA to the app',
+            requirement: {
+              tokens: [
+                {
+                  address: 'z35n6UoHSi9MED4uaQy6ozFgKPaZj2UKrurBG',
+                  value,
+                },
+              ],
+            },
+            chainInfo: {
+              host: chainHost,
+            },
+          },
+        ],
+      ];
+    };
+
+    const handleApprove = async (ctx, e) => {
+      action('onApprove')(ctx, e);
+      // TODO: send tx to blockchain
+      setResponse(e);
+    };
+
+    const handleComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setOpen(false);
+    };
+
+    return (
+      <TestContainer height={780} resize="true">
+        <Typography gutterBottom>When the app needs user to pay some token to get some service.</Typography>
+        <Button variant="contained" size="small" onClick={() => setOpen(true)}>
+          {message}
+        </Button>
+        {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
+        <Connect
+          popup
+          open={open}
+          onClose={handleClose}
+          onConnect={handleConnect}
+          onApprove={handleApprove}
+          onComplete={handleComplete}
+          onReject={onReject}
+          onCancel={onCancel}
+          onTimeout={onTimeout}
+          onError={onError}
+          messages={{
+            title: 'Payment Required',
+            scan: 'Please prepare the payment to continue',
+            confirm: 'Confirm on your DID Wallet',
+            success: 'Payment signed but not broadcasted',
           }}
           webWalletUrl={webWalletUrl}
           baseUrl={baseUrl}

@@ -19,22 +19,22 @@ export interface TAgreementResponse {
 }
 
 export type TAnyRequest =
+  | TAgreementRequest
+  | TAssetRequest
   | TAuthPrincipalRequest
+  | TPrepareTxRequest
   | TProfileRequest
   | TSignatureRequest
-  | TPrepareTxRequest
-  | TAgreementRequest
-  | TVerifiableCredentialRequest
-  | TAssetRequest;
+  | TVerifiableCredentialRequest;
 
 export type TAnyResponse =
+  | TAgreementResponse
+  | TAssetResponse
   | TAuthPrincipalResponse
+  | TPrepareTxResponse
   | TProfileResponse
   | TSignatureResponse
-  | TPrepareTxResponse
-  | TAgreementResponse
-  | TVerifiableCredentialResponse
-  | TAssetResponse;
+  | TVerifiableCredentialResponse;
 
 export interface TAppInfo {
   description: string;

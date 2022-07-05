@@ -9,7 +9,18 @@ import objectHash from 'object-hash';
 import { WsServer } from '@arcblock/ws';
 import { isValid } from '@arcblock/did';
 import { SessionStorage } from '@did-connect/storage';
-import { Session, Context, CustomError } from '@did-connect/types';
+import {
+  Session,
+  Context,
+  CustomError,
+  AuthPrincipalRequest,
+  AssetRequest,
+  ProfileRequest,
+  SignatureRequest,
+  VerifiableCredentialRequest,
+  AgreementRequest,
+  PrepareTxRequest,
+} from '@did-connect/types';
 import { Authenticator } from '@did-connect/authenticator';
 
 import type { JwtBody } from '@arcblock/jwt';
@@ -24,7 +35,6 @@ import type {
   TAnyResponse,
   TAnyRequest,
   TAuthPrincipalRequest,
-  TAuthPrincipalResponse,
   TI18nMessages,
 } from '@did-connect/types';
 
@@ -98,6 +108,38 @@ export function createSocketServer(logger: TLogger, pathname: string) {
   return new WsServer({ logger, pathname });
 }
 
+export function validateRequestedClaims(claims: TAnyRequest[][]) {
+  const validators: TAnyObject = {
+    agreement: AgreementRequest,
+    asset: AssetRequest,
+    authPrincipal: AuthPrincipalRequest,
+    prepareTx: PrepareTxRequest,
+    profile: ProfileRequest,
+    signature: SignatureRequest,
+    verifiableCreate: VerifiableCredentialRequest,
+  };
+
+  for (const group of claims) {
+    for (const claim of group) {
+      if (!validators[claim.type]) {
+        return {
+          error: `Invalid ${claim.type} request: supported request types are ${Object.keys(validators)}`,
+          code: 'REQUEST_UNSUPPORTED',
+        };
+      }
+      const { error } = validators[claim.type].validate(claim);
+      if (error) {
+        return {
+          error: `Invalid ${claim.type} request: ${error.details.map((x: any) => x.message).join(', ')}`,
+          code: 'REQUEST_INVALID',
+        };
+      }
+    }
+  }
+
+  return { error: '', code: 'ok' };
+}
+
 // FIXME: i18n for all errors
 export function createHandlers({
   storage,
@@ -168,7 +210,7 @@ export function createHandlers({
       return { error: 'Invalid sessionId', code: 'SESSION_ID_INVALID' };
     }
 
-    const result = verifyUpdater(context);
+    let result = verifyUpdater(context);
     if (result.error) {
       return result;
     }
@@ -194,10 +236,17 @@ export function createHandlers({
       error: '',
     };
 
+    if (Array.isArray(session.requestedClaims) && session.requestedClaims.length > 0) {
+      result = validateRequestedClaims(session.requestedClaims);
+      if (result.error) {
+        return result;
+      }
+    }
+
     const { value, error } = Session.validate(session);
     if (error) {
       return {
-        error: `Invalid session updates: ${error.details.map((x: any) => x.message).join(', ')}`,
+        error: `Invalid session props: ${error.details.map((x: any) => x.message).join(', ')}`,
         code: 'SESSION_UPDATE_INVALID',
       };
     }
@@ -224,13 +273,20 @@ export function createHandlers({
         );
       }
 
-      const result = verifyUpdater(context, session.updaterPk);
+      let result = verifyUpdater(context, session.updaterPk);
       if (result.error) {
         throw new CustomError(result.code, result.error);
       }
 
       if (body.status && ['error', 'canceled'].includes(body.status) === false) {
         throw new CustomError('SESSION_STATUS_INVALID', 'Can only update session status to error or canceled');
+      }
+
+      if (Array.isArray(body.requestedClaims) && body.requestedClaims.length > 0) {
+        result = validateRequestedClaims(body.requestedClaims);
+        if (result.error) {
+          throw new CustomError(result.code, result.error);
+        }
       }
 
       const { error, value } = Session.validate({ ...session, ...body });
