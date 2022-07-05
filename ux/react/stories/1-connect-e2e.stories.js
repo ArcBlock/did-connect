@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { useState } from 'react';
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
@@ -9,6 +11,7 @@ import { toBase58 } from '@ocap/util';
 import Client from '@ocap/client';
 import { fromAddress, fromPublicKey } from '@ocap/wallet';
 import objectHash from 'object-hash';
+import type { TProfileRequest, TAssetRequest } from '@did-connect/types';
 
 import Connect from '../src/Connect';
 import { BrowserEnvContext } from '../src/Connect/contexts/browser';
@@ -23,6 +26,22 @@ const baseUrl = 'https://dfe45b38-znkntry8ptmrcty8b2mnmapp4bs3bx8n844d.did.abtne
 const webWalletUrl = `${window.location.protocol}//www.abtnode.com`;
 
 const chainHost = 'https://beta.abtnetwork.io/api/';
+
+const profileRequest: TProfileRequest = {
+  type: 'profile',
+  items: ['fullName', 'email', 'avatar'],
+  description: 'Please give me your profile',
+};
+const assetRequest: TAssetRequest = {
+  type: 'asset',
+  filters: [
+    {
+      // https://launcher.staging.arcblock.io/
+      trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'],
+    },
+  ],
+  description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
+};
 
 const noop = () => undefined;
 const onStart = action('onStart');
@@ -40,15 +59,7 @@ const onCreate = async (ctx, e) => {
 const onConnect = async (ctx, e) => {
   action('onConnect')(ctx, e);
   await sleep(1000);
-  return [
-    [
-      {
-        type: 'profile',
-        fields: ['fullName', 'email', 'avatar'],
-        description: 'Please give me your profile',
-      },
-    ],
-  ];
+  return [[profileRequest]];
 };
 const onApprove = async (ctx, e) => {
   action('onApprove')(ctx, e);
@@ -95,7 +106,7 @@ storiesOf('DID-Connect/Examples', module)
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('Connect');
     const [connectedUser, setConnectedUser] = useState(null);
-    const handleClose = () => {
+    const handleClose = (ctx, e) => {
       action('close');
       setOpen(false);
     };
@@ -147,15 +158,7 @@ storiesOf('DID-Connect/Examples', module)
     };
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
-      return [
-        [
-          {
-            type: 'profile',
-            fields: ['fullName', 'email', 'avatar'],
-            description: 'Please give me your profile',
-          },
-        ],
-      ];
+      return [[profileRequest]];
     };
     const handleComplete = (ctx, e) => {
       action('onComplete')(ctx, e);
@@ -203,20 +206,7 @@ storiesOf('DID-Connect/Examples', module)
     };
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
-      return [
-        [
-          {
-            type: 'asset',
-            filters: [
-              {
-                // https://launcher.staging.arcblock.io/
-                trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'],
-              },
-            ],
-            description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
-          },
-        ],
-      ];
+      return [[assetRequest]];
     };
 
     // Verify the ownership of the NFT
@@ -572,21 +562,7 @@ storiesOf('DID-Connect/Examples', module)
     };
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
-      return [
-        [
-          {
-            type: 'profile',
-            fields: ['fullName', 'email', 'avatar'],
-            description: 'Please give me your profile',
-          },
-          {
-            // https://launcher.staging.arcblock.io/
-            type: 'asset',
-            filters: [{ trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'] }],
-            description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
-          },
-        ],
-      ];
+      return [[profileRequest, assetRequest]];
     };
 
     const handleApprove = async (ctx, e) => {
@@ -640,23 +616,7 @@ storiesOf('DID-Connect/Examples', module)
     };
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
-      return [
-        [
-          {
-            type: 'profile',
-            fields: ['fullName', 'email', 'avatar'],
-            description: 'Please give me your profile',
-          },
-        ],
-        [
-          {
-            // https://launcher.staging.arcblock.io/
-            type: 'asset',
-            filters: [{ trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'] }],
-            description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
-          },
-        ],
-      ];
+      return [[profileRequest], [assetRequest]];
     };
 
     const handleApprove = async (ctx, e) => {
@@ -717,15 +677,7 @@ storiesOf('DID-Connect/Examples', module)
     };
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
-      return [
-        [
-          {
-            type: 'profile',
-            fields: ['fullName', 'email', 'avatar'],
-            description: 'Please give me your profile',
-          },
-        ],
-      ];
+      return [[profileRequest]];
     };
 
     const handleApprove = async (ctx, e) => {

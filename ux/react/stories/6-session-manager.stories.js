@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-filename-extension */
 /* eslint-disable no-alert */
 import { storiesOf } from '@storybook/react';
 

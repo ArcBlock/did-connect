@@ -141,6 +141,7 @@ export function createHandlers({
     const hash = objectHash(body);
     const decoded: JwtBody = decode(signerToken);
     if (decoded.hash !== hash) {
+      logger.debug('hash mismatch', decoded.hash, hash, body, decoded);
       return { error: 'Invalid payload hash', code: 'PAYLOAD_HASH_MISMATCH' };
     }
 
@@ -373,10 +374,19 @@ export function createHandlers({
       }
 
       const handleWalletApprove = async (): Promise<TSession> => {
-        logger.debug('session.walletApproved', sessionId);
-        const justifiedClaims = isEmpty(claims)
-          ? [{ ...(getAuthPrincipalRequest(session) as TAuthPrincipalResponse), ...session.currentConnected }]
-          : claims;
+        // @ts-ignore
+        const justifiedClaims: TAnyResponse[] = (isEmpty(claims) ? [{ type: 'authPrincipal' }] : claims).map(
+          (x: any) => {
+            if (x.type === 'authPrincipal') {
+              return {
+                ...x,
+                ...(session.currentConnected || { userDid, userPk }),
+              };
+            }
+            return x;
+          }
+        );
+        logger.info('session.walletApproved', sessionId, justifiedClaims);
         await storage.update(sessionId, {
           status: 'walletApproved',
           responseClaims: [...session.responseClaims, justifiedClaims],

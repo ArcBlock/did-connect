@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable react/jsx-filename-extension */
 /* eslint-disable no-script-url */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { storiesOf } from '@storybook/react';
@@ -156,8 +158,7 @@ storiesOf('DID-Connect/Address', module)
             <Box component="span" ml={0.5} bgcolor="#000">
               [append]
             </Box>
-          }
-        >
+          }>
           z1SBWdzYCEEY6WrvEPJv2umgpkkrvgdtBry
         </DidAddress>
       </div>
@@ -170,8 +171,7 @@ storiesOf('DID-Connect/Address', module)
             <Box component="a" href="javascript:void(0)" display="flex" alignItems="center" ml={1}>
               <LinkIcon />
             </Box>
-          }
-        >
+          }>
           z1SBWdzYCEEY6WrvEPJv2umgpkkrvgdtBry
         </DidAddress>
       </div>

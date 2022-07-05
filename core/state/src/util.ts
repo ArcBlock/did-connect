@@ -1,4 +1,5 @@
 import axios from 'axios';
+import isEmpty from 'lodash/isEmpty';
 // @ts-ignore
 import joinUrl from 'url-join';
 // @ts-ignore
@@ -72,6 +73,9 @@ export const createDeepLink = (baseUrl: string, sessionId: string): string => {
 };
 
 export const doSignedRequest = async ({ data, wallet, url, method = 'POST' }: RequestArgs): Promise<TAnyObject> => {
+  if (isEmpty(data)) {
+    throw new Error('Can not update session with empty data');
+  }
   const headers: TAnyObject = {};
   headers['x-updater-pk'] = wallet.publicKey;
   headers['x-updater-token'] = sign(wallet.address, wallet.secretKey as string, { hash: objectHash(data) });

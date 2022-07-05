@@ -13,14 +13,9 @@ export interface TAgreementRequest {
 
 export interface TAgreementResponse {
   agreed: boolean;
-  chainInfo?: TChainInfo;
-  description: string;
-  digest: string;
   meta?: any;
-  method?: 'keccak' | 'sha3' | 'keccak_384' | 'sha3_384' | 'keccak_512' | 'sha3_512' | 'sha2';
   sig?: string;
   type: 'agreement';
-  uri: string;
 }
 
 export type TAnyRequest =
@@ -84,36 +79,11 @@ export interface TAssetRequest {
 }
 
 export interface TAssetResponse {
-  address?: string;
   asset: string;
-  chainInfo?: TChainInfo;
-  description: string;
-  filters?: {
-    address?: string;
-    tag?: string;
-    trustedIssuers?: (
-      | {
-          did: string;
-          endpoint: string;
-        }
-      | string
-    )[];
-    trustedParents?: string[];
-  }[];
   meta?: any;
-  optional?: boolean;
   ownerDid: string;
   ownerPk: string;
   ownerProof: string;
-  tag?: string;
-  trustedIssuers?: (
-    | {
-        did: string;
-        endpoint: string;
-      }
-    | string
-  )[];
-  trustedParents?: string[];
   type: 'asset';
 }
 
@@ -157,41 +127,7 @@ export interface TAuthPrincipalRequest {
 }
 
 export interface TAuthPrincipalResponse {
-  chainInfo?: TChainInfo;
-  declareParams?: {
-    issuer: string;
-    moniker: string;
-  };
-  description: string;
   meta?: any;
-  supervised?: boolean;
-  target?: string;
-  targetType?: {
-    hash: 'keccak' | 'sha3' | 'keccak_384' | 'sha3_384' | 'keccak_512' | 'sha3_512' | 'sha2';
-    key: 'ed25519' | 'secp256k1' | 'ethereum';
-    role:
-      | 'account'
-      | 'node'
-      | 'device'
-      | 'application'
-      | 'contract'
-      | 'bot'
-      | 'asset'
-      | 'stake'
-      | 'validator'
-      | 'group'
-      | 'tx'
-      | 'tether'
-      | 'swap'
-      | 'delegation'
-      | 'vc'
-      | 'blocklet'
-      | 'registry'
-      | 'token'
-      | 'factory'
-      | 'rollup'
-      | 'any';
-  };
   type: 'authPrincipal';
   userDid: string;
   userPk: string;
@@ -239,23 +175,8 @@ export interface TPrepareTxRequest {
 }
 
 export interface TPrepareTxResponse {
-  chainInfo?: TChainInfo;
-  description: string;
-  display?: string;
   finalTx: string;
   meta?: any;
-  partialTx: string;
-  requirement: {
-    assets?: {
-      address?: string[];
-      issuer?: string[];
-      parent?: string[];
-    };
-    tokens: {
-      address: string;
-      value: string;
-    }[];
-  };
   type: 'prepareTx';
 }
 
@@ -270,11 +191,8 @@ export interface TProfileRequest {
 export interface TProfileResponse {
   avatar?: string;
   birthday?: string;
-  chainInfo?: TChainInfo;
-  description: string;
   email?: string;
   fullName?: string;
-  items?: ('fullName' | 'email' | 'phone' | 'signature' | 'avatar' | 'birthday')[];
   meta?: any;
   phone?: string;
   signature?: string;
@@ -337,16 +255,9 @@ export interface TSignatureRequest {
 }
 
 export interface TSignatureResponse {
-  chainInfo?: TChainInfo;
-  description: string;
-  digest?: string;
-  display?: string;
   meta?: any;
-  method?: 'none' | 'keccak' | 'sha3' | 'keccak_384' | 'sha3_384' | 'keccak_512' | 'sha3_512' | 'sha2';
-  origin?: string;
   sig: string;
   type: 'signature';
-  typeUrl: 'fg:t:transaction' | 'mime:text/plain' | 'mime:text/html' | 'eth:transaction';
 }
 
 export interface TVerifiableCredentialRequest {
@@ -380,33 +291,8 @@ export interface TVerifiableCredentialRequest {
 }
 
 export interface TVerifiableCredentialResponse {
-  chainInfo?: TChainInfo;
-  description: string;
-  filters?: {
-    tag?: string;
-    target?: string;
-    trustedIssuers?: (
-      | {
-          did: string;
-          endpoint: string;
-        }
-      | string
-    )[];
-    type?: string[];
-  }[];
-  item?: string[];
   meta?: any;
-  optional?: boolean;
   presentation: string;
-  tag?: string;
-  target?: string;
-  trustedIssuers?: (
-    | {
-        did: string;
-        endpoint: string;
-      }
-    | string
-  )[];
   type: 'verifiableCredential';
 }
 

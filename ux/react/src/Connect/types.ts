@@ -1,8 +1,9 @@
 import type { TEventCallback, TConnectCallback, TApproveCallback } from '@did-connect/state';
 import { SessionTimeout } from '@did-connect/types';
 
-export interface ConnectProps {
+export type ConnectProps = {
   onClose?: TEventCallback;
+  onStart?: TEventCallback;
   onCreate?: TEventCallback;
   onConnect: TConnectCallback;
   onApprove: TApproveCallback;
@@ -19,4 +20,4 @@ export interface ConnectProps {
   autoConnect?: boolean;
   saveConnect?: boolean;
   onlyConnect?: boolean;
-}
+};

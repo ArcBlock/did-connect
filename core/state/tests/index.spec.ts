@@ -26,7 +26,7 @@ import { interpret } from 'xstate';
 import { nanoid } from 'nanoid';
 import last from 'lodash/last';
 import axios from 'axios';
-import { sign, verify, decode, JwtBody } from '@arcblock/jwt';
+import { sign, verify, decode } from '@arcblock/jwt';
 import { toBase58 } from '@ocap/util';
 import waitFor from 'p-wait-for';
 // @ts-ignore
@@ -60,7 +60,6 @@ const profileRequest: TProfileRequest = {
 };
 const profileResponse: TProfileResponse = {
   type: 'profile',
-  description: 'Please give me your profile',
   fullName: 'test',
   email: 'test@arcblock.io',
   avatar: 'abc',
@@ -74,7 +73,6 @@ const assetRequest: TAssetRequest = {
 const assetResponse: TAssetResponse = {
   type: 'asset',
   asset: user.address,
-  description: 'Please prove that you own asset',
   ownerDid: user.address,
   ownerPk: user.publicKey.toString(),
   ownerProof: 'abc',

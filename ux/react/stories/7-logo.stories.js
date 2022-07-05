@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-filename-extension */
 import Typography from '@mui/material/Typography';
 import { storiesOf } from '@storybook/react';
 import DidLogo from '../src/Logo';
@@ -46,8 +47,7 @@ storiesOf('DID-Connect/Logo', module)
         background: '#4E6AF6',
         color: '#ffffff',
         margin: 32,
-      }}
-    >
+      }}>
       <DidLogo size={128} />
     </div>
   ));

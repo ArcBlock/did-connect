@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-filename-extension */
 import { storiesOf } from '@storybook/react';
 
 import Box from '@mui/material/Box';
@@ -76,8 +77,7 @@ storiesOf('DID-Connect/Avatar', module)
         border: '1px solid #eee',
         overflow: 'hidden',
         resize: 'both',
-      }}
-    >
+      }}>
       <Avatar did="z1YXMb8Souf2u8zVwWzexSNiD5Te7XGS313" responsive />
     </div>
   ))

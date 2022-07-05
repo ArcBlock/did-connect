@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-filename-extension */
 import { storiesOf } from '@storybook/react';
 
 import Box from '@mui/material/Box';

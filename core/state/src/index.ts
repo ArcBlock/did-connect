@@ -163,7 +163,7 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
     const claims = await onConnect(ctx, e);
     const result = await doSignedRequest({
       url: sessionApiUrl,
-      data: { requestedClaims: claims },
+      data: { requestedClaims: claims || [] },
       wallet: updater,
       method: 'PUT',
     });

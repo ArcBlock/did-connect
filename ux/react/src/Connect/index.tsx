@@ -10,31 +10,55 @@ import type { ConnectProps } from './types';
 import '@fontsource/lato/400.css';
 import '@fontsource/lato/700.css';
 
+const noop = () => null;
+const defaultProps = {
+  prefix: '/api/connect/relay',
+  onClose: noop,
+  onStart: noop,
+  onCreate: noop,
+  onComplete: noop,
+  onTimeout: noop,
+  onCancel: noop,
+  onReject: noop,
+  onError: noop,
+  timeout: SessionTimeout,
+  locale: 'en',
+  webWalletUrl: '',
+  baseUrl: '',
+  autoConnect: true,
+  saveConnect: true,
+  onlyConnect: false,
+};
+
 // TODO: more props to BasicConnect
-function Connect({
-  onCreate,
-  onConnect,
-  onApprove,
-  onComplete,
-  onTimeout,
-  onReject,
-  onCancel,
-  onError,
-  onClose,
-  prefix,
-  timeout,
-  locale,
-  webWalletUrl,
-  baseUrl,
-  autoConnect,
-  saveConnect,
-  onlyConnect,
-  ...rest
-}: ConnectProps) {
+function Connect(props: ConnectProps) {
+  const {
+    onStart,
+    onCreate,
+    onConnect,
+    onApprove,
+    onComplete,
+    onTimeout,
+    onReject,
+    onCancel,
+    onError,
+    onClose,
+    prefix,
+    timeout,
+    locale,
+    webWalletUrl,
+    baseUrl,
+    autoConnect,
+    saveConnect,
+    onlyConnect,
+    ...rest
+  } = { ...defaultProps, ...props };
+
   const { session, generate, cancel } = useSession({
     baseUrl,
     timeout,
     prefix,
+    onStart,
     onCreate,
     onConnect,
     onApprove,
@@ -65,24 +89,5 @@ function Connect({
     </BrowserEnvProvider>
   );
 }
-
-const noop = () => null;
-Connect.defaultProps = {
-  prefix: '/api/connect/relay',
-  onClose: noop,
-  onCreate: noop,
-  onComplete: noop,
-  onTimeout: noop,
-  onCancel: noop,
-  onReject: noop,
-  onError: noop,
-  timeout: SessionTimeout,
-  locale: 'en',
-  webWalletUrl: '',
-  baseUrl: '',
-  autoConnect: true,
-  saveConnect: true,
-  onlyConnect: false,
-};
 
 export default withWebWalletSWKeeper(withDialog(Connect));

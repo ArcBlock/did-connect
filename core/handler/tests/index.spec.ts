@@ -72,7 +72,6 @@ const profileRequest: TProfileRequest = {
 };
 const profileResponse: TProfileResponse = {
   type: 'profile',
-  description: 'Please give me your profile',
   fullName: 'test',
   email: 'test@arcblock.io',
   avatar: '123',
@@ -86,7 +85,6 @@ const assetRequest: TAssetRequest = {
 const assetResponse: TAssetResponse = {
   type: 'asset',
   asset: user.address,
-  description: 'Please prove that you own asset',
   ownerDid: user.address,
   ownerPk: user.publicKey.toString(),
   ownerProof: 'abc',
@@ -112,7 +110,9 @@ describe('RelayAdapterExpress', () => {
     headers['x-updater-pk'] = typeof pk === 'undefined' ? wallet.publicKey : pk;
     headers['x-updater-token'] =
       typeof token === 'undefined'
-        ? Jwt.sign(wallet.address, wallet.secretKey as string, { hash: typeof hash === 'undefined' ? objectHash(data) : hash })
+        ? Jwt.sign(wallet.address, wallet.secretKey as string, {
+            hash: typeof hash === 'undefined' ? objectHash(data) : hash,
+          })
         : token;
 
     const res = await api({

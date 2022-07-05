@@ -56,12 +56,22 @@ const DIDWalletInfo = Joi.object({
 type TRequest = LiteralUnion<'authPrincipal' | 'profile' | 'signature' | 'prepareTx' | 'agreement' | 'verifiableCredential' | 'asset', string>; // prettier-ignore
 type TSignature = LiteralUnion<'fg:g:transaction' | 'eth:transaction' | 'mime:text/html' | 'mime:text/plain', string>; // prettier-ignore
 
-const createStandardFields = (type: string, description: string) => ({
-  type: Joi.string().valid(type).required(),
-  description: Joi.string().min(1).required().default(description),
-  chainInfo: ChainInfo,
-  meta: Joi.any().optional().default({}),
-});
+const createStandardFields = (type: string, description: string, isRequest: boolean) => {
+  if (isRequest) {
+    return {
+      type: Joi.string().valid(type).required(),
+      description: Joi.string().min(1).required().default(description),
+      chainInfo: ChainInfo,
+      meta: Joi.any().optional().default({}),
+    };
+  }
+
+  return {
+    type: Joi.string().valid(type).required(),
+    meta: Joi.any().optional().default({}),
+  };
+};
+
 const TrustedIssuer = Joi.alternatives().try(
   Joi.object({
     did: Joi.DID().required(),
@@ -236,15 +246,14 @@ const createClaimTypes = (type: TRequest, description: string): ObjectSchema[] =
   };
 
   const request: ObjectSchema = Joi.object({
-    ...createStandardFields(type, description),
+    ...createStandardFields(type, description, true),
     ...claims[type].request,
   })
     .options(options)
     .meta({ unknownType: 'string', className: `T${capitalize(type)}Request` });
 
   const response: ObjectSchema = Joi.object({
-    ...createStandardFields(type, description),
-    ...claims[type].request,
+    ...createStandardFields(type, description, false),
     ...claims[type].response,
   })
     .options(options)
