@@ -27,6 +27,7 @@
     "prepush": "CI=1 yarn test",
     "prepublish": "npm run build",
     "test": "jest --forceExit",
+    "start": "blocklet dev",
     "coverage": "yarn test -- --coverage",
     "storybook:deploy": "storybook-to-ghpages -e storybook-static",
     "storybook:clean": "rm -rf storybook-static && mkdir storybook-static",
