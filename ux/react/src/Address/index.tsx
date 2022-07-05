@@ -1,21 +1,12 @@
-import DidAddress from './did-address';
-import ResponsiveDidAddress from './responsive-did-address';
+import Simple from './simple';
+import Responsive from './responsive';
+import { DidAddressProps } from './types';
 
 export const formatAddress = (str: string) => str.split(':').pop();
 
-interface DidAddressWrapperProps {
-  responsive?: boolean;
-}
-
-function DidAddressWrapper({ responsive, ...rest }: DidAddressWrapperProps) {
+export default function DidAddress({ responsive = true, ...rest }: DidAddressProps): JSX.Element {
   if (responsive) {
-    return <ResponsiveDidAddress {...rest} />;
+    return <Responsive {...rest} />;
   }
-  return <DidAddress {...rest} />;
+  return <Simple {...rest} />;
 }
-
-export default DidAddressWrapper;
-
-DidAddressWrapper.defaultProps = {
-  responsive: true,
-};

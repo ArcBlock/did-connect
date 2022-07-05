@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
+import type { TI18nMessages } from '@did-connect/types';
+
 import { useRef, useState, forwardRef } from 'react';
 import styled from 'styled-components';
 import '@fontsource/ubuntu-mono/400.css';
@@ -6,13 +7,14 @@ import useMountedState from 'react-use/lib/useMountedState';
 import Tooltip from '@mui/material/Tooltip';
 import { green } from '@mui/material/colors';
 import copy from 'copy-to-clipboard';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import CopyIcon from '@arcblock/icons/lib/Copy';
+
 import CompactText from './compact-text';
+import { SimpleProps } from './types';
 
 export const formatAddress = (str: any) => str.split(':').pop();
 
-const translations = {
+const translations: TI18nMessages = {
   en: {
     copy: 'Click To Copy',
     copied: 'Copied!',
@@ -21,21 +23,6 @@ const translations = {
     copy: '点击复制',
     copied: '已复制!',
   },
-};
-
-type DidAddressProps = {
-  component?: string;
-  size?: number;
-  copyable?: boolean;
-  children?: any;
-  content?: string;
-  inline?: boolean;
-  prepend?: any;
-  append?: any;
-  compact?: boolean;
-  startChars?: number;
-  endChars?: number;
-  locale?: 'en' | 'zh';
 };
 
 /**
@@ -51,12 +38,24 @@ type DidAddressProps = {
  *   - 为保证 copy 功能正常工作, 原 children 始终渲染, 但在紧凑式下会隐藏
  *   - 可配合 useMediaQuery 使用
  */
-const DidAddress = forwardRef<any, DidAddressProps>(
+const DidAddress = forwardRef<any, SimpleProps>(
   (
-    { component, size, copyable, content, children, prepend, append, compact, startChars, endChars, locale, ...rest },
+    {
+      component = 'span',
+      size = 0,
+      copyable = true,
+      children,
+      content = '',
+      prepend = null,
+      append = null,
+      compact = false,
+      startChars = 6,
+      endChars = 6,
+      locale = 'en',
+      ...rest
+    },
     ref
-  ) => {
-    // @ts-expect-error ts-migrate(2538) FIXME: Type 'undefined' cannot be used as an index type.
+  ): JSX.Element => {
     if (!translations[locale]) {
       // eslint-disable-next-line no-param-reassign
       locale = 'en';
@@ -82,10 +81,8 @@ const DidAddress = forwardRef<any, DidAddressProps>(
     let copyElement = null;
     if (copyable) {
       copyElement = (
-        // @ts-expect-error ts-migrate(2538) FIXME: Type 'undefined' cannot be used as an index type.
         <span className="did-address__copy-wrapper" title={copied ? '' : translations[locale].copy}>
           {copied ? (
-            // @ts-expect-error ts-migrate(2538) FIXME: Type 'undefined' cannot be used as an index type.
             <Tooltip title={translations[locale].copied} placement="bottom" arrow open={copied}>
               <i className="fal fa-check did-address__copy" style={{ color: green[500] }} />
             </Tooltip>
@@ -98,11 +95,12 @@ const DidAddress = forwardRef<any, DidAddressProps>(
     }
 
     return (
+      // @ts-ignore
       <Root as={component} size={size} {...rest} ref={ref}>
         {prepend}
         {/* 注意: 该元素必须渲染(可以隐藏), 以便 compact 模式下复制的文本是完整的 */}
         <span
-          // @ts-expect-error ts-migrate(2322) FIXME: Type 'MutableRefObject<undefined>' is not assignab... Remove this comment to see the full error message
+          // @ts-ignore
           ref={textRef}
           className="did-address__text did-address-truncate"
           style={{ display: compact ? 'none' : 'inline' }}>
@@ -123,21 +121,6 @@ const DidAddress = forwardRef<any, DidAddressProps>(
 );
 
 export default DidAddress;
-
-DidAddress.defaultProps = {
-  component: 'span',
-  size: 0,
-  copyable: true,
-  children: null,
-  content: '',
-  inline: false,
-  prepend: null,
-  append: null,
-  compact: false,
-  startChars: 6,
-  endChars: 6,
-  locale: 'en',
-};
 
 const getFontSize = (size: any) => {
   // 12px 及以上的 size 有效, 否则返回 inherit

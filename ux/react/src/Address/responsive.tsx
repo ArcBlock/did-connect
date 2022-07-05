@@ -1,16 +1,9 @@
 import { useState, createRef, useEffect } from 'react';
 import styled from 'styled-components';
 import useMeasure from 'react-use/lib/useMeasure';
-import DidAddress from './did-address';
 
-type OwnProps = {
-  style?: any;
-  className?: string;
-  component?: string;
-};
-
-// @ts-expect-error ts-migrate(2565) FIXME: Property 'defaultProps' is used before being assig... Remove this comment to see the full error message
-type Props = OwnProps & typeof ResponsiveDidAddress.defaultProps;
+import DidAddress from './simple';
+import { ResponsiveProps } from './types';
 
 /**
  * 根据父容器宽度自动切换 compact 模式
@@ -22,7 +15,12 @@ type Props = OwnProps & typeof ResponsiveDidAddress.defaultProps;
  * - 监听容器宽度变化, 当容器宽度变化时, 对比容器宽度和 did address full-width, => 切换 compact 模式
  * - TODO: 初始化时, 在确定是否应该以 compact 模式渲染前, 隐藏显示, 避免闪烁问题
  */
-export default function ResponsiveDidAddress({ style, className, component, ...rest }: Props) {
+export default function ResponsiveDidAddress({
+  style = {},
+  className = '',
+  component = 'span',
+  ...rest
+}: ResponsiveProps): JSX.Element {
   const [compact, setCompact] = useState(false);
   // did address 完整显示时的宽度
   const [addressFullWidth, setAddressFullWidth] = useState(null);
@@ -33,25 +31,21 @@ export default function ResponsiveDidAddress({ style, className, component, ...r
     if (!compact && addressFullWidth === null) {
       setAddressFullWidth((ref as any).current.offsetWidth);
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (containerWidth && addressFullWidth) {
       setCompact(containerWidth < addressFullWidth);
     }
   }, [containerWidth, addressFullWidth]);
+
   return (
+    // @ts-ignore
     <Root as={component} inline={(rest as any).inline} ref={containerRef} style={style} className={className}>
       <StyledDidAddress {...rest} component={component} inline compact={compact} ref={ref} />
     </Root>
   );
 }
-
-ResponsiveDidAddress.defaultProps = {
-  style: {},
-  className: '',
-  component: 'span',
-};
 
 const Root = styled.div`
   display: block;

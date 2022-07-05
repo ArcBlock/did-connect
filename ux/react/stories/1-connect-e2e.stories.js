@@ -22,10 +22,7 @@ const sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout)
 
 // TODO: deploy this to staging server
 const baseUrl = 'https://dfe45b38-znkntry8ptmrcty8b2mnmapp4bs3bx8n844d.did.abtnet.io';
-
-// TODO: make this usable
 const webWalletUrl = `${window.location.protocol}//wallet.staging.arcblock.io`;
-
 const chainHost = 'https://beta.abtnetwork.io/api/';
 
 const profileRequest: TProfileRequest = {

@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import { Children } from 'react';
 
 // 递归, 将 text (string) 部分替换为 CompactText (保持元素结构)
@@ -20,19 +21,16 @@ function RecursiveWrapper({ children, ...rest }: any) {
   return wrappedChildren;
 }
 
-type OwnCompactTextProps = {
+interface Props {
   startChars?: number;
   endChars?: number;
   children: React.ReactNode;
-};
-
-// @ts-expect-error ts-migrate(2565) FIXME: Property 'defaultProps' is used before being assig... Remove this comment to see the full error message
-type CompactTextProps = OwnCompactTextProps & typeof CompactText.defaultProps;
+}
 
 /**
  * 紧凑文本组件 (显示首尾, 中间截断显示省略号), 仅考虑等宽字体的情况
  */
-export default function CompactText({ startChars, endChars, children }: CompactTextProps) {
+export default function CompactText({ startChars = 6, endChars = 6, children }: Props): JSX.Element {
   if (typeof children !== 'string') {
     return (
       <RecursiveWrapper startChars={startChars} endChars={endChars}>
@@ -47,8 +45,3 @@ export default function CompactText({ startChars, endChars, children }: CompactT
     </span>
   );
 }
-
-CompactText.defaultProps = {
-  startChars: 6,
-  endChars: 6,
-};
