@@ -1,7 +1,7 @@
 import DidAddress from './did-address';
 import ResponsiveDidAddress from './responsive-did-address';
 
-export const formatAddress = (str: any) => str.split(':').pop();
+export const formatAddress = (str: string) => str.split(':').pop();
 
 interface DidAddressWrapperProps {
   responsive?: boolean;

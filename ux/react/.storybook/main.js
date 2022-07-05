@@ -8,4 +8,11 @@ module.exports = {
     '@storybook/addon-storysource',
     '@storybook/addon-docs',
   ],
+  babel: async (options) => {
+    console.log(options);
+    return {
+      ...options,
+      // any extra options you want to set
+    };
+  },
 };

@@ -16,7 +16,8 @@ function RecursiveWrapper({ children, ...rest }: any) {
     }
     return child;
   });
-  return <>{wrappedChildren}</>;
+
+  return wrappedChildren;
 }
 
 type OwnCompactTextProps = {

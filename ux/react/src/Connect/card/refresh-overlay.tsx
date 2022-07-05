@@ -1,4 +1,4 @@
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'styl... Remove this comment to see the full error message
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import styled from 'styled-components';
 import Refresh from '@mui/icons-material/Refresh';
 
@@ -15,10 +15,7 @@ export default function RefreshOverlay({ onRefresh, ...rest }: RefreshOverlayPro
 
   return (
     <Root {...rest} onClick={handleOnRefresh}>
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'span'.
       <span>
-        // @ts-expect-error ts-migrate(2749) FIXME: 'Refresh' refers to a value, but is being used as ... Remove this
-        comment to see the full error message
         <Refresh />
       </span>
     </Root>

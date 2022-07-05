@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import PropTypes from 'prop-types';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'styl... Remove this comment to see the full error message
 import styled from 'styled-components';
@@ -30,17 +31,10 @@ const StyledButton = styled(Button)`
 /**
  * Status (scanned/succeed/error)
  */
-export default function Status({
-  status,
-  onCancel,
-  onRetry,
-  messages,
-  locale,
-  ...rest
-}: any) {
+export default function Status({ status, onCancel, onRetry, messages, locale, ...rest }: any) {
   return (
     <Root {...rest}>
-      {isSessionActive(status: any) && (
+      {isSessionActive(status) && (
         <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
           <Box>
             <ConnectIcon style={{ width: 48, height: 48, fill: '#4598FA' }} />

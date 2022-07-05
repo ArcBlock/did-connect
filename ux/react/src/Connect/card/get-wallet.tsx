@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { useRef } from 'react';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'styl... Remove this comment to see the full error message
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
 import translations from '../assets/locale';
@@ -8,7 +8,6 @@ type OwnProps = {
   locale?: 'en' | 'zh';
 };
 
-// @ts-expect-error ts-migrate(2565) FIXME: Property 'defaultProps' is used before being assig... Remove this comment to see the full error message
 type Props = OwnProps & typeof GetWallet.defaultProps;
 
 /**
@@ -32,7 +31,6 @@ export default function GetWallet({ locale, ...rest }: Props) {
       <a
         href={`https://www.didwallet.io/${locale === 'zh' ? 'zh' : 'en'}`}
         target="_blank"
-        // @ts-expect-error ts-migrate(2322) FIXME: Type 'MutableRefObject<undefined>' is not assignab... Remove this comment to see the full error message
         ref={linkRef}
         style={{ display: 'none' }}
         rel="noreferrer">

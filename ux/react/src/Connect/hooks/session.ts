@@ -7,7 +7,7 @@ import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 import { createStateMachine } from '@did-connect/state';
 
 import { decodeConnectUrl, parseTokenFromConnectUrl, updateConnectedInfo } from '../../utils';
-import useMachine from './machine';
+import { useMachine } from './machine';
 
 // 从 url params 中获取已存在的 session (token & connect url)
 const parseExistingSession = () => {
@@ -63,10 +63,9 @@ export default function useSession({
     await onComplete(...args);
   };
 
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'createMachine'.
   const session = useMemo(
     () =>
-      createMachine({
+      createStateMachine({
         baseUrl: joinUrl(baseUrl, prefix),
         sessionId: existingSession ? (existingSession as any).sessionId : null,
         // initial = 'start', // we maybe reusing existing session
@@ -91,14 +90,14 @@ export default function useSession({
         onlyConnect,
         // timeout for each stage
         timeout,
-}), [retryCount] // eslint-disable-line
+      }),
+    [retryCount] // eslint-disable-line
   );
 
   const { machine, deepLink, sessionId } = session;
   const [state, send, service] = useMachine(machine);
 
   const cancel = () => {
-    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     send({ type: 'CANCEL' });
     setCancelCount((counter) => counter + 1);
   };

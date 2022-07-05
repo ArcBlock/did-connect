@@ -1,22 +1,46 @@
 // Note: this custom hook exists because of: https://github.com/statelyai/xstate/issues/1101
 import { useState, useEffect, useMemo } from 'react';
-import { interpret, State } from 'xstate';
+import {
+  interpret,
+  EventObject,
+  StateMachine,
+  State,
+  Interpreter,
+  InterpreterOptions,
+  MachineOptions,
+  StateConfig,
+  Typestate,
+} from 'xstate';
 
-export default function useMachine(machine: any, options = {}) {
+interface UseMachineOptions<TContext, TEvent extends EventObject> {
+  /**
+   * If provided, will be merged with machine's `context`.
+   */
+  context?: Partial<TContext>;
+  /**
+   * The state to rehydrate the machine to. The machine will
+   * start at this state instead of its `initialState`.
+   */
+  state?: StateConfig<TContext, TEvent>;
+}
+
+export function useMachine<TContext, TEvent extends EventObject, TTypestate extends Typestate<TContext> = any>(
+  machine: StateMachine<TContext, any, TEvent, TTypestate>,
+  options: Partial<InterpreterOptions> &
+    Partial<UseMachineOptions<TContext, TEvent>> &
+    Partial<MachineOptions<TContext, TEvent>> = {}
+): [
+  State<TContext, TEvent, any, TTypestate>,
+  Interpreter<TContext, any, TEvent, TTypestate>['send'],
+  Interpreter<TContext, any, TEvent, TTypestate>
+] {
   const {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'context' does not exist on type '{}'.
     context,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'guards' does not exist on type '{}'.
     guards,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'actions' does not exist on type '{}'.
     actions,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'activities' does not exist on type '{}'.
     activities,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'services' does not exist on type '{}'.
     services,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'delays' does not exist on type '{}'.
     delays,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'state' does not exist on type '{}'.
     state: rehydratedState,
     ...interpreterOptions
   } = options;
@@ -34,12 +58,13 @@ export default function useMachine(machine: any, options = {}) {
     const createdMachine = machine.withConfig(machineConfig, {
       ...machine.context,
       ...context,
-    });
+    } as TContext);
 
     return interpret(createdMachine, interpreterOptions).start(
       rehydratedState ? State.create(rehydratedState) : undefined
     );
-  }, [machine]); // eslint-disable-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [machine]);
 
   const [state, setState] = useState(service.state);
 
@@ -62,12 +87,12 @@ export default function useMachine(machine: any, options = {}) {
   // This mutation assignment is safe because the service instance is only used
   // in one place -- this hook's caller.
   useEffect(() => {
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+    // @ts-ignore
     Object.assign(service.machine.options.actions, actions);
   }, [service, actions]);
 
   useEffect(() => {
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+    // @ts-ignore
     Object.assign(service.machine.options.services, services);
   }, [service, services]);
 

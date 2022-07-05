@@ -1,16 +1,13 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable react/no-unused-prop-types */
 import { useState, useMemo } from 'react';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'styl... Remove this comment to see the full error message
 import styled from 'styled-components';
 import { ErrorBoundary } from 'react-error-boundary';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import Img from '@arcblock/ux/lib/Img';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import { mergeProps } from '@arcblock/ux/lib/Util';
 import { makeStyles } from '@mui/styles';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import { Shape } from '@arcblock/did-motif';
-import { Box } from '@mui/system';
+import Box from '@mui/material/Box';
 import DIDMotif from './did-motif';
 import blockies from './etherscan-blockies';
 

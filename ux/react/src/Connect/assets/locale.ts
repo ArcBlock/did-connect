@@ -1,4 +1,6 @@
-export default {
+import { TI18nMessages } from '@did-connect/types';
+
+const messages: TI18nMessages = {
   en: {
     generateError: 'Request new qrcode failed',
     checkError: 'Status check failed!',
@@ -44,3 +46,5 @@ export default {
     connected: '已连接您的',
   },
 };
+
+export default messages;

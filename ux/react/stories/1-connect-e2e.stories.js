@@ -17,7 +17,7 @@ import { BrowserEnvContext } from '../src/Connect/contexts/browser';
 const sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout));
 
 // TODO: deploy this to staging server
-const baseUrl = 'https://did-connect-relay-server-vwb-192-168-123-127.ip.abtnet.io';
+const baseUrl = 'https://dfe45b38-znkntry8ptmrcty8b2mnmapp4bs3bx8n844d.did.abtnet.io';
 
 // TODO: make this usable
 const webWalletUrl = `${window.location.protocol}//www.abtnode.com`;
@@ -41,11 +41,13 @@ const onConnect = async (ctx, e) => {
   action('onConnect')(ctx, e);
   await sleep(1000);
   return [
-    {
-      type: 'profile',
-      fields: ['fullName', 'email', 'avatar'],
-      description: 'Please give me your profile',
-    },
+    [
+      {
+        type: 'profile',
+        fields: ['fullName', 'email', 'avatar'],
+        description: 'Please give me your profile',
+      },
+    ],
   ];
 };
 const onApprove = async (ctx, e) => {
@@ -146,11 +148,13 @@ storiesOf('DID-Connect/Examples', module)
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
       return [
-        {
-          type: 'profile',
-          fields: ['fullName', 'email', 'avatar'],
-          description: 'Please give me your profile',
-        },
+        [
+          {
+            type: 'profile',
+            fields: ['fullName', 'email', 'avatar'],
+            description: 'Please give me your profile',
+          },
+        ],
       ];
     };
     const handleComplete = (ctx, e) => {
@@ -200,16 +204,18 @@ storiesOf('DID-Connect/Examples', module)
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
       return [
-        {
-          type: 'asset',
-          filters: [
-            {
-              // https://launcher.staging.arcblock.io/
-              trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'],
-            },
-          ],
-          description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
-        },
+        [
+          {
+            type: 'asset',
+            filters: [
+              {
+                // https://launcher.staging.arcblock.io/
+                trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'],
+              },
+            ],
+            description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
+          },
+        ],
       ];
     };
 
@@ -270,13 +276,15 @@ storiesOf('DID-Connect/Examples', module)
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
       return [
-        {
-          type: 'verifiableCredential',
-          item: ['ABTNodePassport'],
-          trustedIssuers: ['zNKjT5VBGNEzh4p6V4dsaYE61e7Pxxn3vk4j'],
-          optional: false,
-          description: 'Please provide passport issued by Blocklet Server(Staging)',
-        },
+        [
+          {
+            type: 'verifiableCredential',
+            item: ['ABTNodePassport'],
+            trustedIssuers: ['zNKjT5VBGNEzh4p6V4dsaYE61e7Pxxn3vk4j'],
+            optional: false,
+            description: 'Please provide passport issued by Blocklet Server(Staging)',
+          },
+        ],
       ];
     };
 
@@ -336,12 +344,14 @@ storiesOf('DID-Connect/Examples', module)
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
       return [
-        {
-          type: 'signature',
-          typeUrl: 'mime:text/plain',
-          origin: toBase58('DID Connect is Awesome'),
-          description: 'Please sign the message',
-        },
+        [
+          {
+            type: 'signature',
+            typeUrl: 'mime:text/plain',
+            origin: toBase58('DID Connect is Awesome'),
+            description: 'Please sign the message',
+          },
+        ],
       ];
     };
 
@@ -403,13 +413,15 @@ storiesOf('DID-Connect/Examples', module)
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
       return [
-        {
-          type: 'signature',
-          typeUrl: 'mime:text/plain',
-          digest: toBase58(objectHash(data)),
-          description: 'Please sign the data hash',
-          meta: data,
-        },
+        [
+          {
+            type: 'signature',
+            typeUrl: 'mime:text/plain',
+            digest: toBase58(objectHash(data)),
+            description: 'Please sign the data hash',
+            meta: data,
+          },
+        ],
       ];
     };
 
@@ -485,15 +497,17 @@ storiesOf('DID-Connect/Examples', module)
       });
 
       return [
-        {
-          type: 'signature',
-          typeUrl: 'fg:t:transaction',
-          origin: toBase58(tx),
-          description: 'Please sign this transaction to transfer 1 TBA to the app',
-          chainInfo: {
-            host: chainHost,
+        [
+          {
+            type: 'signature',
+            typeUrl: 'fg:t:transaction',
+            origin: toBase58(tx),
+            description: 'Please sign this transaction to transfer 1 TBA to the app',
+            chainInfo: {
+              host: chainHost,
+            },
           },
-        },
+        ],
       ];
     };
 
@@ -627,17 +641,21 @@ storiesOf('DID-Connect/Examples', module)
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
       return [
-        {
-          type: 'profile',
-          fields: ['fullName', 'email', 'avatar'],
-          description: 'Please give me your profile',
-        },
-        {
-          // https://launcher.staging.arcblock.io/
-          type: 'asset',
-          filters: [{ trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'] }],
-          description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
-        },
+        [
+          {
+            type: 'profile',
+            fields: ['fullName', 'email', 'avatar'],
+            description: 'Please give me your profile',
+          },
+        ],
+        [
+          {
+            // https://launcher.staging.arcblock.io/
+            type: 'asset',
+            filters: [{ trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'] }],
+            description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
+          },
+        ],
       ];
     };
 
@@ -700,11 +718,13 @@ storiesOf('DID-Connect/Examples', module)
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
       return [
-        {
-          type: 'profile',
-          fields: ['fullName', 'email', 'avatar'],
-          description: 'Please give me your profile',
-        },
+        [
+          {
+            type: 'profile',
+            fields: ['fullName', 'email', 'avatar'],
+            description: 'Please give me your profile',
+          },
+        ],
       ];
     };
 

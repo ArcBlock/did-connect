@@ -13,9 +13,7 @@ interface ConnectButtonProps {
 export default function ConnectButton({ children, ...rest }: ConnectButtonProps) {
   return (
     <Button color="did" variant="contained" {...rest}>
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'span'.
       <span style={{ fontWeight: 400 }}>{children || 'Continue With'}</span>
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'style'.
       <ConnectLogo style={{ width: 'auto', height: '1.2em', margin: '0 4px 0 8px' }} />
     </Button>
   );

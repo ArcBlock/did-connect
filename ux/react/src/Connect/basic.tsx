@@ -1,19 +1,14 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { useState, useEffect, useMemo } from 'react';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'styl... Remove this comment to see the full error message
 import styled, { css } from 'styled-components';
 import { useTheme } from '@mui/styles';
 import Cookie from 'js-cookie';
 import Box from '@mui/material/Box';
 import useMeasure from 'react-use/lib/useMeasure';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import Img from '@arcblock/ux/lib/Img';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import { openWebWallet } from '@arcblock/ux/lib/Util';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import Spinner from '@arcblock/ux/lib/Spinner';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import colors from '@arcblock/ux/lib/Colors';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import DidWalletLogo from '@arcblock/icons/lib/DidWalletLogo';
 import { useBrowserEnvContext } from './contexts/browser';
 import translations from './assets/locale';
