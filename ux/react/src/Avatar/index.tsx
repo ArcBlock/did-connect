@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/no-unstable-nested-components */
 import { useState, useMemo } from 'react';
 import styled from 'styled-components';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -8,6 +7,9 @@ import { mergeProps } from '@arcblock/ux/lib/Util';
 import { makeStyles } from '@mui/styles';
 import { Shape } from '@arcblock/did-motif';
 import Box from '@mui/material/Box';
+
+import type { LiteralUnion } from 'type-fest';
+
 import DIDMotif from './did-motif';
 import blockies from './etherscan-blockies';
 
@@ -35,19 +37,25 @@ const isEthereumDid = (did: any) => {
   return true;
 };
 
-type OwnAvatarProps = {
-  did: string;
-  size?: number;
-  variant?: 'circle' | 'rounded' | 'default';
-  animation?: boolean;
-  shape?: '' | 'rectangle' | 'square' | 'hexagon' | 'circle';
+const defaultProps = {
+  size: 36,
+  variant: 'default',
+  animation: false,
+  shape: '',
 };
 
-// @ts-expect-error ts-migrate(2565) FIXME: Property 'defaultProps' is used before being assig... Remove this comment to see the full error message
-type AvatarProps = OwnAvatarProps & typeof Avatar.defaultProps;
+type AvatarVariant = LiteralUnion<'default' | 'rounded' | 'circle', string>;
+type AvatarShape = LiteralUnion<'' | 'rectangle' | 'square' | 'hexagon' | 'circle', string>;
+type AvatarProps = {
+  did: string;
+  size?: number;
+  variant?: AvatarVariant;
+  animation?: boolean;
+  shape?: AvatarShape;
+} & typeof defaultProps;
 
 // 参考: https://github.com/blocklet/block-explorer/issues/478#issuecomment-1038954976
-function Avatar(props: AvatarProps) {
+function Avatar(props: AvatarProps): JSX.Element {
   const classes = useStyles();
   const [imgError, setImgError] = useState(false);
   const newProps = mergeProps(props, Avatar, []);
@@ -103,12 +111,7 @@ function Avatar(props: AvatarProps) {
   throw new Error(`Invalid DID: ${did}`);
 }
 
-Avatar.defaultProps = {
-  size: 36,
-  variant: 'default',
-  animation: false,
-  shape: '',
-};
+Avatar.defaultProps = defaultProps;
 
 const BlockyIconContainer = styled.div`
   width: ${(props: any) => props.$size / 0.7}px;
@@ -120,7 +123,7 @@ const BlockyIconContainer = styled.div`
   background: #ddd;
 `;
 
-export default function AvatarWithErrorBoundary(props: any) {
+export default function AvatarWithErrorBoundary(props: AvatarProps): JSX.Element {
   const classes = useStyles();
   const size = props.size || 36;
   return (
@@ -137,3 +140,5 @@ export default function AvatarWithErrorBoundary(props: any) {
     </ErrorBoundary>
   );
 }
+
+AvatarWithErrorBoundary.defaultProps = defaultProps;
