@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { useState } from 'react';
@@ -556,12 +557,17 @@ storiesOf('DID-Connect/Examples', module)
       const app = fromAddress(ctx.appInfo.publisher.split(':').pop());
       const user = fromPublicKey(e.userPk);
       const value = (await client.fromTokenToUnit(1)).toString(10);
-      const { buffer: tx } = await client.encodeTransferV2Tx({
+      const { buffer: tx } = await client.encodeTransferV3Tx({
         tx: {
           itx: {
-            to: app.address,
-            // https://beta.abtnetwork.io/explorer/tokens/z35n6UoHSi9MED4uaQy6ozFgKPaZj2UKrurBG/transactions
-            tokens: [{ address: 'z35n6UoHSi9MED4uaQy6ozFgKPaZj2UKrurBG', value }],
+            inputs: [],
+            outputs: [
+              {
+                owner: app.address,
+                // https://beta.abtnetwork.io/explorer/tokens/z35n6UoHSi9MED4uaQy6ozFgKPaZj2UKrurBG/transactions
+                tokens: [{ address: 'z35n6UoHSi9MED4uaQy6ozFgKPaZj2UKrurBG', value }],
+              },
+            ],
           },
         },
         wallet: user,
