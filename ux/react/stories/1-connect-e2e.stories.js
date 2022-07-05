@@ -8,8 +8,8 @@ import Button from '@arcblock/ux/lib/Button';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { toBase58 } from '@ocap/util';
-import Client from '@ocap/client';
 import { fromAddress, fromPublicKey } from '@ocap/wallet';
+import Client from '@ocap/client';
 import objectHash from 'object-hash';
 import type { TProfileRequest, TAssetRequest } from '@did-connect/types';
 
@@ -23,7 +23,7 @@ const sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout)
 const baseUrl = 'https://dfe45b38-znkntry8ptmrcty8b2mnmapp4bs3bx8n844d.did.abtnet.io';
 
 // TODO: make this usable
-const webWalletUrl = `${window.location.protocol}//www.abtnode.com`;
+const webWalletUrl = `${window.location.protocol}//wallet.staging.arcblock.io`;
 
 const chainHost = 'https://beta.abtnetwork.io/api/';
 
