@@ -1,5 +1,5 @@
 import Cookie from 'js-cookie';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
+import { TAppInfo, TSession } from '@did-connect/types';
 import { getCookieOptions } from '@arcblock/ux/lib/Util';
 
 export const providerName = 'wallet_url';
@@ -18,7 +18,7 @@ export const noop = () => null;
  * - env.webWalletUrl
  * - production web wallet url
  */
-export const getWebWalletUrl = () => {
+export const getWebWalletUrl = (): string => {
   return (
     window.localStorage.getItem(providerName) ||
     (window as any).blocklet?.webWalletUrl ||
@@ -28,7 +28,7 @@ export const getWebWalletUrl = () => {
 };
 
 // 检查 wallet url protocol 和当前页面地址的 protocol 是否一致
-export const checkSameProtocol = (webWalletUrl: any) => {
+export const checkSameProtocol = (webWalletUrl: any): boolean => {
   const { protocol } = window.location;
   let walletProtocol = '';
   try {
@@ -40,58 +40,58 @@ export const checkSameProtocol = (webWalletUrl: any) => {
 };
 
 // https://github.com/joaquimserafim/base64-url/blob/54d9c9ede66a8724f280cf24fd18c38b9a53915f/index.js#L10
-function unescape(str: any) {
+function unescape(str: string): string {
   return (str + '==='.slice((str.length + 3) % 4)).replace(/-/g, '+').replace(/_/g, '/');
 }
-function escape(str: any) {
+function escape(str: string): string {
   return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
 // 如果需要 did-connect 加入一个已经存在的 session, 可以通过 url 传递一个 "__connect_url__" 查询参数, did-connect 会解析参数值中的 token 和 connect url 并加入该 session
 // "__connect_url__" 需要编码/解码才可以正常使用
 // 该方法只针对 browser 环境, nodejs 环境可以使用 escape(Buffer.from(url).toString('base64')) 进行编码
-export const encodeConnectUrl = (url: any) => {
+export const encodeConnectUrl = (url: string): string => {
   return escape(window.btoa(url));
 };
 
-export const decodeConnectUrl = (encoded: any) => {
+export const decodeConnectUrl = (encoded: string): string => {
   return window.atob(unescape(encoded));
 };
 
 // connectUrl 对应 create token 响应数据中的 url 字段值
-export const parseTokenFromConnectUrl = (connectUrl: any) => {
+export const parseTokenFromConnectUrl = (connectUrl: string): string => {
   const connectUrlObj = new URL(connectUrl);
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | null' is not assignable... Remove this comment to see the full error message
-  const url = decodeURIComponent(connectUrlObj.searchParams.get('url'));
-  const token = new URL(url).searchParams.get('_t_');
+  const url = decodeURIComponent(connectUrlObj.searchParams.get('url') || '');
+  const token = new URL(url).searchParams.get('_t_') || '';
   return token;
 };
 
-export const getAppId = (appInfo: any) => {
+export const getAppId = (appInfo: TAppInfo): string => {
   return appInfo
-    ? appInfo.publisher.replace('did:abt:', '')
+    ? appInfo.publisher?.replace('did:abt:', '')
     : (window as any).blocklet?.appId || (window as any).env?.appId || '';
 };
 
-export const updateConnectedInfo = (ctx: any) => {
+export const updateConnectedInfo = (ctx: TSession) => {
   const cookieOptions = getCookieOptions({ expireInDays: 7, returnDomain: false });
 
   // connected_did and connected_pk are used to skip authPrincipal
-  Cookie.set('connected_did', ctx.connectedUser.userDid || '', cookieOptions);
-  Cookie.set('connected_pk', ctx.connectedUser.userPk || '', cookieOptions);
+  Cookie.set('connected_did', ctx.currentConnected?.userDid || '', cookieOptions);
+  Cookie.set('connected_pk', ctx.currentConnected?.userPk || '', cookieOptions);
 
   // connected_app is used to check session validity
   Cookie.set('connected_app', getAppId(ctx.appInfo), cookieOptions);
 
   // connected_wallet_os is used to decide autoConnect target
-  if (ctx.connectedUser.wallet?.os) {
-    Cookie.set('connected_wallet_os', ctx.connectedUser.wallet.os, cookieOptions);
+  if (ctx.currentConnected?.didwallet.os) {
+    Cookie.set('connected_wallet_os', ctx.currentConnected.didwallet.os, cookieOptions);
   }
 };
 
-export const isSessionFinalized = (status: any) => ['error', 'canceled', 'rejected', 'completed'].includes(status);
+export const isSessionFinalized = (status: string): boolean =>
+  ['error', 'canceled', 'rejected', 'completed'].includes(status);
 
-export const isSessionActive = (status: any) =>
+export const isSessionActive = (status: string): boolean =>
   ['walletScanned', 'walletConnected', 'appConnected', 'walletApproved', 'appApproved'].includes(status);
 
-export const isSessionLoading = (status: any) => ['start', 'loading'].includes(status);
+export const isSessionLoading = (status: string): boolean => ['start', 'loading'].includes(status);

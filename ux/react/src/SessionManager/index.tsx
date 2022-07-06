@@ -145,6 +145,7 @@ type OwnSessionManagerProps = {
   size?: number;
 };
 
+// @ts-ignore
 type SessionManagerProps = OwnSessionManagerProps & typeof SessionManager.defaultProps;
 
 function SessionManager({
