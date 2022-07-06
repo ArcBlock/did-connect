@@ -1,15 +1,21 @@
+import { TAnyObject } from '@did-connect/types';
+
 import CookieEngine from './engine/cookie';
 import LocalStorageEngine from './engine/local-storage';
+import { EngineType, StorageEngine } from './types';
 
-export default function createStorage(storageKey = 'did.auth.token', storageEngine = 'ls', storageOptions = {}) {
+export default function createStorage(
+  storageKey: string = 'did.auth.token',
+  storageEngine: EngineType = 'ls',
+  storageOptions: TAnyObject = {}
+): StorageEngine {
   if (!storageKey) {
     throw new Error('storageKey must be specified to create a storage');
   }
 
   let storage = null;
   if (storageEngine === 'ls') {
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 2.
-    storage = new LocalStorageEngine(storageKey, storageOptions);
+    storage = new LocalStorageEngine(storageKey);
   } else if (storageEngine === 'cookie') {
     storage = new CookieEngine(storageKey, storageOptions);
   } else {

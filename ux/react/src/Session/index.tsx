@@ -1,13 +1,11 @@
+import { TAnyObject, TLocaleCode, TI18nMessages } from '@did-connect/types';
 import { createContext, Component } from 'react';
-import PropTypes from 'prop-types';
+import { AxiosInstance } from 'axios';
 import omit from 'lodash/omit';
 import Cookie from 'js-cookie';
 
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import { getCookieOptions } from '@arcblock/ux/lib/Util';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import Center from '@arcblock/ux/lib/Center';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import Spinner from '@arcblock/ux/lib/Spinner';
 
 import Connect from '../Connect';
@@ -15,13 +13,11 @@ import createService from '../Service';
 import createStorage from '../Storage';
 import { getAppId, updateConnectedInfo } from '../utils';
 
-// @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
-export const SessionContext = createContext();
-const { Provider, Consumer } = SessionContext;
+import { EngineType, StorageEngine } from '../Storage/types';
 
-const AUTH_SERVICE_PREFIX = '/.well-known/service';
+type I18nGroup = { [key: string]: TI18nMessages };
 
-const translations = {
+const translations: I18nGroup = {
   login: {
     en: {
       title: 'Connect DID Wallet',
@@ -66,14 +62,70 @@ const translations = {
   },
 };
 
-// @ts-expect-error ts-migrate(4060) FIXME: Return type of exported function has or is using p... Remove this comment to see the full error message
+const defaultProps = {
+  locale: 'en',
+  action: 'login',
+  prefix: '/api/did',
+  appendAuthServicePrefix: false,
+  extraParams: {},
+  autoConnect: null,
+  autoDisconnect: true,
+  timeout: 5 * 60 * 1000,
+  webWalletUrl: '',
+  messages: null,
+};
+
+type ProviderProps = {
+  children: any;
+  serviceHost: string;
+  action?: string;
+  prefix?: string;
+  appendAuthServicePrefix?: boolean;
+  locale?: TLocaleCode;
+  timeout?: number;
+  autoConnect?: boolean;
+  autoDisconnect?: boolean;
+  extraParams?: TAnyObject;
+  webWalletUrl?: string;
+  messages?: I18nGroup | null;
+} & typeof defaultProps;
+
+type ProviderState = {
+  action: string;
+  error: string;
+  initialized: boolean;
+  loading: boolean;
+  open: boolean;
+  user: any; // FIXME: user type
+};
+
+type SessionContextValue = {
+  api: AxiosInstance;
+  session: ProviderState & {
+    login(done: any): void;
+    logout(done: any): void;
+    switchDid(done: any): void;
+    switchProfile(done: any): void;
+    switchPassport(done: any): void;
+    refresh(): void;
+    // FIXME: type for callbacks
+    // updateConnectedInfo;
+  };
+};
+
+export const SessionContext = createContext<SessionContextValue>({} as SessionContextValue);
+
+const { Provider, Consumer } = SessionContext;
+
+const AUTH_SERVICE_PREFIX = '/.well-known/service';
+
 export default function createSessionContext(
-  storageKey = 'login_token',
-  storageEngine = 'ls',
-  storageOptions = {},
+  storageKey: string = 'login_token',
+  storageEngine: EngineType = 'ls',
+  storageOptions: TAnyObject = {},
   appendAuthServicePrefix = false
-) {
-  const storage = createStorage(storageKey, storageEngine, storageOptions);
+): any {
+  const storage: StorageEngine = createStorage(storageKey, storageEngine, storageOptions);
   const { getToken, setToken, removeToken } = storage;
 
   const clearSession = () => {
@@ -85,17 +137,19 @@ export default function createSessionContext(
     removeToken();
   };
 
-  class SessionProvider extends Component {
-    listeners: any;
+  class SessionProvider extends Component<ProviderProps, ProviderState> {
+    listeners: { [key: string]: Function[] };
 
-    service: any;
+    service: AxiosInstance;
 
-    constructor(props: any) {
+    constructor(props: ProviderProps) {
       super(props);
 
-      this.service = createService(props.serviceHost, storage);
+      const { serviceHost, action } = this.props;
+
+      this.service = createService(serviceHost, storage);
       this.state = {
-        action: props.action,
+        action,
         error: '',
         initialized: false,
         loading: false,
@@ -116,24 +170,24 @@ export default function createSessionContext(
     }
 
     get fullPrefix() {
-      if (appendAuthServicePrefix || (this.props as any).appendAuthServicePrefix) {
-        return `${AUTH_SERVICE_PREFIX}${(this.props as any).prefix}`;
+      const { appendAuthServicePrefix: appendPrefix, prefix } = this.props;
+      if (appendAuthServicePrefix && appendPrefix) {
+        return `${AUTH_SERVICE_PREFIX}${prefix}`;
       }
-      return (this.props as any).prefix;
+      return prefix;
     }
 
     // 不可以直接个性 props.autoConnect (readonly)
     get autoConnect() {
+      const { autoConnect, autoLogin } = this.props;
       // for backward compatibility
-      if (typeof (this.props as any).autoConnect === 'boolean') {
-        return (this.props as any).autoConnect;
+      if (typeof autoConnect === 'boolean') {
+        return autoConnect;
       }
-      // eslint-disable-next-line react/prop-types
-      return !!(this.props as any).autoLogin;
+      return !!autoLogin;
     }
 
     componentDidMount() {
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'autoDisconnect' does not exist on type '... Remove this comment to see the full error message
       const { autoDisconnect } = this.props;
       // ensure we are in the same app
       const connectedApp = Cookie.get('connected_app');
@@ -170,7 +224,7 @@ export default function createSessionContext(
 
     async refresh(showProgress = false, setInitialized = false) {
       try {
-        if ((this.state as any).loading) {
+        if (this.state.loading) {
           console.warn('SessionProvider.refresh is currently in progress, call it will be noop');
           return;
         }
@@ -231,7 +285,7 @@ export default function createSessionContext(
     }
 
     login(done: any) {
-      if ((this.state as any).user) {
+      if (this.state.user) {
         return;
       }
       if (typeof done === 'function') {
@@ -255,7 +309,7 @@ export default function createSessionContext(
     }
 
     switchProfile(done: any) {
-      if (!(this.state as any).user) {
+      if (!this.state.user) {
         return;
       }
       if (typeof done === 'function') {
@@ -265,7 +319,7 @@ export default function createSessionContext(
     }
 
     switchPassport(done: any) {
-      if (!(this.state as any).user) {
+      if (!this.state.user) {
         return;
       }
       if (typeof done === 'function') {
@@ -284,6 +338,7 @@ export default function createSessionContext(
           while (this.listeners.login.length) {
             const cb = this.listeners.login.shift();
             try {
+              // @ts-ignore
               cb(result, decrypt);
             } catch (err) {
               console.error('Error when call login listeners', err);
@@ -305,10 +360,8 @@ export default function createSessionContext(
     }
 
     render() {
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'children' does not exist on type 'Readon... Remove this comment to see the full error message
       const { children, locale, timeout, extraParams, webWalletUrl, messages, ...rest } = this.props;
       const { autoConnect } = this;
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'action' does not exist on type 'Readonly... Remove this comment to see the full error message
       const { action, user, open, initialized, loading } = this.state;
 
       const prefix = this.fullPrefix;
@@ -336,9 +389,8 @@ export default function createSessionContext(
         );
       }
 
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       const connectMessages = messages || translations[action];
-      const callbacks = {
+      const callbacks: { [key: string]: Function } = {
         login: this.onLogin,
         'switch-profile': this.onSwitchProfile,
         'switch-passport': this.onLogin,
@@ -352,7 +404,6 @@ export default function createSessionContext(
             locale={locale}
             checkFn={this.service.get}
             onClose={() => this.onClose(action)}
-            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             onSuccess={callbacks[action]}
             extraParams={extraParams}
             checkTimeout={timeout}
@@ -370,37 +421,8 @@ export default function createSessionContext(
     }
   }
 
-  (SessionProvider as any).propTypes = {
-    children: PropTypes.any.isRequired,
-    serviceHost: PropTypes.string.isRequired,
-    action: PropTypes.string,
-    prefix: PropTypes.string,
-    appendAuthServicePrefix: PropTypes.bool,
-    locale: PropTypes.string,
-    timeout: PropTypes.number,
-    autoConnect: PropTypes.bool,
-    autoDisconnect: PropTypes.bool,
-    extraParams: PropTypes.object,
-    webWalletUrl: PropTypes.string,
-    messages: PropTypes.object,
-  };
-
-  (SessionProvider as any).defaultProps = {
-    locale: 'en',
-    action: 'login',
-    prefix: '/api/did',
-    appendAuthServicePrefix: false,
-    extraParams: {},
-    autoConnect: null,
-    autoDisconnect: true,
-    timeout: 5 * 60 * 1000,
-    webWalletUrl: '',
-    messages: null,
-  };
-
   function withSession(InnerComponent: any) {
     return function WithSessionComponent(props: any) {
-      // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       return <Consumer>{(sessionProps) => <InnerComponent {...props} {...sessionProps} />}</Consumer>;
     };
   }
@@ -408,7 +430,6 @@ export default function createSessionContext(
   return { SessionProvider, SessionConsumer: Consumer, SessionContext, withSession };
 }
 
-// @ts-expect-error ts-migrate(4060) FIXME: Return type of exported function has or is using p... Remove this comment to see the full error message
 export function createAuthServiceSessionContext({ storageEngine = 'cookie' } = {}) {
   const storageKey = 'login_token';
 

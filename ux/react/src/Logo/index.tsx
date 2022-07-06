@@ -1,4 +1,4 @@
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
+/* eslint-disable react/require-default-props */
 import DidLogoIcon from '@arcblock/icons/lib/DidLogo';
 
 const defaultStyle = {
@@ -7,13 +7,13 @@ const defaultStyle = {
   fill: 'currentColor',
 };
 
-interface DidLogoProps {
+interface Props {
   style?: object;
   size?: string | number;
   className?: string;
 }
 
-export default function DidLogo({ style, size, className }: DidLogoProps) {
+export default function DidLogo({ style = defaultStyle, size = 0, className = '' }: Props): JSX.Element {
   const height = Number(size) > 0 ? `${Number(size)}px` : size;
   return (
     <DidLogoIcon
@@ -22,9 +22,3 @@ export default function DidLogo({ style, size, className }: DidLogoProps) {
     />
   );
 }
-
-DidLogo.defaultProps = {
-  style: defaultStyle,
-  size: 0,
-  className: '',
-};

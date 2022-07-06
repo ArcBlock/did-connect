@@ -1,11 +1,13 @@
-export default class LocalStorageEngine {
-  storageKey: any;
+import { StorageEngine } from '../types';
 
-  constructor(storageKey: any) {
+export default class LocalStorageEngine implements StorageEngine {
+  storageKey: string;
+
+  constructor(storageKey: string) {
     this.storageKey = storageKey;
   }
 
-  setToken(token: any) {
+  setToken(token: string) {
     if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') {
       return undefined;
     }

@@ -1,25 +1,23 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable react/no-array-index-key  */
 /* eslint-disable react/jsx-no-bind */
 import { useMemo, useRef, useState } from 'react';
+import { TLocaleCode } from '@did-connect/types';
 import { IconButton, ClickAwayListener, MenuList, MenuItem, Paper, Popper, SvgIcon, Button, Chip } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import AccountOutline from 'mdi-material-ui/AccountOutline';
 import ShieldCheck from 'mdi-material-ui/ShieldCheck';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import OpenInIcon from '@arcblock/icons/lib/OpenIn';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import DisconnectIcon from '@arcblock/icons/lib/Disconnect';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import SwitchDidIcon from '@arcblock/icons/lib/Switch';
 import SwitchProfileIcon from '@mui/icons-material/PersonOutline';
 import SwitchPassportIcon from '@mui/icons-material/VpnKeyOutlined';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 
 import DidAvatar from '../Avatar';
 import DidAddress from '../Address';
 
-const messages = {
+const messages: { [key: string]: { [key: string]: string } } = {
   zh: {
     switchDid: '切换账户',
     switchProfile: '切换用户信息',
@@ -129,7 +127,7 @@ type OwnSessionManagerProps = {
     switchProfile: (...args: any[]) => any;
     switchPassport: (...args: any[]) => any;
   };
-  locale?: string;
+  locale?: TLocaleCode;
   showText?: boolean;
   showRole?: boolean;
   switchDid?: boolean;
@@ -147,7 +145,6 @@ type OwnSessionManagerProps = {
   size?: number;
 };
 
-// @ts-expect-error ts-migrate(2565) FIXME: Property 'defaultProps' is used before being assig... Remove this comment to see the full error message
 type SessionManagerProps = OwnSessionManagerProps & typeof SessionManager.defaultProps;
 
 function SessionManager({
@@ -169,7 +166,7 @@ function SessionManager({
   dark,
   size,
   ...rest
-}: SessionManagerProps) {
+}: SessionManagerProps): JSX.Element {
   const userAnchorRef = useRef(null);
   const classes = useStyles({ dark });
   const [userOpen, setUserOpen] = useState(false);
@@ -177,8 +174,7 @@ function SessionManager({
   // base64 img maybe have some blank char, need encodeURIComponent to transform it
   const avatar = session.user?.avatar?.replace(/\s/g, encodeURIComponent(' '));
   const currentRole = useMemo(
-    // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
-    () => session.user?.passports?.find((item) => item.name === session.user.role),
+    () => session.user?.passports?.find((item) => item.name === session.user?.role),
     [session.user]
   );
   const browser = useBrowser();
@@ -192,7 +188,6 @@ function SessionManager({
         {...rest}
         data-cy="sessionManager-login">
         <SvgIcon component={AccountOutline} />
-        {/* @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message */}
         <span style={{ lineHeight: '25px' }}>{messages[locale].connect}</span>
       </Button>
     ) : (
@@ -278,7 +273,6 @@ function SessionManager({
                       />
                     )}
                   </div>
-                  {/* @ts-expect-error ts-migrate(2322) FIXME: Type '{ children: string; responsive: false; }' is... Remove this comment to see the full error message */}
                   <DidAddress responsive={false}>{session.user.did}</DidAddress>
                 </div>
                 {Array.isArray(menu) &&
@@ -313,14 +307,12 @@ function SessionManager({
                     href="https://www.abtwallet.io/"
                     target="_blank">
                     <SvgIcon component={OpenInIcon} className={classes.menuIcon} />
-                    {/* @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message */}
                     {messages[locale].openInWallet}
                   </MenuItem>
                 )}
                 {!!switchDid && (
                   <MenuItem className={classes.menuItem} onClick={_onSwitchDid} data-cy="sessionManager-switch-trigger">
                     <SvgIcon component={SwitchDidIcon} className={classes.menuIcon} />
-                    {/* @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message */}
                     {messages[locale].switchDid}
                   </MenuItem>
                 )}
@@ -330,7 +322,6 @@ function SessionManager({
                     onClick={_onSwitchProfile}
                     data-cy="sessionManager-switch-profile-trigger">
                     <SvgIcon component={SwitchProfileIcon} className={classes.menuIcon} />
-                    {/* @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message */}
                     {messages[locale].switchProfile}
                   </MenuItem>
                 )}
@@ -340,7 +331,6 @@ function SessionManager({
                     onClick={_onSwitchPassport}
                     data-cy="sessionManager-switch-passport-trigger">
                     <SvgIcon component={SwitchPassportIcon} className={classes.menuIcon} />
-                    {/* @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message */}
                     {messages[locale].switchPassport}
                   </MenuItem>
                 )}
@@ -350,7 +340,6 @@ function SessionManager({
                   disabled={disableLogout}
                   data-cy="sessionManager-logout-trigger">
                   <SvgIcon component={DisconnectIcon} className={classes.menuIcon} />
-                  {/* @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message */}
                   {messages[locale].disconnect}
                 </MenuItem>
               </MenuList>

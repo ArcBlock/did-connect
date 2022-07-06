@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 
-export default function createService(baseURL: any, storage: any, timeout = 10000) {
+export default function createService(baseURL: string, storage: any, timeout = 10000): AxiosInstance {
   const service = axios.create({ baseURL, timeout });
 
   service.interceptors.request.use(
