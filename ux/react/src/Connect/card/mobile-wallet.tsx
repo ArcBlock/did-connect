@@ -7,15 +7,20 @@ interface MobileWalletProps {
   status: string;
   qrcodeSize: number;
   deepLink: string;
-  onRefresh(...args: unknown[]): unknown;
+  onRefresh(...args: any[]): any;
 }
 
 /**
  * MobileWallet (QRCode scanning)
  */
-export default function MobileWallet({ qrcodeSize, deepLink, status, onRefresh, ...rest }: MobileWalletProps) {
+export default function MobileWallet({
+  qrcodeSize,
+  deepLink,
+  status,
+  onRefresh,
+  ...rest
+}: MobileWalletProps): JSX.Element {
   return (
-    // @ts-ignore
     <ResponsiveCard {...rest} position="relative" color="#A8B4C5" fontWeight={700} status={status}>
       <div>
         <Box mt={0.5} fontSize={20} color="#666">

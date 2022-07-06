@@ -4,7 +4,8 @@ import { getCookieOptions } from '@arcblock/ux/lib/Util';
 
 export const providerName = 'wallet_url';
 
-export const noop = () => null;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const noop = (...args: any[]) => undefined;
 
 /**
  * 获取 web wallet url, 常用于为 did connect 组件传递 webWalletUrl 参数,
@@ -72,7 +73,7 @@ export const getAppId = (appInfo: TAppInfo): string => {
     : (window as any).blocklet?.appId || (window as any).env?.appId || '';
 };
 
-export const updateConnectedInfo = (ctx: TSession) => {
+export const updateConnectedInfo = (ctx: TSession): void => {
   const cookieOptions = getCookieOptions({ expireInDays: 7, returnDomain: false });
 
   // connected_did and connected_pk are used to skip authPrincipal

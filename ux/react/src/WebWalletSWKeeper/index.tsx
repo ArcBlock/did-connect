@@ -13,12 +13,9 @@ let id: any;
 const injectIframe = (webWalletUrl: any) => {
   const iframe = document.createElement('iframe');
   iframe.id = id;
-  // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'string'.
-  iframe.style.width = 0;
-  // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'string'.
-  iframe.style.height = 0;
-  // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'string'.
-  iframe.style.border = 0;
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
   // https://stackoverflow.com/questions/27858989/iframe-with-0-height-creates-a-gap
   iframe.style.display = 'block';
   // fix: 页面自动滚动到底部问题 (https://github.com/blocklet/abt-wallet/issues/1160)
@@ -54,7 +51,6 @@ type OwnWebWalletSWKeeperProps = {
   maxIdleTime?: number;
 };
 
-// @ts-expect-error ts-migrate(2565) FIXME: Property 'defaultProps' is used before being assig... Remove this comment to see the full error message
 type WebWalletSWKeeperProps = OwnWebWalletSWKeeperProps & typeof WebWalletSWKeeper.defaultProps;
 
 // 该组件通过嵌入一个 web wallet iframe 帮助 web wallet service worker 延最大空闲时间
@@ -67,7 +63,7 @@ function WebWalletSWKeeper({ webWalletUrl, maxIdleTime }: WebWalletSWKeeperProps
     } else {
       enable(webWalletUrl);
     }
-  }, [isIdle]);
+  }, [isIdle]); // eslint-disable-line
   // 组件销毁时自动清理
   useEffect(() => () => cleanup(), []);
   return null;

@@ -1,4 +1,4 @@
-import { TAnyObject, TLocaleCode, TI18nMessages } from '@did-connect/types';
+import { TAnyObject, TSession, TLocaleCode, TI18nMessages } from '@did-connect/types';
 import { createContext, Component } from 'react';
 import { AxiosInstance } from 'axios';
 import omit from 'lodash/omit';
@@ -76,7 +76,7 @@ const defaultProps = {
 };
 
 type ProviderProps = {
-  children: any;
+  children: React.ReactNode;
   serviceHost: string;
   action?: string;
   prefix?: string;
@@ -99,7 +99,7 @@ type ProviderState = {
   user: any; // FIXME: user type
 };
 
-type SessionContextValue = {
+type ContextState = {
   api: AxiosInstance;
   session: ProviderState & {
     login(done: any): void;
@@ -108,12 +108,11 @@ type SessionContextValue = {
     switchProfile(done: any): void;
     switchPassport(done: any): void;
     refresh(): void;
-    // FIXME: type for callbacks
-    // updateConnectedInfo;
+    updateConnectedInfo(ctx: TSession): void;
   };
 };
 
-export const SessionContext = createContext<SessionContextValue>({} as SessionContextValue);
+export const SessionContext = createContext<ContextState>({} as ContextState);
 
 const { Provider, Consumer } = SessionContext;
 
@@ -360,6 +359,7 @@ export default function createSessionContext(
     }
 
     render() {
+      // @ts-ignore
       const { children, locale, timeout, extraParams, webWalletUrl, messages, ...rest } = this.props;
       const { autoConnect } = this;
       const { action, user, open, initialized, loading } = this.state;
@@ -398,7 +398,7 @@ export default function createSessionContext(
 
       return (
         <Provider value={state}>
-          {!open && typeof children === 'function' ? children(state) : children}
+          {!open && typeof children === 'function' ? (children as Function)(state) : children}
           <Connect
             action={action}
             locale={locale}

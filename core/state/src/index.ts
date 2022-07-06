@@ -14,11 +14,18 @@ import { createConnection, destroyConnections } from './socket';
 
 const noop = () => undefined;
 
-export type TEventCallback = (context: TSession, event: TEvent) => Promisable<void>;
-export type TConnectCallback = (context: TSession, event: TEvent) => Promisable<TAnyRequest[][]>;
-export type TApproveCallback = (context: TSession, event: TEvent) => Promisable<TAppResponse>;
+export type TSessionContext = TSession;
+export type TSessionEvent = TEvent;
+export type TSessionState = {
+  value: TSessionStatus;
+  context: TSession;
+};
 
-export type SessionStateOptions = {
+export type TEventCallback = (context: TSessionContext, event: TSessionEvent) => Promisable<void>;
+export type TConnectCallback = (context: TSessionContext, event: TSessionEvent) => Promisable<TAnyRequest[][]>;
+export type TApproveCallback = (context: TSessionContext, event: TSessionEvent) => Promisable<TAppResponse>;
+
+export type TSessionOptions = {
   baseUrl?: string;
   initial?: TSessionStatus;
   sessionId?: string;
@@ -38,17 +45,17 @@ export type SessionStateOptions = {
   timeout?: typeof SessionTimeout;
 };
 
-type TSessionState = {
-  deepLink: string;
-  machine: StateMachine<TSession, any, TEvent, { value: TSessionStatus; context: TSession }>;
+export type TSessionMachine = {
   sessionId: string;
+  machine: StateMachine<TSessionContext, TSessionState, TSessionEvent, TSessionState>;
+  deepLink: string;
 };
 
-export function createStateMachine(options: SessionStateOptions): TSessionState {
+export function createStateMachine(options: TSessionOptions): TSessionMachine {
   const {
     baseUrl = '/api/connect/relay',
     initial = 'start', // we maybe reusing existing session
-    sessionId, // we maybe reusing existing session
+    sessionId = '', // we maybe reusing existing session
     strategy = 'default',
     dispatch, // handle events emitted from websocket relay
     onStart = noop,
@@ -91,7 +98,6 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
     throw new CustomError('INVALID_CALLBACK', 'Invalid onConnect, which must be a function or an object or an array');
   }
 
-  // FIXME: validate with schema from types package
   let requestedClaims: TAnyRequest[][] = [];
   if (isFunction(onConnect) === false) {
     // @ts-ignore
@@ -105,11 +111,11 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
   const authApiUrl = createApiUrl(baseUrl, sid, '/auth');
   const sessionApiUrl = createApiUrl(baseUrl, sid, '/session');
 
-  const _onStart = async (ctx: TSession, e: TEvent) => {
+  const _onStart = async (ctx: TSessionContext, e: TSessionEvent) => {
     await onStart(ctx, e);
   };
 
-  const createOrRestoreSession = async (ctx: TSession, e: TEvent) => {
+  const createOrRestoreSession = async (ctx: TSessionContext, e: TSessionEvent) => {
     const isExistingSession = sid === sessionId;
     let session = null;
     if (isExistingSession) {
@@ -155,7 +161,7 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
     return session.appInfo;
   };
 
-  const _onConnect = async (ctx: TSession, e: TEvent): Promise<TAnyRequest[][]> => {
+  const _onConnect = async (ctx: TSessionContext, e: TSessionEvent): Promise<TAnyRequest[][]> => {
     if (ctx.requestedClaims.length) {
       return ctx.requestedClaims;
     }
@@ -170,7 +176,7 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
     return result.requestedClaims;
   };
 
-  const _onApprove = async (ctx: TSession, e: TEvent): Promise<TAppResponse> => {
+  const _onApprove = async (ctx: TSessionContext, e: TSessionEvent): Promise<TAppResponse> => {
     let approveResult = await onApprove(ctx, e);
     if (typeof approveResult === 'undefined') {
       approveResult = {};
@@ -185,25 +191,25 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
     return approveResult;
   };
 
-  const _onComplete = async (ctx: TSession, e: TEvent) => {
+  const _onComplete = async (ctx: TSessionContext, e: TSessionEvent) => {
     await onComplete(ctx, e);
   };
 
-  const _onReject = async (ctx: TSession, e: TEvent) => {
+  const _onReject = async (ctx: TSessionContext, e: TSessionEvent) => {
     await onReject(ctx, e);
   };
 
   // FIXME: report timeout events to server
-  const _onTimeout = async (ctx: TSession, e: TEvent) => {
+  const _onTimeout = async (ctx: TSessionContext, e: TSessionEvent) => {
     await onTimeout(ctx, e);
   };
 
-  const _onCancel = async (ctx: TSession, e: TEvent) => {
+  const _onCancel = async (ctx: TSessionContext, e: TSessionEvent) => {
     await onCancel(ctx, e);
   };
 
   // report some client error to relay, and execute callback
-  const _onError = async (ctx: TSession, e: TEvent) => {
+  const _onError = async (ctx: TSessionContext, e: TSessionEvent) => {
     if (e.data) {
       console.error('Client', e.data);
       if (['SESSION_NOT_FOUND', 'SESSION_FINALIZED'].includes(e.data.code) === false) {
@@ -220,7 +226,7 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
 
   // TODO: fallback to polling when socket connection failed
   createConnection(createSocketEndpoint(baseUrl)).then((socket) => {
-    socket.on(sid, (e: TEvent) => {
+    socket.on(sid, (e: TSessionEvent) => {
       switch (e.status) {
         case 'walletScanned':
           return dispatch({ ...e, type: 'WALLET_SCAN' });
@@ -244,7 +250,7 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
     });
   });
 
-  const machine = createMachine(
+  const machine = createMachine<TSessionContext, TSessionEvent, TSessionState>(
     {
       id: `connect.session.${sid}`,
       initial,
@@ -263,11 +269,13 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
         onlyConnect,
         authUrl: authApiUrl,
         timeout,
+        challenge: '',
+        // @ts-ignore
+        appInfo: null,
       },
       states: {
         // we can do some pre-check here, error thrown from here will halt the process
         start: {
-          // @ts-ignore
           invoke: {
             id: 'startSession',
             src: _onStart,
@@ -287,7 +295,6 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
         // generate a session in relay-server by sending a request
         // and get back deep-link to display as qrcode
         loading: {
-          // @ts-ignore
           invoke: {
             id: 'createSession',
             src: createOrRestoreSession,
@@ -336,7 +343,6 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
 
         // wallet confirmed the ownership of did for the session
         walletConnected: {
-          // @ts-ignore
           invoke: {
             id: 'onConnect',
             src: _onConnect,
@@ -380,7 +386,6 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
 
         // wallet has approved the request, can be triggered multiple times
         walletApproved: {
-          // @ts-ignore
           invoke: {
             id: 'onApprove',
             src: _onApprove,
@@ -445,23 +450,29 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
         onCancel: _onCancel,
         onTimeout: _onTimeout,
         onError: _onError,
-        saveAppInfo: assign({ appInfo: (ctx: TSession, e: TEvent) => e.data }), // from client
-        // @ts-ignore
-        saveConnectedUser: assign({ currentConnected: (ctx: TSession, e: TEvent) => e.currentConnected }), // from server
-        saveRequestedClaims: assign({ requestedClaims: (ctx: TSession, e: TEvent) => e.data }), // from client
-        saveError: assign({ error: (ctx: TSession, e: TEvent) => get(e, 'data.message') || e.error }), // from client or server
-        // @ts-ignore
-        incrementCurrentStep: assign({ currentStep: (ctx: TSession) => ctx.currentStep + 1 }), // from server
-        saveResponseClaims: assign({
-          // @ts-ignore
-          responseClaims: (ctx: TSession, e: TEvent) => [...ctx.responseClaims, e.responseClaims],
-          // @ts-ignore
-          currentStep: (ctx: TSession, e: TEvent) => e.currentStep,
-          // @ts-ignore
-          challenge: (ctx: TSession, e: TEvent) => e.challenge,
+        saveAppInfo: assign<TSessionContext, TSessionEvent>({
+          appInfo: (ctx: TSessionContext, e: TSessionEvent) => e.data,
+        }), // from client
+        saveConnectedUser: assign<TSessionContext, TSessionEvent>({
+          currentConnected: (ctx: TSessionContext, e: TSessionEvent) => e.currentConnected,
         }), // from server
-        // @ts-ignore
-        saveApproveResult: assign({ approveResults: (ctx: TSession, e: TEvent) => [...ctx.approveResults, e.data] }), // from client
+        saveRequestedClaims: assign<TSessionContext, TSessionEvent>({
+          requestedClaims: (ctx: TSessionContext, e: TSessionEvent) => e.data,
+        }), // from client
+        saveError: assign<TSessionContext, TSessionEvent>({
+          error: (ctx: TSessionContext, e: TSessionEvent) => get(e, 'data.message') || e.error,
+        }), // from client or server
+        incrementCurrentStep: assign<TSessionContext, TSessionEvent>({
+          currentStep: (ctx: TSessionContext) => ctx.currentStep + 1,
+        }), // from server
+        saveResponseClaims: assign<TSessionContext, TSessionEvent>({
+          responseClaims: (ctx: TSessionContext, e: TSessionEvent) => [...ctx.responseClaims, e.responseClaims],
+          currentStep: (ctx: TSessionContext, e: TSessionEvent) => e.currentStep,
+          challenge: (ctx: TSessionContext, e: TSessionEvent) => e.challenge,
+        }), // from server
+        saveApproveResult: assign<TSessionContext, TSessionEvent>({
+          approveResults: (ctx: TSessionContext, e: TSessionEvent) => [...ctx.approveResults, e.data],
+        }), // from client
         reportCancel: () =>
           doSignedRequest({
             url: sessionApiUrl,
@@ -475,7 +486,6 @@ export function createStateMachine(options: SessionStateOptions): TSessionState 
     }
   );
 
-  // @ts-ignore
   return { sessionId: sid, machine, deepLink: createDeepLink(baseUrl, sid) };
 }
 

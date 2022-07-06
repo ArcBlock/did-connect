@@ -4,7 +4,7 @@ export interface SimpleProps {
   component?: string;
   size?: number;
   copyable?: boolean;
-  children?: any;
+  children?: React.ReactNode;
   content?: string;
   inline?: boolean;
   prepend?: any;
@@ -16,7 +16,7 @@ export interface SimpleProps {
 }
 
 export interface ResponsiveProps {
-  style?: any;
+  style?: React.CSSProperties;
   className?: string;
   component?: string;
 }

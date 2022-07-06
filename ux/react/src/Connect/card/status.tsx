@@ -1,19 +1,17 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import PropTypes from 'prop-types';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'styl... Remove this comment to see the full error message
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Check from '@mui/icons-material/Check';
 import Clear from '@mui/icons-material/Clear';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import ConnectIcon from '@arcblock/icons/lib/Connect';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import DidWalletLogo from '@arcblock/icons/lib/DidWalletLogo';
+import { TSessionStatus, TLocaleCode } from '@did-connect/types';
 
 import translations from '../assets/locale';
 import Card from './card';
 import { isSessionActive, noop } from '../../utils';
+import { ConnectMessages } from '../types';
 
 const StyledButton = styled(Button)`
   && {
@@ -28,10 +26,25 @@ const StyledButton = styled(Button)`
   }
 `;
 
+export type StatusProps = {
+  status: TSessionStatus;
+  locale: TLocaleCode;
+  messages: ConnectMessages;
+  onCancel: (...args: any[]) => any;
+  onRetry: (...args: any[]) => any;
+};
+
 /**
  * Status (scanned/succeed/error)
  */
-export default function Status({ status, onCancel, onRetry, messages, locale, ...rest }: any) {
+export default function Status({
+  status,
+  onCancel = noop,
+  onRetry = noop,
+  messages,
+  locale = 'en',
+  ...rest
+}: StatusProps): JSX.Element {
   return (
     <Root {...rest}>
       {isSessionActive(status) && (
@@ -86,24 +99,6 @@ export default function Status({ status, onCancel, onRetry, messages, locale, ..
   );
 }
 
-Status.propTypes = {
-  status: PropTypes.string.isRequired,
-  onCancel: PropTypes.func,
-  onRetry: PropTypes.func,
-  messages: PropTypes.shape({
-    confirm: PropTypes.string.isRequired, // scanned
-    success: PropTypes.any.isRequired,
-    error: PropTypes.any.isRequired,
-  }).isRequired,
-  locale: PropTypes.oneOf(['en', 'zh']),
-};
-
-Status.defaultProps = {
-  onCancel: noop,
-  onRetry: noop,
-  locale: 'en',
-};
-
 const Root = styled(Card)`
   display: flex;
   justify-content: center;
@@ -151,8 +146,6 @@ const Root = styled(Card)`
     .status_desc {
       word-break: break-all;
     }
-  }
-
   }
   .text-wallet {
     color: #334660;

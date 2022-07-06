@@ -3,7 +3,7 @@ import Button from '@arcblock/ux/lib/Button';
 import ConnectLogo from '@arcblock/icons/lib/ConnectLogo';
 
 interface Props {
-  children?: any;
+  children?: React.ReactNode;
 }
 
 export default function ConnectButton({ children = 'Continue With', ...rest }: Props): JSX.Element {

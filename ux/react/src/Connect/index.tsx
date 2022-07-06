@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { SessionTimeout } from '@did-connect/types';
 
 import BasicConnect from './basic';
@@ -31,8 +30,7 @@ const defaultProps = {
   onlyConnect: false,
 };
 
-// TODO: more props to BasicConnect
-const Connect: FC<ConnectProps> = (props) => {
+function Connect(props: ConnectProps): JSX.Element {
   const {
     onStart,
     onCreate,
@@ -89,6 +87,6 @@ const Connect: FC<ConnectProps> = (props) => {
       <BasicConnect key={session.context.sessionId} {...connectProps} />
     </BrowserEnvProvider>
   );
-};
+}
 
 export default withWebWalletSWKeeper(withDialog(Connect));

@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { useMemo, useState, useEffect } from 'react';
 import Cookie from 'js-cookie';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'url-... Remove this comment to see the full error message
 import joinUrl from 'url-join';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
-import { createStateMachine } from '@did-connect/state';
+import { createStateMachine, TSessionMachine } from '@did-connect/state';
+import { TSession, TSessionStatus, TEvent } from '@did-connect/types';
 
-import { decodeConnectUrl, parseTokenFromConnectUrl, updateConnectedInfo } from '../../utils';
+import { decodeConnectUrl, parseTokenFromConnectUrl, updateConnectedInfo, noop } from '../../utils';
 import { useMachine } from './machine';
+import { HookProps, HookResult } from '../types';
 
 // 从 url params 中获取已存在的 session (token & connect url)
 const parseExistingSession = () => {
@@ -30,8 +31,6 @@ const parseExistingSession = () => {
   }
 };
 
-const noop = () => null;
-
 export default function useSession({
   prefix,
   onCreate = noop,
@@ -46,10 +45,8 @@ export default function useSession({
   autoConnect = true,
   saveConnect = true,
   onlyConnect = false,
-
-  // FIXME: support optional saveConnect
   timeout,
-}: any) {
+}: HookProps): HookResult {
   const browser = useBrowser();
   const existingSession = useMemo(() => parseExistingSession(), []);
 
@@ -57,13 +54,14 @@ export default function useSession({
   const [retryCount, setRetryCount] = useState(0);
 
   const _onComplete = async (...args: any[]) => {
-    if (saveConnect && (state as any).context.currentConnected) {
-      updateConnectedInfo((state as any).context);
+    if (saveConnect && state.context.currentConnected) {
+      updateConnectedInfo(state.context);
     }
+    // @ts-ignore
     await onComplete(...args);
   };
 
-  const session = useMemo(
+  const session: TSessionMachine = useMemo(
     () =>
       createStateMachine({
         baseUrl: joinUrl(baseUrl, prefix),
@@ -95,10 +93,10 @@ export default function useSession({
   );
 
   const { machine, deepLink, sessionId } = session;
-  const [state, send, service] = useMachine(machine);
+  const [state, send, service] = useMachine<TSession, TEvent>(machine);
 
   const cancel = () => {
-    send({ type: 'CANCEL' });
+    send('CANCEL');
     setCancelCount((counter) => counter + 1);
   };
 
@@ -156,7 +154,7 @@ export default function useSession({
   // };
   return {
     sessionId,
-    session: { status: (state as any).value, context: (state as any).context, deepLink },
+    session: { status: state.value as TSessionStatus, context: state.context, deepLink },
     dispatch: send,
     generate,
     cancel,

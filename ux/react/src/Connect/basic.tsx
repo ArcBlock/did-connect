@@ -10,19 +10,16 @@ import { openWebWallet } from '@arcblock/ux/lib/Util';
 import Spinner from '@arcblock/ux/lib/Spinner';
 import colors from '@arcblock/ux/lib/Colors';
 import DidWalletLogo from '@arcblock/icons/lib/DidWalletLogo';
+import { TAppInfo } from '@did-connect/types';
+
 import { useBrowserEnvContext } from './contexts/browser';
 import translations from './assets/locale';
 import DidAddress from '../Address';
 import DidAvatar from '../Avatar';
 import { StatusCard, MobileWalletCard, ConnectWebWalletCard, ConnectMobileWalletCard, GetWalletCard } from './card';
-import {
-  getWebWalletUrl,
-  checkSameProtocol,
-  isSessionFinalized,
-  isSessionActive,
-  isSessionLoading,
-  noop,
-} from '../utils';
+import { getWebWalletUrl, checkSameProtocol, isSessionFinalized, isSessionActive, isSessionLoading } from '../utils';
+
+import { UIProps } from './types';
 
 // #442, 页面初始化时的可见性, 如果不可见 (比如通过在某个页面中右键在新标签页中打开的一个基于 did-connect 登录页) 则禁止自动弹出 web wallet 窗口
 const initialDocVisible = !document.hidden;
@@ -35,7 +32,7 @@ const getAppDid = (publisher: any) => {
 };
 
 type AppIconProps = {
-  appInfo: any;
+  appInfo: TAppInfo;
 };
 
 function AppIcon({ appInfo, ...rest }: AppIconProps) {
@@ -43,48 +40,27 @@ function AppIcon({ appInfo, ...rest }: AppIconProps) {
   if (error) {
     return <DidAvatar did={appInfo.publisher} size={32} />;
   }
-  return <Img src={appInfo.icon} alt={appInfo.title} width={32} height={32} {...rest} onError={() => setError(true)} />;
+  return (
+    <Img src={appInfo.icon} alt={appInfo.description} width={32} height={32} {...rest} onError={() => setError(true)} />
+  );
 }
-
-type OwnBasicConnectProps = {
-  locale?: 'en' | 'zh';
-  qrcodeSize?: number;
-  webWalletUrl?: string;
-  messages: {
-    title: string;
-    scan: string;
-    confirm: string;
-    success: any;
-  };
-  showDownload?: boolean;
-  session: any;
-  generate: (...args: any[]) => any;
-  cancel: (...args: any[]) => any;
-  enabledConnectTypes?: any[];
-  onRecreateSession?: (...args: any[]) => any;
-  extraContent?: any;
-  loadingEle?: any;
-};
-
-// @ts-expect-error ts-migrate(2565) FIXME: Property 'defaultProps' is used before being assig... Remove this comment to see the full error message
-type BasicConnectProps = OwnBasicConnectProps & typeof BasicConnect.defaultProps;
 
 // FIXME: reuse existing session is not working
 export default function BasicConnect({
-  locale,
+  locale = 'en',
+  qrcodeSize = 184,
+  // showDownload = true,
+  webWalletUrl = '',
+  enabledConnectTypes = ['web', 'mobile'],
+  // onRecreateSession = noop,
+  extraContent = null,
+  loadingEle = null,
   messages,
-  qrcodeSize,
-  showDownload,
-  webWalletUrl,
   session,
   generate,
   cancel,
-  enabledConnectTypes,
-  onRecreateSession,
-  extraContent,
-  loadingEle,
   ...rest
-}: BasicConnectProps) {
+}: UIProps): JSX.Element {
   const { context, status, deepLink } = session;
 
   // eslint-disable-next-line no-param-reassign
@@ -125,7 +101,7 @@ export default function BasicConnect({
   const handleRefresh = () => {
     onRecreateSession();
     if (!session.inExistingSession) {
-      generate(false);
+      generate();
     }
   };
 
@@ -328,17 +304,7 @@ export default function BasicConnect({
   );
 }
 
-BasicConnect.defaultProps = {
-  locale: 'en',
-  qrcodeSize: 184,
-  showDownload: true,
-  webWalletUrl: '',
-
-  enabledConnectTypes: ['web', 'mobile'],
-  onRecreateSession: noop,
-  extraContent: null,
-  loadingEle: '',
-};
+BasicConnect.defaultProps = {};
 
 const centerMixin = css`
   display: flex;

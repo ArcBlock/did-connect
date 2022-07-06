@@ -9,7 +9,7 @@ const options = { stripUnknown: true, noDefaults: false };
 const capitalize = (input: string): string => input.charAt(0).toUpperCase() + input.slice(1);
 
 type TLocaleCode = LiteralUnion<'en' | 'zh', string>;
-type TSessionStatus = LiteralUnion<'created' | 'walletScanned' | 'walletConnected' | 'appConnected' | 'walletApproved' | 'appApproved' | 'error' | 'timeout' | 'rejected' | 'canceled' | 'completed', string>; // prettier-ignore
+type TSessionStatus = LiteralUnion<'start' | 'created' | 'walletScanned' | 'walletConnected' | 'appConnected' | 'walletApproved' | 'appApproved' | 'error' | 'timeout' | 'rejected' | 'canceled' | 'completed', string>; // prettier-ignore
 
 // Basic Types
 const ChainInfo: ObjectSchema = Joi.object({

@@ -18,7 +18,7 @@ type Props = {
  * - mobile browser 环境会显示 (该情况下文案改成了 Open With ...)
  * - wallet webview 环境会显示, 该情况下实际上没有机会显示, 因为 token created 时会自动唤起 mobile auth
  */
-export default function ConnectMobileWallet({ status, onRefresh, deepLink, ...rest }: Props) {
+export default function ConnectMobileWallet({ status, onRefresh, deepLink, ...rest }: Props): JSX.Element {
   const iconSize = (rest as any).layout === 'lr' ? [20, 34] : [40, 68];
   const linkRef = useRef();
   return (

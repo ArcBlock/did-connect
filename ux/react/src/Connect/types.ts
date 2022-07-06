@@ -1,12 +1,21 @@
 import type { TEventCallback, TConnectCallback, TApproveCallback } from '@did-connect/state';
-import { SessionTimeout } from '@did-connect/types';
+import { TLocaleCode, SessionTimeout, TSession, TSessionStatus } from '@did-connect/types';
+import { LiteralUnion } from 'type-fest';
 
-export interface ConnectProps {
+export type TWalletCode = LiteralUnion<'web' | 'native', string>;
+
+export type ConnectMessages = {
+  title: string;
+  scan: string;
+  confirm: string;
+  success: any;
+  error?: string;
+};
+
+export type HookProps = {
   onConnect: TConnectCallback;
   onApprove: TApproveCallback;
-  messages: { [key: string]: string };
 
-  onClose?: TEventCallback;
   onStart?: TEventCallback;
   onCreate?: TEventCallback;
   onComplete?: TEventCallback;
@@ -17,16 +26,36 @@ export interface ConnectProps {
 
   prefix?: string;
   timeout?: typeof SessionTimeout;
-  locale?: 'en' | 'zh';
-  webWalletUrl?: string;
   baseUrl?: string;
 
   autoConnect?: boolean;
   saveConnect?: boolean;
   onlyConnect?: boolean;
+};
 
-  // connect related
+export type HookResult = {
+  sessionId: string;
+  dispatch: (...args: any[]) => any;
+  generate: (...args: any[]) => any;
+  cancel: (...args: any[]) => any;
+  session: {
+    context: TSession;
+    status: TSessionStatus;
+    deepLink: string;
+  };
+};
+
+export type ConnectProps = HookProps & {
+  onClose?: TEventCallback;
+
+  locale?: TLocaleCode;
+  webWalletUrl?: string;
   extraContent?: any;
   showDownload?: boolean;
   qrcodeSize?: number;
-}
+  loadingEle?: any;
+  enabledConnectTypes?: TWalletCode[];
+  messages: ConnectMessages;
+};
+
+export type UIProps = ConnectProps & Pick<HookResult, 'session' | 'generate' | 'cancel'>;

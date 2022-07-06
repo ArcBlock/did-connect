@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import Box from '@mui/material/Box';
 
 interface CardProps {
-  children: any;
+  children: React.ReactNode;
 }
 
 interface ResponsiveCardProps {
-  children: any;
+  children: React.ReactNode;
 
   // 两种布局: 上下, 左右 (适用于移动端)
   layout?: 'tb' | 'lr';
@@ -16,7 +16,7 @@ interface ResponsiveCardProps {
 /**
  * Card
  */
-export default function Card({ children, ...rest }: CardProps) {
+export default function Card({ children, ...rest }: CardProps): JSX.Element {
   return <Root {...rest}>{children}</Root>;
 }
 
@@ -32,7 +32,7 @@ const Root = styled(Box)`
 `;
 
 // ResponsiveCard, 支持两种布局: 上下, 左右 (适用于移动端)
-export function ResponsiveCard({ children, layout, ...rest }: ResponsiveCardProps) {
+export function ResponsiveCard({ children, layout, ...rest }: ResponsiveCardProps): JSX.Element | null {
   if (!children) {
     return null;
   }

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Refresh from '@mui/icons-material/Refresh';
 
 interface RefreshOverlayProps {
-  onRefresh(...args: unknown[]): unknown;
+  onRefresh(...args: any[]): any;
 }
 
 // 需要父元素设置 relative position

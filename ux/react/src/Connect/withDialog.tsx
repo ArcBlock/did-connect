@@ -1,16 +1,13 @@
 import { forwardRef } from 'react';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'styl... Remove this comment to see the full error message
 import styled from 'styled-components';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/styles';
 import Slide from '@mui/material/Slide';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@arc... Remove this comment to see the full error message
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 
 const Transition = forwardRef(function Transition(props, ref) {
-  // @ts-expect-error ts-migrate(2741) FIXME: Property 'children' is missing in type '{ directio... Remove this comment to see the full error message
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
