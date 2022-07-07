@@ -8,8 +8,9 @@
     "ux/*"
   ],
   "scripts": {
-    "lint": "pnpm -r --parallel lint",
-    "lint:fix": "pnpm -r --parallel lint:fix",
+    "lint": "lerna run lint",
+    "lint:fix": "lerna run lint:fix",
+    "coverage": "lerna run coverage",
     "storybook:vue": "pnpm -C packages/vue storybook",
     "storybook:react": "pnpm -C packages/react storybook",
     "build:vue": "pnpm -C packages/vue build",

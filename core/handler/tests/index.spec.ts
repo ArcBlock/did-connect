@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 /* eslint-disable import/no-extraneous-dependencies */
 import axios from 'axios';
 import * as Jwt from '@arcblock/jwt';
@@ -90,7 +91,7 @@ const assetResponse: TAssetResponse = {
   ownerProof: 'abc',
 };
 
-describe('RelayAdapterExpress', () => {
+describe('Handlers', () => {
   let server: any;
   let api: any;
   let client: any;
@@ -1165,32 +1166,31 @@ describe('RelayAdapterExpress', () => {
     expect(res.error).toMatch('Can only update session status');
   });
 
-  test('should throw onUpdate when status not valid', async () => {
+  test('should throw onUpdate when requestedClaims not valid', async () => {
     const { updateSession } = await prepareEvilTest();
-    const res = await updateSession({ requestedClaims: [{ a: 'b' }] });
-    expect(res.error).toMatch('Invalid session');
-    expect(res.error).toMatch('requestedClaims');
+    const res = await updateSession({ requestedClaims: [[{ type: 'b' }]] });
+    expect(res.error).toMatch('Invalid b request');
   });
 
-  test('should throw onUpdate when status not valid', async () => {
+  test('should throw onUpdate when error not valid', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, updater, '');
     expect(res.error).toMatch('Invalid updater pk');
   });
 
-  test('should throw onUpdate when status not valid', async () => {
+  test('should throw onUpdate when token not valid', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, updater, undefined, '');
     expect(res.error).toMatch('Invalid token');
   });
 
-  test('should throw onUpdate when status not valid', async () => {
+  test('should throw onUpdate when signature not valid', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, updater, 'abc', 'def');
     expect(res.error).toMatch('Invalid updater signature');
   });
 
-  test('should throw onUpdate when status not valid', async () => {
+  test('should throw onUpdate when hash not valid', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, updater, undefined, undefined, 'abc');
     expect(res.error).toMatch('Invalid payload hash');
@@ -1208,8 +1208,7 @@ describe('RelayAdapterExpress', () => {
       { sessionId, updaterPk, authUrl, requestedClaims: [{ type: 'unknown' }] },
       updater
     );
-    expect(res.error).toMatch('Invalid session');
-    expect(res.error).toMatch('requestedClaims');
+    expect(res.error).toMatch('Invalid request group');
   });
 
   test('should throw onUpdate when sessionId valid', async () => {

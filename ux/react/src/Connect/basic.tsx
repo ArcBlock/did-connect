@@ -81,22 +81,21 @@ export default function BasicConnect({
   const getDeepLink = () => (isMobile ? deepLink.replace(/^https?:\/\//, 'abt://') : deepLink);
 
   const handleRetry = () => {
-    // inExistingSession 为 true 时不重新生成 token
-    if (!session.inExistingSession) {
+    if (!session.existing) {
       setNativeCalled(false);
       generate();
     }
   };
 
   const handleCancel = () => {
-    if (!session.inExistingSession) {
+    if (!session.existing) {
       setCancelCounter(cancelCounter + 1);
       cancel();
     }
   };
 
   const handleRefresh = () => {
-    if (!session.inExistingSession) {
+    if (!session.existing) {
       generate();
     }
   };

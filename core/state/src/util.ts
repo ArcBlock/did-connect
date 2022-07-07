@@ -73,7 +73,7 @@ export const createDeepLink = (baseUrl: string, sessionId: string): string => {
 };
 
 export const doSignedRequest = async ({ data, wallet, url, method = 'POST' }: RequestArgs): Promise<TAnyObject> => {
-  if (isEmpty(data)) {
+  if (isEmpty(data) && method === 'POST') {
     throw new Error('Can not update session with empty data');
   }
   const headers: TAnyObject = {};

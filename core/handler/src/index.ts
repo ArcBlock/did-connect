@@ -120,6 +120,12 @@ export function validateRequestedClaims(claims: TAnyRequest[][]) {
   };
 
   for (const group of claims) {
+    if (!Array.isArray(group)) {
+      return {
+        error: 'Invalid request group: each group must be an array',
+        code: 'REQUEST_INVALID',
+      };
+    }
     for (const claim of group) {
       if (!validators[claim.type]) {
         return {

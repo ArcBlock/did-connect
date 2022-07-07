@@ -154,7 +154,12 @@ export default function useSession({
   // };
   return {
     sessionId,
-    session: { status: state.value as TSessionStatus, context: state.context, deepLink },
+    session: {
+      status: state.value as TSessionStatus,
+      context: state.context,
+      deepLink,
+      existing: !!existingSession,
+    },
     dispatch: send,
     generate,
     cancel,

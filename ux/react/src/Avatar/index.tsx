@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable react/no-unstable-nested-components */
 import { useState, useMemo } from 'react';
 import styled from 'styled-components';

@@ -97,5 +97,6 @@ export function useMachine<TContext, TEvent extends EventObject, TTypestate exte
     Object.assign(service.machine.options.services, services);
   }, [service, services]);
 
+  // @ts-expect-error
   return [state, service.send, service];
 }

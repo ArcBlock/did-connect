@@ -11,9 +11,6 @@ export type ResponsiveProps = CardProps & {
   layout?: LiteralUnion<'tb' | 'lr', string>;
 };
 
-/**
- * Card
- */
 export default function Card({ children = null, ...rest }: CardProps): JSX.Element {
   return <Root {...rest}>{children}</Root>;
 }

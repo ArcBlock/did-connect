@@ -41,6 +41,7 @@ export type THookResult = {
     context: TSession;
     status: TSessionStatus;
     deepLink: string;
+    existing: boolean;
   };
 };
 export type TBasicPropsBase = {
