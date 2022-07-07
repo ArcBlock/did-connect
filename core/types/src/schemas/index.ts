@@ -371,6 +371,16 @@ const Session: ObjectSchema = Joi.object({
       wallet: 60000,
     })
     .required(),
+  // When we need to fetch requestedClaims from another source
+  connectUrl: Joi.string()
+    .uri({ scheme: ['http', 'https'] })
+    .optional()
+    .default(''),
+  // When we need to fetch approve results from another source
+  approveUrl: Joi.string()
+    .uri({ scheme: ['http', 'https'] })
+    .optional()
+    .default(''),
 })
   .options(options)
   .meta({ unknownType: 'string', className: 'TSession' });

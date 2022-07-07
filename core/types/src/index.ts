@@ -1,6 +1,16 @@
 /* eslint-disable @typescript-eslint/indent */
+import { Joi } from '@arcblock/validator';
 import { LiteralUnion } from 'type-fest';
 import { TAppInfo, TChainInfo, TWalletInfo, TSession, TAnyResponse, TAnyRequest } from './types';
+import {
+  AuthPrincipalRequest,
+  AssetRequest,
+  ProfileRequest,
+  SignatureRequest,
+  VerifiableCredentialRequest,
+  AgreementRequest,
+  PrepareTxRequest,
+} from './schemas';
 
 export * from './schemas';
 export * from './types';
@@ -63,3 +73,46 @@ export const SessionTimeout = {
   relay: 10 * 1000,
   wallet: 60 * 1000,
 } as const;
+
+const urlSchema = Joi.string().uri({ scheme: ['http', 'https'] }).required(); // prettier-ignore
+export function isUrl(str: string): boolean {
+  return !urlSchema.validate(str).error;
+}
+
+export function isRequestList(claims: TAnyRequest[][]): { code: string; error: string } {
+  const validators: TAnyObject = {
+    agreement: AgreementRequest,
+    asset: AssetRequest,
+    authPrincipal: AuthPrincipalRequest,
+    prepareTx: PrepareTxRequest,
+    profile: ProfileRequest,
+    signature: SignatureRequest,
+    verifiableCredential: VerifiableCredentialRequest,
+  };
+
+  for (const group of claims) {
+    if (!Array.isArray(group)) {
+      return {
+        error: 'Invalid request group: each group must be an array',
+        code: 'REQUEST_INVALID',
+      };
+    }
+    for (const claim of group) {
+      if (!validators[claim.type]) {
+        return {
+          error: `Invalid ${claim.type} request: supported request types are ${Object.keys(validators)}`,
+          code: 'REQUEST_UNSUPPORTED',
+        };
+      }
+      const { error } = validators[claim.type].validate(claim);
+      if (error) {
+        return {
+          error: `Invalid ${claim.type} request: ${error.details.map((x: any) => x.message).join(', ')}`,
+          code: 'REQUEST_INVALID',
+        };
+      }
+    }
+  }
+
+  return { error: '', code: 'OK' };
+}

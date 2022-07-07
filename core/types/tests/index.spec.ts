@@ -1,4 +1,13 @@
-import { ChainInfo, Context, Session, AnyRequest, AnyResponse, VerifiableCredentialRequest } from '../src';
+import {
+  ChainInfo,
+  Context,
+  Session,
+  AnyRequest,
+  AnyResponse,
+  VerifiableCredentialRequest,
+  isRequestList,
+  isUrl,
+} from '../src';
 
 const request = {
   type: 'profile',
@@ -105,5 +114,23 @@ describe('Validator', () => {
 
   test('should AnyResponse work', () => {
     expect(AnyResponse.validate(response).error).toBeFalsy();
+  });
+
+  test('should isUrl work', () => {
+    expect(isUrl('')).toBeFalsy();
+    expect(isUrl('http://www.arcblock.io')).toBeTruthy();
+    expect(isUrl('ftp://www.arcblock.io')).toBeFalsy();
+  });
+
+  test('should isRequestList work', () => {
+    expect(isRequestList([]).code).toBe('OK');
+    // @ts-ignore
+    expect(isRequestList([{ type: 'b' }]).code).toBe('REQUEST_INVALID');
+    // @ts-ignore
+    expect(isRequestList([[{ type: 'b' }]]).code).toBe('REQUEST_UNSUPPORTED');
+    // @ts-ignore
+    expect(isRequestList([[{ type: 'profile' }]]).code).toBe('REQUEST_INVALID');
+
+    expect(isRequestList([[{ type: 'profile', description: 'abc', items: ['fullName'] }]]).code).toBe('OK');
   });
 });

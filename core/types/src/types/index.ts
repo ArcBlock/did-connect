@@ -202,9 +202,11 @@ export interface TProfileResponse {
 export interface TSession {
   appInfo: TAppInfo;
   approveResults: any[];
+  approveUrl?: string;
   authUrl: string;
   autoConnect: boolean;
   challenge: string;
+  connectUrl?: string;
   currentConnected?: {
     didwallet: TWalletInfo;
     userDid: string;
