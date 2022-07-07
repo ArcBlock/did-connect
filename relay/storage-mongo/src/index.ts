@@ -1,11 +1,33 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable no-param-reassign */
-const MongoClient = require('mongodb');
-const StorageInterface = require('@did-connect/storage');
+// @ts-ignore
+import MongoClient from 'mongodb';
+import { BaseStorage, SessionStorage, SessionStorageOptions } from '@did-connect/storage';
+import { TSession } from '@did-connect/types';
 
 const debug = require('debug')(require('../package.json').name);
 
-module.exports = class MongoSessionStorage extends StorageInterface {
+export type MongoStorageOptions = SessionStorageOptions & {
+  url: string;
+  collection?: string;
+  [key: string]: any;
+};
+
+export class MongoStorage extends BaseStorage implements SessionStorage {
+  // @ts-ignore
+  state: string;
+
+  collectionName: string;
+
+  client: any;
+
+  db: any;
+
+  collectionReadyPromise: any;
+
+  collection: any;
+
   /**
    * Creates an instance of MongoSessionStorage.
    *
@@ -14,7 +36,7 @@ module.exports = class MongoSessionStorage extends StorageInterface {
    * @param {string} options.url - mongodb connection string
    * @param {string} [options.collection='did_auth_tokens'] - which collection to store did auth tokens
    */
-  constructor(options) {
+  constructor(options: MongoStorageOptions) {
     options = options || {};
 
     super(options);
@@ -23,7 +45,7 @@ module.exports = class MongoSessionStorage extends StorageInterface {
 
     this.changeState('init');
 
-    const newConnectionCallback = (err, client) => {
+    const newConnectionCallback = (err: any, client: any) => {
       if (err) {
         this.connectionFailed(err);
       } else {
@@ -53,8 +75,8 @@ module.exports = class MongoSessionStorage extends StorageInterface {
       this.handleNewConnectionAsync(options.client);
     } else if (options.clientPromise) {
       options.clientPromise
-        .then((client) => this.handleNewConnectionAsync(client))
-        .catch((err) => this.connectionFailed(err));
+        .then((client: any) => this.handleNewConnectionAsync(client))
+        .catch((err: any) => this.connectionFailed(err));
     } else {
       throw new Error('Connection strategy not found');
     }
@@ -62,26 +84,26 @@ module.exports = class MongoSessionStorage extends StorageInterface {
     this.changeState('connecting');
   }
 
-  connectionFailed(err) {
+  connectionFailed(err: any) {
     this.changeState('disconnected');
     throw err;
   }
 
-  handleNewConnectionAsync(client) {
+  handleNewConnectionAsync(client: any) {
     this.client = client;
     this.db = typeof client.db !== 'function' ? client.db : client.db();
     this.setCollection(this.db.collection(this.collectionName));
     this.changeState('connected');
   }
 
-  changeState(newState) {
+  changeState(newState: string) {
     if (newState !== this.state) {
       this.state = newState;
       this.emit(newState);
     }
   }
 
-  setCollection(collection) {
+  setCollection(collection: any) {
     this.collectionReadyPromise = undefined;
     this.collection = collection;
 
@@ -105,24 +127,26 @@ module.exports = class MongoSessionStorage extends StorageInterface {
     return promise;
   }
 
-  read(sessionId) {
-    return this.collectionReady().then((collection) => collection.findOne({ sessionId }));
+  async read(sessionId: string): Promise<TSession> {
+    return this.collectionReady().then((collection: any) => collection.findOne({ sessionId }));
   }
 
-  create(sessionId, attrs = { status: 'created' }) {
+  async create(sessionId: string, attrs: Partial<TSession>): Promise<TSession> {
     return this.update(sessionId, { ...attrs }, true);
   }
 
-  update(sessionId, updates, upsert = false) {
+  async update(sessionId: string, updates: Partial<TSession>, upsert = false): Promise<TSession> {
+    // @ts-ignore
     if (!updates.updatedAt) {
+      // @ts-ignore
       updates.updatedAt = new Date();
     }
 
     debug('update', { sessionId, updates });
 
     return this.collectionReady()
-      .then((collection) => collection.updateOne({ sessionId }, { $set: updates }, { upsert }))
-      .then((rawResponse) => {
+      .then((collection: any) => collection.updateOne({ sessionId }, { $set: updates }, { upsert }))
+      .then((rawResponse: any) => {
         if (rawResponse.result) {
           rawResponse = rawResponse.result;
         }
@@ -143,18 +167,14 @@ module.exports = class MongoSessionStorage extends StorageInterface {
       });
   }
 
-  delete(sessionId) {
+  async delete(sessionId: string): Promise<void> {
     return this.collectionReady()
-      .then((collection) => collection.deleteOne({ sessionId }))
+      .then((collection: any) => collection.deleteOne({ sessionId }))
       .then(() => this.emit('delete', sessionId));
   }
 
-  exist(sessionId, did) {
-    return this.collectionReady().then((collection) => collection.findOne({ sessionId, did }));
-  }
-
-  clear() {
-    return this.collectionReady().then((collection) => collection.drop());
+  async clear(): Promise<void> {
+    return this.collectionReady().then((collection: any) => collection.drop());
   }
 
   close() {
@@ -162,4 +182,4 @@ module.exports = class MongoSessionStorage extends StorageInterface {
       this.client.close();
     }
   }
-};
+}

@@ -9,6 +9,7 @@ build:
 	@cd relay/storage && npm run build
 	@cd relay/storage-memory && npm run build
 	@cd relay/storage-nedb && npm run build
+	@cd relay/storage-mongo && npm run build
 	@cd core/authenticator && npm run build
 	@cd core/handler && npm run build
 	@cd core/state && npm run build

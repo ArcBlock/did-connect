@@ -45,6 +45,7 @@
   "gitHead": "570a366418890ded86422e168417bae0c9967e35",
   "dependencies": {
     "@did-connect/storage": "^2.0.0",
+    "@did-connect/types": "^2.0.0",
     "debug": "^4.3.4",
     "mongodb": "3.1.13"
   }
