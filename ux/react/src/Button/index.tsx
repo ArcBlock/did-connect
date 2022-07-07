@@ -1,4 +1,3 @@
-/* eslint-disable react/require-default-props */
 import Button from '@arcblock/ux/lib/Button';
 import ConnectLogo from '@arcblock/icons/lib/ConnectLogo';
 

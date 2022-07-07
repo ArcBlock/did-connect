@@ -51,6 +51,7 @@ type OwnWebWalletSWKeeperProps = {
   maxIdleTime?: number;
 };
 
+// @ts-ignore
 type WebWalletSWKeeperProps = OwnWebWalletSWKeeperProps & typeof WebWalletSWKeeper.defaultProps;
 
 // 该组件通过嵌入一个 web wallet iframe 帮助 web wallet service worker 延最大空闲时间

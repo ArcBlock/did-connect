@@ -1,14 +1,14 @@
-import Box from '@mui/material/Box';
+import Box, { BoxProps } from '@mui/material/Box';
 import QRCode from '@arcblock/ux/lib/QRCode';
-import { ResponsiveCard } from './card';
+import { ResponsiveCard, ResponsiveProps } from './card';
 import RefreshOverlay from './refresh-overlay';
 
-interface MobileWalletProps {
+type MobileWalletProps = ResponsiveProps & {
   status: string;
   qrcodeSize: number;
   deepLink: string;
   onRefresh(...args: any[]): any;
-}
+} & BoxProps;
 
 /**
  * MobileWallet (QRCode scanning)
@@ -21,7 +21,7 @@ export default function MobileWallet({
   ...rest
 }: MobileWalletProps): JSX.Element {
   return (
-    <ResponsiveCard {...rest} position="relative" color="#A8B4C5" fontWeight={700} status={status}>
+    <ResponsiveCard {...rest} position="relative" color="#A8B4C5" fontWeight={700}>
       <div>
         <Box mt={0.5} fontSize={20} color="#666">
           Mobile Wallet

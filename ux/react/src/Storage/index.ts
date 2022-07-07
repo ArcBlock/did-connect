@@ -2,13 +2,13 @@ import { TAnyObject } from '@did-connect/types';
 
 import CookieEngine from './engine/cookie';
 import LocalStorageEngine from './engine/local-storage';
-import { EngineType, StorageEngine } from './types';
+import { TStorageEngineCode, TStorageEngine } from '../types';
 
 export default function createStorage(
   storageKey: string = 'did.auth.token',
-  storageEngine: EngineType = 'ls',
+  storageEngine: TStorageEngineCode = 'ls',
   storageOptions: TAnyObject = {}
-): StorageEngine {
+): TStorageEngine {
   if (!storageKey) {
     throw new Error('storageKey must be specified to create a storage');
   }

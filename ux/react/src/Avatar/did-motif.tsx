@@ -1,22 +1,25 @@
 import { useRef, useLayoutEffect } from 'react';
 import { update } from '@arcblock/did-motif';
 
-const defaultProps = {
-  size: 200,
-  animation: false,
-  responsive: false,
-  shape: null,
-};
+import { TAvatarShape } from '../types';
 
 type Props = {
   did: string;
   size?: number;
   animation?: boolean;
   responsive?: boolean;
-  shape?: number;
-} & typeof defaultProps;
+  shape?: TAvatarShape;
+  style?: React.CSSProperties;
+};
 
-export default function DIDMotif({ did, size, animation, shape, responsive, ...rest }: Props): JSX.Element {
+export default function DIDMotif({
+  did,
+  size = 200,
+  animation = false,
+  responsive = false,
+  shape = '',
+  ...rest
+}: Props): JSX.Element {
   const svgRef = useRef(null);
 
   useLayoutEffect(() => {
@@ -35,5 +38,3 @@ export default function DIDMotif({ did, size, animation, shape, responsive, ...r
     </span>
   );
 }
-
-DIDMotif.defaultProps = defaultProps;

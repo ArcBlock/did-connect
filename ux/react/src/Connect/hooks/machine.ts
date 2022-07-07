@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 // Note: this custom hook exists because of: https://github.com/statelyai/xstate/issues/1101
 import { useState, useEffect, useMemo } from 'react';
 import {

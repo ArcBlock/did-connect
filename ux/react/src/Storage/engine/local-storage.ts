@@ -1,6 +1,6 @@
-import { StorageEngine } from '../types';
+import { TStorageEngine } from '../../types';
 
-export default class LocalStorageEngine implements StorageEngine {
+export default class LocalStorageEngine implements TStorageEngine {
   storageKey: string;
 
   constructor(storageKey: string) {

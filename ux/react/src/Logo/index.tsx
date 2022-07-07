@@ -1,4 +1,3 @@
-/* eslint-disable react/require-default-props */
 import DidLogoIcon from '@arcblock/icons/lib/DidLogo';
 
 const defaultStyle = {

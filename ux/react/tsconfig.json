@@ -3,6 +3,7 @@
   "include": ["src"],
   "exclude": ["tests", "lib"],
   "compilerOptions": {
+    "lib": ["es6", "dom"],
     "outDir": "lib"
   }
 }

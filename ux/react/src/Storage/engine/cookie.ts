@@ -1,9 +1,9 @@
 import Cookie from 'js-cookie';
 import { getCookieOptions } from '@arcblock/ux/lib/Util';
 
-import { StorageEngine } from '../types';
+import { TStorageEngine } from '../../types';
 
-export default class CookieStorageEngine implements StorageEngine {
+export default class CookieStorageEngine implements TStorageEngine {
   options: any;
 
   storageKey: any;

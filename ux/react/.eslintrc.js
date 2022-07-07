@@ -8,5 +8,12 @@ module.exports = {
   },
   rules: {
     '@typescript-eslint/no-use-before-define': 'off',
+    'react/require-default-props': [
+      'error',
+      {
+        classes: 'defaultProps',
+        functions: 'defaultArguments',
+      },
+    ],
   },
 };

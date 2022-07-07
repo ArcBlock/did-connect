@@ -1,18 +1,22 @@
 import { createContext, useContext } from 'react';
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 
+export type ContextState = {
+  isWalletWebview: boolean;
+  isMobile: boolean;
+};
+
 /**
  * 浏览器环境 Context (方便在测试环境模拟浏览器环境)
  */
-const BrowserEnvContext = createContext({
+const BrowserEnvContext = createContext<ContextState>({
   isWalletWebview: false,
   isMobile: false,
 });
 
 const { Provider, Consumer } = BrowserEnvContext;
 
-// eslint-disable-next-line react/prop-types
-function BrowserEnvProvider({ children }: any) {
+function BrowserEnvProvider({ children }: React.PropsWithChildren<{}>) {
   const browser = useBrowser();
   const value = {
     isWalletWebview: browser.wallet,
@@ -22,7 +26,7 @@ function BrowserEnvProvider({ children }: any) {
   return <Provider value={value}>{children}</Provider>;
 }
 
-function useBrowserEnvContext() {
+function useBrowserEnvContext(): ContextState {
   return useContext(BrowserEnvContext);
 }
 

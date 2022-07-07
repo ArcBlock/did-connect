@@ -1,22 +1,20 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
+import { LiteralUnion } from 'type-fest';
 import styled from 'styled-components';
-import Box from '@mui/material/Box';
+import Box, { BoxProps } from '@mui/material/Box';
 
-interface CardProps {
-  children: React.ReactNode;
-}
+export type CardProps = {
+  children?: any;
+} & BoxProps;
 
-interface ResponsiveCardProps {
-  children: React.ReactNode;
-
-  // 两种布局: 上下, 左右 (适用于移动端)
-  layout?: 'tb' | 'lr';
-}
+// 两种布局: 上下, 左右 (适用于移动端)
+export type ResponsiveProps = CardProps & {
+  layout?: LiteralUnion<'tb' | 'lr', string>;
+};
 
 /**
  * Card
  */
-export default function Card({ children, ...rest }: CardProps): JSX.Element {
+export default function Card({ children = null, ...rest }: CardProps): JSX.Element {
   return <Root {...rest}>{children}</Root>;
 }
 
@@ -32,10 +30,11 @@ const Root = styled(Box)`
 `;
 
 // ResponsiveCard, 支持两种布局: 上下, 左右 (适用于移动端)
-export function ResponsiveCard({ children, layout, ...rest }: ResponsiveCardProps): JSX.Element | null {
+export function ResponsiveCard({ children = null, layout = 'tb', ...rest }: ResponsiveProps): JSX.Element | null {
   if (!children) {
     return null;
   }
+
   const [child1, child2, ...extras] = children;
   return (
     <ResponsiveCardRoot layout={layout} {...rest}>
@@ -46,11 +45,7 @@ export function ResponsiveCard({ children, layout, ...rest }: ResponsiveCardProp
   );
 }
 
-ResponsiveCard.defaultProps = {
-  layout: 'tb',
-};
-
-const ResponsiveCardRoot = styled(Card)<{ layout: string }>`
+const ResponsiveCardRoot = styled(Card)<{ layout?: string }>`
   display: flex;
   flex-direction: ${(props: any) => (props.layout === 'tb' ? 'column' : 'row')};
   justify-content: space-between;

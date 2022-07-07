@@ -8,7 +8,7 @@ import { TSession, TSessionStatus, TEvent } from '@did-connect/types';
 
 import { decodeConnectUrl, parseTokenFromConnectUrl, updateConnectedInfo, noop } from '../../utils';
 import { useMachine } from './machine';
-import { HookProps, HookResult } from '../types';
+import { THookProps, THookResult } from '../../types';
 
 // 从 url params 中获取已存在的 session (token & connect url)
 const parseExistingSession = () => {
@@ -46,7 +46,7 @@ export default function useSession({
   saveConnect = true,
   onlyConnect = false,
   timeout,
-}: HookProps): HookResult {
+}: THookProps): THookResult {
   const browser = useBrowser();
   const existingSession = useMemo(() => parseExistingSession(), []);
 

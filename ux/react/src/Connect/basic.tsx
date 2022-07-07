@@ -19,7 +19,7 @@ import DidAvatar from '../Avatar';
 import { StatusCard, MobileWalletCard, ConnectWebWalletCard, ConnectMobileWalletCard, GetWalletCard } from './card';
 import { getWebWalletUrl, checkSameProtocol, isSessionFinalized, isSessionActive, isSessionLoading } from '../utils';
 
-import { UIProps } from './types';
+import { TBasicProps } from '../types';
 
 // #442, 页面初始化时的可见性, 如果不可见 (比如通过在某个页面中右键在新标签页中打开的一个基于 did-connect 登录页) 则禁止自动弹出 web wallet 窗口
 const initialDocVisible = !document.hidden;
@@ -38,6 +38,7 @@ type AppIconProps = {
 function AppIcon({ appInfo, ...rest }: AppIconProps) {
   const [error, setError] = useState(false);
   if (error) {
+    // @ts-ignore
     return <DidAvatar did={appInfo.publisher} size={32} />;
   }
   return (
@@ -49,10 +50,8 @@ function AppIcon({ appInfo, ...rest }: AppIconProps) {
 export default function BasicConnect({
   locale = 'en',
   qrcodeSize = 184,
-  // showDownload = true,
   webWalletUrl = '',
   enabledConnectTypes = ['web', 'mobile'],
-  // onRecreateSession = noop,
   extraContent = null,
   loadingEle = null,
   messages,
@@ -60,7 +59,7 @@ export default function BasicConnect({
   generate,
   cancel,
   ...rest
-}: UIProps): JSX.Element {
+}: TBasicProps): JSX.Element {
   const { context, status, deepLink } = session;
 
   // eslint-disable-next-line no-param-reassign
@@ -71,7 +70,7 @@ export default function BasicConnect({
   const isSameProtocol = checkSameProtocol(webWalletUrl);
   const theme = useTheme();
 
-  const [ref, { width }] = useMeasure();
+  const [ref, { width }] = useMeasure<HTMLDivElement>();
   // const matchSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const matchSmallScreen = width < 600;
   const { isWalletWebview, isMobile } = useBrowserEnvContext();
@@ -82,7 +81,6 @@ export default function BasicConnect({
   const getDeepLink = () => (isMobile ? deepLink.replace(/^https?:\/\//, 'abt://') : deepLink);
 
   const handleRetry = () => {
-    onRecreateSession();
     // inExistingSession 为 true 时不重新生成 token
     if (!session.inExistingSession) {
       setNativeCalled(false);
@@ -91,7 +89,6 @@ export default function BasicConnect({
   };
 
   const handleCancel = () => {
-    onRecreateSession();
     if (!session.inExistingSession) {
       setCancelCounter(cancelCounter + 1);
       cancel();
@@ -99,7 +96,6 @@ export default function BasicConnect({
   };
 
   const handleRefresh = () => {
-    onRecreateSession();
     if (!session.inExistingSession) {
       generate();
     }
@@ -178,12 +174,6 @@ export default function BasicConnect({
     setWebWalletOpened(true);
   }
 
-  const statusMessages = {
-    confirm: messages.confirm, // scanned
-    success: messages.success,
-    error: context.error || '',
-  };
-
   console.log('session', status, context);
 
   return (
@@ -244,7 +234,7 @@ export default function BasicConnect({
                   status={status}
                   onCancel={handleCancel}
                   onRetry={handleRetry}
-                  messages={statusMessages}
+                  messages={{ ...messages, error: context.error || '' }}
                   locale={locale}
                   className="auth_status"
                 />
@@ -303,8 +293,6 @@ export default function BasicConnect({
     </Root>
   );
 }
-
-BasicConnect.defaultProps = {};
 
 const centerMixin = css`
   display: flex;

@@ -2,15 +2,15 @@ import { SessionTimeout } from '@did-connect/types';
 
 import BasicConnect from './basic';
 import { BrowserEnvProvider } from './contexts/browser';
-import withDialog from './withDialog';
+import withDialog from './with-dialog';
 import { withWebWalletSWKeeper } from '../WebWalletSWKeeper';
 import useSession from './hooks/session';
-import { ConnectProps } from './types';
+import { TConnectProps, THookProps, TBasicProps, THookResult } from '../types';
 
 import '@fontsource/lato/400.css';
 import '@fontsource/lato/700.css';
 
-const noop = () => null;
+const noop = () => {};
 const defaultProps = {
   prefix: '/api/connect/relay',
   onClose: noop,
@@ -30,7 +30,7 @@ const defaultProps = {
   onlyConnect: false,
 };
 
-function Connect(props: ConnectProps): JSX.Element {
+function Connect(props: TConnectProps): JSX.Element {
   const {
     onStart,
     onCreate,
@@ -53,7 +53,7 @@ function Connect(props: ConnectProps): JSX.Element {
     ...rest
   } = { ...defaultProps, ...props };
 
-  const { session, generate, cancel } = useSession({
+  const hookProps: THookProps = {
     baseUrl,
     timeout,
     prefix,
@@ -66,14 +66,13 @@ function Connect(props: ConnectProps): JSX.Element {
     onReject,
     onCancel,
     onError,
-    onClose,
-    locale,
     autoConnect,
     saveConnect,
     onlyConnect,
-  });
+  };
+  const { session, generate, cancel }: THookResult = useSession(hookProps);
 
-  const connectProps = {
+  const connectProps: TBasicProps = {
     ...rest,
     session,
     generate,

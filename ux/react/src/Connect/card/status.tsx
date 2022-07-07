@@ -11,7 +11,7 @@ import { TSessionStatus, TLocaleCode } from '@did-connect/types';
 import translations from '../assets/locale';
 import Card from './card';
 import { isSessionActive, noop } from '../../utils';
-import { ConnectMessages } from '../types';
+import { TConnectMessage } from '../../types';
 
 const StyledButton = styled(Button)`
   && {
@@ -29,10 +29,10 @@ const StyledButton = styled(Button)`
 export type StatusProps = {
   status: TSessionStatus;
   locale: TLocaleCode;
-  messages: ConnectMessages;
+  messages: TConnectMessage;
   onCancel: (...args: any[]) => any;
   onRetry: (...args: any[]) => any;
-};
+} & React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 
 /**
  * Status (scanned/succeed/error)

@@ -1,29 +1,23 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import styled from 'styled-components';
-import Box from '@mui/material/Box';
+import Box, { BoxProps } from '@mui/material/Box';
 import ComputerIcon from '@arcblock/icons/lib/Computer';
-import { ResponsiveCard } from './card';
+
+import { ResponsiveCard, ResponsiveProps } from './card';
 import RefreshOverlay from './refresh-overlay';
 
-interface ConnectWebWalletProps {
+type CardProps = ResponsiveProps & {
   status: string;
   onRefresh(...args: any[]): any;
   webWalletUrl?: string;
-}
+} & BoxProps;
 
 /**
  * ConnectWebWallet
  */
-export default function ConnectWebWallet({
-  status,
-  onRefresh,
-  webWalletUrl,
-  ...rest
-}: ConnectWebWalletProps): JSX.Element {
+export default function ConnectWebWallet({ status, onRefresh, webWalletUrl = '', ...rest }: CardProps): JSX.Element {
   const iconSize = rest.layout === 'lr' ? 48 : 64;
   const isTimeout = status === 'timeout';
   const className = `${rest.className || ''} ${isTimeout ? 'card_timeout' : ''}`;
-  const url = new URL(webWalletUrl);
 
   const renderProvider = () => {
     const webWalletExtension = (window as any)?.ABT_DEV || (window as any).ABT;
@@ -36,6 +30,7 @@ export default function ConnectWebWallet({
     }
 
     if (webWalletUrl) {
+      const url = new URL(webWalletUrl);
       return (
         <Box mt={0.5} fontSize={12} style={{ wordBreak: 'break-all' }}>
           {url.hostname}
@@ -59,10 +54,6 @@ export default function ConnectWebWallet({
     </Root>
   );
 }
-
-ConnectWebWallet.defaultProps = {
-  webWalletUrl: '',
-};
 
 const Root = styled(ResponsiveCard)`
   position: relative;

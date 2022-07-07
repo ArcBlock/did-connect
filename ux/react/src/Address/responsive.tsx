@@ -41,7 +41,7 @@ export default function ResponsiveDidAddress({
 
   return (
     // @ts-ignore
-    <Root as={component} inline={(rest as any).inline} ref={containerRef} style={style} className={className}>
+    <Root as={component} inline={rest.inline} ref={containerRef} style={style} className={className}>
       <StyledDidAddress {...rest} component={component} inline compact={compact} ref={ref} />
     </Root>
   );

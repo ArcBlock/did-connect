@@ -1,11 +1,13 @@
 import { useRef } from 'react';
 import styled from 'styled-components';
-import Box from '@mui/material/Box';
+import Box, { BoxProps } from '@mui/material/Box';
 import { TLocaleCode } from '@did-connect/types';
 
 import translations from '../assets/locale';
 
-export default function GetWallet({ locale = 'en', ...rest }: { locale: TLocaleCode }): JSX.Element {
+type Props = { locale: TLocaleCode } & BoxProps;
+
+export default function GetWallet({ locale = 'en', ...rest }: Props): JSX.Element {
   const linkRef = useRef<HTMLAnchorElement>(null);
 
   return (

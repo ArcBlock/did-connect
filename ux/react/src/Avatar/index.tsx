@@ -8,10 +8,9 @@ import { makeStyles } from '@mui/styles';
 import { Shape } from '@arcblock/did-motif';
 import Box from '@mui/material/Box';
 
-import type { LiteralUnion } from 'type-fest';
-
 import DIDMotif from './did-motif';
 import blockies from './etherscan-blockies';
+import { TAvatarShape, TAvatarVariant } from '../types';
 
 const useStyles = makeStyles(() => ({
   img: {
@@ -38,20 +37,21 @@ const isEthereumDid = (did: any) => {
 };
 
 const defaultProps = {
+  did: '',
+  src: '',
   size: 36,
   variant: 'default',
   animation: false,
   shape: '',
 };
 
-type AvatarVariant = LiteralUnion<'default' | 'rounded' | 'circle', string>;
-type AvatarShape = LiteralUnion<'' | 'rectangle' | 'square' | 'hexagon' | 'circle', string>;
 type AvatarProps = {
-  did: string;
+  did?: string;
+  src?: string;
   size?: number;
-  variant?: AvatarVariant;
+  variant?: TAvatarVariant;
   animation?: boolean;
-  shape?: AvatarShape;
+  shape?: TAvatarShape;
 } & typeof defaultProps;
 
 // 参考: https://github.com/blocklet/block-explorer/issues/478#issuecomment-1038954976

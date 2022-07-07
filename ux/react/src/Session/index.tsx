@@ -1,5 +1,6 @@
+/* eslint-disable react/require-default-props */
 import { TAnyObject, TSession, TLocaleCode, TI18nMessages } from '@did-connect/types';
-import { createContext, Component } from 'react';
+import { createContext, Component, useContext } from 'react';
 import { AxiosInstance } from 'axios';
 import omit from 'lodash/omit';
 import Cookie from 'js-cookie';
@@ -13,7 +14,7 @@ import createService from '../Service';
 import createStorage from '../Storage';
 import { getAppId, updateConnectedInfo } from '../utils';
 
-import { EngineType, StorageEngine } from '../Storage/types';
+import { TStorageEngineCode, TStorageEngine, TSessionUser } from '../types';
 
 type I18nGroup = { [key: string]: TI18nMessages };
 
@@ -75,7 +76,7 @@ const defaultProps = {
   messages: null,
 };
 
-type ProviderProps = {
+export type ProviderProps = {
   children: React.ReactNode;
   serviceHost: string;
   action?: string;
@@ -90,16 +91,16 @@ type ProviderProps = {
   messages?: I18nGroup | null;
 } & typeof defaultProps;
 
-type ProviderState = {
+export type ProviderState = {
   action: string;
   error: string;
   initialized: boolean;
   loading: boolean;
   open: boolean;
-  user: any; // FIXME: user type
+  user?: TSessionUser;
 };
 
-type ContextState = {
+export type ContextState = {
   api: AxiosInstance;
   session: ProviderState & {
     login(done: any): void;
@@ -120,11 +121,11 @@ const AUTH_SERVICE_PREFIX = '/.well-known/service';
 
 export default function createSessionContext(
   storageKey: string = 'login_token',
-  storageEngine: EngineType = 'ls',
+  storageEngine: TStorageEngineCode = 'ls',
   storageOptions: TAnyObject = {},
   appendAuthServicePrefix = false
 ): any {
-  const storage: StorageEngine = createStorage(storageKey, storageEngine, storageOptions);
+  const storage: TStorageEngine = createStorage(storageKey, storageEngine, storageOptions);
   const { getToken, setToken, removeToken } = storage;
 
   const clearSession = () => {
@@ -153,7 +154,7 @@ export default function createSessionContext(
         initialized: false,
         loading: false,
         open: false,
-        user: null,
+        user: undefined,
       };
 
       this.onLogin = this.onLogin.bind(this);
@@ -240,9 +241,9 @@ export default function createSessionContext(
         if (status === 400) {
           removeToken();
           if (showProgress) {
-            this.setState({ user: null, error: '', loading: false });
+            this.setState({ user: undefined, error: '', loading: false });
           } else {
-            this.setState({ user: null, error: '' });
+            this.setState({ user: undefined, error: '' });
           }
         }
 
@@ -299,12 +300,12 @@ export default function createSessionContext(
       Cookie.remove('connected_wallet_os', cookieOptions);
       Cookie.remove('connected_app', cookieOptions);
       removeToken();
-      this.setState({ user: null, error: '', open: false, loading: false }, done);
+      this.setState({ user: undefined, error: '', open: false, loading: false }, done);
     }
 
     switchDid(done: any) {
       clearSession();
-      this.setState({ user: null, error: '', open: false, loading: false }, done);
+      this.setState({ user: undefined, error: '', open: false, loading: false }, done);
     }
 
     switchProfile(done: any) {
@@ -389,7 +390,7 @@ export default function createSessionContext(
         );
       }
 
-      const connectMessages = messages || translations[action];
+      const TConnectMessage = messages || translations[action];
       const callbacks: { [key: string]: Function } = {
         login: this.onLogin,
         'switch-profile': this.onSwitchProfile,
@@ -408,7 +409,7 @@ export default function createSessionContext(
             extraParams={extraParams}
             checkTimeout={timeout}
             webWalletUrl={webWalletUrl}
-            messages={connectMessages[locale]}
+            messages={TConnectMessage[locale]}
             popup
             open={open}
             // {...rest} 允许在使用 SessionProvider 时将一些额外的 props 传递到内部的 Connect 组件, 比如 dialogStyle
@@ -427,7 +428,11 @@ export default function createSessionContext(
     };
   }
 
-  return { SessionProvider, SessionConsumer: Consumer, SessionContext, withSession };
+  function useSessionContext(): ContextState {
+    return useContext(SessionContext);
+  }
+
+  return { SessionProvider, SessionConsumer: Consumer, SessionContext, withSession, useSessionContext };
 }
 
 export function createAuthServiceSessionContext({ storageEngine = 'cookie' } = {}) {

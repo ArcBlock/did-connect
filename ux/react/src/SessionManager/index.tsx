@@ -16,6 +16,7 @@ import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 
 import DidAvatar from '../Avatar';
 import DidAddress from '../Address';
+import { TSessionUser } from '../types';
 
 const messages: { [key: string]: { [key: string]: string } } = {
   zh: {
@@ -111,16 +112,7 @@ const useStyles = makeStyles((theme) => ({
 
 type OwnSessionManagerProps = {
   session: {
-    user?: {
-      did: string;
-      role: string;
-      fullName?: string;
-      avatar?: string;
-      passports?: {
-        name: string;
-        title: string;
-      }[];
-    };
+    user?: TSessionUser;
     login: (...args: any[]) => any;
     logout: (...args: any[]) => any;
     switchDid: (...args: any[]) => any;

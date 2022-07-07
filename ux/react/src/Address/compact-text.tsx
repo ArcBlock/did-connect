@@ -1,4 +1,3 @@
-/* eslint-disable react/require-default-props */
 import { Children } from 'react';
 
 // 递归, 将 text (string) 部分替换为 CompactText (保持元素结构)
