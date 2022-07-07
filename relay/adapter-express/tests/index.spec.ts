@@ -63,7 +63,6 @@ const profileRequest: TProfileRequest = {
 };
 const profileResponse: TProfileResponse = {
   type: 'profile',
-  description: 'Please give me your profile',
   fullName: 'test',
   email: 'test@arcblock.io',
   avatar: 'abc',
@@ -77,7 +76,6 @@ const assetRequest: TAssetRequest = {
 const assetResponse: TAssetResponse = {
   type: 'asset',
   asset: user.address,
-  description: 'Please prove that you own asset',
   ownerDid: user.address,
   ownerPk: user.publicKey.toString(),
   ownerProof: 'abc',
@@ -98,7 +96,7 @@ describe('RelayAdapterExpress', () => {
   ): Promise<any> => {
     const headers: TAnyObject = {};
     headers['x-updater-pk'] = wallet.publicKey;
-    headers['x-updater-token'] = Jwt.sign(wallet.address, wallet.secretKey, { hash: objectHash(data) });
+    headers['x-updater-token'] = Jwt.sign(wallet.address, wallet.secretKey as string, { hash: objectHash(data) });
     headers['x-connected-did'] = user.address;
     headers['x-connected-pk'] = user.publicKey;
 
@@ -246,7 +244,7 @@ describe('RelayAdapterExpress', () => {
     if (claims.find((x: TAnyRequest) => x.type === 'authPrincipal')) {
       res = await api.post(getAuthUrl(authInfo.url), {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [],
           challenge: authInfo.challenge,
         }),
@@ -261,7 +259,7 @@ describe('RelayAdapterExpress', () => {
     // 4. submit requested claims
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
-      userInfo: Jwt.sign(user.address, user.secretKey, {
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [profileResponse],
         challenge,
       }),
@@ -349,7 +347,7 @@ describe('RelayAdapterExpress', () => {
     if (claims.find((x: TAnyRequest) => x.type === 'authPrincipal')) {
       res = await api.post(getAuthUrl(authInfo.url), {
         userPk: toBase58(user.publicKey),
-        userInfo: Jwt.sign(user.address, user.secretKey, {
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
           requestedClaims: [],
           challenge: authInfo.challenge,
         }),
@@ -364,7 +362,7 @@ describe('RelayAdapterExpress', () => {
     // 4. submit profile claim
     res = await api.post(nextUrl, {
       userPk: toBase58(user.publicKey),
-      userInfo: Jwt.sign(user.address, user.secretKey, {
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [profileResponse],
         challenge,
       }),
@@ -381,7 +379,7 @@ describe('RelayAdapterExpress', () => {
     obj.searchParams.set('userPk', toBase58(user.publicKey));
     obj.searchParams.set(
       'userInfo',
-      Jwt.sign(user.address, user.secretKey, {
+      Jwt.sign(user.address, user.secretKey as string, {
         requestedClaims: [assetResponse],
         challenge,
       })
