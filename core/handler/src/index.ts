@@ -116,7 +116,7 @@ export function validateRequestedClaims(claims: TAnyRequest[][]) {
     prepareTx: PrepareTxRequest,
     profile: ProfileRequest,
     signature: SignatureRequest,
-    verifiableCreate: VerifiableCredentialRequest,
+    verifiableCredential: VerifiableCredentialRequest,
   };
 
   for (const group of claims) {
