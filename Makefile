@@ -17,27 +17,21 @@ build:
 
 init: install dep env
 	@echo "Initializing the repo..."
-	@cd core/proto && make dep
 	@make build
 
 github-init:
 	@echo "Initialize software required for github (normally ubuntu software)"
-	@sudo npm install --unsafe-perm -g @blocklet/cli grpc-tools @dropbox-web-platform/protobufjs-cli @dropbox-web-platform/protobufjs js2dts@0.3.3 jsdoc@3.6.6
+	@sudo npm install --unsafe-perm -g @blocklet/cli typescript
 	@make dep
-	@cd core/proto && make init && make build
 	@make build
 
 install:
 	@echo "Install software required for this repo..."
-	@npm install -g lerna yarn @blocklet/cli grpc-tools protobufjs js2dts@0.3.3 jsdoc@3.6.6 --target_arch=x64
+	@npm install -g lerna yarn @blocklet/cli typescript
 
 dep:
 	@echo "Install dependencies required for this repo..."
 	@lerna bootstrap
-
-env:
-	@echo "Init env for packages..."
-	@echo "ES_ENDPOINT=\"http://127.0.0.1:9200\"" > indexdb/elasticsearch/.env.test
 
 all: pre-build build post-build
 
@@ -47,7 +41,7 @@ test:
 
 lint:
 	@echo "Linting the software..."
-	@npm run lint:fix
+	@npm run lint
 
 docs:
 	@echo "Building and publishing the documenation..."
@@ -60,16 +54,11 @@ precommit: dep lint build test
 clean:
 	@echo "Cleaning the build..."
 	@rm -rf coverage
-	@lerna exec --no-bail -- "rm -rf coverage"
-	@lerna exec --no-bail -- "rm -rf .blocklet"
+	@lerna exec --no-bail -- "rm -rf coverage .blocklet"
 
 coverage:
 	@echo "Running unit tests and collecting coverage..."
 	@npm run coverage
-
-codecov:
-	@echo "Reporting coverage to codecov..."
-	@npm run codecov
 
 run:
 	@echo "Running the software..."

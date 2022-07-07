@@ -54,7 +54,7 @@
   },
   "scripts": {
     "lint": "eslint src tests",
-    "lint:fix": "eslint --fix lib tests",
+    "lint:fix": "eslint --fix src tests",
     "prebuild": "npm run clean",
     "build": "tsc",
     "watch": "tsc -b --watch",
