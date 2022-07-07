@@ -64,11 +64,11 @@ const DidAddress = forwardRef<any, SimpleProps>(
     const isMounted = useMountedState();
 
     const [copied, setCopied] = useState(false);
-    const textRef = useRef();
+    const textRef = useRef<HTMLSpanElement>();
     const onCopy = (e: any) => {
       e.stopPropagation();
-      // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
-      copy(content || textRef.current.textContent);
+      // @ts-ignore
+      copy(content || textRef.current?.textContent);
       setCopied(true);
       // 恢复 copied 状态
       setTimeout(() => {

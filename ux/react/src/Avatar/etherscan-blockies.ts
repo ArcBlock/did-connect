@@ -51,20 +51,17 @@ function createCanvas(imageData: any, color: any, scale: any, bgcolor: any, spot
   // eslint-disable-next-line no-multi-assign
   c.width = c.height = width * scale;
   const cc = c.getContext('2d');
-  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-  cc.fillStyle = bgcolor;
-  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-  cc.fillRect(0, 0, c.width, c.height);
-  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-  cc.fillStyle = color;
-  for (let i = 0; i < imageData.length; i++) {
-    const row = Math.floor(i / width);
-    const col = i % width;
-    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-    cc.fillStyle = imageData[i] === 1 ? color : spotcolor;
-    if (imageData[i]) {
-      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-      cc.fillRect(col * scale, row * scale, scale, scale);
+  if (cc) {
+    cc.fillStyle = bgcolor;
+    cc.fillRect(0, 0, c.width, c.height);
+    cc.fillStyle = color;
+    for (let i = 0; i < imageData.length; i++) {
+      const row = Math.floor(i / width);
+      const col = i % width;
+      cc.fillStyle = imageData[i] === 1 ? color : spotcolor;
+      if (imageData[i]) {
+        cc.fillRect(col * scale, row * scale, scale, scale);
+      }
     }
   }
   return c;

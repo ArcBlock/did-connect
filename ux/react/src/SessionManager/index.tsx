@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
   userName: {
     fontSize: 20,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'dark' does not exist on type '{}'.
+    // @ts-ignore
     color: ({ dark }) => (dark ? '#aaa' : '#222'),
     fontWeight: 'bold',
     marginBottom: 10,

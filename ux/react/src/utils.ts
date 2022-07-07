@@ -67,7 +67,7 @@ export const parseTokenFromConnectUrl = (connectUrl: string): string => {
   return token;
 };
 
-export const getAppId = (appInfo: TAppInfo): string => {
+export const getAppId = (appInfo?: TAppInfo): string => {
   return appInfo
     ? appInfo.publisher?.replace('did:abt:', '')
     : (window as any).blocklet?.appId || (window as any).env?.appId || '';

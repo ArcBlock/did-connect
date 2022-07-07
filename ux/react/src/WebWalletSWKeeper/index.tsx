@@ -22,8 +22,7 @@ const injectIframe = (webWalletUrl: any) => {
   // fix: 页面自动滚动到底部问题 (https://github.com/blocklet/abt-wallet/issues/1160)
   //      top: 0 可能不是必须的, 但测试中发现, 如果不设置, 在某些特殊情况下似乎也会导致页面自动滚动到底部
   iframe.style.position = 'absolute';
-  // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'string'.
-  iframe.style.top = 0;
+  iframe.style.top = '0';
   iframe.src = `${webWalletUrl}?action=iframe`;
   document.body.appendChild(iframe);
 };

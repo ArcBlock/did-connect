@@ -191,7 +191,6 @@ export default function createSessionContext(
       const { autoDisconnect } = this.props;
       // ensure we are in the same app
       const connectedApp = Cookie.get('connected_app');
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
       const actualApp = getAppId();
       if (autoDisconnect && connectedApp && actualApp && connectedApp !== actualApp) {
         clearSession();
