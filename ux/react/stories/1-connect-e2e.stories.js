@@ -1,6 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/jsx-filename-extension */
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import { useState } from 'react';
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
@@ -104,7 +102,7 @@ storiesOf('DID-Connect/Examples', module)
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('Connect');
     const [connectedUser, setConnectedUser] = useState(null);
-    const handleClose = (ctx, e) => {
+    const handleClose = () => {
       action('close');
       setOpen(false);
     };

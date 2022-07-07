@@ -173,8 +173,6 @@ export default function BasicConnect({
     setWebWalletOpened(true);
   }
 
-  console.log('session', status, context);
-
   return (
     <Root {...rest} theme={theme} ref={ref} data-did-auth-url={deepLink}>
       <div className="auth_inner">

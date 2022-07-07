@@ -8,6 +8,7 @@ module.exports = {
   },
   rules: {
     '@typescript-eslint/no-use-before-define': 'off',
+    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     'react/require-default-props': [
       'error',
       {

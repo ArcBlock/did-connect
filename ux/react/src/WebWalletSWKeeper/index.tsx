@@ -2,13 +2,14 @@ import { useEffect } from 'react';
 import useIdle from 'react-use/lib/useIdle';
 import useLocalStorage from 'react-use/lib/useLocalStorage';
 import { getWebWalletUrl, checkSameProtocol } from '../utils';
+import { TConnectProps } from '../types';
 
 // 默认最大空闲时间: 30min
 const DEFAULT_MAX_IDLE_TIME = 1000 * 60 * 30;
 // 可使用 localStorage.setItem('wallet_sw_keeper_disabled', 1) 来禁用嵌入 wallet iframe
 const STORAGE_KEY_DISABLED = 'wallet_sw_keeper_disabled';
 // iframe id, 如果存在多个 WebWalletSWKeeper 组件实例, 共享此 id, 保证只有一个 iframe
-let id: any;
+let id: string;
 
 const injectIframe = (webWalletUrl: any) => {
   const iframe = document.createElement('iframe');
@@ -36,7 +37,7 @@ const removeIframe = () => {
 
 const cleanup = () => {
   removeIframe();
-  id = null;
+  id = '';
 };
 
 const enable = (webWalletUrl: any) => {
@@ -46,17 +47,17 @@ const enable = (webWalletUrl: any) => {
   }
 };
 
-type OwnWebWalletSWKeeperProps = {
+type KeeperProps = {
   webWalletUrl: string;
   maxIdleTime?: number;
 };
 
-// @ts-ignore
-type WebWalletSWKeeperProps = OwnWebWalletSWKeeperProps & typeof WebWalletSWKeeper.defaultProps;
+type WrapperProps = TConnectProps & KeeperProps;
 
 // 该组件通过嵌入一个 web wallet iframe 帮助 web wallet service worker 延最大空闲时间
-function WebWalletSWKeeper({ webWalletUrl, maxIdleTime }: WebWalletSWKeeperProps) {
+export default function WebWalletSWKeeper({ webWalletUrl, maxIdleTime = DEFAULT_MAX_IDLE_TIME }: KeeperProps) {
   const isIdle = useIdle(maxIdleTime);
+
   // 用户操作空闲时间超过 maxIdleTime 时禁用, 活跃时启用
   useEffect(() => {
     if (isIdle) {
@@ -65,20 +66,19 @@ function WebWalletSWKeeper({ webWalletUrl, maxIdleTime }: WebWalletSWKeeperProps
       enable(webWalletUrl);
     }
   }, [isIdle]); // eslint-disable-line
+
   // 组件销毁时自动清理
   useEffect(() => () => cleanup(), []);
+
   return null;
 }
 
-WebWalletSWKeeper.defaultProps = {
-  maxIdleTime: DEFAULT_MAX_IDLE_TIME,
-};
-
-export default WebWalletSWKeeper;
-
 export const withWebWalletSWKeeper = (Component: any) => {
-  // eslint-disable-next-line react/prop-types
-  return function WithWebWalletSWKeeperComponent({ webWalletUrl, maxIdleTime, ...rest }: any) {
+  return function WithWebWalletSWKeeperComponent({
+    webWalletUrl,
+    maxIdleTime = DEFAULT_MAX_IDLE_TIME,
+    ...rest
+  }: WrapperProps) {
     // eslint-disable-next-line no-param-reassign
     webWalletUrl = webWalletUrl || getWebWalletUrl();
     const [disabled] = useLocalStorage(STORAGE_KEY_DISABLED);

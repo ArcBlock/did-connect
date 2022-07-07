@@ -18,6 +18,8 @@ import DidAvatar from '../Avatar';
 import DidAddress from '../Address';
 import { TSessionUser } from '../types';
 
+const noop = () => {};
+
 const messages: { [key: string]: { [key: string]: string } } = {
   zh: {
     switchDid: '切换账户',
@@ -110,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type OwnSessionManagerProps = {
+type SessionManagerProps = {
   session: {
     user?: TSessionUser;
     login: (...args: any[]) => any;
@@ -137,27 +139,24 @@ type OwnSessionManagerProps = {
   size?: number;
 };
 
-// @ts-ignore
-type SessionManagerProps = OwnSessionManagerProps & typeof SessionManager.defaultProps;
-
 function SessionManager({
   session,
-  locale,
-  showText,
-  showRole,
-  switchDid,
-  switchProfile,
-  switchPassport,
-  disableLogout,
-  onLogin,
-  onLogout,
-  onSwitchDid,
-  onSwitchProfile,
-  onSwitchPassport,
-  menu,
-  menuRender,
-  dark,
-  size,
+  locale = 'en',
+  showText = false,
+  showRole = false,
+  switchDid = true,
+  switchProfile = true,
+  switchPassport = true,
+  disableLogout = false,
+  menu = [],
+  menuRender = noop,
+  onLogin = noop,
+  onLogout = noop,
+  onSwitchDid = noop,
+  onSwitchProfile = noop,
+  onSwitchPassport = noop,
+  dark = false,
+  size = 28,
   ...rest
 }: SessionManagerProps): JSX.Element {
   const userAnchorRef = useRef(null);
@@ -343,26 +342,5 @@ function SessionManager({
     </>
   );
 }
-
-const noop = () => {};
-
-SessionManager.defaultProps = {
-  locale: 'en',
-  showText: false,
-  showRole: false,
-  switchDid: true,
-  switchProfile: true,
-  switchPassport: true,
-  disableLogout: false,
-  menu: [],
-  menuRender: noop,
-  onLogin: noop,
-  onLogout: noop,
-  onSwitchDid: noop,
-  onSwitchProfile: noop,
-  onSwitchPassport: noop,
-  dark: false,
-  size: 28,
-};
 
 export default SessionManager;

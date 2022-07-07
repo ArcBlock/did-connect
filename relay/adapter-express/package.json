@@ -53,7 +53,7 @@
     "url": "https://github.com/ArcBlock/did-connect"
   },
   "scripts": {
-    "lint": "eslint lib tests",
+    "lint": "eslint src tests",
     "lint:fix": "eslint --fix lib tests",
     "prebuild": "npm run clean",
     "build": "tsc",
