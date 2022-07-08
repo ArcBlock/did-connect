@@ -2,7 +2,7 @@ name: '@did-connect/react'
 title: DID Connect React
 description: DID Connect React Component Library
 group: static
-main: lib
+main: storybook-static
 author:
   name: wangshijun
   email: shijun@arcblock.io

@@ -3,6 +3,7 @@
   "include": ["src"],
   "exclude": ["tests", "lib"],
   "compilerOptions": {
+    "jsx": "react",
     "lib": ["es6", "dom"],
     "outDir": "lib"
   }

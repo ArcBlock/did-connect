@@ -29,10 +29,9 @@
     "build:ts": "rm -rf lib && tsc",
     "test": "jest --forceExit",
     "start": "blocklet dev",
-    "coverage": "yarn test -- --coverage",
     "storybook:deploy": "storybook-to-ghpages -e storybook-static",
     "storybook:clean": "rm -rf storybook-static && mkdir storybook-static",
-    "storybook:build": "npm run clean && build-storybook && cp -r static/* storybook-static/",
+    "storybook:build": "npm run storybook:clean && build-storybook && cp -r static/* storybook-static/",
     "storybook:start": "start-storybook -s ./static -p $BLOCKLET_PORT"
   },
   "bugs": {
