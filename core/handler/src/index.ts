@@ -64,10 +64,13 @@ export type TLogger = {
   warn(...args: any[]): void;
 };
 
+export type TSessionUpdateResult = TSession | { code: string; error?: string };
+
 export interface THandlers {
   handleSessionCreate(context: TContext): Promisable<TSessionUpdateResult>;
   handleSessionRead(sessionId: string): Promisable<TSession>;
   handleSessionUpdate(context: TContext): Promisable<TSessionUpdateResult>;
+  handleSessionDelete(context: TContext): Promisable<TSessionUpdateResult>;
   handleClaimRequest(context: TContext): Promisable<TAppResponseSigned>;
   handleClaimResponse(context: TContext): Promisable<TAppResponseSigned>;
   parseWalletUA(ua: string): TWalletInfo;
@@ -85,8 +88,6 @@ export type TSessionUpdateContext = TContext & {
     error?: string;
   };
 };
-
-export type TSessionUpdateResult = TSession | { error: string; code: string };
 
 export type TWalletHandlerContext = TContext & {
   session: TSession;
@@ -268,6 +269,17 @@ export function createHandlers({
       await storage.update(sessionId, { status: 'error', error: err.message });
       return { error: err.message, code: err.code };
     }
+  };
+
+  const handleSessionDelete = async (context: TSessionUpdateContext): Promise<TSessionUpdateResult> => {
+    const { session, sessionId } = context;
+    const result = verifyUpdater(context, session.updaterPk);
+    if (result.error) {
+      throw new CustomError(result.code, result.error);
+    }
+
+    await storage.delete(sessionId);
+    return { code: 'OK' };
   };
 
   const getAuthPrincipalRequest = (session: TSession): TAuthPrincipalRequest => {
@@ -592,6 +604,7 @@ export function createHandlers({
     handleSessionCreate,
     handleSessionRead,
     handleSessionUpdate,
+    handleSessionDelete,
     handleClaimRequest,
     handleClaimResponse,
     parseWalletUA,
