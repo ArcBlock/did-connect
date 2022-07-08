@@ -48,7 +48,6 @@ app.post('/connect/profile', (req, res) => {
 });
 
 app.post('/approve/profile', (req, res) => {
-  console.log(req.body);
   const { responseClaims, currentStep } = req.body;
   res.jsonp({
     successMessage: `Your name is ${responseClaims[currentStep][0].fullName}`,
