@@ -4,6 +4,7 @@ import axios from 'axios';
 import * as Jwt from '@arcblock/jwt';
 import { types } from '@ocap/mcrypto';
 import { nanoid } from 'nanoid';
+import { Request, Response } from 'express';
 // @ts-ignore
 import { WsClient } from '@arcblock/ws';
 import { fromRandom, WalletObject } from '@ocap/wallet';
@@ -148,7 +149,48 @@ describe('Handlers', () => {
   };
 
   beforeAll(async () => {
-    server = await createTestServer();
+    server = await createTestServer({
+      routes: [
+        {
+          method: 'post',
+          path: '/connect/error',
+          handler: (req: Request, res: Response) => res.json({ error: 'connect error' }),
+        },
+        {
+          method: 'get',
+          path: '/connect/notfound',
+          handler: (req: Request, res: Response) => res.json({ error: 'connect notfound' }),
+        },
+        {
+          method: 'post',
+          path: '/connect/profile',
+          handler: (req: Request, res: Response) => res.json([[profileRequest]]),
+        },
+        {
+          method: 'post',
+          path: '/connect/asset',
+          handler: (req: Request, res: Response) => res.json([[assetRequest]]),
+        },
+        {
+          method: 'post',
+          path: '/approve/error',
+          handler: (req: Request, res: Response) => res.json({ error: 'approve error' }),
+        },
+        {
+          method: 'get',
+          path: '/approve/notfound',
+          handler: (req: Request, res: Response) => res.json({ error: 'approve notfound' }),
+        },
+        {
+          method: 'post',
+          path: '/approve/profile',
+          handler: (req: Request, res: Response) =>
+            res.json({
+              message: `you provided profile ${(req.body.responseClaims[0][0] as TProfileResponse).fullName}`,
+            }),
+        },
+      ],
+    });
 
     const storage = new MemoryStorage();
     const authenticator = new Authenticator({ wallet: app, appInfo, chainInfo });
@@ -282,6 +324,48 @@ describe('Handlers', () => {
 
     // 1. create session
     session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout }, updater);
+    expect(session.sessionId).toEqual(sessionId);
+
+    await runSingleTest(authUrl, statusHistory, args);
+
+    // assert session completed
+    session = await getSession();
+    expect(session.status).toEqual('error');
+
+    // try to scan a finalized session
+    const res = await api.get(getAuthUrl(authUrl));
+    const authInfo: Jwt.JwtBody = Jwt.decode(res.data.authInfo);
+    expect(authInfo.status).toEqual('error');
+    expect(authInfo.errorMessage).toMatch('Session finalized');
+  });
+
+  test('should connect complete when everything is working: single + connectUrl + approveUrl', async () => {
+    let session: TestSession = {};
+
+    const { sessionId, updaterPk, authUrl, getSession } = prepareTest();
+    const args = { completed: false, sessionId };
+    const statusHistory: string[] = [];
+    client.on(sessionId, async (e: RelayEvent) => {
+      expect(e.status).toBeTruthy();
+      statusHistory.push(e.status);
+
+      if (e.status === 'completed') {
+        args.completed = true;
+      }
+    });
+
+    // 1. create session
+    session = await doSignedRequest(
+      {
+        sessionId,
+        updaterPk,
+        authUrl,
+        connectUrl: joinUrl(baseUrl, '/connect/profile'),
+        approveUrl: joinUrl(baseUrl, '/approve/profile'),
+        timeout,
+      },
+      updater
+    );
     expect(session.sessionId).toEqual(sessionId);
 
     await runSingleTest(authUrl, statusHistory, args);
@@ -783,6 +867,65 @@ describe('Handlers', () => {
     client.off(sessionId);
   });
 
+  test('should timeout when api not connect properly', async () => {
+    let session: TestSession = {};
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
+
+    const statusHistory: string[] = [];
+    const { sessionId, updaterPk, authUrl } = prepareTest();
+
+    client.on(sessionId, async (e: RelayEvent) => {
+      console.log('-->', e);
+      expect(e.status).toBeTruthy();
+      statusHistory.push(e.status);
+    });
+
+    // 1. create session
+    session = await doSignedRequest(
+      {
+        sessionId,
+        updaterPk,
+        authUrl,
+        connectUrl: joinUrl(baseUrl, '/connect/error'),
+        timeout: { ...timeout, app: 1000 },
+      },
+      updater
+    );
+    expect(session.sessionId).toEqual(sessionId);
+
+    // 2. simulate scan
+    res = await api.get(getAuthUrl(authUrl));
+    expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+    expect(authInfo.url).toEqual(authUrl);
+
+    // 3. submit auth principal
+    const claims = authInfo.requestedClaims;
+    if (claims.find((x) => x.type === 'authPrincipal')) {
+      res = await api.post(getAuthUrl(authInfo.url), {
+        userPk: toBase58(user.publicKey),
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
+          requestedClaims: [],
+          challenge: authInfo.challenge,
+        }),
+      });
+      // @ts-ignore
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.status).toEqual('error');
+      expect(authInfo.errorMessage).toMatch('Failed to get request list from URL');
+      expect(authInfo.errorMessage).toMatch('connect error');
+    }
+
+    // 7. assert status history
+    expect(statusHistory).toEqual(['walletScanned', 'walletConnected', 'error']);
+
+    client.off(sessionId);
+  });
+
   test('should timeout when client not approve properly', async () => {
     let session: TestSession = {};
     let res: any = {};
@@ -852,6 +995,86 @@ describe('Handlers', () => {
 
     // 7. assert status history
     expect(statusHistory).toEqual(['walletScanned', 'walletConnected', 'appConnected', 'walletApproved', 'timeout']);
+
+    client.off(sessionId);
+  });
+
+  test('should timeout when api not approve properly', async () => {
+    let session: TestSession = {};
+    let res: any = {};
+    // @ts-ignore
+    let authInfo: TAuthResponse = {};
+
+    const statusHistory: string[] = [];
+    const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
+
+    client.on(sessionId, async (e: RelayEvent) => {
+      expect(e.status).toBeTruthy();
+      statusHistory.push(e.status);
+
+      if (e.status === 'walletConnected') {
+        session = await updateSession({
+          requestedClaims: [[profileRequest]],
+        });
+      }
+    });
+
+    // 1. create session
+    session = await doSignedRequest(
+      {
+        sessionId,
+        updaterPk,
+        authUrl,
+        approveUrl: joinUrl(baseUrl, '/approve/notfound'),
+        timeout: { ...timeout, app: 1000 },
+      },
+      updater
+    );
+    expect(session.sessionId).toEqual(sessionId);
+
+    // 2. simulate scan
+    res = await api.get(getAuthUrl(authUrl));
+    expect(Jwt.verify(res.data.authInfo, res.data.appPk)).toBe(true);
+    // @ts-ignore
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+    expect(authInfo.url).toEqual(authUrl);
+
+    // 3. submit auth principal
+    let claims = authInfo.requestedClaims;
+    let nextUrl = getAuthUrl(authUrl);
+    let challenge = authInfo.challenge; // eslint-disable-line
+    if (claims.find((x) => x.type === 'authPrincipal')) {
+      res = await api.post(getAuthUrl(authInfo.url), {
+        userPk: toBase58(user.publicKey),
+        userInfo: Jwt.sign(user.address, user.secretKey as string, {
+          requestedClaims: [],
+          challenge: authInfo.challenge,
+        }),
+      });
+      // @ts-ignore
+      authInfo = Jwt.decode(res.data.authInfo);
+      expect(authInfo.requestedClaims[0].type).toEqual('profile');
+      claims = authInfo.requestedClaims;
+      challenge = authInfo.challenge;
+      nextUrl = authInfo.url;
+    }
+
+    // 4. submit requested claims
+    res = await api.post(nextUrl, {
+      userPk: toBase58(user.publicKey),
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
+        requestedClaims: [{ type: 'profile', description: 'xx', fullName: 'test', email: 'test@arcblock.io' }],
+        challenge,
+      }),
+    });
+    // @ts-ignore
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.status).toEqual('error');
+    expect(authInfo.errorMessage).toMatch('Failed to get response from');
+
+    // 7. assert status history
+    expect(statusHistory).toEqual(['walletScanned', 'walletConnected', 'appConnected', 'walletApproved', 'error']);
 
     client.off(sessionId);
   });

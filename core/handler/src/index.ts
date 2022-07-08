@@ -3,24 +3,14 @@ import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 import waitFor from 'p-wait-for';
 import { verify, decode } from '@arcblock/jwt';
+import axios, { AxiosResponse } from 'axios';
 // @ts-ignore
 import objectHash from 'object-hash';
 // @ts-ignore
 import { WsServer } from '@arcblock/ws';
 import { isValid } from '@arcblock/did';
 import { SessionStorage } from '@did-connect/storage';
-import {
-  Session,
-  Context,
-  CustomError,
-  AuthPrincipalRequest,
-  AssetRequest,
-  ProfileRequest,
-  SignatureRequest,
-  VerifiableCredentialRequest,
-  AgreementRequest,
-  PrepareTxRequest,
-} from '@did-connect/types';
+import { Session, Context, CustomError, isRequestList } from '@did-connect/types';
 import { Authenticator } from '@did-connect/authenticator';
 
 import type { JwtBody } from '@arcblock/jwt';
@@ -108,44 +98,6 @@ export function createSocketServer(logger: TLogger, pathname: string) {
   return new WsServer({ logger, pathname });
 }
 
-export function validateRequestedClaims(claims: TAnyRequest[][]) {
-  const validators: TAnyObject = {
-    agreement: AgreementRequest,
-    asset: AssetRequest,
-    authPrincipal: AuthPrincipalRequest,
-    prepareTx: PrepareTxRequest,
-    profile: ProfileRequest,
-    signature: SignatureRequest,
-    verifiableCredential: VerifiableCredentialRequest,
-  };
-
-  for (const group of claims) {
-    if (!Array.isArray(group)) {
-      return {
-        error: 'Invalid request group: each group must be an array',
-        code: 'REQUEST_INVALID',
-      };
-    }
-    for (const claim of group) {
-      if (!validators[claim.type]) {
-        return {
-          error: `Invalid ${claim.type} request: supported request types are ${Object.keys(validators)}`,
-          code: 'REQUEST_UNSUPPORTED',
-        };
-      }
-      const { error } = validators[claim.type].validate(claim);
-      if (error) {
-        return {
-          error: `Invalid ${claim.type} request: ${error.details.map((x: any) => x.message).join(', ')}`,
-          code: 'REQUEST_INVALID',
-        };
-      }
-    }
-  }
-
-  return { error: '', code: 'ok' };
-}
-
 // FIXME: i18n for all errors
 export function createHandlers({
   storage,
@@ -206,6 +158,8 @@ export function createHandlers({
       updaterPk,
       strategy = 'default',
       authUrl,
+      connectUrl = '',
+      approveUrl = '',
       autoConnect = true,
       onlyConnect = false,
       requestedClaims = [],
@@ -227,6 +181,8 @@ export function createHandlers({
       updaterPk,
       strategy,
       authUrl,
+      connectUrl,
+      approveUrl,
       challenge: getStepChallenge(),
       autoConnect,
       onlyConnect,
@@ -242,8 +198,8 @@ export function createHandlers({
       error: '',
     };
 
-    if (Array.isArray(session.requestedClaims) && session.requestedClaims.length > 0) {
-      result = validateRequestedClaims(session.requestedClaims);
+    if (Array.isArray(session.requestedClaims)) {
+      result = isRequestList(session.requestedClaims);
       if (result.error) {
         return result;
       }
@@ -288,8 +244,8 @@ export function createHandlers({
         throw new CustomError('SESSION_STATUS_INVALID', 'Can only update session status to error or canceled');
       }
 
-      if (Array.isArray(body.requestedClaims) && body.requestedClaims.length > 0) {
-        result = validateRequestedClaims(body.requestedClaims);
+      if (Array.isArray(body.requestedClaims)) {
+        result = isRequestList(body.requestedClaims);
         if (result.error) {
           throw new CustomError(result.code, result.error);
         }
@@ -409,6 +365,57 @@ export function createHandlers({
       locale
     );
 
+  const fetchRequestList = async (session: TSession, locale: TLocaleCode): Promise<TAnyRequest[][]> => {
+    try {
+      const result: AxiosResponse = await axios.post(
+        session.connectUrl as string,
+        {
+          ...pick(session, ['sessionId', 'currentConnected']),
+          locale,
+        },
+        { timeout: session.timeout.app }
+      );
+
+      if (result.data.error) {
+        throw new CustomError('AppError', result.data.error);
+      }
+
+      const { code, error } = isRequestList(result.data);
+      if (code !== 'OK') {
+        throw new CustomError('AppError', error);
+      }
+
+      return result.data;
+    } catch (err: any) {
+      throw new CustomError('AppError', `Failed to get request list from URL: ${session.connectUrl}: ${err.message}`);
+    }
+  };
+
+  const fetchApproveResult = async (session: TSession, locale: TLocaleCode): Promise<TAnyObject> => {
+    try {
+      const result: AxiosResponse = await axios.post(
+        session.approveUrl as string,
+        {
+          ...pick(session, [
+            'sessionId',
+            'challenge',
+            'currentStep',
+            'currentConnected',
+            'requestedClaims',
+            'responseClaims',
+            'approveResults',
+          ]),
+          locale,
+        },
+        { timeout: session.timeout.app }
+      );
+
+      return result.data;
+    } catch (err: any) {
+      throw new CustomError('AppError', `Failed to get response from URL: ${session.approveUrl}: ${err.message}`);
+    }
+  };
+
   const handleClaimResponse = async (context: TWalletHandlerContext): Promise<TAppResponseSigned> => {
     const { sessionId, session, body, locale, didwallet } = context;
     try {
@@ -459,6 +466,18 @@ export function createHandlers({
           currentStep: session.currentStep,
           challenge: session.challenge,
         });
+
+        // If we should fetch response from some url, fetch and verify
+        if (session.approveUrl) {
+          const approveResult = await fetchApproveResult(session, locale);
+          wsServer.broadcast(sessionId, { status: 'appApproved' });
+          return storage.update(sessionId, {
+            status: 'appApproved',
+            approveResults: [...session.approveResults, approveResult],
+          });
+        }
+
+        // Otherwise wait for webapp to fill the approve results
         await waitForAppApprove(sessionId, session.timeout.app, locale);
         wsServer.broadcast(sessionId, { status: 'appApproved' });
         return storage.update(sessionId, { status: 'appApproved' });
@@ -492,7 +511,12 @@ export function createHandlers({
         // If our claims are populated already, move to appConnected without waiting
         if (session.requestedClaims.length > 0) {
           newSession = await storage.update(sessionId, { status: 'appConnected' });
+        } else if (session.connectUrl) {
+          // If we should fetch claims from some url, fetch and verify
+          const requestedClaims = await fetchRequestList(session, locale);
+          newSession = await storage.update(sessionId, { status: 'appConnected', requestedClaims });
         } else {
+          // else wait for webapp to fill the claims
           newSession = await waitForAppConnect(sessionId, session.timeout.app, locale);
           await storage.update(sessionId, { status: 'appConnected' });
         }
