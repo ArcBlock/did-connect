@@ -54,7 +54,7 @@
     "prebuild": "npm run clean",
     "build": "npm run types && tsc",
     "watch": "tsc -b --watch",
-    "types": "ts-node scripts/types.js && sed -i '' 's/unknown/string/g' ./src/types/index.ts && prettier --write ./src/types/index.ts",
+    "types": "ts-node scripts/types.js && sed -i.bak 's/unknown/string/g' ./src/types/index.ts && rm  ./src/types/index.ts.bak && prettier --write ./src/types/index.ts",
     "check": "tsc --noEmit",
     "clean": "rm -rf ./lib",
     "test": "jest --forceExit",
