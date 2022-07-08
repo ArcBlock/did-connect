@@ -34,6 +34,12 @@ const createTestServer = (opts = {}) =>
       server.use(bodyParser.raw(Object.assign({ limit: '1mb', type: 'application/octet-stream' }, opts.bodyParser)));
     }
 
+    if (Array.isArray(opts.routes)) {
+      opts.routes.forEach((x) => {
+        server[x.method](x.path, x.handler);
+      });
+    }
+
     const send = (fn) => (req, res, next) => {
       const cb = typeof fn === 'function' ? fn(req, res, next) : fn;
 
