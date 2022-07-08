@@ -1,5 +1,5 @@
 import type { TEventCallback, TConnectCallback, TApproveCallback } from '@did-connect/state';
-import { TLocaleCode, SessionTimeout, TSession, TSessionStatus, TAnyRequest, TAnyObject } from '@did-connect/types';
+import { TLocaleCode, SessionTimeout, TSession, TSessionStatus, TAnyRequest } from '@did-connect/types';
 import { LiteralUnion } from 'type-fest';
 
 export type TWalletCode = LiteralUnion<'web' | 'native', string>;

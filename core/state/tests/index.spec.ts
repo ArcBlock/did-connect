@@ -238,7 +238,7 @@ describe('StateMachine', () => {
     });
 
     const initial = machine.initialState;
-    const service = interpret(machine).onTransition((state, e) => {
+    const service = interpret(machine).onTransition((state) => {
       if (state.value === 'created') {
         expect(state.context.appInfo).toBeTruthy();
       }

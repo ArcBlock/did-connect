@@ -5,7 +5,6 @@ import type { TAppResponse, TSession, TAnyRequest, TAnyObject, TSessionStatus, T
 import get from 'lodash/get';
 import isFunction from 'lodash/isFunction';
 import isArray from 'lodash/isArray';
-import isObject from 'lodash/isObject';
 import { nanoid } from 'nanoid';
 import { createMachine, assign, StateMachine } from 'xstate';
 import { SessionTimeout, CustomError, isUrl, isRequestList } from '@did-connect/types';
