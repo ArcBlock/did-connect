@@ -375,12 +375,12 @@ const Session: ObjectSchema = Joi.object({
   connectUrl: Joi.string()
     .uri({ scheme: ['http', 'https'] })
     .optional()
-    .default(''),
+    .allow(''),
   // When we need to fetch approve results from another source
   approveUrl: Joi.string()
     .uri({ scheme: ['http', 'https'] })
     .optional()
-    .default(''),
+    .allow(''),
 })
   .options(options)
   .meta({ unknownType: 'string', className: 'TSession' });

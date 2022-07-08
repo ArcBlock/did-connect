@@ -5,9 +5,10 @@ import type { TAppResponse, TSession, TAnyRequest, TAnyObject, TSessionStatus, T
 import get from 'lodash/get';
 import isFunction from 'lodash/isFunction';
 import isArray from 'lodash/isArray';
+import isObject from 'lodash/isObject';
 import { nanoid } from 'nanoid';
 import { createMachine, assign, StateMachine } from 'xstate';
-import { SessionTimeout, CustomError } from '@did-connect/types';
+import { SessionTimeout, CustomError, isUrl, isRequestList } from '@did-connect/types';
 
 import { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, getUpdater } from './util';
 import { createConnection, destroyConnections } from './socket';
@@ -26,6 +27,17 @@ export type TConnectCallback = (context: TSessionContext, event: TSessionEvent) 
 export type TApproveCallback = (context: TSessionContext, event: TSessionEvent) => Promisable<TAppResponse>;
 
 export type TSessionOptions = {
+  // onConnect can be one of the following:
+  // - a function that returns the requestedClaims list
+  // - an requestedClaims list
+  // - a URL that can be used to retrieve the requestedClaims list
+  onConnect: TConnectCallback | TAnyRequest[][] | string;
+
+  // onApprove can be one of the following:
+  // - a function that returns the approveResult
+  // - a URL that can be used to retrieve the approveResult
+  onApprove: TApproveCallback | string;
+
   baseUrl?: string;
   initial?: TSessionStatus;
   sessionId?: string;
@@ -33,8 +45,6 @@ export type TSessionOptions = {
   dispatch: (...args: any[]) => void;
   onStart?: TEventCallback;
   onCreate?: TEventCallback;
-  onConnect: TConnectCallback;
-  onApprove: TApproveCallback;
   onComplete?: TEventCallback;
   onReject?: TEventCallback;
   onCancel?: TEventCallback;
@@ -76,11 +86,11 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
     throw new CustomError('INVALID_SESSION_ID', 'Invalid sessionId, which must be a valid 21 char nanoid');
   }
 
+  // verify callbacks
   const fns: TAnyObject = {
     dispatch,
     onStart,
     onCreate,
-    onApprove,
     onComplete,
     onReject,
     onCancel,
@@ -93,15 +103,36 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
     }
   });
 
-  // can be claim list or function that returns claim list
-  if (isFunction(onConnect) === false && isArray(onConnect) === false) {
-    throw new CustomError('INVALID_CALLBACK', 'Invalid onConnect, which must be a function or an object or an array');
-  }
-
+  // verify onConnect
+  let connectUrl = '';
   let requestedClaims: TAnyRequest[][] = [];
   if (isFunction(onConnect) === false) {
-    // @ts-ignore
-    requestedClaims = onConnect;
+    if (typeof onConnect === 'string') {
+      if (isUrl(onConnect) === false) {
+        throw new CustomError('INVALID_CALLBACK', 'Invalid onConnect, which must be a valid URL');
+      }
+      connectUrl = onConnect;
+    } else if (isArray(onConnect)) {
+      if (isRequestList(onConnect).code !== 'OK') {
+        throw new CustomError('INVALID_CALLBACK', 'Invalid onConnect, which must be a request list');
+      }
+      requestedClaims = onConnect;
+    } else {
+      throw new CustomError('INVALID_CALLBACK', 'Invalid onConnect, which must be a function or an array or a URL');
+    }
+  }
+
+  // verify onApprove
+  let approveUrl = '';
+  if (isFunction(onApprove) === false) {
+    if (typeof onApprove === 'string') {
+      if (isUrl(onApprove) === false) {
+        throw new CustomError('INVALID_CALLBACK', 'Invalid onApprove, which must be a valid URL');
+      }
+      approveUrl = onApprove;
+    } else {
+      throw new CustomError('INVALID_CALLBACK', 'Invalid onApprove, which must be a function or an object or a URL');
+    }
   }
 
   const updater = getUpdater();
@@ -150,6 +181,8 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
           autoConnect,
           onlyConnect,
           authUrl: authApiUrl,
+          connectUrl,
+          approveUrl,
           timeout,
         },
         wallet: updater,
@@ -166,28 +199,38 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
       return ctx.requestedClaims;
     }
 
-    const claims = await onConnect(ctx, e);
-    const result = await doSignedRequest({
-      url: sessionApiUrl,
-      data: { requestedClaims: claims || [] },
-      wallet: updater,
-      method: 'PUT',
-    });
-    return result.requestedClaims;
+    if (isFunction(onConnect)) {
+      const claims = await onConnect(ctx, e);
+      const result = await doSignedRequest({
+        url: sessionApiUrl,
+        data: { requestedClaims: claims || [] },
+        wallet: updater,
+        method: 'PUT',
+      });
+      return result.requestedClaims;
+    }
+
+    return [];
   };
 
   const _onApprove = async (ctx: TSessionContext, e: TSessionEvent): Promise<TAppResponse> => {
-    let approveResult = await onApprove(ctx, e);
-    if (typeof approveResult === 'undefined') {
-      approveResult = {};
+    let approveResult = {};
+    if (isFunction(onApprove)) {
+      approveResult = await onApprove(ctx, e);
+      if (typeof approveResult === 'undefined') {
+        approveResult = {};
+      }
     }
 
-    await doSignedRequest({
-      url: sessionApiUrl,
-      data: { approveResults: [...ctx.approveResults, approveResult] },
-      wallet: updater,
-      method: 'PUT',
-    });
+    if (approveResult) {
+      await doSignedRequest({
+        url: sessionApiUrl,
+        data: { approveResults: [...ctx.approveResults, approveResult] },
+        wallet: updater,
+        method: 'PUT',
+      });
+    }
+
     return approveResult;
   };
 
@@ -232,8 +275,12 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
           return dispatch({ ...e, type: 'WALLET_SCAN' });
         case 'walletConnected':
           return dispatch({ ...e, type: 'WALLET_CONNECTED' });
+        case 'appConnected':
+          return e.requestedClaims?.length ? dispatch({ ...e, type: 'APP_CONNECTED' }) : null;
         case 'walletApproved':
           return dispatch({ ...e, type: 'WALLET_APPROVE' });
+        case 'appApproved':
+          return e.approveResults?.length ? dispatch({ ...e, type: 'APP_APPROVED' }) : null;
         case 'completed':
           return dispatch({ ...e, type: 'COMPLETE' });
         case 'error':
@@ -249,6 +296,32 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
       }
     });
   });
+
+  const connectService = {
+    id: 'onConnect',
+    src: _onConnect,
+    onDone: {
+      target: 'appConnected',
+      actions: [],
+    },
+    onError: {
+      target: 'error',
+      actions: ['onError'],
+    },
+  };
+
+  const approveService = {
+    id: 'onApprove',
+    src: _onApprove,
+    onDone: {
+      target: 'appApproved',
+      actions: [],
+    },
+    onError: {
+      target: 'error',
+      actions: ['onError'],
+    },
+  };
 
   const machine = createMachine<TSessionContext, TSessionEvent, TSessionState>(
     {
@@ -343,20 +416,10 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
 
         // wallet confirmed the ownership of did for the session
         walletConnected: {
-          invoke: {
-            id: 'onConnect',
-            src: _onConnect,
-            onDone: {
-              target: 'appConnected',
-              actions: ['saveRequestedClaims'],
-            },
-            onError: {
-              target: 'error',
-              actions: ['onError'],
-            },
-          },
+          invoke: connectUrl ? undefined : connectService,
           on: {
             WALLET_APPROVE: { target: 'walletApproved' },
+            APP_CONNECTED: { target: 'appConnected' },
             APP_CANCELED: { target: 'canceled' },
             ERROR: { target: 'error' },
             CANCEL: { target: 'canceled' },
@@ -379,6 +442,7 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
             CANCEL: { target: 'canceled' },
             TIMEOUT: { target: 'timeout' },
           },
+          entry: ['saveRequestedClaims'],
           after: {
             wallet: { target: 'timeout' },
           },
@@ -386,19 +450,9 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
 
         // wallet has approved the request, can be triggered multiple times
         walletApproved: {
-          invoke: {
-            id: 'onApprove',
-            src: _onApprove,
-            onDone: {
-              target: 'appApproved',
-              actions: ['saveApproveResult'],
-            },
-            onError: {
-              target: 'error',
-              actions: ['onError'],
-            },
-          },
+          invoke: approveUrl ? undefined : approveService,
           on: {
+            APP_APPROVED: { target: 'appApproved' },
             ERROR: { target: 'error' },
             CANCEL: { target: 'canceled' },
             TIMEOUT: { target: 'timeout' },
@@ -418,6 +472,7 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
             ERROR: { target: 'error' },
             CANCEL: { target: 'canceled' },
           },
+          entry: ['saveApproveResults'],
         },
 
         // the who process has completed
@@ -457,8 +512,9 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
           currentConnected: (ctx: TSessionContext, e: TSessionEvent) => e.currentConnected,
         }), // from server
         saveRequestedClaims: assign<TSessionContext, TSessionEvent>({
-          requestedClaims: (ctx: TSessionContext, e: TSessionEvent) => e.data,
-        }), // from client
+          requestedClaims: (ctx: TSessionContext, e: TSessionEvent) =>
+            e.requestedClaims || e.data || ctx.requestedClaims,
+        }), // from client|server
         saveError: assign<TSessionContext, TSessionEvent>({
           error: (ctx: TSessionContext, e: TSessionEvent) => get(e, 'data.message') || e.error,
         }), // from client or server
@@ -470,9 +526,10 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
           currentStep: (ctx: TSessionContext, e: TSessionEvent) => e.currentStep,
           challenge: (ctx: TSessionContext, e: TSessionEvent) => e.challenge,
         }), // from server
-        saveApproveResult: assign<TSessionContext, TSessionEvent>({
-          approveResults: (ctx: TSessionContext, e: TSessionEvent) => [...ctx.approveResults, e.data],
-        }), // from client
+        saveApproveResults: assign<TSessionContext, TSessionEvent>({
+          approveResults: (ctx: TSessionContext, e: TSessionEvent) =>
+            e.approveResults || [...ctx.approveResults, e.data],
+        }), // from client|server
         reportCancel: () =>
           doSignedRequest({
             url: sessionApiUrl,

@@ -157,24 +157,9 @@ describe('Handlers', () => {
           handler: (req: Request, res: Response) => res.json({ error: 'connect error' }),
         },
         {
-          method: 'get',
-          path: '/connect/notfound',
-          handler: (req: Request, res: Response) => res.json({ error: 'connect notfound' }),
-        },
-        {
           method: 'post',
           path: '/connect/profile',
           handler: (req: Request, res: Response) => res.json([[profileRequest]]),
-        },
-        {
-          method: 'post',
-          path: '/connect/asset',
-          handler: (req: Request, res: Response) => res.json([[assetRequest]]),
-        },
-        {
-          method: 'post',
-          path: '/approve/error',
-          handler: (req: Request, res: Response) => res.json({ error: 'approve error' }),
         },
         {
           method: 'get',
@@ -877,7 +862,6 @@ describe('Handlers', () => {
     const { sessionId, updaterPk, authUrl } = prepareTest();
 
     client.on(sessionId, async (e: RelayEvent) => {
-      console.log('-->', e);
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
     });

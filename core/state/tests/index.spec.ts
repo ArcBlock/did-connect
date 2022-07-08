@@ -24,6 +24,7 @@ import { types } from '@ocap/mcrypto';
 import { fromRandom } from '@ocap/wallet';
 import { interpret } from 'xstate';
 import { nanoid } from 'nanoid';
+import { Request, Response } from 'express';
 import last from 'lodash/last';
 import axios from 'axios';
 import { sign, verify, decode } from '@arcblock/jwt';
@@ -107,7 +108,31 @@ describe('StateMachine', () => {
   let baseUrl: string;
 
   beforeAll(async () => {
-    server = await createTestServer();
+    server = await createTestServer({
+      routes: [
+        {
+          method: 'post',
+          path: '/connect/error',
+          handler: (req: Request, res: Response) => res.json({ error: 'connect error' }),
+        },
+        {
+          method: 'post',
+          path: '/connect/profile',
+          handler: (req: Request, res: Response) => res.json([[profileRequest]]),
+        },
+        {
+          method: 'get',
+          path: '/approve/notfound',
+          handler: (req: Request, res: Response) => res.json({ error: 'approve notfound' }),
+        },
+        {
+          method: 'post',
+          path: '/approve/profile',
+          handler: (req: Request, res: Response) =>
+            res.json({ successMessage: `approved with result ${req.body.responseClaims[0][0].fullName}` }),
+        },
+      ],
+    });
 
     // eslint-disable-next-line no-console
     const logger = { info: console.info, error: console.error, warn: console.warn, debug: noop };
@@ -126,9 +151,21 @@ describe('StateMachine', () => {
     // @ts-ignore
     expect(() => createStateMachine({ dispatch: 'abc' })).toThrow(/Invalid dispatch/);
     // @ts-ignore
-    expect(() => createStateMachine({ dispatch: noop })).toThrow(/Invalid onApprove/);
+    expect(() => createStateMachine({ dispatch: noop })).toThrow(/Invalid onConnect/);
+    // @ts-ignore
+    expect(() => createStateMachine({ dispatch: noop, onConnect: 'abc' })).toThrow(/Invalid onConnect/);
+    // @ts-ignore
+    expect(() => createStateMachine({ dispatch: noop, onConnect: [[{ type: 'b' }]] })).toThrow(/Invalid onConnect/);
     // @ts-ignore
     expect(() => createStateMachine({ dispatch: noop, onApprove: noop })).toThrow(/Invalid onConnect/);
+    // @ts-ignore
+    expect(() => createStateMachine({ dispatch: noop, onConnect: noop })).toThrow(/Invalid onApprove/);
+    // @ts-ignore
+    expect(() => createStateMachine({ dispatch: noop, onConnect: noop, onApprove: 'abc' })).toThrow(
+      /Invalid onApprove/
+    );
+    // @ts-ignore
+    expect(() => createStateMachine({ dispatch: noop, onConnect: noop, onApprove: 123 })).toThrow(/Invalid onApprove/);
   });
 
   const defaultConnectHandler = (authInfo: TAuthResponse): [TAnyRequest[], string, string] => {
@@ -179,8 +216,8 @@ describe('StateMachine', () => {
   }: {
     sessionProps?: any;
     handleWalletConnect?: (authInfo: TAuthResponse) => [TAnyRequest[], string, string];
-    onConnect?: TConnectCallback | TAnyRequest[][];
-    onApprove?: TApproveCallback;
+    onConnect?: TConnectCallback | TAnyRequest[][] | string;
+    onApprove?: TApproveCallback | string;
     onComplete?: TEventCallback;
     requestedClaims?: TAnyResponse[];
     expectedStatusHistory?: string[];
@@ -201,11 +238,13 @@ describe('StateMachine', () => {
     });
 
     const initial = machine.initialState;
-    const service = interpret(machine).onTransition((state) => {
+    const service = interpret(machine).onTransition((state, e) => {
       if (state.value === 'created') {
         expect(state.context.appInfo).toBeTruthy();
       }
-      stateHistory.push(state.value as string);
+      if (state.changed !== false) {
+        stateHistory.push(state.value as string);
+      }
     });
 
     // Start the service and wait for session created
@@ -264,6 +303,19 @@ describe('StateMachine', () => {
       onConnect: () => {
         return [[profileRequest]];
       },
+    });
+  });
+
+  test('should work as expected: 1 claim + 1 step + connectUrl', async () => {
+    await runSingleTest({
+      onConnect: joinUrl(baseUrl, '/connect/profile'),
+    });
+  });
+
+  test('should work as expected: 1 claim + 1 step + connectUrl + approveUrl', async () => {
+    await runSingleTest({
+      onConnect: joinUrl(baseUrl, '/connect/profile'),
+      onApprove: joinUrl(baseUrl, '/approve/profile'),
     });
   });
 
@@ -369,7 +421,9 @@ describe('StateMachine', () => {
       if (state.value === 'created') {
         expect(state.context.appInfo).toBeTruthy();
       }
-      stateHistory.push(state.value as string);
+      if (state.changed !== false) {
+        stateHistory.push(state.value as string);
+      }
     });
 
     // Start the service and wait for session created
@@ -484,7 +538,9 @@ describe('StateMachine', () => {
 
     const initial = machine.initialState;
     const service = interpret(machine).onTransition((state) => {
-      stateHistory.push(state.value as string);
+      if (state.changed !== false) {
+        stateHistory.push(state.value as string);
+      }
     });
 
     // Start the service and wait for session created
@@ -542,7 +598,9 @@ describe('StateMachine', () => {
 
     const initial = machine.initialState;
     const service = interpret(machine).onTransition((state) => {
-      stateHistory.push(state.value as string);
+      if (state.changed !== false) {
+        stateHistory.push(state.value as string);
+      }
     });
 
     // Start the service and wait for session created
@@ -603,7 +661,9 @@ describe('StateMachine', () => {
 
     const initial = machine.initialState;
     const service = interpret(machine).onTransition((state) => {
-      stateHistory.push(state.value as string);
+      if (state.changed !== false) {
+        stateHistory.push(state.value as string);
+      }
     });
 
     // Start the service and wait for session created
@@ -670,7 +730,9 @@ describe('StateMachine', () => {
 
     const initial = machine.initialState;
     const service = interpret(machine).onTransition((state) => {
-      stateHistory.push(state.value as string);
+      if (state.changed !== false) {
+        stateHistory.push(state.value as string);
+      }
     });
 
     // Start the service and wait for session created
@@ -764,7 +826,9 @@ describe('StateMachine', () => {
 
     const initial = machine.initialState;
     const service = interpret(machine).onTransition((state) => {
-      stateHistory.push(state.value as string);
+      if (state.changed !== false) {
+        stateHistory.push(state.value as string);
+      }
     });
 
     finalizedSessionId = initial.context.sessionId;
@@ -825,7 +889,9 @@ describe('StateMachine', () => {
     });
 
     const service = interpret(machine).onTransition((state) => {
-      stateHistory.push(state.value as string);
+      if (state.changed !== false) {
+        stateHistory.push(state.value as string);
+      }
     });
 
     // Start the service and wait for session created
@@ -853,7 +919,9 @@ describe('StateMachine', () => {
     });
 
     const service = interpret(machine).onTransition((state) => {
-      stateHistory.push(state.value as string);
+      if (state.changed !== false) {
+        stateHistory.push(state.value as string);
+      }
     });
 
     // Start the service and wait for session created

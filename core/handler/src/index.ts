@@ -469,12 +469,9 @@ export function createHandlers({
 
         // If we should fetch response from some url, fetch and verify
         if (session.approveUrl) {
-          const approveResult = await fetchApproveResult(session, locale);
-          wsServer.broadcast(sessionId, { status: 'appApproved' });
-          return storage.update(sessionId, {
-            status: 'appApproved',
-            approveResults: [...session.approveResults, approveResult],
-          });
+          const approveResults = [...session.approveResults, await fetchApproveResult(session, locale)];
+          wsServer.broadcast(sessionId, { status: 'appApproved', approveResults });
+          return storage.update(sessionId, { status: 'appApproved', approveResults });
         }
 
         // Otherwise wait for webapp to fill the approve results
