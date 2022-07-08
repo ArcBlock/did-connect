@@ -18,7 +18,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@blocklet/sdk": "^1.7.26",
+    "@blocklet/sdk": "^1.8.1",
     "@did-connect/authenticator": "2.0.0",
     "@did-connect/handler": "2.0.0",
     "@did-connect/relay-adapter-express": "2.0.0",
