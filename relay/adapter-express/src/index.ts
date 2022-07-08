@@ -18,6 +18,7 @@ export function attachHandlers(router: any, handlers: THandlers, prefix: string 
     handleSessionCreate,
     handleSessionRead,
     handleSessionUpdate,
+    handleSessionDelete,
     handleClaimRequest,
     handleClaimResponse,
     parseWalletUA,
@@ -97,6 +98,12 @@ export function attachHandlers(router: any, handlers: THandlers, prefix: string 
   // web: update session
   router.put(`${prefix}/session`, ensureContext(true), async (req: TRequest, res: TResponse) => {
     const result: TSessionUpdateResult = await handleSessionUpdate(req.context);
+    res.jsonp(result);
+  });
+
+  // web: delete session
+  router.delete(`${prefix}/session`, ensureContext(true), async (req: TRequest, res: TResponse) => {
+    const result: TSessionUpdateResult = await handleSessionDelete(req.context);
     res.jsonp(result);
   });
 

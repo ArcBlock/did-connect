@@ -30,10 +30,14 @@ export class MemoryStorage extends BaseStorage implements SessionStorage {
     return this.read(sessionId);
   }
 
-  // @ts-ignore
-  delete(sessionId: string): Promise<void> {
+  delete(sessionId: string): Promise<number> {
     this.emit('delete', storage[sessionId]);
-    delete storage[sessionId];
+    if (storage[sessionId]) {
+      delete storage[sessionId];
+      return Promise.resolve(1);
+    }
+
+    return Promise.resolve(0);
   }
 
   // @ts-ignore

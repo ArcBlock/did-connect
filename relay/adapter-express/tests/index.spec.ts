@@ -156,7 +156,8 @@ describe('RelayAdapterExpress', () => {
     const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${sessionId}`);
     const updateSession = (updates: Partial<TSession>) =>
       doSignedRequest(updates, updater, `/api/connect/relay/session?sid=${sessionId}`, 'PUT');
-    return { sessionId, updaterPk, authUrl, updateSession };
+    const deleteSession = () => doSignedRequest({}, updater, `/api/connect/relay/session?sid=${sessionId}`, 'DELETE');
+    return { sessionId, updaterPk, authUrl, updateSession, deleteSession };
   };
 
   const getAuthUrl = (authUrl: string) => {
@@ -204,7 +205,7 @@ describe('RelayAdapterExpress', () => {
 
     const statusHistory: string[] = [];
 
-    const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
+    const { sessionId, updaterPk, authUrl, updateSession, deleteSession } = prepareTest();
 
     client.on(sessionId, async (e: TEvent) => {
       statusHistory.push(e.status);
@@ -285,6 +286,9 @@ describe('RelayAdapterExpress', () => {
 
     res = await api.get(`/api/connect/relay/session?sid=${sessionId}`);
     expect(res.data.sessionId).toEqual(sessionId);
+
+    res = await deleteSession();
+    expect(res.code).toBe('OK');
   });
 
   test('should connect complete when everything is working: multiple step', async () => {

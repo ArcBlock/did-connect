@@ -10,7 +10,7 @@ export interface SessionStorage {
   create(sessionId: string, attributes: Partial<TSession>): Promise<TSession>;
   read(sessionId: string): Promise<TSession>;
   update(sessionId: string, updates: Partial<TSession>): Promise<TSession>;
-  delete(sessionId: string): Promise<void>;
+  delete(sessionId: string): Promise<number>;
   clear(): Promise<void>;
   isFinalized(status: string): boolean;
   deleteFinalized(sessionId: string): Promise<boolean>;
@@ -46,7 +46,7 @@ export class BaseStorage extends EventEmitter implements SessionStorage {
     throw new Error('update must be implemented in child class');
   }
 
-  delete(sessionId: string): Promise<void> {
+  delete(sessionId: string): Promise<number> {
     throw new Error('delete must be implemented in child class');
   }
 

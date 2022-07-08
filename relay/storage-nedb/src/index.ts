@@ -111,13 +111,13 @@ export class NedbStorage extends BaseStorage implements SessionStorage {
     });
   }
 
-  delete(sessionId: string): Promise<void> {
+  delete(sessionId: string): Promise<number> {
     return new Promise((resolve, reject) => {
       if (!sessionId) {
         reject(new Error('sessionId is required to delete auth record'));
         return;
       }
-      this.db.remove({ sessionId }, { multi: true }, (err, numRemoved) => {
+      this.db.remove({ sessionId }, { multi: true }, (err, numRemoved: number) => {
         if (err) {
           reject(err);
         } else {

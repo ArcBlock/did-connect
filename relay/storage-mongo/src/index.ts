@@ -167,7 +167,7 @@ export class MongoStorage extends BaseStorage implements SessionStorage {
       });
   }
 
-  async delete(sessionId: string): Promise<void> {
+  async delete(sessionId: string): Promise<number> {
     return this.collectionReady()
       .then((collection: any) => collection.deleteOne({ sessionId }))
       .then(() => this.emit('delete', sessionId));
