@@ -35,6 +35,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+app.post('/connect/profile', (req, res) => {
+  res.jsonp([
+    [
+      {
+        type: 'profile',
+        items: ['fullName', 'email', 'avatar'],
+        description: 'Please give me your profile',
+      },
+    ],
+  ]);
+});
+
+app.post('/approve/profile', (req, res) => {
+  console.log(req.body);
+  const { responseClaims, currentStep } = req.body;
+  res.jsonp({
+    successMessage: `Your name is ${responseClaims[currentStep][0].fullName}`,
+  });
+});
+
 attachHandlers(app, handlers);
 
 app.use((req, res) => {

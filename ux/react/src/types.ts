@@ -1,5 +1,5 @@
 import type { TEventCallback, TConnectCallback, TApproveCallback } from '@did-connect/state';
-import { TLocaleCode, SessionTimeout, TSession, TSessionStatus } from '@did-connect/types';
+import { TLocaleCode, SessionTimeout, TSession, TSessionStatus, TAnyRequest, TAnyObject } from '@did-connect/types';
 import { LiteralUnion } from 'type-fest';
 
 export type TWalletCode = LiteralUnion<'web' | 'native', string>;
@@ -13,8 +13,16 @@ export type TConnectMessage = {
   error?: string;
 };
 export type THookProps = {
-  onConnect: TConnectCallback;
-  onApprove: TApproveCallback;
+  // onConnect can be one of the following:
+  // - a function that returns the requestedClaims list
+  // - a requestedClaims list
+  // - a URL that can be used to retrieve the requestedClaims list
+  onConnect: TConnectCallback | TAnyRequest[][] | string;
+
+  // onApprove can be one of the following:
+  // - a function that returns the approveResult
+  // - a URL that can be used to retrieve the approveResult
+  onApprove: TApproveCallback | string;
 
   onStart?: TEventCallback;
   onCreate?: TEventCallback;

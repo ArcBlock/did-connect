@@ -48,7 +48,7 @@ export default function useSession({
   timeout,
 }: THookProps): THookResult {
   const browser = useBrowser();
-  const existingSession = useMemo(() => parseExistingSession(), []);
+  const existingSession: TSession = useMemo(() => parseExistingSession(), []);
 
   const [cancelCount, setCancelCount] = useState(0);
   const [retryCount, setRetryCount] = useState(0);
@@ -65,7 +65,7 @@ export default function useSession({
     () =>
       createStateMachine({
         baseUrl: joinUrl(baseUrl, prefix),
-        sessionId: existingSession ? (existingSession as any).sessionId : null,
+        sessionId: existingSession ? existingSession.sessionId : null,
         // initial = 'start', // we maybe reusing existing session
         // strategy = 'default',
         dispatch: (...args: any[]) => (send as any).call(service, ...args),

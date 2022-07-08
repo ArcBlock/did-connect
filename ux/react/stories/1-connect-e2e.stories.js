@@ -10,6 +10,7 @@ import { toBase58 } from '@ocap/util';
 import { fromAddress, fromPublicKey } from '@ocap/wallet';
 import Client from '@ocap/client';
 import objectHash from 'object-hash';
+import joinUrl from 'url-join';
 import type { TProfileRequest, TAssetRequest } from '@did-connect/types';
 
 import Connect from '../src/Connect';
@@ -686,6 +687,49 @@ storiesOf('DID-Connect/Examples', module)
             scan: 'You must provide profile and NFT to continue',
             confirm: 'Confirm on your DID Wallet',
             success: 'Claims accepted',
+          }}
+          webWalletUrl={webWalletUrl}
+          baseUrl={baseUrl}
+        />
+      </TestContainer>
+    );
+  })
+  .add('Remote API', () => {
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('Login');
+    const handleClose = () => {
+      action('close');
+      setOpen(false);
+    };
+    const handleComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setMessage(`Hello ${ctx.responseClaims[0][0].fullName}`);
+      setOpen(false);
+    };
+    return (
+      <TestContainer height={780} resize="true">
+        <Typography gutterBottom>
+          Sometimes you need to call a remote API to get requested claims and then complete the session.
+        </Typography>
+        <Button variant="contained" size="small" onClick={() => setOpen(true)}>
+          {message}
+        </Button>
+        <Connect
+          popup
+          open={open}
+          onClose={handleClose}
+          onConnect={joinUrl(baseUrl, '/connect/profile')}
+          onApprove={joinUrl(baseUrl, '/approve/profile')}
+          onComplete={handleComplete}
+          onReject={onReject}
+          onCancel={onCancel}
+          onTimeout={onTimeout}
+          onError={onError}
+          messages={{
+            title: 'Profile Required',
+            scan: 'You can manage and provide your profile in your DID Wallet',
+            confirm: 'Confirm on your DID Wallet',
+            success: 'Profile accepted',
           }}
           webWalletUrl={webWalletUrl}
           baseUrl={baseUrl}

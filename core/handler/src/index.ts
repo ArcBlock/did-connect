@@ -456,7 +456,7 @@ export function createHandlers({
           }
         );
         logger.info('session.walletApproved', sessionId, justifiedClaims);
-        await storage.update(sessionId, {
+        const updated = await storage.update(sessionId, {
           status: 'walletApproved',
           responseClaims: [...session.responseClaims, justifiedClaims],
         });
@@ -469,7 +469,7 @@ export function createHandlers({
 
         // If we should fetch response from some url, fetch and verify
         if (session.approveUrl) {
-          const approveResults = [...session.approveResults, await fetchApproveResult(session, locale)];
+          const approveResults = [...session.approveResults, await fetchApproveResult(updated, locale)];
           wsServer.broadcast(sessionId, { status: 'appApproved', approveResults });
           return storage.update(sessionId, { status: 'appApproved', approveResults });
         }
