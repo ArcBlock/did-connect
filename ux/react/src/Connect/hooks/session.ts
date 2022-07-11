@@ -4,34 +4,29 @@ import Cookie from 'js-cookie';
 import joinUrl from 'url-join';
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 import { createStateMachine, TSessionMachine } from '@did-connect/state';
-import { TSession, TSessionStatus, TEvent } from '@did-connect/types';
+import { TSession, TSessionStatus, TEvent, SessionTimeout } from '@did-connect/types';
 
-import { decodeConnectUrl, parseTokenFromConnectUrl, updateConnectedInfo, noop } from '../../utils';
+import { decodeConnectUrl, parseSessionId, updateConnectedInfo, noop } from '../../utils';
 import { useMachine } from './machine';
 import { THookProps, THookResult } from '../../types';
 
-// 从 url params 中获取已存在的 session (token & connect url)
-const parseExistingSession = () => {
+// 从 url params 中获取已存在的 session (sessionId & connect url)
+const parseExistingSession = (): { sessionId?: string; url?: string; error?: string } => {
   try {
     const url = new URL(window.location.href);
     const connectUrlParam = url.searchParams.get('__connect_url__');
     if (!connectUrlParam) {
-      return null;
+      return {};
     }
     const connectUrl = decodeConnectUrl(connectUrlParam);
-    const token = parseTokenFromConnectUrl(connectUrl);
-    return {
-      token,
-      url: connectUrl,
-    };
-  } catch (e) {
-    return {
-      error: e,
-    };
+    const sessionId = parseSessionId(connectUrl);
+    return { sessionId, url: connectUrl };
+  } catch (err: any) {
+    throw new Error(`Can not parse existing session id: ${err.message}`);
   }
 };
 
-export default function useSession({
+export function useSession({
   prefix,
   onCreate = noop,
   onConnect,
@@ -42,13 +37,14 @@ export default function useSession({
   onCancel = noop,
   onError = noop,
   baseUrl,
+  strategy = 'default',
   autoConnect = true,
   saveConnect = true,
   onlyConnect = false,
-  timeout,
+  timeout = SessionTimeout,
 }: THookProps): THookResult {
   const browser = useBrowser();
-  const existingSession: TSession = useMemo(() => parseExistingSession(), []);
+  const existingSession = useMemo(() => parseExistingSession(), []);
 
   const [cancelCount, setCancelCount] = useState(0);
   const [retryCount, setRetryCount] = useState(0);
@@ -65,10 +61,11 @@ export default function useSession({
     () =>
       createStateMachine({
         baseUrl: joinUrl(baseUrl, prefix),
-        sessionId: existingSession ? existingSession.sessionId : null,
+        sessionId: existingSession.sessionId || '',
         // initial = 'start', // we maybe reusing existing session
-        // strategy = 'default',
-        dispatch: (...args: any[]) => (send as any).call(service, ...args),
+        strategy,
+        // @ts-ignore
+        dispatch: (...args: any[]) => send.call(service, ...args),
         onCreate,
         onConnect,
         onApprove,
@@ -92,15 +89,21 @@ export default function useSession({
     [retryCount] // eslint-disable-line
   );
 
-  const { machine, deepLink, sessionId } = session;
+  const { machine, deepLink, sessionId, cleanup } = session;
   const [state, send, service] = useMachine<TSession, TEvent>(machine);
 
   const cancel = () => {
+    if (existingSession.sessionId) {
+      return;
+    }
     send('CANCEL');
     setCancelCount((counter) => counter + 1);
   };
 
   const generate = () => {
+    if (existingSession.sessionId) {
+      return;
+    }
     setRetryCount((counter) => counter + 1);
   };
 
@@ -109,54 +112,25 @@ export default function useSession({
     if (cancelCount > 0) {
       generate();
     }
-  }, [cancelCount]); // 任何导致 Connect 组件 unmounted 的操作 (比如 dialog 关闭) => 调用 timeout api 清除 token
-  // 关闭时如果 token 状态处于 created，那么应该通知后端给删掉
-  // 说明: 此处需要借助 useRef 在 useEffect return function 中访问 state
-  // const closeSessionRef = useRef(null);
-  // useEffect(() => {
-  //   closeSessionRef.current = { state, params };
-  // });
-  // useEffect(() => {
-  //   return () => {
-  //     // eslint-disable-next-line no-shadow
-  //     const { state, params } = closeSessionRef.current;
-  //     if (state.status === 'created') {
-  //       if (params[tokenKey]) {
-  //         checkFn(`${prefix}/${action}/timeout?${stringifyQuery(params)}`, {
-  //           headers: getExtraHeaders(baseUrl),
-  //         });
-  //       }
-  //     }
-  //   };
-  // }, []);
-  // const applyExistingToken = async () => {
-  //   try {
-  //     if (existingSession.error) {
-  //       throw existingSession.error;
-  //     }
-  //     setState({
-  //       loading: true,
-  //       token: existingSession.token,
-  //       url: existingSession.url,
-  //       inExistingSession: true,
-  //     });
-  //     const data = await checkStatus();
-  //     // existingSession.token 合法的初始状态必须是 created
-  //     if (data?.status && data?.status !== 'created') {
-  //       throw new Error(`${translations[locale].invalidSessionStatus} [${data.status}]`);
-  //     }
-  //   } catch (e) {
-  //     setState({ status: 'error', error: e.message });
-  //     onError(e, state?.store, decrypt);
-  //   } finally {
-  //     setState({ loading: false });
-  //   }
-  // };
+  }, [cancelCount]); // eslint-disable-line
+
+  // 任何导致 Connect 组件 unmounted 的操作 (比如 dialog 关闭) => 调用 timeout api 清除 token
+  // 关闭时如果 session 状态处于 created，那么应该通知后端给删掉
+  useEffect(() => {
+    return () => {
+      if (service.state.value === 'created') {
+        cleanup().catch(console.error);
+      }
+    };
+  }, []); // eslint-disable-line
+
+  const { value, context } = service.state;
+
   return {
     sessionId,
     session: {
-      status: state.value as TSessionStatus,
-      context: state.context,
+      status: value as TSessionStatus,
+      context,
       deepLink,
       existing: !!existingSession,
     },
@@ -164,4 +138,43 @@ export default function useSession({
     generate,
     cancel,
   };
+}
+
+/**
+ * Create a session for later use
+ * The machine will not start automatically
+ */
+export function createSession({
+  prefix,
+  onCreate = noop,
+  onConnect,
+  onApprove,
+  onComplete = noop,
+  onTimeout = noop,
+  onReject = noop,
+  onCancel = noop,
+  onError = noop,
+  baseUrl,
+  strategy = 'default',
+  autoConnect = true,
+  onlyConnect = false,
+  timeout = SessionTimeout,
+}: THookProps): TSessionMachine {
+  return createStateMachine({
+    baseUrl: joinUrl(baseUrl, prefix),
+    sessionId: '',
+    strategy,
+    dispatch: noop,
+    onCreate,
+    onConnect,
+    onApprove,
+    onComplete,
+    onTimeout,
+    onReject,
+    onCancel,
+    onError,
+    autoConnect,
+    onlyConnect,
+    timeout,
+  });
 }

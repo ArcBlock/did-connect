@@ -59,11 +59,10 @@ export const decodeConnectUrl = (encoded: string): string => {
   return window.atob(unescape(encoded));
 };
 
-// connectUrl 对应 create token 响应数据中的 url 字段值
-export const parseTokenFromConnectUrl = (connectUrl: string): string => {
+export const parseSessionId = (connectUrl: string): string => {
   const connectUrlObj = new URL(connectUrl);
   const url = decodeURIComponent(connectUrlObj.searchParams.get('url') || '');
-  const token = new URL(url).searchParams.get('_t_') || '';
+  const token = new URL(url).searchParams.get('sid') || '';
   return token;
 };
 

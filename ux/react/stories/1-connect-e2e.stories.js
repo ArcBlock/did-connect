@@ -709,7 +709,8 @@ storiesOf('DID-Connect/Examples', module)
     return (
       <TestContainer height={780} resize="true">
         <Typography gutterBottom>
-          Sometimes you need to call a remote API to get requested claims and then complete the session.
+          Sometimes you need to call a remote API to get requested claims and then complete the session. You can pass
+          valid URL to `onConnect` or `onApprove` to leverage backend API.
         </Typography>
         <Button variant="contained" size="small" onClick={() => setOpen(true)}>
           {message}

@@ -27,7 +27,7 @@ export const decodeConnectUrl = (encoded) => {
 };
 
 // connectUrl 对应 create token 响应数据中的 url 字段值
-export const parseTokenFromConnectUrl = (connectUrl) => {
+export const parseSessionId = (connectUrl) => {
   const connectUrlObj = new URL(connectUrl);
   const url = decodeURIComponent(connectUrlObj.searchParams.get('url'));
   const token = new URL(url).searchParams.get('_t_');

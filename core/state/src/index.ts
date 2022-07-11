@@ -58,6 +58,7 @@ export type TSessionMachine = {
   sessionId: string;
   machine: StateMachine<TSessionContext, TSessionState, TSessionEvent, TSessionState>;
   deepLink: string;
+  cleanup: () => Promisable<any>;
 };
 
 export function createStateMachine(options: TSessionOptions): TSessionMachine {
@@ -359,6 +360,9 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
               actions: ['onError'],
             },
           },
+          on: {
+            ERROR: { target: 'error' },
+          },
           after: {
             app: { target: 'timeout' },
           },
@@ -542,7 +546,15 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
     }
   );
 
-  return { sessionId: sid, machine, deepLink: createDeepLink(baseUrl, sid) };
+  const cleanup = () =>
+    doSignedRequest({
+      url: sessionApiUrl,
+      data: {},
+      wallet: updater,
+      method: 'DELETE',
+    });
+
+  return { sessionId: sid, machine, deepLink: createDeepLink(baseUrl, sid), cleanup };
 }
 
 export { createDeepLink, destroyConnections };

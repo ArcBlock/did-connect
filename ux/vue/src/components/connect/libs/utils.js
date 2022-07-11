@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { decodeConnectUrl, parseTokenFromConnectUrl } from '../../session/utils';
+import { decodeConnectUrl, parseSessionId } from '../../session/utils';
 
 export const providerName = 'wallet_url';
 
@@ -72,7 +72,7 @@ export function parseExistingSession() {
       return null;
     }
     const connectUrl = decodeConnectUrl(connectUrlParam);
-    const token = parseTokenFromConnectUrl(connectUrl);
+    const token = parseSessionId(connectUrl);
     return {
       token,
       url: connectUrl,

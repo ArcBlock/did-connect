@@ -4,7 +4,7 @@ import BasicConnect from './basic';
 import { BrowserEnvProvider } from './contexts/browser';
 import withDialog from './with-dialog';
 import { withWebWalletSWKeeper } from '../WebWalletSWKeeper';
-import useSession from './hooks/session';
+import { useSession } from './hooks/session';
 import { TConnectProps, THookProps, TBasicProps, THookResult } from '../types';
 
 import '@fontsource/lato/400.css';
@@ -13,7 +13,6 @@ import '@fontsource/lato/700.css';
 const noop = () => {};
 const defaultProps = {
   prefix: '/api/connect/relay',
-  onClose: noop,
   onStart: noop,
   onCreate: noop,
   onComplete: noop,
@@ -25,6 +24,7 @@ const defaultProps = {
   locale: 'en',
   webWalletUrl: '',
   baseUrl: '',
+  strategy: 'default',
   autoConnect: true,
   saveConnect: true,
   onlyConnect: false,
@@ -41,12 +41,12 @@ function Connect(props: TConnectProps): JSX.Element {
     onReject,
     onCancel,
     onError,
-    onClose,
     prefix,
     timeout,
     locale,
     webWalletUrl,
     baseUrl,
+    strategy,
     autoConnect,
     saveConnect,
     onlyConnect,
@@ -55,6 +55,7 @@ function Connect(props: TConnectProps): JSX.Element {
 
   const hookProps: THookProps = {
     baseUrl,
+    strategy,
     timeout,
     prefix,
     onStart,

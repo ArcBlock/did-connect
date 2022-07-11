@@ -35,6 +35,7 @@ export type THookProps = {
   prefix?: string;
   timeout?: typeof SessionTimeout;
   baseUrl?: string;
+  strategy?: string;
 
   autoConnect?: boolean;
   saveConnect?: boolean;

@@ -8,6 +8,7 @@ import Slide from '@mui/material/Slide';
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 
 import { TDialogProps } from '../types';
+import { noop } from '../utils';
 
 const Transition = forwardRef(function Transition(props, ref) {
   // @ts-ignore
@@ -33,10 +34,6 @@ export default function withDialog(Component: any) {
       return <Component {...rest} />;
     }
 
-    // replace deprecated disableBackdropClick/disableEscapeKeyDown with handleOnClose
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleOnClose = (e: any, reason: any) => {};
-
     // 兼容 did-react 版本中存在的 onClose prop
     const handleClose = () => {
       if (onClose) {
@@ -49,7 +46,7 @@ export default function withDialog(Component: any) {
         open={open}
         fullScreen={isFullScreen}
         maxWidth="lg"
-        onClose={handleOnClose}
+        onClose={noop}
         // mobile 弹出面板相关
         {...(isFullScreen && {
           TransitionComponent: Transition,
