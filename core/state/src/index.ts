@@ -37,7 +37,7 @@ export type TSessionOptions = {
   // - a URL that can be used to retrieve the approveResult
   onApprove: TApproveCallback | string;
 
-  baseUrl?: string;
+  relayUrl?: string;
   initial?: TSessionStatus;
   sessionId?: string;
   strategy?: string;
@@ -63,7 +63,7 @@ export type TSessionMachine = {
 
 export function createStateMachine(options: TSessionOptions): TSessionMachine {
   const {
-    baseUrl = '/api/connect/relay',
+    relayUrl = '/api/connect/relay',
     initial = 'start', // we maybe reusing existing session
     sessionId = '', // we maybe reusing existing session
     strategy = 'default',
@@ -139,8 +139,8 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
   const sid = sessionId || nanoid();
   const pk = updater.publicKey.toString();
 
-  const authApiUrl = createApiUrl(baseUrl, sid, '/auth');
-  const sessionApiUrl = createApiUrl(baseUrl, sid, '/session');
+  const authApiUrl = createApiUrl(relayUrl, sid, '/auth');
+  const sessionApiUrl = createApiUrl(relayUrl, sid, '/session');
 
   const _onStart = async (ctx: TSessionContext, e: TSessionEvent) => {
     await onStart(ctx, e);
@@ -268,7 +268,7 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
   };
 
   // TODO: fallback to polling when socket connection failed
-  createConnection(createSocketEndpoint(baseUrl)).then((socket) => {
+  createConnection(createSocketEndpoint(relayUrl)).then((socket) => {
     socket.on(sid, (e: TSessionEvent) => {
       switch (e.status) {
         case 'walletScanned':
@@ -554,7 +554,7 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
       method: 'DELETE',
     });
 
-  return { sessionId: sid, machine, deepLink: createDeepLink(baseUrl, sid), cleanup };
+  return { sessionId: sid, machine, deepLink: createDeepLink(relayUrl, sid), cleanup };
 }
 
 export { createDeepLink, destroyConnections };

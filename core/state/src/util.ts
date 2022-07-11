@@ -16,36 +16,36 @@ type RequestArgs = {
   method: string;
 };
 
-export const createSocketEndpoint = (baseUrl: string): string => {
-  if (!baseUrl) {
-    throw new Error('baseUrl is required when createSocketEndpoint');
+export const createSocketEndpoint = (relayUrl: string): string => {
+  if (!relayUrl) {
+    throw new Error('relayUrl is required when createSocketEndpoint');
   }
 
-  let endpoint = baseUrl;
+  let endpoint = relayUrl;
 
   // we are in browser
-  if (baseUrl.startsWith('/')) {
+  if (relayUrl.startsWith('/')) {
     if (typeof window === 'undefined') {
       throw new Error('Can not create authUrl with pathname in none-browser env');
     }
 
     // eslint-disable-next-line no-undef
     const tmp = new URL(window.location.origin);
-    tmp.pathname = joinUrl(baseUrl);
+    tmp.pathname = joinUrl(relayUrl);
     endpoint = tmp.href;
   }
 
   return endpoint.replace('https:', 'wss:').replace('http:', 'ws:');
 };
 
-export const createApiUrl = (baseUrl: string, sessionId: string, suffix = '/auth'): string => {
-  if (!baseUrl) {
-    throw new Error('baseUrl is required when createApiUrl');
+export const createApiUrl = (relayUrl: string, sessionId: string, suffix = '/auth'): string => {
+  if (!relayUrl) {
+    throw new Error('relayUrl is required when createApiUrl');
   }
   if (!sessionId) {
     throw new Error('sessionId is required when createApiUrl');
   }
-  if (baseUrl.startsWith('/')) {
+  if (relayUrl.startsWith('/')) {
     // we are in browser
     if (typeof window === 'undefined') {
       throw new Error('Can not create authUrl with pathname in none-browser env');
@@ -53,22 +53,22 @@ export const createApiUrl = (baseUrl: string, sessionId: string, suffix = '/auth
 
     // eslint-disable-next-line no-undef
     const tmp = new URL(window.location.origin);
-    tmp.pathname = joinUrl(baseUrl, suffix);
+    tmp.pathname = joinUrl(relayUrl, suffix);
     tmp.searchParams.set('sid', sessionId);
     return tmp.href;
   }
 
   // We are in node or browser
-  const tmp = new URL(baseUrl);
+  const tmp = new URL(relayUrl);
   tmp.pathname = joinUrl(tmp.pathname, suffix);
   tmp.searchParams.set('sid', sessionId);
   return tmp.href;
 };
 
-export const createDeepLink = (baseUrl: string, sessionId: string): string => {
+export const createDeepLink = (relayUrl: string, sessionId: string): string => {
   const tmp = new URL('https://abtwallet.io/i/');
   tmp.searchParams.set('action', 'requestAuth');
-  tmp.searchParams.set('url', encodeURIComponent(createApiUrl(baseUrl, sessionId, '/auth')));
+  tmp.searchParams.set('url', encodeURIComponent(createApiUrl(relayUrl, sessionId, '/auth')));
   return tmp.href;
 };
 

@@ -228,7 +228,7 @@ describe('StateMachine', () => {
     const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
-      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      relayUrl: joinUrl(baseUrl, '/api/connect/relay'),
       // @ts-ignore
       dispatch: (...args: any[]) => service.send.apply(service, args),
       ...sessionProps,
@@ -382,7 +382,7 @@ describe('StateMachine', () => {
     const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
-      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      relayUrl: joinUrl(baseUrl, '/api/connect/relay'),
       // @ts-ignore
       dispatch: (...args: any[]) => service.send.apply(service, args),
       onConnect,
@@ -528,7 +528,7 @@ describe('StateMachine', () => {
     const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
-      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      relayUrl: joinUrl(baseUrl, '/api/connect/relay'),
       // @ts-ignore
       dispatch: (...args: any[]) => service.send.apply(service, args),
       onConnect: () => [],
@@ -588,7 +588,7 @@ describe('StateMachine', () => {
     const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
-      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      relayUrl: joinUrl(baseUrl, '/api/connect/relay'),
       // @ts-ignore
       dispatch: (...args: any[]) => service.send.apply(service, args),
       onConnect: () => [],
@@ -649,7 +649,7 @@ describe('StateMachine', () => {
     const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
-      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      relayUrl: joinUrl(baseUrl, '/api/connect/relay'),
       // @ts-ignore
       dispatch: (...args: any[]) => service.send.apply(service, args),
       onConnect: () => {
@@ -713,7 +713,7 @@ describe('StateMachine', () => {
     const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
-      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      relayUrl: joinUrl(baseUrl, '/api/connect/relay'),
       // @ts-ignore
       dispatch: (...args: any[]) => service.send.apply(service, args),
       onConnect: () => {
@@ -807,7 +807,7 @@ describe('StateMachine', () => {
     const stateHistory: string[] = [];
 
     const { machine } = createStateMachine({
-      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      relayUrl: joinUrl(baseUrl, '/api/connect/relay'),
       // @ts-ignore
       dispatch: (...args: any[]) => service.send.apply(service, args),
       onConnect: (ctx, e) => {
@@ -877,7 +877,7 @@ describe('StateMachine', () => {
     const nonExistingSession = nanoid();
     let hasError = false;
     const { machine } = createStateMachine({
-      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      relayUrl: joinUrl(baseUrl, '/api/connect/relay'),
       sessionId: nonExistingSession,
       // @ts-ignore
       dispatch: (...args: any[]) => service.send.apply(service, args),
@@ -906,7 +906,7 @@ describe('StateMachine', () => {
     const stateHistory: string[] = [];
     let hasError = false;
     const { machine } = createStateMachine({
-      baseUrl: joinUrl(baseUrl, '/api/connect/relay'),
+      relayUrl: joinUrl(baseUrl, '/api/connect/relay'),
       sessionId: finalizedSessionId,
       // @ts-ignore
       dispatch: (...args: any[]) => service.send.apply(service, args),
