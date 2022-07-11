@@ -32,9 +32,8 @@ export type THookProps = {
   onReject?: TEventCallback;
   onError?: TEventCallback;
 
-  prefix?: string;
+  relayUrl?: string;
   timeout?: typeof SessionTimeout;
-  baseUrl?: string;
   strategy?: string;
 
   autoConnect?: boolean;

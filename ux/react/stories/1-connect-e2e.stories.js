@@ -21,6 +21,7 @@ const sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout)
 
 // TODO: deploy this to staging server
 const baseUrl = 'https://dfe45b38-znkntry8ptmrcty8b2mnmapp4bs3bx8n844d.did.abtnet.io';
+const relayUrl = joinUrl(baseUrl, '/api/connect/relay');
 const webWalletUrl = `${window.location.protocol}//wallet.staging.arcblock.io`;
 const chainHost = 'https://beta.abtnetwork.io/api/';
 
@@ -94,7 +95,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'You profile accepted',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );
@@ -141,7 +142,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'You have successfully connected!',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );
@@ -188,7 +189,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'Profile accepted',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );
@@ -247,7 +248,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'NFT accepted',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );
@@ -315,7 +316,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'VC accepted',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );
@@ -379,7 +380,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'Sig accepted',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );
@@ -450,7 +451,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'Signature accepted',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );
@@ -534,7 +535,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'Tx signed but not broadcasted',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );
@@ -627,7 +628,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'Payment signed but not broadcasted',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );
@@ -689,7 +690,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'Claims accepted',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );
@@ -733,7 +734,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'Profile accepted',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );
@@ -793,7 +794,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'Claims accepted',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );
@@ -861,7 +862,7 @@ storiesOf('DID-Connect/Examples', module)
             success: 'Claims accepted',
           }}
           webWalletUrl={webWalletUrl}
-          baseUrl={baseUrl}
+          relayUrl={relayUrl}
         />
       </TestContainer>
     );

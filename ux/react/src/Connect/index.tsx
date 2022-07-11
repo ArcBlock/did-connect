@@ -12,7 +12,7 @@ import '@fontsource/lato/700.css';
 
 const noop = () => {};
 const defaultProps = {
-  prefix: '/api/connect/relay',
+  relayUrl: '/api/connect/relay',
   onStart: noop,
   onCreate: noop,
   onComplete: noop,
@@ -23,7 +23,6 @@ const defaultProps = {
   timeout: SessionTimeout,
   locale: 'en',
   webWalletUrl: '',
-  baseUrl: '',
   strategy: 'default',
   autoConnect: true,
   saveConnect: true,
@@ -41,11 +40,10 @@ function Connect(props: TConnectProps): JSX.Element {
     onReject,
     onCancel,
     onError,
-    prefix,
     timeout,
     locale,
     webWalletUrl,
-    baseUrl,
+    relayUrl,
     strategy,
     autoConnect,
     saveConnect,
@@ -54,10 +52,9 @@ function Connect(props: TConnectProps): JSX.Element {
   } = { ...defaultProps, ...props };
 
   const hookProps: THookProps = {
-    baseUrl,
+    relayUrl,
     strategy,
     timeout,
-    prefix,
     onStart,
     onCreate,
     onConnect,

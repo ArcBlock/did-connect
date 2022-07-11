@@ -27,7 +27,7 @@ const parseExistingSession = (): { sessionId?: string; url?: string; error?: str
 };
 
 export function useSession({
-  prefix,
+  relayUrl,
   onCreate = noop,
   onConnect,
   onApprove,
@@ -36,7 +36,6 @@ export function useSession({
   onReject = noop,
   onCancel = noop,
   onError = noop,
-  baseUrl,
   strategy = 'default',
   autoConnect = true,
   saveConnect = true,
@@ -60,7 +59,7 @@ export function useSession({
   const session: TSessionMachine = useMemo(
     () =>
       createStateMachine({
-        baseUrl: joinUrl(baseUrl, prefix),
+        relayUrl,
         sessionId: existingSession.sessionId || '',
         // initial = 'start', // we maybe reusing existing session
         strategy,
@@ -145,7 +144,7 @@ export function useSession({
  * The machine will not start automatically
  */
 export function createSession({
-  prefix,
+  relayUrl,
   onCreate = noop,
   onConnect,
   onApprove,
@@ -154,14 +153,13 @@ export function createSession({
   onReject = noop,
   onCancel = noop,
   onError = noop,
-  baseUrl,
   strategy = 'default',
   autoConnect = true,
   onlyConnect = false,
   timeout = SessionTimeout,
 }: THookProps): TSessionMachine {
   return createStateMachine({
-    baseUrl: joinUrl(baseUrl, prefix),
+    relayUrl,
     sessionId: '',
     strategy,
     dispatch: noop,
