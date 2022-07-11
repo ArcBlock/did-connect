@@ -32,6 +32,7 @@ export type THookProps = {
   onReject?: TEventCallback;
   onError?: TEventCallback;
 
+  sessionId?: string;
   relayUrl?: string;
   timeout?: typeof SessionTimeout;
   strategy?: string;

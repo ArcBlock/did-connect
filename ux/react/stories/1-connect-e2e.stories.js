@@ -13,7 +13,7 @@ import objectHash from 'object-hash';
 import joinUrl from 'url-join';
 import type { TProfileRequest, TAssetRequest } from '@did-connect/types';
 
-import Connect from '../src/Connect';
+import Connect, { createSession } from '../src/Connect';
 import { BrowserEnvContext } from '../src/Connect/contexts/browser';
 
 // eslint-disable-next-line no-promise-executor-return
@@ -864,6 +864,71 @@ storiesOf('DID-Connect/Examples', module)
           webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
+      </TestContainer>
+    );
+  })
+  .add('Reuse Existing Session', () => {
+    const connectUrl = joinUrl(baseUrl, '/connect/profile');
+    const approveUrl = joinUrl(baseUrl, '/approve/profile');
+    const [session, setSession] = useState(null);
+
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('Login');
+
+    const handleCreateSession = async () => {
+      // If you want to use remote api as callback, you should set them here
+      const result = await createSession({ relayUrl, onConnect: connectUrl, onApprove: approveUrl });
+      setSession(result);
+    };
+
+    const handleClose = () => {
+      action('close');
+      setOpen(false);
+    };
+    const handleComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setMessage(`Hello ${ctx.responseClaims[0][0].fullName}`);
+      setOpen(false);
+    };
+
+    return (
+      <TestContainer height={780} resize="true">
+        <Typography gutterBottom>
+          In some cases, the session maybe created by other apps. You can reuse the session.
+        </Typography>
+        {!session && (
+          <Button variant="contained" size="small" onClick={handleCreateSession}>
+            Create Session
+          </Button>
+        )}
+        {session && (
+          <Button variant="contained" size="small" onClick={() => setOpen(true)}>
+            {message}
+          </Button>
+        )}
+        {session && (
+          <Connect
+            popup
+            open={open}
+            sessionId={session.sessionId}
+            onClose={handleClose}
+            onConnect={connectUrl}
+            onApprove={approveUrl}
+            onComplete={handleComplete}
+            onReject={onReject}
+            onCancel={onCancel}
+            onTimeout={onTimeout}
+            onError={onError}
+            messages={{
+              title: 'Profile Required',
+              scan: 'You can manage and provide your profile in your DID Wallet',
+              confirm: 'Confirm on your DID Wallet',
+              success: 'Profile accepted',
+            }}
+            webWalletUrl={webWalletUrl}
+            relayUrl={relayUrl}
+          />
+        )}
       </TestContainer>
     );
   });

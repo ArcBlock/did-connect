@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { useMemo, useState, useEffect } from 'react';
 import Cookie from 'js-cookie';
-import joinUrl from 'url-join';
+import { interpret } from 'xstate';
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 import { createStateMachine, TSessionMachine } from '@did-connect/state';
 import { TSession, TSessionStatus, TEvent, SessionTimeout } from '@did-connect/types';
@@ -11,8 +11,11 @@ import { useMachine } from './machine';
 import { THookProps, THookResult } from '../../types';
 
 // 从 url params 中获取已存在的 session (sessionId & connect url)
-const parseExistingSession = (): { sessionId?: string; url?: string; error?: string } => {
+const parseExistingSession = (sid?: string): { sessionId?: string; url?: string; error?: string } => {
   try {
+    if (sid) {
+      return { sessionId: sid };
+    }
     const url = new URL(window.location.href);
     const connectUrlParam = url.searchParams.get('__connect_url__');
     if (!connectUrlParam) {
@@ -28,6 +31,7 @@ const parseExistingSession = (): { sessionId?: string; url?: string; error?: str
 
 export function useSession({
   relayUrl,
+  sessionId: sid = '',
   onCreate = noop,
   onConnect,
   onApprove,
@@ -43,7 +47,7 @@ export function useSession({
   timeout = SessionTimeout,
 }: THookProps): THookResult {
   const browser = useBrowser();
-  const existingSession = useMemo(() => parseExistingSession(), []);
+  const existingSession = useMemo(() => parseExistingSession(sid), [sid]);
 
   const [cancelCount, setCancelCount] = useState(0);
   const [retryCount, setRetryCount] = useState(0);
@@ -146,8 +150,8 @@ export function useSession({
 export function createSession({
   relayUrl,
   onCreate = noop,
-  onConnect,
-  onApprove,
+  onConnect = noop,
+  onApprove = noop,
   onComplete = noop,
   onTimeout = noop,
   onReject = noop,
@@ -157,22 +161,34 @@ export function createSession({
   autoConnect = true,
   onlyConnect = false,
   timeout = SessionTimeout,
-}: THookProps): TSessionMachine {
-  return createStateMachine({
-    relayUrl,
-    sessionId: '',
-    strategy,
-    dispatch: noop,
-    onCreate,
-    onConnect,
-    onApprove,
-    onComplete,
-    onTimeout,
-    onReject,
-    onCancel,
-    onError,
-    autoConnect,
-    onlyConnect,
-    timeout,
+}: THookProps): Promise<TSessionMachine> {
+  return new Promise((resolve) => {
+    const session = createStateMachine({
+      relayUrl,
+      sessionId: '',
+      strategy,
+      dispatch: noop,
+      onCreate,
+      onConnect,
+      onApprove,
+      onComplete,
+      onTimeout,
+      onReject,
+      onCancel,
+      onError,
+      autoConnect,
+      onlyConnect,
+      timeout,
+    });
+
+    // wait for session created
+    const service = interpret(session.machine);
+    service.onTransition((currentState) => {
+      if (currentState.value === 'created') {
+        service.stop();
+        resolve(session);
+      }
+    });
+    service.start();
   });
 }
