@@ -16,6 +16,11 @@ build:
 	@cd relay/adapter-express && npm run build
 	@cd ux/react && npm run build
 
+bundle:
+	@echo "Bundling blocklets..."
+	@cd relay/server && npm run bundle
+	@cd ux/react && npm run bundle
+
 init: install dep env
 	@echo "Initializing the repo..."
 	@make build

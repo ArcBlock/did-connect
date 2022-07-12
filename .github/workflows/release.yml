@@ -1,0 +1,100 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  packages:
+    runs-on: ubuntu-latest
+
+    if: "! contains(github.event.head_commit.message, '[skip ci]')"
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          ref: master
+          token: ${{ secrets.GIT_HUB_TOKEN }}
+
+      - name: Use Node.js v16
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Initialize
+        run: make github-init
+
+      - name: Extract current version
+        id: get_version
+        run: |
+          CURRENT_VERSION=$(cat version | awk '{$1=$1;print}')
+          echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
+
+      - name: Config Git
+        run: |
+          git config --local user.name "bot"
+          git config --local user.email "bot@arcblock.io"
+
+      - name: Publish to NPM
+        run: |
+          npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
+          VERSION=$(cat version | awk '{$1=$1;print}')
+          echo "publish version ${VERSION}"
+          lerna version ${CURRENT_VERSION} --exact --no-push --force-publish --yes
+          lerna publish from-git --yes
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"did-connect packages v${VERSION} was successfully published\"}" ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Push Version
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GIT_HUB_TOKEN }}
+          branch: ${{ github.ref }}
+
+      - name: Bundle Blocklets
+        run: make bundle
+
+      - name: Upload Relay Server Test Store
+        uses: blocklet/action-workflow@v1
+        with:
+          skip-deps: true
+          skip-upload: false
+          skip-deploy: true
+          skip-release: true
+          skip-bundle: true
+          working-directory: relay/server
+          store-endpoint: ${{ secrets.STORE_ENDPOINT_DEV }}
+          store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_DEV }}
+          slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Upload React StoryBook to Test Store
+        uses: blocklet/action-workflow@v1
+        with:
+          skip-deps: true
+          skip-upload: false
+          skip-deploy: true
+          skip-release: true
+          skip-bundle: true
+          working-directory: ux/react
+          store-endpoint: ${{ secrets.STORE_ENDPOINT_DEV }}
+          store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_DEV }}
+          slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Sleep for 60 seconds
+        uses: juliangruber/sleep-action@v1
+        with:
+          time: '60s'
+
+      - name: Deploy Storybook to Staging Server
+        uses: blocklet/action-workflow@v1
+        with:
+          skip-deps: true
+          skip-upload: true
+          skip-deploy: false
+          skip-release: true
+          skip-bundle: true
+          working-directory: ux/react
+          server-endpoint: ${{ secrets.STAGING_NODE_ENDPOINT }}
+          server-access-key: ${{ secrets.STAGING_NODE_ACCESS_KEY }}
+          server-access-secret: ${{ secrets.STAGING_NODE_ACCESS_SECRET }}
+          slack-webhook: ${{ secrets.SLACK_WEBHOOK }}

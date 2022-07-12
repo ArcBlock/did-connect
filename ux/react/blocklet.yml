@@ -2,7 +2,7 @@ name: '@did-connect/react'
 title: DID Connect React
 description: DID Connect React Component Library
 group: static
-main: dist
+main: storybook-static
 logo: logo.png
 author:
   name: wangshijun
@@ -42,6 +42,13 @@ capabilities:
   clusterMode: false
   component: true
 screenshots: []
-children: []
+children:
+  - name: 'relay-server'
+    mountPoint: /relay
+    source:
+      store:
+        - https://dev.store.blocklet.dev
+      name: '@did-connect/relay-server'
+      version: latest
 scripts:
   dev: npm run storybook:start
