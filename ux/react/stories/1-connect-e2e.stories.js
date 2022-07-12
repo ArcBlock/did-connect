@@ -19,8 +19,10 @@ import { BrowserEnvContext } from '../src/Connect/contexts/browser';
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (timeout) => new Promise((resolve) => setTimeout(resolve, timeout));
 
-// TODO: deploy this to staging server
-const baseUrl = 'https://dfe45b38-znkntry8ptmrcty8b2mnmapp4bs3bx8n844d.did.abtnet.io';
+const baseUrl =
+  process.env.NODE_ENV === 'production'
+    ? '/relay'
+    : 'https://dfe45b38-znkntry8ptmrcty8b2mnmapp4bs3bx8n844d.did.abtnet.io';
 const relayUrl = joinUrl(baseUrl, '/api/connect/relay');
 const webWalletUrl = `${window.location.protocol}//wallet.staging.arcblock.io`;
 const chainHost = 'https://beta.abtnetwork.io/api/';
