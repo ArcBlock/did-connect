@@ -803,6 +803,7 @@ storiesOf('DID-Connect/Examples', module)
   })
   .add('Multiple Workflow', () => {
     const [open, setOpen] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [completed, setCompleted] = useState(false);
     const [message] = useState('Asset --> Profile');
     const [response1, setResponse1] = useState(null);
@@ -839,6 +840,7 @@ storiesOf('DID-Connect/Examples', module)
       }, 5000);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleProfileComplete = (ctx, e) => {
       action('onComplete')(ctx, e);
       setResponse2(ctx.responseClaims[0][0]);
