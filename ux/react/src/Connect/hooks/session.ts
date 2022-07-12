@@ -117,8 +117,7 @@ export function useSession({
     }
   }, [cancelCount]); // eslint-disable-line
 
-  // 任何导致 Connect 组件 unmounted 的操作 (比如 dialog 关闭) => 调用 timeout api 清除 token
-  // 关闭时如果 session 状态处于 created，那么应该通知后端给删掉
+  // unmount 时如果 session 状态处于 created，那么应该通知后端给删掉
   useEffect(() => {
     return () => {
       if (service.state.value === 'created') {

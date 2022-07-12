@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-filename-extension */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -24,6 +24,8 @@ const baseUrl = 'https://dfe45b38-znkntry8ptmrcty8b2mnmapp4bs3bx8n844d.did.abtne
 const relayUrl = joinUrl(baseUrl, '/api/connect/relay');
 const webWalletUrl = `${window.location.protocol}//wallet.staging.arcblock.io`;
 const chainHost = 'https://beta.abtnetwork.io/api/';
+const connectUrl = joinUrl(baseUrl, '/connect/profile');
+const approveUrl = joinUrl(baseUrl, '/approve/profile');
 
 const profileRequest: TProfileRequest = {
   type: 'profile',
@@ -799,65 +801,100 @@ storiesOf('DID-Connect/Examples', module)
       </TestContainer>
     );
   })
-  .add('Multiple Workflows', () => {
+  .add('Multiple Workflow', () => {
     const [open, setOpen] = useState(false);
-    const [message] = useState('Multiple Workflows');
+    const [completed, setCompleted] = useState(false);
+    const [message] = useState('Asset --> Profile');
     const [response1, setResponse1] = useState(null);
     const [response2, setResponse2] = useState(null);
+    const [nextSession, setNextSession] = useState(null);
+
+    useEffect(() => {
+      createSession({ relayUrl, connectUrl, approveUrl }).then((x) => setNextSession(x));
+    }, []);
 
     const handleClose = () => {
       action('close');
       setOpen(false);
     };
-    const handleConnect = async (ctx, e) => {
+    const handleAssetConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
-      return [[profileRequest]];
+      return [[assetRequest]];
     };
 
-    const handleApprove = async (ctx, e) => {
+    const handleAssetApprove = async (ctx, e) => {
       action('onApprove')(ctx, e);
-      if (e.currentStep === 0) {
-        setResponse1(e);
-      }
-      if (e.currentStep === 1) {
-        setResponse2(e);
-      }
+      setResponse1(e);
+
+      return { nextWorkflow: nextSession.deepLink };
     };
 
-    // {
-    //   // https://launcher.staging.arcblock.io/
-    //   type: 'asset',
-    //   filters: [{ trustedIssuers: ['zNKjDm4Xsoaffb19UE6QxVeevuaTaLCS1n1S'] }],
-    //   description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
-    // },
-
-    const handleComplete = (ctx, e) => {
+    const handleAssetComplete = (ctx, e) => {
       action('onComplete')(ctx, e);
+      setCompleted(true);
+      setOpen(false);
+
+      setTimeout(() => {
+        setOpen(true);
+      }, 5000);
+    };
+
+    const handleProfileComplete = (ctx, e) => {
+      action('onComplete')(ctx, e);
+      setResponse2(ctx.responseClaims[0][0]);
       setOpen(false);
     };
 
+    // {completed && open && (
+    //   <Connect
+    //     key="profile"
+    //     popup
+    //     open={open}
+    //     sessionId={nextSession.sessionId}
+    //     onClose={handleClose}
+    //     onConnect={connectUrl}
+    //     onApprove={approveUrl}
+    //     onComplete={handleProfileComplete}
+    //     onReject={onReject}
+    //     onCancel={onCancel}
+    //     onTimeout={onTimeout}
+    //     onError={onError}
+    //     messages={{
+    //       title: 'Profile Required',
+    //       scan: 'You must provide profile to continue',
+    //       confirm: 'Confirm on your DID Wallet',
+    //       success: 'Claims accepted',
+    //     }}
+    //     webWalletUrl={webWalletUrl}
+    //     relayUrl={relayUrl}
+    //   />
+    // )}
+
     return (
       <TestContainer height={780} resize="true">
-        <Typography gutterBottom>You can concat multiple workflows form different apps.</Typography>
+        <Typography gutterBottom>
+          You can concat multiple workflows form different apps, usually the next workflow should use remote API.
+        </Typography>
         <Button variant="contained" size="small" onClick={() => setOpen(true)}>
           {message}
         </Button>
         {response1 && <pre>{JSON.stringify(response1, null, 2)}</pre>}
         {response2 && <pre>{JSON.stringify(response2, null, 2)}</pre>}
         <Connect
+          key="asset"
           popup
           open={open}
           onClose={handleClose}
-          onConnect={handleConnect}
-          onApprove={handleApprove}
-          onComplete={handleComplete}
+          onConnect={handleAssetConnect}
+          onApprove={handleAssetApprove}
+          onComplete={handleAssetComplete}
           onReject={onReject}
           onCancel={onCancel}
           onTimeout={onTimeout}
           onError={onError}
           messages={{
-            title: 'Profile and NFT Required',
-            scan: 'You must provide profile and NFT to continue',
+            title: 'NFT Required',
+            scan: 'You must provide NFT to continue',
             confirm: 'Confirm on your DID Wallet',
             success: 'Claims accepted',
           }}
@@ -868,8 +905,6 @@ storiesOf('DID-Connect/Examples', module)
     );
   })
   .add('Reuse Existing Session', () => {
-    const connectUrl = joinUrl(baseUrl, '/connect/profile');
-    const approveUrl = joinUrl(baseUrl, '/approve/profile');
     const [session, setSession] = useState(null);
 
     const [open, setOpen] = useState(false);
