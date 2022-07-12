@@ -3,6 +3,7 @@ title: DID Connect Relay
 description: Simple relay server built on top of express
 group: dapp
 main: index.js
+logo: logo.png
 author:
   name: wangshijun
   email: shijun@arcblock.io
@@ -14,8 +15,7 @@ keywords:
 repository:
   type: git
   url: git+https://github.com/ArcBlock/did-connect.git
-files:
-  - screenshots
+files: []
 interfaces:
   - type: web
     name: publicUrl

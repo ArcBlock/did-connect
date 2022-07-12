@@ -2,7 +2,8 @@ name: '@did-connect/react'
 title: DID Connect React
 description: DID Connect React Component Library
 group: static
-main: storybook-static
+main: dist
+logo: logo.png
 author:
   name: wangshijun
   email: shijun@arcblock.io
@@ -14,8 +15,7 @@ keywords:
 repository:
   type: git
   url: git+https://github.com/ArcBlock/did-connect.git
-files:
-  - screenshots
+files: []
 interfaces:
   - type: web
     name: publicUrl

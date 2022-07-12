@@ -28,10 +28,11 @@
     "prepublish": "npm run build",
     "test": "jest --forceExit",
     "start": "blocklet dev",
-    "storybook:deploy": "storybook-to-ghpages -e storybook-static",
-    "storybook:clean": "rm -rf storybook-static && mkdir storybook-static",
-    "storybook:build": "npm run storybook:clean && build-storybook && cp -r static/* storybook-static/",
-    "storybook:start": "start-storybook -s ./static -p $BLOCKLET_PORT"
+    "storybook:clean": "rm -rf dist && mkdir dist",
+    "storybook:build": "npm run storybook:clean && build-storybook -o dist",
+    "storybook:start": "start-storybook -s ./static -p $BLOCKLET_PORT",
+    "bundle": "npm run storybook:build && NODE_ENV=production blocklet bundle --zip --create-release --monorepo",
+    "deploy": "npm run bundle && blocklet deploy .blocklet/bundle"
   },
   "bugs": {
     "url": "https://github.com/ArcBlock/did-connect/issues"
