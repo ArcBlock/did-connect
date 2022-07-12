@@ -1,20 +1,22 @@
 name: '@did-connect/react'
-title: DID Connect React
+version: 2.0.1
 description: DID Connect React Component Library
-group: static
-main: storybook-static
-logo: logo.png
+keywords:
+  - relay
 author:
   name: wangshijun
   email: shijun@arcblock.io
   url: https://github.com/wangshijun
-specVersion: 1.2.7
-version: 2.0.0
-keywords:
-  - relay
+homepage: ''
+license: ''
+main: storybook-static
 repository:
   type: git
   url: git+https://github.com/ArcBlock/did-connect.git
+title: DID Connect React
+group: static
+logo: logo.png
+specVersion: 1.2.7
 files: []
 interfaces:
   - type: web
@@ -26,8 +28,6 @@ interfaces:
 did: z8ia434fB5maV98sHJLp7BjsMvdT9fsZrmqf4
 community: ''
 documentation: ''
-homepage: ''
-license: ''
 payment:
   price: []
   share: []
@@ -43,7 +43,7 @@ capabilities:
   component: true
 screenshots: []
 children:
-  - name: 'relay-server'
+  - name: relay-server
     mountPoint: /relay
     source:
       store:

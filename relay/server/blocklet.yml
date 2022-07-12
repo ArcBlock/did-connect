@@ -1,20 +1,26 @@
 name: '@did-connect/relay-server'
-title: DID Connect Relay
 description: Simple relay server built on top of express
-group: dapp
-main: index.js
-logo: logo.png
+version: 2.0.1
 author:
   name: wangshijun
   email: shijun@arcblock.io
   url: https://github.com/wangshijun
-specVersion: 1.2.7
-version: 2.0.0
+contributors:
+  - name: wangshijun
+    email: shijun@arcblock.io
+    url: https://github.com/wangshijun
+homepage: ''
 keywords:
   - relay
+license: ''
 repository:
   type: git
   url: git+https://github.com/ArcBlock/did-connect.git
+title: DID Connect Relay
+group: dapp
+main: index.js
+logo: logo.png
+specVersion: 1.2.7
 files: []
 interfaces:
   - type: web
@@ -26,8 +32,6 @@ interfaces:
 did: z8ia46ePwnscVS4X2vKUTrdRKhNJ64pWguvwb
 community: ''
 documentation: ''
-homepage: ''
-license: ''
 payment:
   price: []
   share: []
