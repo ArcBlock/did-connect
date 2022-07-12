@@ -1,0 +1,66 @@
+{
+  "name": "@did-connect/authenticator",
+  "description": "Helper function to setup DID Connect support on a node.js web server",
+  "version": "2.0.0",
+  "author": {
+    "name": "wangshijun",
+    "email": "shijun@arcblock.io",
+    "url": "https://github.com/wangshijun"
+  },
+  "contributors": [
+    "wangshijun <shijun@arcblock.io> (https://github.com/wangshijun)"
+  ],
+  "bugs": {
+    "url": "https://github.com/ArcBlock/did-connect/issues",
+    "email": "shijun@arcblock.io"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@arcblock/did": "^1.17.3",
+    "@arcblock/jwt": "^1.17.3",
+    "@did-connect/types": "2.0.0",
+    "@ocap/util": "^1.17.3",
+    "@ocap/wallet": "^1.17.3",
+    "debug": "^4.3.4",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@arcblock/eslint-config-ts": "0.2.2",
+    "@types/debug": "^4.1.7",
+    "axios": "^0.27.2",
+    "eslint": "^8.16.0",
+    "jest": "^28.1.1",
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.3"
+  },
+  "homepage": "https://github.com/ArcBlock/did-connect",
+  "keywords": [
+    "did",
+    "web3"
+  ],
+  "license": "Apache-2.0",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArcBlock/did-connect"
+  },
+  "scripts": {
+    "lint": "eslint src tests",
+    "lint:fix": "eslint --fix src tests",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "watch": "tsc -b --watch",
+    "check": "tsc --noEmit",
+    "clean": "rm -rf ./lib",
+    "test": "jest --forceExit",
+    "coverage": "yarn test --coverage"
+  },
+  "resolutions": {},
+  "gitHead": "87990c8b5e215107fc587c1ced0d6b3e2cd2483e"
+}

@@ -1,0 +1,78 @@
+{
+  "name": "@did-connect/vue",
+  "private": "true",
+  "version": "2.0.0",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/did-connect.umd.js",
+  "module": "./dist/did-connect.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/did-connect.es.js",
+      "require": "./dist/did-connect.umd.js"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook",
+    "lint": "eslint src --ext .mjs,.js,.vue",
+    "lint:fix": "eslint src --ext .mjs,.js,.vue --fix",
+    "lint-staged": "lint-staged"
+  },
+  "dependencies": {
+    "@arcblock/did-motif": "^1.1.10",
+    "@arcblock/event-client": "^1.6.3",
+    "@arcblock/ux": "^2.1.56",
+    "@solana/qr-code-styling": "1.6.0-beta.0",
+    "@vueuse/core": "^8.5.0",
+    "buffer": "^6.0.3",
+    "dsbridge": "^3.1.4",
+    "js-cookie": "^3.0.1",
+    "lodash-es": "^4.17.21",
+    "naive-ui": "^2.29.0",
+    "svgo": "^2.8.0",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-sealedbox-js": "^1.2.0",
+    "unocss": "^0.36.0",
+    "vue": "^3.2.36"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.2",
+    "@fontsource/ubuntu-mono": "^4.5.9",
+    "@iconify-json/mdi": "^1.1.19",
+    "@storybook/addon-actions": "^6.5.9",
+    "@storybook/addon-essentials": "^6.5.9",
+    "@storybook/addon-interactions": "^6.5.9",
+    "@storybook/addon-links": "^6.5.9",
+    "@storybook/builder-vite": "^0.1.36",
+    "@storybook/testing-library": "^0.0.13",
+    "@storybook/vue3": "^6.5.9",
+    "@unocss/preset-icons": "^0.36.0",
+    "@unocss/preset-uno": "^0.36.0",
+    "@vitejs/plugin-vue": "^2.3.3",
+    "babel-loader": "^8.2.5",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^9.0.1",
+    "husky": "^8.0.1",
+    "less": "^4.1.2",
+    "prettier": "^2.6.2",
+    "vite": "^2.9.9",
+    "vite-plugin-blocklet": "^0.1.2",
+    "vite-plugin-css-injected-by-js": "^1.5.0",
+    "vue-loader": "^17.0.0",
+    "vue-router": "^4.0.15"
+  },
+  "lint-staged": {
+    "*.{mjs,js,vue}": [
+      "prettier --write",
+      "eslint --ext .js,.vue,.mjs"
+    ],
+    "*.{css,less,scss,json,graphql}": [
+      "prettier --write"
+    ]
+  }
+}

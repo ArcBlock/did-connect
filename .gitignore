@@ -24,3 +24,7 @@ storybook-static
 *.njsproj
 *.sln
 *.sw?
+coverage
+*/coverage
+scratch
+.blocklet

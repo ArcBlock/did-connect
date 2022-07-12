@@ -1,0 +1,69 @@
+{
+  "name": "@did-connect/state",
+  "description": "State machine for did-connect session",
+  "version": "2.0.0",
+  "author": {
+    "name": "wangshijun",
+    "email": "shijun@arcblock.io",
+    "url": "https://github.com/wangshijun"
+  },
+  "contributors": [
+    "wangshijun <shijun@arcblock.io> (https://github.com/wangshijun)"
+  ],
+  "bugs": {
+    "url": "https://github.com/ArcBlock/did-connect/issues",
+    "email": "shijun@arcblock.io"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@arcblock/jwt": "^1.17.3",
+    "@arcblock/ws": "^1.17.3",
+    "@did-connect/types": "^2.0.0",
+    "@ocap/util": "^1.17.3",
+    "@ocap/wallet": "^1.17.3",
+    "axios": "^0.27.2",
+    "debug": "^4.3.4",
+    "lodash": "^4.17.21",
+    "nanoid": "3.x",
+    "node-localstorage": "^2.2.1",
+    "object-hash": "^3.0.0",
+    "type-fest": "^2.13.1",
+    "url-join": "^4.0.1",
+    "xstate": "^4.32.1"
+  },
+  "devDependencies": {
+    "@arcblock/eslint-config-ts": "0.2.2",
+    "eslint": "^8.16.0",
+    "jest": "^28.1.1",
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.3"
+  },
+  "homepage": "https://github.com/ArcBlock/did-connect",
+  "keywords": [
+    "did",
+    "web3"
+  ],
+  "license": "Apache-2.0",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArcBlock/did-connect"
+  },
+  "scripts": {
+    "lint": "eslint src tests",
+    "lint:fix": "eslint --fix src tests",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "watch": "tsc -b --watch",
+    "check": "tsc --noEmit",
+    "clean": "rm -rf ./lib",
+    "test": "jest --forceExit",
+    "coverage": "yarn test --coverage"
+  }
+}

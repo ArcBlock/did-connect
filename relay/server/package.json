@@ -1,0 +1,48 @@
+{
+  "name": "@did-connect/relay-server",
+  "description": "Simple relay server built on top of express",
+  "version": "2.0.0",
+  "author": {
+    "name": "wangshijun",
+    "email": "shijun@arcblock.io",
+    "url": "https://github.com/wangshijun"
+  },
+  "contributors": [
+    "wangshijun <shijun@arcblock.io> (https://github.com/wangshijun)"
+  ],
+  "bugs": {
+    "url": "https://github.com/ArcBlock/did-connect/issues",
+    "email": "shijun@arcblock.io"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@blocklet/sdk": "^1.8.1",
+    "@did-connect/authenticator": "2.0.0",
+    "@did-connect/handler": "2.0.0",
+    "@did-connect/relay-adapter-express": "2.0.0",
+    "@did-connect/storage-nedb": "^2.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  },
+  "homepage": "https://github.com/ArcBlock/did-connect",
+  "keywords": [
+    "did-connect"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArcBlock/did-connect"
+  },
+  "scripts": {
+    "lint": "eslint index.js",
+    "start": "NODE_ENV=development nodemon index.js --watch index.js --watch ../../core",
+    "bundle": "NODE_ENV=production blocklet bundle --zip --create-release --monorepo",
+    "deploy": "npm run bundle && blocklet deploy .blocklet/bundle"
+  }
+}

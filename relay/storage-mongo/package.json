@@ -1,0 +1,52 @@
+{
+  "name": "@did-connect/storage-mongo",
+  "description": "Storage engine that uses mongodb for did-auth",
+  "version": "2.0.0",
+  "author": "wangshijun <shijun@arcblock.io> (https://ocap.arcblock.io)",
+  "bugs": {
+    "url": "https://github.com/ArcBlock/did-connect/issues",
+    "email": "shijun@arcblock.io"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "contributors": [
+    "wangshijun <shijun@arcblock.io> (https://ocap.arcblock.io)"
+  ],
+  "devDependencies": {
+    "jest": "^28.1.1"
+  },
+  "homepage": "https://github.com/ArcBlock/did-connect/tree/master/packagesstorage-mongo",
+  "keywords": [
+    "did",
+    "web3"
+  ],
+  "license": "Apache-2.0",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArcBlock/did-connect/tree/master/packagesstorage-mongo"
+  },
+  "scripts": {
+    "lint": "eslint src tests",
+    "precommit": "CI=1 yarn test",
+    "prepush": "CI=1 yarn test",
+    "test": "jest",
+    "coverage": "yarn test --coverage",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "clean": "rm -rf ./lib"
+  },
+  "gitHead": "570a366418890ded86422e168417bae0c9967e35",
+  "dependencies": {
+    "@did-connect/storage": "^2.0.0",
+    "@did-connect/types": "^2.0.0",
+    "debug": "^4.3.4",
+    "mongodb": "3.1.13"
+  }
+}

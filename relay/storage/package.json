@@ -1,0 +1,53 @@
+{
+  "name": "@did-connect/storage",
+  "description": "Storage interface for did-auth",
+  "version": "2.0.0",
+  "author": "wangshijun <shijun@arcblock.io> (https://ocap.arcblock.io)",
+  "bugs": {
+    "url": "https://github.com/ArcBlock/did-connect/issues",
+    "email": "shijun@arcblock.io"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "contributors": [
+    "wangshijun <shijun@arcblock.io> (https://ocap.arcblock.io)"
+  ],
+  "dependencies": {
+    "@did-connect/types": "2.0.0"
+  },
+  "devDependencies": {
+    "@arcblock/eslint-config-ts": "0.2.2",
+    "eslint": "^8.16.0",
+    "jest": "^28.1.1",
+    "ts-jest": "^28.0.5",
+    "typescript": "^4.7.3"
+  },
+  "homepage": "https://github.com/ArcBlock/did-connect/tree/master/packagesstorage",
+  "keywords": [
+    "did",
+    "web3"
+  ],
+  "license": "Apache-2.0",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArcBlock/did-connect/tree/master/packagesstorage"
+  },
+  "scripts": {
+    "lint": "eslint src tests",
+    "precommit": "CI=1 yarn test",
+    "prepush": "CI=1 yarn test",
+    "test": "jest",
+    "coverage": "yarn test --coverage",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "clean": "rm -rf ./lib"
+  },
+  "gitHead": "570a366418890ded86422e168417bae0c9967e35"
+}

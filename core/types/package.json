@@ -1,0 +1,63 @@
+{
+  "name": "@did-connect/types",
+  "description": "Type definition and validator for did-connect protocol",
+  "version": "2.0.0",
+  "author": {
+    "name": "wangshijun",
+    "email": "shijun@arcblock.io",
+    "url": "https://github.com/wangshijun"
+  },
+  "contributors": [
+    "wangshijun <shijun@arcblock.io> (https://github.com/wangshijun)"
+  ],
+  "bugs": {
+    "url": "https://github.com/ArcBlock/did-connect/issues",
+    "email": "shijun@arcblock.io"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@arcblock/validator": "^1.17.3",
+    "@ocap/mcrypto": "^1.17.3",
+    "joi": "^17.6.0",
+    "type-fest": "^2.13.1"
+  },
+  "devDependencies": {
+    "@arcblock/eslint-config-ts": "0.2.2",
+    "eslint": "^8.16.0",
+    "jest": "^28.1.1",
+    "joi-to-typescript": "^4.0.5",
+    "prettier": "^2.6.2",
+    "ts-jest": "^28.0.5",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.3"
+  },
+  "homepage": "https://github.com/ArcBlock/did-connect",
+  "keywords": [
+    "did",
+    "web3"
+  ],
+  "license": "Apache-2.0",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArcBlock/did-connect"
+  },
+  "scripts": {
+    "lint": "eslint src tests",
+    "lint:fix": "eslint --fix src tests",
+    "prebuild": "npm run clean",
+    "build": "npm run types && tsc",
+    "watch": "tsc -b --watch",
+    "types": "ts-node scripts/types.js && sed -i.bak 's/unknown/string/g' ./src/types/index.ts && rm  ./src/types/index.ts.bak && prettier --write ./src/types/index.ts",
+    "check": "tsc --noEmit",
+    "clean": "rm -rf ./lib",
+    "test": "jest --forceExit",
+    "coverage": "yarn test --coverage"
+  }
+}
