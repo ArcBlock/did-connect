@@ -1,13 +1,14 @@
 /* eslint-disable react/require-default-props */
-import { TAnyObject, TSession, TLocaleCode, TI18nMessages } from '@did-connect/types';
+import { TAnyObject, TSession, TLocaleCode, TI18nMessages, SessionTimeout } from '@did-connect/types';
 import { createContext, Component, useContext } from 'react';
 import { AxiosInstance } from 'axios';
-import omit from 'lodash/omit';
 import Cookie from 'js-cookie';
 
 import { getCookieOptions } from '@arcblock/ux/lib/Util';
 import Center from '@arcblock/ux/lib/Center';
 import Spinner from '@arcblock/ux/lib/Spinner';
+
+import { TEventCallback } from '@did-connect/state';
 
 import Connect from '../Connect';
 import createService from '../Service';
@@ -65,13 +66,12 @@ const translations: I18nGroup = {
 
 const defaultProps = {
   locale: 'en',
-  action: 'login',
-  prefix: '/api/did',
+  relayUrl: '/api/connect/relay',
   appendAuthServicePrefix: false,
-  extraParams: {},
-  autoConnect: null,
+  autoConnect: true,
   autoDisconnect: true,
-  timeout: 5 * 60 * 1000,
+  autoLogin: false,
+  timeout: SessionTimeout,
   webWalletUrl: '',
   messages: null,
 };
@@ -79,16 +79,15 @@ const defaultProps = {
 export type ProviderProps = {
   children: React.ReactNode;
   serviceHost: string;
-  action?: string;
-  prefix?: string;
+  relayUrl?: string;
   appendAuthServicePrefix?: boolean;
   locale?: TLocaleCode;
-  timeout?: number;
+  timeout?: typeof SessionTimeout;
+  autoLogin?: boolean;
   autoConnect?: boolean;
   autoDisconnect?: boolean;
-  extraParams?: TAnyObject;
   webWalletUrl?: string;
-  messages?: I18nGroup | null;
+  messages?: I18nGroup;
 } & typeof defaultProps;
 
 export type ProviderState = {
@@ -119,6 +118,7 @@ const { Provider, Consumer } = SessionContext;
 
 const AUTH_SERVICE_PREFIX = '/.well-known/service';
 
+// FIXME: this may not work with blocklet-server anymore
 export default function createSessionContext(
   storageKey: string = 'login_token',
   storageEngine: TStorageEngineCode = 'ls',
@@ -145,11 +145,11 @@ export default function createSessionContext(
     constructor(props: ProviderProps) {
       super(props);
 
-      const { serviceHost, action } = this.props;
+      const { serviceHost } = this.props;
 
       this.service = createService(serviceHost, storage);
       this.state = {
-        action,
+        action: 'login',
         error: '',
         initialized: false,
         loading: false,
@@ -170,11 +170,11 @@ export default function createSessionContext(
     }
 
     get fullPrefix() {
-      const { appendAuthServicePrefix: appendPrefix, prefix } = this.props;
+      const { appendAuthServicePrefix: appendPrefix, relayUrl } = this.props;
       if (appendAuthServicePrefix && appendPrefix) {
-        return `${AUTH_SERVICE_PREFIX}${prefix}`;
+        return `${AUTH_SERVICE_PREFIX}${relayUrl}`;
       }
-      return prefix;
+      return relayUrl;
     }
 
     // 不可以直接个性 props.autoConnect (readonly)
@@ -233,9 +233,9 @@ export default function createSessionContext(
         }
 
         const { autoConnect } = this;
-        const prefix = this.fullPrefix;
+        const relayUrl = this.fullPrefix;
 
-        const { data, status } = await this.service.get(`${prefix}/session`.replace(/\/+/, '/'));
+        const { data, status } = await this.service.get(`${relayUrl}/session`.replace(/\/+/, '/'));
 
         if (status === 400) {
           removeToken();
@@ -360,11 +360,11 @@ export default function createSessionContext(
 
     render() {
       // @ts-ignore
-      const { children, locale, timeout, extraParams, webWalletUrl, messages, ...rest } = this.props;
+      const { children, locale, timeout, webWalletUrl, messages, ...rest } = this.props;
       const { autoConnect } = this;
       const { action, user, open, initialized, loading } = this.state;
 
-      const prefix = this.fullPrefix;
+      const relayUrl = this.fullPrefix;
 
       const state = {
         api: this.service,
@@ -389,32 +389,32 @@ export default function createSessionContext(
         );
       }
 
-      const TConnectMessage = messages || translations[action];
-      const callbacks: { [key: string]: Function } = {
+      const callbacks: { [key: string]: TEventCallback } = {
         login: this.onLogin,
         'switch-profile': this.onSwitchProfile,
         'switch-passport': this.onLogin,
       };
 
+      // FIXME: onConnect and onApprove callbacks
       return (
         <Provider value={state}>
           {!open && typeof children === 'function' ? (children as Function)(state) : children}
           <Connect
-            action={action}
+            key={action}
             locale={locale}
-            checkFn={this.service.get}
             onClose={() => this.onClose(action)}
-            onSuccess={callbacks[action]}
-            extraParams={extraParams}
-            checkTimeout={timeout}
+            onConnect={() => []}
+            onApprove={() => []}
+            onComplete={callbacks[action]}
+            timeout={timeout}
             webWalletUrl={webWalletUrl}
-            messages={TConnectMessage[locale]}
+            messages={messages || translations[action][locale]}
             popup
             open={open}
             // {...rest} 允许在使用 SessionProvider 时将一些额外的 props 传递到内部的 Connect 组件, 比如 dialogStyle
-            {...omit(rest, ['action'])}
-            // 注意 prefix 经过了特殊处理, 优先级高于 "...rest", 所以放在其后
-            prefix={prefix}
+            {...rest}
+            // 注意 relayUrl 经过了特殊处理, 优先级高于 "...rest", 所以放在其后
+            relayUrl={relayUrl}
           />
         </Provider>
       );

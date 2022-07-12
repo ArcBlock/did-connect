@@ -14,6 +14,7 @@ build:
 	@cd core/handler && npm run build
 	@cd core/state && npm run build
 	@cd relay/adapter-express && npm run build
+	@cd ux/react && npm run build
 
 init: install dep env
 	@echo "Initializing the repo..."

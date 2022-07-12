@@ -1,10 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src"],
-  "exclude": ["tests", "lib"],
+  "exclude": ["tests"],
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "lib": ["es6", "dom"],
-    "outDir": "lib"
+    "target": "es5",
+    "module": "esnext",
+    "lib": ["dom", "esnext"],
+    "declarationDir": ".",
+    "outDir": "/tmp/did-connect/react"
   }
 }

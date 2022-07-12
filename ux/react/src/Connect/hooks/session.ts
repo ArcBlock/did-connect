@@ -149,8 +149,8 @@ export function useSession({
 export function createSession({
   relayUrl,
   onCreate = noop,
-  onConnect = noop,
-  onApprove = noop,
+  onConnect = () => Promise.resolve([]),
+  onApprove = () => Promise.resolve({}),
   onComplete = noop,
   onTimeout = noop,
   onReject = noop,

@@ -10,23 +10,22 @@
   "author": "wangshijun<wangshijun2010@gmail.com>",
   "homepage": "https://github.com/ArcBlock/did-connect#readme",
   "license": "Apache-2.0",
-  "main": "lib/index.js",
-  "files": [
-    "lib",
-    "src"
-  ],
+  "main": "index.js",
+  "typings": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ArcBlock/did-connect.git"
   },
   "scripts": {
     "lint": "eslint src stories tests",
-    "build": "babel src --out-dir lib --copy-files",
-    "watch": "babel src --out-dir lib -w --copy-files",
+    "clean": "rm -rf lib",
+    "build": "npm run clean && npm run build:types && npm run build:code",
+    "build:code": "babel src --out-dir . --copy-files --extensions .js,.jsx,.ts,.tsx",
+    "build:types": "tsc",
+    "watch": "babel src --out-dir . -w --copy-files --extensions .js,.jsx,.ts,.tsx",
     "precommit": "CI=1 yarn test",
     "prepush": "CI=1 yarn test",
     "prepublish": "npm run build",
-    "build:ts": "rm -rf lib && tsc",
     "test": "jest --forceExit",
     "start": "blocklet dev",
     "storybook:deploy": "storybook-to-ghpages -e storybook-static",

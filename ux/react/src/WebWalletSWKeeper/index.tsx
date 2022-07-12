@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import useIdle from 'react-use/lib/useIdle';
 import useLocalStorage from 'react-use/lib/useLocalStorage';
 import { getWebWalletUrl, checkSameProtocol } from '../utils';
-import { TConnectProps } from '../types';
+import { TDialogProps } from '../types';
 
 // 默认最大空闲时间: 30min
 const DEFAULT_MAX_IDLE_TIME = 1000 * 60 * 30;
@@ -51,7 +51,7 @@ type KeeperProps = {
   maxIdleTime?: number;
 };
 
-type WrapperProps = TConnectProps & KeeperProps;
+type WrapperProps = TDialogProps & KeeperProps;
 
 // 该组件通过嵌入一个 web wallet iframe 帮助 web wallet service worker 延最大空闲时间
 export default function WebWalletSWKeeper({ webWalletUrl, maxIdleTime = DEFAULT_MAX_IDLE_TIME }: KeeperProps) {
