@@ -5,6 +5,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/did-connect.umd.js",
   "module": "./dist/did-connect.es.js",
   "exports": {
