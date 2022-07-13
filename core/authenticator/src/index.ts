@@ -5,7 +5,8 @@ import { sign, verify, decode, JwtBody } from '@arcblock/jwt';
 import { toBase58 } from '@ocap/util';
 import { toAddress } from '@arcblock/did';
 import { isValid, WalletObject } from '@ocap/wallet';
-import { AppInfo } from '@did-connect/types';
+import { AppInfo, isUrl } from '@did-connect/types';
+import { Promisable } from 'type-fest';
 import type {
   TLocaleCode,
   TAppInfo,
@@ -13,16 +14,20 @@ import type {
   TAuthResponse,
   TChainInfo,
   TSession,
-  TContext,
+  TAuthContext,
   TAnyRequest,
   TAnyResponse,
   TI18nMessages,
 } from '@did-connect/types';
 
-type AuthenticatorOptions = {
-  wallet: WalletObject;
-  appInfo: TAppInfo | Function;
-  chainInfo?: TChainInfo;
+export type TWalletInfoFn = (params: TAuthContext) => Promisable<WalletObject>;
+export type TAppInfoFn = (params: TAuthContext) => Promisable<TAppInfo>;
+export type TChainInfoFn = (params: TAuthContext) => Promisable<TChainInfo>;
+
+export type AuthenticatorOptions = {
+  wallet: WalletObject | TWalletInfoFn;
+  appInfo: TAppInfo | TAppInfoFn;
+  chainInfo?: TChainInfo | TChainInfoFn;
   timeout?: number;
 };
 
@@ -73,11 +78,11 @@ const errors: TI18nMessages = {
 };
 
 export class Authenticator {
-  readonly wallet: WalletObject;
+  readonly wallet: WalletObject | TWalletInfoFn;
 
-  readonly appInfo: TAppInfo | Function;
+  readonly appInfo: TAppInfo | TAppInfoFn;
 
-  readonly chainInfo: TChainInfo;
+  readonly chainInfo: TChainInfo | TChainInfoFn;
 
   readonly timeout: number;
 
@@ -103,7 +108,7 @@ export class Authenticator {
    * @param {object} context
    * @returns {object} { appPk, authInfo }
    */
-  signJson(data: TAppResponse, context: TContext): TAppResponseSigned {
+  async signJson(data: TAppResponse, context: TAuthContext): Promise<TAppResponseSigned> {
     const final: TAppResponse = { response: data.response ? data.response : data };
 
     // Attach protocol fields to the root
@@ -135,15 +140,11 @@ export class Authenticator {
       response,
     };
 
+    const wallet = await this.getWalletInfo(context);
+
     return {
-      appPk: toBase58(this.wallet.publicKey),
-      authInfo: sign(
-        this.wallet.address,
-        this.wallet.secretKey as string,
-        payload,
-        true,
-        didwallet ? didwallet.jwt : undefined
-      ),
+      appPk: toBase58(wallet.publicKey),
+      authInfo: sign(wallet.address, wallet.secretKey as string, payload, true, didwallet ? didwallet.jwt : undefined),
     };
   }
 
@@ -155,7 +156,7 @@ export class Authenticator {
    * @param {object} context - context
    * @returns {object} { appPk, authInfo }
    */
-  signClaims(claims: TAnyRequest[], context: TContext): TAppResponseSigned {
+  async signClaims(claims: TAnyRequest[], context: TAuthContext): Promise<TAppResponseSigned> {
     const { sessionId, session, didwallet } = context;
     const { authUrl, challenge, appInfo } = session as TSession;
 
@@ -175,21 +176,38 @@ export class Authenticator {
       url: nextUrl,
     };
 
+    const wallet = await this.getWalletInfo(context);
+
     return {
-      appPk: toBase58(this.wallet.publicKey),
-      authInfo: sign(this.wallet.address, this.wallet.secretKey as string, payload, true, didwallet.jwt),
+      appPk: toBase58(wallet.publicKey),
+      authInfo: sign(wallet.address, wallet.secretKey as string, payload, true, didwallet.jwt),
     };
+  }
+
+  async getWalletInfo(params: TAuthContext): Promise<WalletObject> {
+    if (typeof this.wallet === 'function') {
+      // @ts-ignore
+      const result: WalletObject = await this.tryWithTimeout<WalletObject>(() => this.wallet(params));
+      if (this._validateWallet(result)) {
+        return result;
+      }
+
+      throw new Error('Invalid wallet function provided');
+    }
+
+    return this.wallet;
   }
 
   /**
    * Determine appInfo on the fly
    */
-  async getAppInfo(context: TContext & { baseUrl: string }): Promise<TAppInfo> {
+  async getAppInfo(context: TAuthContext): Promise<TAppInfo> {
+    const wallet = await this.getWalletInfo(context);
     if (typeof this.appInfo === 'function') {
       // @ts-ignore
-      const info: TAppInfo = await this.tryWithTimeout(() => this.appInfo(context));
+      const info: TAppInfo = await this.tryWithTimeout<TAppInfo>(() => this.appInfo(context));
       if (!info.publisher) {
-        info.publisher = `did:abt:${this.wallet.address}`;
+        info.publisher = `did:abt:${wallet.address}`;
       }
 
       // @ts-ignore
@@ -197,10 +215,20 @@ export class Authenticator {
     }
 
     if (this.appInfo && !this.appInfo.publisher) {
-      this.appInfo.publisher = `did:abt:${this.wallet.address}`;
+      this.appInfo.publisher = `did:abt:${wallet.address}`;
     }
 
     return this.appInfo;
+  }
+
+  async getChainInfo(params: TAuthContext): Promise<TChainInfo> {
+    if (typeof this.chainInfo === 'function') {
+      // @ts-ignore
+      const result: TChainInfo = await this.tryWithTimeout<TChainInfo>(() => this.chainInfo(params));
+      return isUrl(result.host) ? result : DEFAULT_CHAIN_INFO;
+    }
+
+    return this.chainInfo || DEFAULT_CHAIN_INFO;
   }
 
   /**
@@ -239,7 +267,7 @@ export class Authenticator {
     });
   }
 
-  _validateAppInfo(info: TAppInfo | Function): TAppInfo | Function {
+  _validateAppInfo(info: TAppInfo | TAppInfoFn): TAppInfo | TAppInfoFn {
     if (typeof info === 'function') {
       return info;
     }
@@ -255,9 +283,13 @@ export class Authenticator {
     return value;
   }
 
-  _validateWallet(wallet: WalletObject) {
+  _validateWallet(wallet: WalletObject | TWalletInfoFn): WalletObject | TWalletInfoFn {
     if (!wallet) {
       throw new Error('Authenticator cannot work without wallet');
+    }
+
+    if (typeof wallet === 'function') {
+      return wallet;
     }
 
     if (isValid(wallet)) {
@@ -303,7 +335,7 @@ export class Authenticator {
     });
   }
 
-  tryWithTimeout(asyncFn: Function): Promise<TAppInfo> {
+  tryWithTimeout<T>(asyncFn: Function): Promise<T> {
     if (typeof asyncFn !== 'function') {
       throw new Error('asyncFn must be a valid function');
     }

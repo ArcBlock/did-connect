@@ -2,16 +2,20 @@
 import get from 'lodash/get';
 import type { THandlers, TSessionUpdateResult } from '@did-connect/handler';
 import type { Request, Response, NextFunction } from 'express';
-import type { TContext, TLocaleCode, TSession, TWalletInfo, TAnyObject } from '@did-connect/types';
+import type { TAppResponseSigned } from '@did-connect/authenticator';
+import type { TAuthContext, TLocaleCode, TSession, TWalletInfo, TAnyObject } from '@did-connect/types';
 
 export interface TRequest extends Request {
   query: TAnyObject;
   body: TAnyObject;
   cookies: TAnyObject;
-  context: TContext;
+  context: TAuthContext;
+  [key: string]: any;
 }
 
-export interface TResponse extends Response {}
+export interface TResponse extends Response {
+  [key: string]: any;
+}
 
 export function attachHandlers(router: any, handlers: THandlers, prefix: string = '/api/connect/relay') {
   const {
@@ -67,7 +71,7 @@ export function attachHandlers(router: any, handlers: THandlers, prefix: string 
         .split('-')
         .shift();
 
-      const context: TContext = {
+      const context: TAuthContext = {
         didwallet,
         body: req.method === 'GET' ? req.query : req.body,
         headers: req.headers,
@@ -77,6 +81,7 @@ export function attachHandlers(router: any, handlers: THandlers, prefix: string 
         signerPk: req.get('x-updater-pk') || '',
         signerToken: req.get('x-updater-token') || '',
         previousConnected: getPreviousConnected(req),
+        request: req,
       };
 
       req.context = context;
@@ -109,19 +114,19 @@ export function attachHandlers(router: any, handlers: THandlers, prefix: string 
 
   // wallet: get requested claims
   router.get(`${prefix}/auth`, ensureContext(true), async (req: TRequest, res: TResponse) => {
-    const result = await handleClaimRequest(req.context);
+    const result: TAppResponseSigned = await handleClaimRequest(req.context);
     res.jsonp(result);
   });
 
   // Wallet: submit requested claims
   router.post(`${prefix}/auth`, ensureContext(true), async (req: TRequest, res: TResponse) => {
-    const result = await handleClaimResponse(req.context);
+    const result: TAppResponseSigned = await handleClaimResponse(req.context);
     res.jsonp(result);
   });
 
   // Wallet: submit auth response for web wallet
   router.get(`${prefix}/auth/submit`, ensureContext(true), async (req: TRequest, res: TResponse) => {
-    const result = await handleClaimResponse(req.context);
+    const result: TAppResponseSigned = await handleClaimResponse(req.context);
     res.jsonp(result);
   });
 }

@@ -5,7 +5,7 @@ import { types } from '@ocap/mcrypto';
 import { verify, decode, JwtBody } from '@arcblock/jwt';
 import { fromRandom, WalletType } from '@ocap/wallet';
 import { toBase58 } from '@ocap/util';
-import { TContext, TAnyRequest } from '@did-connect/types';
+import { TAuthContext, TAppInfo, TAnyRequest } from '@did-connect/types';
 
 import { Authenticator } from '../src';
 
@@ -32,7 +32,7 @@ const claims: TAnyRequest[] = [
   },
 ];
 
-const context: TContext = {
+const context: TAuthContext = {
   didwallet: { os: 'web', version: '1.1.0', jwt: '1.1.0' },
   body: {},
   headers: {},
@@ -75,6 +75,15 @@ const context: TContext = {
       wallet: 10000,
     },
   },
+  baseUrl: '',
+  request: {},
+};
+
+const appInfo = {
+  name: 'DID Wallet Demo',
+  description: 'Demo application to show the potential of DID Wallet',
+  icon: 'https://arcblock.oss-cn-beijing.aliyuncs.com/images/wallet-round.png',
+  link: 'http://beta.abtnetwork.io/webapp',
 };
 
 describe('Authenticator', () => {
@@ -89,12 +98,7 @@ describe('Authenticator', () => {
 
   const auth = new Authenticator({
     wallet,
-    appInfo: {
-      name: 'DID Wallet Demo',
-      description: 'Demo application to show the potential of DID Wallet',
-      icon: 'https://arcblock.oss-cn-beijing.aliyuncs.com/images/wallet-round.png',
-      link: 'http://beta.abtnetwork.io/webapp',
-    },
+    appInfo,
     chainInfo: {
       host: chainHost,
       id: chainId,
@@ -123,6 +127,25 @@ describe('Authenticator', () => {
     } catch (err) {
       expect(err).toBeTruthy();
     }
+  });
+
+  test('should function params work as expected', async () => {
+    const tmp = new Authenticator({
+      wallet: () => wallet,
+      appInfo: () => appInfo,
+      chainInfo: () => ({
+        host: chainHost,
+        id: chainId,
+      }),
+      timeout: 100,
+    });
+
+    // @ts-ignore
+    expect(await tmp.getWalletInfo({})).toEqual(wallet);
+    // @ts-ignore
+    expect((await tmp.getAppInfo({})).name).toEqual(appInfo.name);
+    // @ts-ignore
+    expect(await tmp.getChainInfo({})).toEqual({ host: chainHost, id: chainId });
   });
 
   test('should sign correct claims and verify those claims', async () => {
@@ -196,7 +219,7 @@ describe('Authenticator', () => {
       appInfo: () =>
         new Promise((resolve) => {
           setTimeout(() => {
-            resolve({});
+            resolve(auth.appInfo as TAppInfo);
           }, 200);
         }),
       chainInfo: {

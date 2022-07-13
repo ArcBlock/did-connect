@@ -199,9 +199,11 @@ describe('Handlers', () => {
     const authUrl = joinUrl(baseUrl, `/api/connect/relay/auth?sid=${sessionId}`);
     const updateSession = (updates: any, wallet: WalletObject = updater, pk?: any, token?: any, hash?: any) =>
       doSignedRequest(updates, wallet, `/api/connect/relay/session?sid=${sessionId}`, 'PUT', pk, token, hash);
+    const deleteSession = (wallet: WalletObject = updater, pk?: any, token?: any, hash?: any) =>
+      doSignedRequest({}, wallet, `/api/connect/relay/session?sid=${sessionId}`, 'DELETE', pk, token, hash);
     const getSession = () => api.get(`/api/connect/relay/session?sid=${sessionId}`).then((x: any) => x.data);
 
-    return { sessionId, updaterPk, authUrl, updateSession, getSession };
+    return { sessionId, updaterPk, authUrl, updateSession, deleteSession, getSession };
   };
 
   const getAuthUrl = (authUrl: string): string => {
@@ -1349,7 +1351,7 @@ describe('Handlers', () => {
   const prepareEvilTest = async () => {
     let session: TestSession = {};
 
-    const { sessionId, updaterPk, authUrl, updateSession } = prepareTest();
+    const { sessionId, updaterPk, authUrl, updateSession, deleteSession } = prepareTest();
 
     // 1. create session
     session = await doSignedRequest({ sessionId, updaterPk, authUrl, timeout }, updater);
@@ -1358,13 +1360,25 @@ describe('Handlers', () => {
     expect(session.strategy).toEqual('default');
     expect(session.status).toEqual('created');
 
-    return { sessionId, updaterPk, authUrl, updateSession };
+    return { sessionId, updaterPk, authUrl, updateSession, deleteSession };
   };
 
   test('should throw onUpdate when updater mismatch', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, evil);
     expect(res.error).toMatch('Invalid updater');
+  });
+
+  test('should throw onDelete when updater mismatch', async () => {
+    const { deleteSession } = await prepareEvilTest();
+    const res = await deleteSession(evil);
+    expect(res.error).toMatch('Invalid updater');
+  });
+
+  test.skip('should not throw onDelete when updater match', async () => {
+    const { deleteSession } = prepareTest();
+    const res = await deleteSession();
+    expect(res.error).toMatch('OK');
   });
 
   test('should throw onUpdate when status not valid', async () => {

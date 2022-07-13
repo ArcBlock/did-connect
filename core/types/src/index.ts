@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/indent */
 import { Joi } from '@arcblock/validator';
 import { LiteralUnion } from 'type-fest';
-import { TAppInfo, TChainInfo, TWalletInfo, TSession, TAnyResponse, TAnyRequest } from './types';
+import { TAppInfo, TChainInfo, TWalletInfo, TSession, TContext, TAnyResponse, TAnyRequest } from './types';
 import {
   AuthPrincipalRequest,
   AssetRequest,
@@ -46,6 +46,11 @@ export type TAuthResponse = TAppResponse & {
   url: string;
 };
 
+export type TAuthContext = TContext & {
+  baseUrl?: string;
+  request: TAnyObject;
+};
+
 export interface TEvent extends Omit<TSession, 'responseClaims'> {
   type: string;
   data: any;
@@ -75,7 +80,10 @@ export const SessionTimeout = {
 } as const;
 
 const urlSchema = Joi.string().uri({ scheme: ['http', 'https'] }).required(); // prettier-ignore
-export function isUrl(str: string): boolean {
+export function isUrl(str: any): boolean {
+  if (typeof str !== 'string') {
+    return false;
+  }
   return !urlSchema.validate(str).error;
 }
 

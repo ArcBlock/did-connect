@@ -19,6 +19,7 @@ import type { TAppResponseSigned, TWalletResponseSigned } from '@did-connect/aut
 import type {
   TSession,
   TContext,
+  TAuthContext,
   TWalletInfo,
   TLocaleCode,
   TAnyObject,
@@ -71,17 +72,17 @@ export interface THandlers {
   handleSessionRead(sessionId: string): Promisable<TSession>;
   handleSessionUpdate(context: TContext): Promisable<TSessionUpdateResult>;
   handleSessionDelete(context: TContext): Promisable<TSessionUpdateResult>;
-  handleClaimRequest(context: TContext): Promisable<TAppResponseSigned>;
-  handleClaimResponse(context: TContext): Promisable<TAppResponseSigned>;
+  handleClaimRequest(context: TAuthContext): Promisable<TAppResponseSigned>;
+  handleClaimResponse(context: TAuthContext): Promisable<TAppResponseSigned>;
   parseWalletUA(ua: string): TWalletInfo;
   wsServer: any;
 }
 
-export type TSessionCreateContext = TContext & {
+export type TSessionCreateContext = TAuthContext & {
   body: TSession;
 };
 
-export type TSessionUpdateContext = TContext & {
+export type TSessionUpdateContext = TAuthContext & {
   session: TSession;
   body: TSession & {
     status?: 'error' | 'canceled';
@@ -89,7 +90,7 @@ export type TSessionUpdateContext = TContext & {
   };
 };
 
-export type TWalletHandlerContext = TContext & {
+export type TWalletHandlerContext = TAuthContext & {
   session: TSession;
   body: TWalletResponseSigned;
   locale: TLocaleCode;
@@ -187,7 +188,6 @@ export function createHandlers({
       challenge: getStepChallenge(),
       autoConnect,
       onlyConnect,
-      // FIXME: app link should be updated according to blocklet env?
       appInfo: await authenticator.getAppInfo({ ...context, baseUrl: new URL(authUrl).origin }),
       previousConnected: context.previousConnected,
       currentConnected: null,
@@ -275,7 +275,7 @@ export function createHandlers({
     const { session, sessionId } = context;
     const result = verifyUpdater(context, session.updaterPk);
     if (result.error) {
-      throw new CustomError(result.code, result.error);
+      return result;
     }
 
     await storage.delete(sessionId);
