@@ -472,7 +472,7 @@ storiesOf('DID-Connect/Examples', module)
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
       const app = fromAddress(ctx.appInfo.publisher.split(':').pop());
-      const user = fromPublicKey(e.userPk);
+      const user = fromPublicKey(e.currentConnected.userPk);
       const value = (await client.fromTokenToUnit(1)).toString(10);
       const { buffer: tx } = await client.encodeTransferV2Tx({
         tx: {
@@ -556,7 +556,7 @@ storiesOf('DID-Connect/Examples', module)
     const handleConnect = async (ctx, e) => {
       action('onConnect')(ctx, e);
       const app = fromAddress(ctx.appInfo.publisher.split(':').pop());
-      const user = fromPublicKey(e.userPk);
+      const user = fromPublicKey(e.currentConnected.userPk);
       const value = (await client.fromTokenToUnit(1)).toString(10);
       const { buffer: tx } = await client.encodeTransferV3Tx({
         tx: {
