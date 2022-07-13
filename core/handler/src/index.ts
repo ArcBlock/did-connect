@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/return-await */
 import pick from 'lodash/pick';
 import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
