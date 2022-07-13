@@ -1,3 +1,7 @@
+## 2.0.5 (July 13, 2022)
+
+- fix: connect examples
+
 ## 2.0.4 (July 13, 2022)
 
 - feat: make authenticator compatible with v1
