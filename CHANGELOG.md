@@ -1,3 +1,7 @@
+## 2.0.4 (July 13, 2022)
+
+- feat: make authenticator compatible with v1
+
 ## 2.0.3 (July 13, 2022)
 
 - fix: relay not working in story book
