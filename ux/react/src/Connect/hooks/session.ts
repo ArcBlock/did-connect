@@ -11,7 +11,7 @@ import { useMachine } from './machine';
 import { THookProps, THookResult } from '../../types';
 
 // 从 url params 中获取已存在的 session (sessionId & connect url)
-const parseExistingSession = (sid?: string): { sessionId?: string; url?: string; error?: string } => {
+const parseExistingSession = (sid?: string): { sessionId: string } => {
   try {
     if (sid) {
       return { sessionId: sid };
@@ -19,11 +19,11 @@ const parseExistingSession = (sid?: string): { sessionId?: string; url?: string;
     const url = new URL(window.location.href);
     const connectUrlParam = url.searchParams.get('__connect_url__');
     if (!connectUrlParam) {
-      return {};
+      return { sessionId: '' };
     }
     const connectUrl = decodeConnectUrl(connectUrlParam);
     const sessionId = parseSessionId(connectUrl);
-    return { sessionId, url: connectUrl };
+    return { sessionId };
   } catch (err: any) {
     throw new Error(`Can not parse existing session id: ${err.message}`);
   }
@@ -64,7 +64,7 @@ export function useSession({
     () =>
       createStateMachine({
         relayUrl,
-        sessionId: existingSession.sessionId || '',
+        sessionId: existingSession.sessionId,
         // initial = 'start', // we maybe reusing existing session
         strategy,
         // @ts-ignore
@@ -134,7 +134,7 @@ export function useSession({
       status: value as TSessionStatus,
       context,
       deepLink,
-      existing: !!existingSession,
+      existing: !!existingSession.sessionId,
     },
     dispatch: send,
     generate,
