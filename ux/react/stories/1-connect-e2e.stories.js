@@ -24,7 +24,6 @@ const baseUrl =
     ? '/relay'
     : 'https://dfe45b38-znkntry8ptmrcty8b2mnmapp4bs3bx8n844d.did.abtnet.io';
 const relayUrl = joinUrl(baseUrl, '/api/connect/relay');
-const webWalletUrl = `${window.location.protocol}//wallet.staging.arcblock.io`;
 const chainHost = 'https://beta.abtnetwork.io/api/';
 const connectUrl = joinUrl(baseUrl, '/connect/profile');
 const approveUrl = joinUrl(baseUrl, '/approve/profile');
@@ -98,7 +97,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm login on your DID Wallet',
             success: 'You profile accepted',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -145,7 +143,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm operation on your DID Wallet',
             success: 'You have successfully connected!',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -192,7 +189,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm on your DID Wallet',
             success: 'Profile accepted',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -251,7 +247,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm on your DID Wallet',
             success: 'NFT accepted',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -319,7 +314,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm on your DID Wallet',
             success: 'VC accepted',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -383,7 +377,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm on your DID Wallet',
             success: 'Sig accepted',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -454,7 +447,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm on your DID Wallet',
             success: 'Signature accepted',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -493,7 +485,7 @@ storiesOf('DID-Connect/Examples', module)
             type: 'signature',
             typeUrl: 'fg:t:transaction',
             origin: toBase58(tx),
-            description: 'Please sign this transaction to transfer 1 TBA to the app',
+            description: 'Please sign this transaction to pay 1 TBA to the app with current account',
             chainInfo: {
               host: chainHost,
             },
@@ -538,7 +530,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm on your DID Wallet',
             success: 'Tx signed but not broadcasted',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -579,7 +570,7 @@ storiesOf('DID-Connect/Examples', module)
           {
             type: 'prepareTx',
             partialTx: toBase58(tx),
-            description: 'Please sign this transaction to transfer 1 TBA to the app',
+            description: 'Please sign this transaction to pay 1 TBA to the app with any account',
             requirement: {
               tokens: [
                 {
@@ -631,7 +622,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm on your DID Wallet',
             success: 'Payment signed but not broadcasted',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -693,7 +683,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm on your DID Wallet',
             success: 'Claims accepted',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -737,7 +726,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm on your DID Wallet',
             success: 'Profile accepted',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -797,7 +785,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm on your DID Wallet',
             success: 'Claims accepted',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -869,7 +856,6 @@ storiesOf('DID-Connect/Examples', module)
     //       confirm: 'Confirm on your DID Wallet',
     //       success: 'Claims accepted',
     //     }}
-    //     webWalletUrl={webWalletUrl}
     //     relayUrl={relayUrl}
     //   />
     // )}
@@ -902,7 +888,6 @@ storiesOf('DID-Connect/Examples', module)
             confirm: 'Confirm on your DID Wallet',
             success: 'Claims accepted',
           }}
-          webWalletUrl={webWalletUrl}
           relayUrl={relayUrl}
         />
       </TestContainer>
@@ -964,7 +949,6 @@ storiesOf('DID-Connect/Examples', module)
               confirm: 'Confirm on your DID Wallet',
               success: 'Profile accepted',
             }}
-            webWalletUrl={webWalletUrl}
             relayUrl={relayUrl}
           />
         )}
