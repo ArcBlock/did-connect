@@ -171,7 +171,7 @@ export class Authenticator {
       action: 'responseAuth',
       challenge,
       appInfo,
-      chainInfo: claimWithChainInfo?.chainInfo || DEFAULT_CHAIN_INFO,
+      chainInfo: claimWithChainInfo?.chainInfo || (await this.getChainInfo(context)),
       requestedClaims: claims,
       url: nextUrl,
     };
