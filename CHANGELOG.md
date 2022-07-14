@@ -1,3 +1,8 @@
+## 2.0.9 (July 15, 2022)
+
+- feat(react): add theme wrapper component
+- fix(react): incorrect existing session check
+
 ## 2.0.8 (July 14, 2022)
 
 - chore: respect web wallet url
