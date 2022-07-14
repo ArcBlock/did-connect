@@ -493,7 +493,7 @@ storiesOf('DID-Connect/Examples', module)
             type: 'signature',
             typeUrl: 'fg:t:transaction',
             origin: toBase58(tx),
-            description: 'Please sign this transaction to transfer 1 TBA to the app',
+            description: 'Please sign this transaction to pay 1 TBA to the app with current account',
             chainInfo: {
               host: chainHost,
             },
@@ -579,7 +579,7 @@ storiesOf('DID-Connect/Examples', module)
           {
             type: 'prepareTx',
             partialTx: toBase58(tx),
-            description: 'Please sign this transaction to transfer 1 TBA to the app',
+            description: 'Please sign this transaction to pay 1 TBA to the app with any account',
             requirement: {
               tokens: [
                 {
