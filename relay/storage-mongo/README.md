@@ -6,6 +6,7 @@
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Install](#install)
 - [Usage](#usage)
 - [Contributors](#contributors)
@@ -21,7 +22,7 @@ yarn add @did-connect/storage-mongo
 ## Usage
 
 ```js
-const MongoStorage = require('@did-connect/storage-mongo');
+const { MongoStorage } = require('@did-connect/storage-mongo');
 
 const storage = new MongoStorage({
   url: 'mongodb://localhost/forge-web-starter',

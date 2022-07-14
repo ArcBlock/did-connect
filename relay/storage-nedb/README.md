@@ -6,6 +6,7 @@
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Install](#install)
 - [Usage](#usage)
 - [Contributors](#contributors)
@@ -21,9 +22,9 @@ yarn add @did-connect/storage-nedb
 ## Usage
 
 ```js
-const DiskStorage = require('@did-connect/storage-nedb');
+const { NedbStorage } = require('@did-connect/storage-nedb');
 
-const storage = new DiskStorage({
+const storage = new NedbStorage({
   dbPath: '/path/to/db',
 });
 
