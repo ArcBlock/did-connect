@@ -27,7 +27,7 @@
   "dependencies": {
     "@arcblock/did-motif": "^1.1.10",
     "@arcblock/event-client": "^1.6.3",
-    "@arcblock/ux": "^2.1.58",
+    "@arcblock/ux": "^2.1.59",
     "@solana/qr-code-styling": "1.6.0-beta.0",
     "@vueuse/core": "^8.5.0",
     "buffer": "^6.0.3",
