@@ -1,11 +1,10 @@
-# [**@did-connect/storage-memory**](https://github.com/ArcBlock/did-connect)
-
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 > Storage engine that uses mongo to store data, implements interfaces defined in `@did-connect/storage`.
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Install](#install)
 - [Usage](#usage)
 - [Contributors](#contributors)
@@ -21,7 +20,7 @@ yarn add @did-connect/storage-memory
 ## Usage
 
 ```js
-const MemoryStorage = require('@did-connect/storage-memory');
+const { MemoryStorage } = require('@did-connect/storage-memory');
 
 const storage = new MemoryStorage();
 
