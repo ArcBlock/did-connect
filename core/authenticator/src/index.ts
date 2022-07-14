@@ -164,14 +164,14 @@ export class Authenticator {
     tmp.searchParams.set('sid', sessionId);
     const nextUrl = tmp.href;
 
-    // TODO: perhaps we should set and respect chainInfo in each claim
+    // TODO: we should set and respect chainInfo in each claim in future
     const claimWithChainInfo = claims.find((x: TAnyRequest) => x.chainInfo);
 
     const payload: Partial<TAuthResponse> = {
       action: 'responseAuth',
       challenge,
       appInfo,
-      chainInfo: claimWithChainInfo ? claimWithChainInfo.chainInfo : DEFAULT_CHAIN_INFO,
+      chainInfo: claimWithChainInfo?.chainInfo || DEFAULT_CHAIN_INFO,
       requestedClaims: claims,
       url: nextUrl,
     };

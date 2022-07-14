@@ -17,7 +17,6 @@ const type = WalletType({
 
 const wallet = fromRandom(type);
 const chainHost = 'https://beta.abtnetwork.io/api';
-const chainId = 'beta';
 
 const sleep = (ms: number) =>
   new Promise((resolve) => {
@@ -96,20 +95,13 @@ describe('Authenticator', () => {
     expect(() => new Authenticator({ wallet, appInfo: {} })).toThrow(/appInfo/);
   });
 
-  const auth = new Authenticator({
-    wallet,
-    appInfo,
-    chainInfo: {
-      host: chainHost,
-      id: chainId,
-    },
-    timeout: 100,
-  });
+  const auth = new Authenticator({ wallet, appInfo, timeout: 100 });
 
   test('should create instance with certain methods', () => {
     expect(typeof auth.verify).toEqual('function');
     expect(typeof auth.signJson).toEqual('function');
     expect(typeof auth.signClaims).toEqual('function');
+    expect(auth.chainInfo).toEqual({ host: 'none' });
   });
 
   test('should throw if sign without claims', async () => {
@@ -135,7 +127,6 @@ describe('Authenticator', () => {
       appInfo: () => appInfo,
       chainInfo: () => ({
         host: chainHost,
-        id: chainId,
       }),
       timeout: 100,
     });
@@ -145,13 +136,17 @@ describe('Authenticator', () => {
     // @ts-ignore
     expect((await tmp.getAppInfo({})).name).toEqual(appInfo.name);
     // @ts-ignore
-    expect(await tmp.getChainInfo({})).toEqual({ host: chainHost, id: chainId });
+    expect(await tmp.getChainInfo({})).toEqual({ host: chainHost });
   });
 
   test('should sign correct claims and verify those claims', async () => {
-    const signed = await auth.signClaims(claims, context);
+    let signed = await auth.signClaims(claims, context);
     expect(signed.appPk).toEqual(toBase58(wallet.publicKey));
     expect(verify(signed.authInfo, wallet.publicKey)).toBeTruthy();
+
+    signed = await auth.signClaims(claims, context);
+    const clientSigned = { userPk: signed.appPk, userInfo: signed.authInfo, token: '123' };
+    expect(await auth.verify(clientSigned)).toBeTruthy();
   });
 
   test('should signJson work as expected', async () => {
@@ -192,10 +187,26 @@ describe('Authenticator', () => {
     expect(decoded.nextWorkflow).toEqual('value');
   });
 
-  test('should be able to verify client signed', async () => {
-    const signed = await auth.signClaims(claims, context);
-    const clientSigned = { userPk: signed.appPk, userInfo: signed.authInfo, token: '123' };
-    expect(await auth.verify(clientSigned)).toBeTruthy();
+  test('should sign correct chainInfo on sign', async () => {
+    // should respect chainInfo from authenticator
+    let signed = await auth.signClaims(claims, context);
+    const decoded: JwtBody = decode(signed.authInfo, true);
+    expect(decoded.chainInfo).toEqual({ host: 'none' });
+
+    // should respect chainInfo from claim
+    signed = await auth.signClaims(
+      [
+        {
+          type: 'profile',
+          items: ['fullName', 'email'],
+          description: 'Please provide these info to continue',
+          chainInfo: { host: chainHost },
+        },
+      ],
+      context
+    );
+    const decoded3: JwtBody = decode(signed.authInfo, true);
+    expect(decoded3.chainInfo).toEqual({ host: chainHost });
   });
 
   test('should _validateAppInfo work', () => {
@@ -224,7 +235,6 @@ describe('Authenticator', () => {
         }),
       chainInfo: {
         host: chainHost,
-        id: chainId,
       },
     });
 

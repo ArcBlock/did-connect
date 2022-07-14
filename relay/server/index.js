@@ -23,6 +23,9 @@ const authenticator = new Authenticator({
     subscriptionEndpoint: '/api/websocket',
     nodeDid: process.env.ABT_NODE_DID,
   },
+  chainInfo: {
+    host: process.env.CHAIN_HOST || 'none',
+  },
 });
 
 const noop = () => null;
