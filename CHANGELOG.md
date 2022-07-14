@@ -1,3 +1,9 @@
+## 2.0.6 (July 14, 2022)
+
+- chore: polish handler types
+- chore: update deps and polish readme
+- chore: cleanup storybook scripts
+
 ## 2.0.5 (July 13, 2022)
 
 - fix: connect examples
