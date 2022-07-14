@@ -66,23 +66,11 @@ export type TLogger = {
   warn(...args: any[]): void;
 };
 
-export type TSessionUpdateResult = TSession | { code: string; error?: string };
-
-export interface THandlers {
-  handleSessionCreate(context: TSessionCreateContext): Promisable<TSessionUpdateResult>;
-  handleSessionRead(sessionId: string): Promisable<TSession>;
-  handleSessionUpdate(context: TSessionUpdateContext): Promisable<TSessionUpdateResult>;
-  handleSessionDelete(context: TSessionUpdateContext): Promisable<TSessionUpdateResult>;
-  handleClaimRequest(context: TWalletHandlerContext): Promisable<TAppResponseSigned>;
-  handleClaimResponse(context: TWalletHandlerContext): Promisable<TAppResponseSigned>;
-  parseWalletUA(ua: string): TWalletInfo;
-  wsServer: any;
-}
-
 export type TSessionCreateContext = TAuthContext & {
   body: TSession;
 };
 
+export type TSessionUpdateResult = TSession | { code: string; error?: string };
 export type TSessionUpdateContext = TAuthContext & {
   session: TSession;
   body: TSession & {
@@ -96,6 +84,17 @@ export type TWalletHandlerContext = TAuthContext & {
   body: TWalletResponseSigned;
   locale: TLocaleCode;
 };
+
+export interface THandlers {
+  handleSessionCreate(context: TSessionCreateContext): Promisable<TSessionUpdateResult>;
+  handleSessionRead(sessionId: string): Promisable<TSession>;
+  handleSessionUpdate(context: TSessionUpdateContext): Promisable<TSessionUpdateResult>;
+  handleSessionDelete(context: TSessionUpdateContext): Promisable<TSessionUpdateResult>;
+  handleClaimRequest(context: TWalletHandlerContext): Promisable<TAppResponseSigned>;
+  handleClaimResponse(context: TWalletHandlerContext): Promisable<TAppResponseSigned>;
+  parseWalletUA(ua: string): TWalletInfo;
+  wsServer: any;
+}
 
 export function createSocketServer(logger: TLogger, pathname: string) {
   return new WsServer({ logger, pathname });

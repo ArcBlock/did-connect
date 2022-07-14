@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/indent */
 import get from 'lodash/get';
-import type { THandlers, TSessionUpdateResult } from '@did-connect/handler';
+import type {
+  THandlers,
+  TSessionUpdateContext,
+  TSessionCreateContext,
+  TWalletHandlerContext,
+  TSessionUpdateResult,
+} from '@did-connect/handler';
 import type { Request, Response, NextFunction } from 'express';
 import type { TAppResponseSigned } from '@did-connect/authenticator';
 import type { TAuthContext, TLocaleCode, TSession, TWalletInfo, TAnyObject } from '@did-connect/types';
@@ -71,7 +77,7 @@ export function attachHandlers(router: any, handlers: THandlers, prefix: string 
         .split('-')
         .shift();
 
-      const context: TAuthContext = {
+      const context = {
         didwallet,
         body: req.method === 'GET' ? req.query : req.body,
         headers: req.headers,
@@ -91,7 +97,7 @@ export function attachHandlers(router: any, handlers: THandlers, prefix: string 
 
   // web: create new session
   router.post(`${prefix}/session`, ensureContext(false), async (req: TRequest, res: TResponse) => {
-    const result: TSessionUpdateResult = await handleSessionCreate(req.context);
+    const result: TSessionUpdateResult = await handleSessionCreate(req.context as TSessionCreateContext);
     res.jsonp(result);
   });
 
@@ -102,31 +108,31 @@ export function attachHandlers(router: any, handlers: THandlers, prefix: string 
 
   // web: update session
   router.put(`${prefix}/session`, ensureContext(true), async (req: TRequest, res: TResponse) => {
-    const result: TSessionUpdateResult = await handleSessionUpdate(req.context);
+    const result: TSessionUpdateResult = await handleSessionUpdate(req.context as TSessionUpdateContext);
     res.jsonp(result);
   });
 
   // web: delete session
   router.delete(`${prefix}/session`, ensureContext(true), async (req: TRequest, res: TResponse) => {
-    const result: TSessionUpdateResult = await handleSessionDelete(req.context);
+    const result: TSessionUpdateResult = await handleSessionDelete(req.context as TSessionUpdateContext);
     res.jsonp(result);
   });
 
   // wallet: get requested claims
   router.get(`${prefix}/auth`, ensureContext(true), async (req: TRequest, res: TResponse) => {
-    const result: TAppResponseSigned = await handleClaimRequest(req.context);
+    const result: TAppResponseSigned = await handleClaimRequest(req.context as TWalletHandlerContext);
     res.jsonp(result);
   });
 
   // Wallet: submit requested claims
   router.post(`${prefix}/auth`, ensureContext(true), async (req: TRequest, res: TResponse) => {
-    const result: TAppResponseSigned = await handleClaimResponse(req.context);
+    const result: TAppResponseSigned = await handleClaimResponse(req.context as TWalletHandlerContext);
     res.jsonp(result);
   });
 
   // Wallet: submit auth response for web wallet
   router.get(`${prefix}/auth/submit`, ensureContext(true), async (req: TRequest, res: TResponse) => {
-    const result: TAppResponseSigned = await handleClaimResponse(req.context);
+    const result: TAppResponseSigned = await handleClaimResponse(req.context as TWalletHandlerContext);
     res.jsonp(result);
   });
 }
