@@ -69,12 +69,12 @@ export type TLogger = {
 export type TSessionUpdateResult = TSession | { code: string; error?: string };
 
 export interface THandlers {
-  handleSessionCreate(context: TContext): Promisable<TSessionUpdateResult>;
+  handleSessionCreate(context: TSessionCreateContext): Promisable<TSessionUpdateResult>;
   handleSessionRead(sessionId: string): Promisable<TSession>;
-  handleSessionUpdate(context: TContext): Promisable<TSessionUpdateResult>;
-  handleSessionDelete(context: TContext): Promisable<TSessionUpdateResult>;
-  handleClaimRequest(context: TAuthContext): Promisable<TAppResponseSigned>;
-  handleClaimResponse(context: TAuthContext): Promisable<TAppResponseSigned>;
+  handleSessionUpdate(context: TSessionUpdateContext): Promisable<TSessionUpdateResult>;
+  handleSessionDelete(context: TSessionUpdateContext): Promisable<TSessionUpdateResult>;
+  handleClaimRequest(context: TWalletHandlerContext): Promisable<TAppResponseSigned>;
+  handleClaimResponse(context: TWalletHandlerContext): Promisable<TAppResponseSigned>;
   parseWalletUA(ua: string): TWalletInfo;
   wsServer: any;
 }
