@@ -1,3 +1,7 @@
+## 2.0.7 (July 14, 2022)
+
+- fix: should use global chainInfo as fallback
+
 ## 2.0.6 (July 14, 2022)
 
 - chore: polish handler types
