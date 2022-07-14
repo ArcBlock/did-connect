@@ -30,7 +30,7 @@
     "start": "blocklet dev",
     "storybook:clean": "rm -rf dist && mkdir dist",
     "storybook:build": "npm run storybook:clean && NODE_ENV=production build-storybook --quiet --output-dir dist",
-    "storybook:start": "start-storybook -s ./static -p $BLOCKLET_PORT",
+    "storybook:start": "start-storybook -p $BLOCKLET_PORT",
     "bundle": "npm run storybook:build && NODE_ENV=production blocklet bundle --zip --create-release --monorepo",
     "deploy": "npm run bundle && blocklet deploy .blocklet/bundle"
   },
