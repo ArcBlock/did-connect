@@ -1,11 +1,6 @@
 import React from 'react';
 import { addParameters } from '@storybook/react';
-import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
-import { ThemeProvider } from 'styled-components';
-import { create } from '@arcblock/ux/lib/Theme';
-import StyledEngineProvider from '@mui/material/StyledEngineProvider';
-
-const muiTheme = create();
+import { ThemeProvider } from '../src/Theme';
 
 addParameters({
   options: {
@@ -33,13 +28,8 @@ addParameters({
 // - <StoryFn /> 解决在 story 中使用 useTheme 的问题
 export const decorators = [
   (StoryFn) => (
-    // injectFirst 会影响 makeStyles 自定义样式和 mui styles 覆盖问题
-    <StyledEngineProvider injectFirst>
-      <MuiThemeProvider theme={muiTheme}>
-        <ThemeProvider theme={muiTheme}>
-          <StoryFn />
-        </ThemeProvider>
-      </MuiThemeProvider>
-    </StyledEngineProvider>
+    <ThemeProvider>
+      <StoryFn />
+    </ThemeProvider>
   ),
 ];
