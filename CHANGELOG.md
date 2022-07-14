@@ -1,3 +1,8 @@
+## 2.0.8 (July 14, 2022)
+
+- chore: respect web wallet url
+- chore: polish test case summary
+
 ## 2.0.7 (July 14, 2022)
 
 - fix: should use global chainInfo as fallback
