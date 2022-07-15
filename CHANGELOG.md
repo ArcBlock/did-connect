@@ -1,3 +1,7 @@
+## 2.0.10 (July 15, 2022)
+
+- chore: update blocklet logo
+
 ## 2.0.9 (July 15, 2022)
 
 - feat(react): add theme wrapper component
