@@ -53,8 +53,8 @@ export function useSession({
   const [retryCount, setRetryCount] = useState(0);
 
   const _onComplete = async (...args: any[]) => {
-    if (saveConnect && state.context.currentConnected) {
-      updateConnectedInfo(state.context);
+    if (saveConnect && service.state.context.currentConnected) {
+      updateConnectedInfo(service.state.context);
     }
     // @ts-ignore
     await onComplete(...args);

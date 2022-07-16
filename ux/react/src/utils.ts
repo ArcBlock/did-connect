@@ -75,17 +75,18 @@ export const getAppId = (appInfo?: TAppInfo): string => {
 export const updateConnectedInfo = (ctx: TSession): void => {
   const cookieOptions = getCookieOptions({ expireInDays: 7, returnDomain: false });
 
-  // connected_did and connected_pk are used to skip authPrincipal
-  Cookie.set('connected_did', ctx.currentConnected?.userDid || '', cookieOptions);
-  Cookie.set('connected_pk', ctx.currentConnected?.userPk || '', cookieOptions);
+  if (ctx.currentConnected) {
+    // connected_did and connected_pk are used to skip authPrincipal
+    Cookie.set('connected_did', ctx.currentConnected.userDid, cookieOptions);
+    Cookie.set('connected_pk', ctx.currentConnected.userPk, cookieOptions);
+    // connected_wallet_os is used to decide autoConnect target
+    if (ctx.currentConnected.didwallet.os) {
+      Cookie.set('connected_wallet_os', ctx.currentConnected.didwallet.os, cookieOptions);
+    }
+  }
 
   // connected_app is used to check session validity
   Cookie.set('connected_app', getAppId(ctx.appInfo), cookieOptions);
-
-  // connected_wallet_os is used to decide autoConnect target
-  if (ctx.currentConnected?.didwallet.os) {
-    Cookie.set('connected_wallet_os', ctx.currentConnected.didwallet.os, cookieOptions);
-  }
 };
 
 export const isSessionFinalized = (status: string): boolean =>
