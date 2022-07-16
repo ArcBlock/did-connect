@@ -1,3 +1,7 @@
+## 2.0.11 (July 16, 2022)
+
+- fix(ui): connected user not properly persisted onConnect
+
 ## 2.0.10 (July 15, 2022)
 
 - chore: update blocklet logo
