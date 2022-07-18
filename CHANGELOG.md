@@ -1,3 +1,8 @@
+## 2.0.13 (July 18, 2022)
+
+- fix(react): eslint error
+- fix(types): appInfo.link is required
+
 ## 2.0.12 (July 18, 2022)
 
 - fix(handler): incompatibility with android wallet for empty claim response
