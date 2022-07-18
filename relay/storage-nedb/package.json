@@ -1,7 +1,7 @@
 {
   "name": "@did-connect/storage-nedb",
   "description": "Storage engine that uses nedb for did-auth",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "author": "wangshijun <shijun@arcblock.io> (https://ocap.arcblock.io)",
   "bugs": {
     "url": "https://github.com/ArcBlock/did-connect/issues",
@@ -48,8 +48,8 @@
   },
   "gitHead": "570a366418890ded86422e168417bae0c9967e35",
   "dependencies": {
-    "@did-connect/storage": "2.0.11",
-    "@did-connect/types": "2.0.11",
+    "@did-connect/storage": "2.0.12",
+    "@did-connect/types": "2.0.12",
     "@nedb/core": "1.x",
     "@nedb/multi": "1.x",
     "debug": "^4.3.4"
