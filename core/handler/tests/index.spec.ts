@@ -20,6 +20,7 @@ import { SessionTimeout } from '@did-connect/types';
 import type {
   TAnyObject,
   TSession,
+  TAuthContext,
   TAuthPrincipalRequest,
   TAuthPrincipalResponse,
   TProfileRequest,
@@ -49,7 +50,7 @@ const chainInfo = {
   id: 'beta',
 };
 
-const appInfo = ({ baseUrl }: any) => ({
+const appInfo = ({ baseUrl }: TAuthContext) => ({
   name: 'DID Wallet Demo',
   description: 'Demo application to show the potential of DID Wallet',
   icon: 'https://arcblock.oss-cn-beijing.aliyuncs.com/images/wallet-round.png',
