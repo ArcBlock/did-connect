@@ -1,8 +1,8 @@
 # DID Connect
 
-This monorepo contains DID Connect implementation by ArcBlock.
+DID Connect is a decentralized identity protocol that enables seamless connection between decentralized identity and decentralized services.
 
-The core workflow of DID Connect is shown the following diagram.
+This monorepo contains DID Connect implementation by ArcBlock. the implementation can be divided into 3 parts:
 
 - Core: defines the core DID Connect data types and state machine
   - [@did-connect/types](./core/types)
@@ -18,6 +18,11 @@ The core workflow of DID Connect is shown the following diagram.
 - UX: defines UI components that can be used in webapps to handle DID Connect workflow
   - [@did-connect/react](./ux/react)
   - [@did-connect/vue](./ux/vue)
+
+The implementation also includes a few blocklets that can be used to test the implementation.
+
+- DID Connect Relay: Relay server implementation built on top of express
+- DID Connect React: React UI component playground for DID Connect
 
 ## Contribute
 

@@ -18,6 +18,7 @@ import joinUrl from 'url-join';
 
 import { SessionTimeout } from '@did-connect/types';
 import type {
+  TAppInfo,
   TAnyObject,
   TSession,
   TAuthContext,
@@ -50,11 +51,11 @@ const chainInfo = {
   id: 'beta',
 };
 
-const appInfo = ({ baseUrl }: TAuthContext) => ({
+const appInfo = ({ baseUrl }: TAuthContext): TAppInfo => ({
   name: 'DID Wallet Demo',
   description: 'Demo application to show the potential of DID Wallet',
   icon: 'https://arcblock.oss-cn-beijing.aliyuncs.com/images/wallet-round.png',
-  link: baseUrl,
+  link: baseUrl as string,
   updateSubEndpoint: true,
   subscriptionEndpoint: '/api/websocket',
   nodeDid: 'z1Zg7PUWJX2NS9cRhpjuMtvjjLK5W2E3Wsh',
