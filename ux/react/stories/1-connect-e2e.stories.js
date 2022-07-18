@@ -65,7 +65,7 @@ const onConnect = async (ctx, e) => {
 const onApprove = async (ctx, e) => {
   action('onApprove')(ctx, e);
   await sleep(1000);
-  return 'approved';
+  return { successMessage: 'approved' };
 };
 
 /**
