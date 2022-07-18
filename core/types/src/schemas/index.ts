@@ -32,7 +32,7 @@ const AppInfo: ObjectSchema = Joi.object({
     .required(),
   link: Joi.string()
     .uri({ scheme: ['http', 'https'] })
-    .optional(),
+    .required(),
   path: Joi.string()
     .uri({ scheme: ['http', 'https'] })
     .default('https://abtwallet.io/i/'),

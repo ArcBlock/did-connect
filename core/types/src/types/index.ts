@@ -39,7 +39,7 @@ export type TAnyResponse =
 export interface TAppInfo {
   description: string;
   icon: string;
-  link?: string;
+  link: string;
   name: string;
   nodeDid?: string;
   path?: string;
