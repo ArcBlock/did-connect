@@ -458,6 +458,13 @@ export function createHandlers({
         // @ts-ignore
         const justifiedClaims: TAnyResponse[] = (isEmpty(claims) ? [{ type: 'authPrincipal' }] : claims).map(
           (x: any) => {
+            // NOTE: this is required to support legacy android wallet
+            if (isEmpty(x)) {
+              return {
+                type: 'authPrincipal',
+                ...(session.currentConnected || { userDid, userPk }),
+              };
+            }
             if (x.type === 'authPrincipal') {
               return {
                 ...x,
