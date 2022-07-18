@@ -1,3 +1,8 @@
+## 2.0.14 (July 18, 2022)
+
+- chore: polish test typings
+- fix(test): onApprove return object in e2e test
+
 ## 2.0.13 (July 18, 2022)
 
 - fix(react): eslint error
