@@ -93,7 +93,7 @@ export function useSession({
   );
 
   const { machine, deepLink, sessionId, cleanup } = session;
-  const [state, send, service] = useMachine<TSession, TEvent>(machine);
+  const [, send, service] = useMachine<TSession, TEvent>(machine);
 
   const cancel = () => {
     if (existingSession.sessionId) {
