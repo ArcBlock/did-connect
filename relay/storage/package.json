@@ -1,7 +1,7 @@
 {
   "name": "@did-connect/storage",
   "description": "Storage interface for did-auth",
-  "version": "2.0.12",
+  "version": "2.0.13",
   "author": "wangshijun <shijun@arcblock.io> (https://ocap.arcblock.io)",
   "bugs": {
     "url": "https://github.com/ArcBlock/did-connect/issues",
@@ -14,7 +14,7 @@
     "wangshijun <shijun@arcblock.io> (https://ocap.arcblock.io)"
   ],
   "dependencies": {
-    "@did-connect/types": "2.0.12"
+    "@did-connect/types": "2.0.13"
   },
   "devDependencies": {
     "@arcblock/eslint-config-ts": "0.2.2",
