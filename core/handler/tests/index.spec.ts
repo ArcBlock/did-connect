@@ -904,7 +904,7 @@ describe('Handlers', () => {
       // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.status).toEqual('error');
-      expect(authInfo.errorMessage).toMatch('Failed to get request list from URL');
+      expect(authInfo.errorMessage).toMatch('Failed to fetch request list from');
       expect(authInfo.errorMessage).toMatch('connect error');
     }
 
@@ -1059,7 +1059,7 @@ describe('Handlers', () => {
     // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('error');
-    expect(authInfo.errorMessage).toMatch('Failed to get response from');
+    expect(authInfo.errorMessage).toMatch('Failed to fetch approve result from');
 
     // 7. assert status history
     expect(statusHistory).toEqual(['walletScanned', 'walletConnected', 'appConnected', 'walletApproved', 'error']);
@@ -1368,13 +1368,13 @@ describe('Handlers', () => {
   test('should throw onUpdate when updater mismatch', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, evil);
-    expect(res.error).toMatch('Invalid updater');
+    expect(res.code).toMatch('UPDATER_MISMATCH');
   });
 
   test('should throw onDelete when updater mismatch', async () => {
     const { deleteSession } = await prepareEvilTest();
     const res = await deleteSession(evil);
-    expect(res.error).toMatch('Invalid updater');
+    expect(res.code).toMatch('UPDATER_MISMATCH');
   });
 
   test.skip('should not throw onDelete when updater match', async () => {
@@ -1398,25 +1398,25 @@ describe('Handlers', () => {
   test('should throw onUpdate when error not valid', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, updater, '');
-    expect(res.error).toMatch('Invalid updater pk');
+    expect(res.code).toMatch('UPDATER_PK_EMPTY');
   });
 
   test('should throw onUpdate when token not valid', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, updater, undefined, '');
-    expect(res.error).toMatch('Invalid token');
+    expect(res.code).toMatch('SIGNATURE_EMPTY');
   });
 
   test('should throw onUpdate when signature not valid', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, updater, 'abc', 'def');
-    expect(res.error).toMatch('Invalid updater signature');
+    expect(res.code).toMatch('SIGNATURE_INVALID');
   });
 
   test('should throw onUpdate when hash not valid', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, updater, undefined, undefined, 'abc');
-    expect(res.error).toMatch('Invalid payload hash');
+    expect(res.code).toMatch('PAYLOAD_HASH_MISMATCH');
   });
 
   test('should now throw onUpdate when update to error', async () => {

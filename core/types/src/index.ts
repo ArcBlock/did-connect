@@ -124,3 +124,8 @@ export function isRequestList(claims: TAnyRequest[][]): { code: string; error: s
 
   return { error: '', code: 'OK' };
 }
+
+export function t(template: string, data: TAnyObject) {
+  // eslint-disable-next-line no-prototype-builtins
+  return template.replace(/{(\w*)}/g, (_, key: string) => (data.hasOwnProperty(key) ? data[key] : ''));
+}

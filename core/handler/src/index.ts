@@ -11,7 +11,7 @@ import objectHash from 'object-hash';
 import { WsServer } from '@arcblock/ws';
 import { isValid } from '@arcblock/did';
 import { SessionStorage } from '@did-connect/storage';
-import { Session, Context, CustomError, isRequestList } from '@did-connect/types';
+import { Session, Context, CustomError, isRequestList, t } from '@did-connect/types';
 import { Authenticator } from '@did-connect/authenticator';
 
 import type { JwtBody } from '@arcblock/jwt';
@@ -57,6 +57,58 @@ const errors: TI18nMessages = {
     en: 'Claims provided by wallet do not match with requested claims',
     zh: '提交的声明类型和请求的声明类型不匹配',
   },
+  invalidUpdaterPk: {
+    en: 'Updater pk is required',
+    zh: '更新者公钥是必须的',
+  },
+  invalidUpdaterToken: {
+    en: 'Updater signed token is required',
+    zh: '更新者签名是必须的',
+  },
+  invalidUpdaterSig: {
+    en: 'Updater signature token is invalid',
+    zh: '更新者签名无效',
+  },
+  invalidUpdaterDid: {
+    en: 'Updater did mismatch',
+    zh: '更新者 DID 不匹配',
+  },
+  invalidPayloadHash: {
+    en: 'Payload hash mismatch',
+    zh: '请求指纹不匹配',
+  },
+  invalidContext: {
+    en: 'Context is invalid',
+    zh: '上下文无效',
+  },
+  invalidSessionId: {
+    en: 'Session id is invalid',
+    zh: '会话 ID 无效',
+  },
+  invalidSessionProp: {
+    en: 'Invalid session props: {error}',
+    zh: '无效的会话属性: {error}',
+  },
+  sessionFinalized: {
+    en: 'Session finalized as {status}',
+    zh: '会话已经完成为 {status}',
+  },
+  sessionStatusInvalid: {
+    en: 'Can only update session status to error or canceled',
+    zh: '只能更新会话状态为 error 或 canceled',
+  },
+  invalidSessionUpdate: {
+    en: 'Invalid session updates: {error}',
+    zh: '无效的会话更新: {error}',
+  },
+  invalidConnectUrl: {
+    en: 'Failed to fetch request list from: {url}: {error}',
+    zh: '请求 connectUrl 失败: {url}: {error}',
+  },
+  invalidApproveUrl: {
+    en: 'Failed to fetch approve result from: {url}: {error}',
+    zh: '请求 approveUrl 失败: {url}: {error}',
+  },
 };
 
 export type TLogger = {
@@ -100,7 +152,6 @@ export function createSocketServer(logger: TLogger, pathname: string) {
   return new WsServer({ logger, pathname });
 }
 
-// FIXME: i18n for all errors
 export function createHandlers({
   storage,
   authenticator,
@@ -124,27 +175,27 @@ export function createHandlers({
   const signClaims = authenticator.signClaims.bind(authenticator);
 
   const verifyUpdater = (params: TAnyObject, updaterPk?: string): { error: string; code: string } => {
-    const { body, signerPk, signerToken } = params;
+    const { locale, body, signerPk, signerToken } = params;
     if (!signerPk) {
-      return { error: 'Invalid updater pk', code: 'UPDATER_PK_EMPTY' };
+      return { error: errors.invalidUpdaterPk[locale], code: 'UPDATER_PK_EMPTY' };
     }
     if (!signerToken) {
-      return { error: 'Invalid token', code: 'SIGNATURE_EMPTY' };
+      return { error: errors.invalidUpdaterToken[locale], code: 'SIGNATURE_EMPTY' };
     }
 
     if (verify(signerToken, signerPk) === false) {
-      return { error: 'Invalid updater signature', code: 'SIGNATURE_INVALID' };
+      return { error: errors.invalidUpdaterSig[locale], code: 'SIGNATURE_INVALID' };
     }
 
     if (updaterPk && updaterPk !== signerPk) {
-      return { error: 'Invalid updater', code: 'UPDATER_MISMATCH' };
+      return { error: errors.invalidUpdaterDid[locale], code: 'UPDATER_MISMATCH' };
     }
 
     const hash = objectHash(body);
     const decoded: JwtBody = decode(signerToken);
     if (decoded.hash !== hash) {
       logger.debug('hash mismatch', decoded.hash, hash, body, decoded);
-      return { error: 'Invalid payload hash', code: 'PAYLOAD_HASH_MISMATCH' };
+      return { error: errors.invalidPayloadHash[locale], code: 'PAYLOAD_HASH_MISMATCH' };
     }
 
     return { error: '', code: 'OK' };
@@ -152,7 +203,7 @@ export function createHandlers({
 
   const handleSessionCreate = async (context: TSessionCreateContext): Promise<TSessionUpdateResult> => {
     if (isValidContext(context) === false) {
-      return { error: 'Invalid context', code: 'CONTEXT_INVALID' };
+      return { error: errors.invalidContext[context.locale], code: 'CONTEXT_INVALID' };
     }
 
     const {
@@ -209,7 +260,9 @@ export function createHandlers({
     const { value, error } = Session.validate(session);
     if (error) {
       return {
-        error: `Invalid session props: ${error.details.map((x: any) => x.message).join(', ')}`,
+        error: t(errors.invalidSessionProp[context.locale], {
+          error: error.details.map((x: any) => x.message).join(', '),
+        }),
         code: 'SESSION_UPDATE_INVALID',
       };
     }
@@ -223,16 +276,18 @@ export function createHandlers({
   };
 
   const handleSessionUpdate = async (context: TSessionUpdateContext): Promise<TSessionUpdateResult> => {
-    const { body, session, sessionId } = context;
+    const { locale, body, session, sessionId } = context;
     try {
       if (isValidContext(context) === false) {
-        throw new CustomError('CONTEXT_INVALID', 'Invalid context');
+        throw new CustomError('CONTEXT_INVALID', errors.invalidContext[locale]);
       }
 
       if (storage.isFinalized(session.status)) {
         throw new CustomError(
           'SESSION_FINALIZED',
-          `Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`
+          t(errors.invalidContext[locale], {
+            status: `${session.status}${session.error ? `: ${session.error}` : ''}`,
+          })
         );
       }
 
@@ -242,7 +297,7 @@ export function createHandlers({
       }
 
       if (body.status && ['error', 'canceled'].includes(body.status) === false) {
-        throw new CustomError('SESSION_STATUS_INVALID', 'Can only update session status to error or canceled');
+        throw new CustomError('SESSION_STATUS_INVALID', errors.sessionStatusInvalid[locale]);
       }
 
       if (Array.isArray(body.requestedClaims)) {
@@ -256,7 +311,7 @@ export function createHandlers({
       if (error) {
         throw new CustomError(
           'SESSION_UPDATE_INVALID',
-          `Invalid session updates: ${error.details.map((x: any) => x.message).join(', ')}`
+          t(errors.invalidSessionUpdate[locale], { error: error.details.map((x: any) => x.message).join(', ') })
         );
       }
 
@@ -293,17 +348,19 @@ export function createHandlers({
   };
 
   const handleClaimRequest = async (context: TWalletHandlerContext): Promise<TAppResponseSigned> => {
-    const { sessionId, session, didwallet } = context;
+    const { sessionId, session, didwallet, locale } = context;
 
     try {
       if (isValidContext(context) === false) {
-        throw new CustomError('CONTEXT_INVALID', 'Invalid context');
+        throw new CustomError('CONTEXT_INVALID', errors.invalidContext[locale]);
       }
 
       if (storage.isFinalized(session.status)) {
         throw new CustomError(
           'SESSION_FINALIZED',
-          `Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`
+          t(errors.sessionFinalized[locale], {
+            status: `${session.status}${session.error ? `: ${session.error}` : ''}`,
+          })
         );
       }
 
@@ -312,7 +369,6 @@ export function createHandlers({
         logger.debug('session.walletScanned', sessionId);
         wsServer.broadcast(sessionId, { status: 'walletScanned', didwallet });
         await storage.update(sessionId, { status: 'walletScanned' });
-
         return signClaims([getAuthPrincipalRequest(session)], context);
       }
 
@@ -399,7 +455,10 @@ export function createHandlers({
 
       return result.data;
     } catch (err: any) {
-      throw new CustomError('AppError', `Failed to get request list from URL: ${session.connectUrl}: ${err.message}`);
+      throw new CustomError(
+        'AppError',
+        t(errors.invalidConnectUrl[locale], { url: session.connectUrl, error: err.message })
+      );
     }
   };
 
@@ -424,7 +483,10 @@ export function createHandlers({
 
       return result.data;
     } catch (err: any) {
-      throw new CustomError('AppError', `Failed to get response from URL: ${session.approveUrl}: ${err.message}`);
+      throw new CustomError(
+        'AppError',
+        t(errors.invalidApproveUrl[locale], { url: session.approveUrl, error: err.message })
+      );
     }
   };
 
@@ -432,13 +494,15 @@ export function createHandlers({
     const { sessionId, session, body, locale, didwallet } = context;
     try {
       if (isValidContext(context) === false) {
-        throw new CustomError('CONTEXT_INVALID', 'Invalid context');
+        throw new CustomError('CONTEXT_INVALID', errors.invalidContext[locale]);
       }
 
       if (storage.isFinalized(session.status)) {
         throw new CustomError(
           'SESSION_FINALIZED',
-          `Session finalized as ${session.status}${session.error ? `: ${session.error}` : ''}`
+          t(errors.sessionFinalized[locale], {
+            status: `${session.status}${session.error ? `: ${session.error}` : ''}`,
+          })
         );
       }
 
