@@ -457,6 +457,9 @@ export function createHandlers({
 
       return result.data;
     } catch (err: any) {
+      if (err.response) {
+        console.warn(err.response);
+      }
       throw new CustomError(
         'AppError',
         t(errors.invalidConnectUrl[locale], { url: session.connectUrl, error: err.message })
@@ -487,6 +490,9 @@ export function createHandlers({
 
       return result.data;
     } catch (err: any) {
+      if (err.response) {
+        console.warn(err.response);
+      }
       throw new CustomError(
         'AppError',
         t(errors.invalidApproveUrl[locale], { url: session.approveUrl, error: err.message })
@@ -574,7 +580,7 @@ export function createHandlers({
       // once appConnected we return the first claim
       if (session.status === 'walletScanned') {
         logger.debug('session.walletConnected', sessionId);
-        await storage.update(sessionId, {
+        newSession = await storage.update(sessionId, {
           status: 'walletConnected',
           currentConnected: { userDid, userPk, didwallet },
         });
@@ -597,7 +603,7 @@ export function createHandlers({
           newSession = await storage.update(sessionId, { status: 'appConnected' });
         } else if (session.connectUrl) {
           // If we should fetch claims from some url, fetch and verify
-          const requestedClaims = await fetchRequestList(session, locale);
+          const requestedClaims = await fetchRequestList(newSession, locale);
           newSession = await storage.update(sessionId, { status: 'appConnected', requestedClaims });
         } else {
           // else wait for webapp to fill the claims
