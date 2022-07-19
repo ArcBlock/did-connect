@@ -293,8 +293,10 @@ export interface TVerifiableCredentialRequest {
 }
 
 export interface TVerifiableCredentialResponse {
+  assetDid?: string;
   meta?: any;
-  presentation: string;
+  optional?: boolean;
+  presentation?: string;
   type: 'verifiableCredential';
 }
 
