@@ -41,7 +41,7 @@ export function attachHandlers(router: any, handlers: THandlers, prefix: string 
       return {
         userDid,
         userPk: get(req, 'cookies.connected_pk', ''),
-        didwallet: get(req, 'cookies.connected_wallet', ''),
+        didwallet: get(req, 'cookies.connected_wallet_os', ''),
       };
     }
 
