@@ -11,11 +11,6 @@
     "lint": "lerna run lint --parallel",
     "lint:fix": "lerna run lint:fix",
     "coverage": "lerna run coverage",
-    "storybook:vue": "pnpm -C packages/vue storybook",
-    "storybook:react": "pnpm -C packages/react storybook",
-    "build:vue": "pnpm -C packages/vue build",
-    "example:vue": "cd example && blocklet dev",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install"
   },
   "keywords": [],

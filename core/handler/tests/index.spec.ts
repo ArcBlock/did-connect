@@ -18,6 +18,7 @@ import joinUrl from 'url-join';
 
 import { SessionTimeout } from '@did-connect/types';
 import type {
+  TAppInfo,
   TAnyObject,
   TSession,
   TAuthContext,
@@ -50,11 +51,11 @@ const chainInfo = {
   id: 'beta',
 };
 
-const appInfo = ({ baseUrl }: TAuthContext) => ({
+const appInfo = ({ baseUrl }: TAuthContext): TAppInfo => ({
   name: 'DID Wallet Demo',
   description: 'Demo application to show the potential of DID Wallet',
   icon: 'https://arcblock.oss-cn-beijing.aliyuncs.com/images/wallet-round.png',
-  link: baseUrl,
+  link: baseUrl as string,
   updateSubEndpoint: true,
   subscriptionEndpoint: '/api/websocket',
   nodeDid: 'z1Zg7PUWJX2NS9cRhpjuMtvjjLK5W2E3Wsh',
@@ -180,7 +181,13 @@ describe('Handlers', () => {
 
     const storage = new MemoryStorage();
     const authenticator = new Authenticator({ wallet: app, appInfo, chainInfo });
-    const logger = { info: noop, error: console.error, warn: console.warn, debug: noop };
+    const logger = {
+      // eslint-disable-next-line no-console
+      info: process.env.CI ? noop : console.info,
+      error: process.env.CI ? noop : console.error,
+      warn: process.env.CI ? noop : console.warn,
+      debug: noop,
+    };
     const handlers = createHandlers({ storage, authenticator, logger });
 
     handlers.wsServer.attach(server.http);
@@ -903,7 +910,7 @@ describe('Handlers', () => {
       // @ts-ignore
       authInfo = Jwt.decode(res.data.authInfo);
       expect(authInfo.status).toEqual('error');
-      expect(authInfo.errorMessage).toMatch('Failed to get request list from URL');
+      expect(authInfo.errorMessage).toMatch('Failed to fetch request list from');
       expect(authInfo.errorMessage).toMatch('connect error');
     }
 
@@ -1058,7 +1065,7 @@ describe('Handlers', () => {
     // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
     expect(authInfo.status).toEqual('error');
-    expect(authInfo.errorMessage).toMatch('Failed to get response from');
+    expect(authInfo.errorMessage).toMatch('Failed to fetch approve result from');
 
     // 7. assert status history
     expect(statusHistory).toEqual(['walletScanned', 'walletConnected', 'appConnected', 'walletApproved', 'error']);
@@ -1367,13 +1374,13 @@ describe('Handlers', () => {
   test('should throw onUpdate when updater mismatch', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, evil);
-    expect(res.error).toMatch('Invalid updater');
+    expect(res.code).toMatch('UPDATER_MISMATCH');
   });
 
   test('should throw onDelete when updater mismatch', async () => {
     const { deleteSession } = await prepareEvilTest();
     const res = await deleteSession(evil);
-    expect(res.error).toMatch('Invalid updater');
+    expect(res.code).toMatch('UPDATER_MISMATCH');
   });
 
   test.skip('should not throw onDelete when updater match', async () => {
@@ -1397,25 +1404,25 @@ describe('Handlers', () => {
   test('should throw onUpdate when error not valid', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, updater, '');
-    expect(res.error).toMatch('Invalid updater pk');
+    expect(res.code).toMatch('UPDATER_PK_EMPTY');
   });
 
   test('should throw onUpdate when token not valid', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, updater, undefined, '');
-    expect(res.error).toMatch('Invalid token');
+    expect(res.code).toMatch('SIGNATURE_EMPTY');
   });
 
   test('should throw onUpdate when signature not valid', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, updater, 'abc', 'def');
-    expect(res.error).toMatch('Invalid updater signature');
+    expect(res.code).toMatch('SIGNATURE_INVALID');
   });
 
   test('should throw onUpdate when hash not valid', async () => {
     const { updateSession } = await prepareEvilTest();
     const res = await updateSession({ status: 'error' }, updater, undefined, undefined, 'abc');
-    expect(res.error).toMatch('Invalid payload hash');
+    expect(res.code).toMatch('PAYLOAD_HASH_MISMATCH');
   });
 
   test('should now throw onUpdate when update to error', async () => {

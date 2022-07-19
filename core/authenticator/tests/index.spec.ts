@@ -219,7 +219,11 @@ describe('Authenticator', () => {
     // @ts-ignore
     expect(() => auth._validateAppInfo({ name: 'abc', description: 'abc' })).toThrow('icon');
     // @ts-ignore
-    expect(() => auth._validateAppInfo({ name: 'abc', description: 'abc', icon: 'https://abc' })).not.toThrow();
+    expect(() => auth._validateAppInfo({ name: 'abc', description: 'abc', icon: 'https://abc' })).toThrow('link');
+    // @ts-ignore
+    expect(() =>
+      auth._validateAppInfo({ name: 'abc', description: 'abc', link: 'http://blocklet.dev', icon: 'https://abc' })
+    ).not.toThrow();
   });
 
   test('should timeout work as expected', (done) => {

@@ -1,3 +1,12 @@
+## 2.0.15 (July 19, 2022)
+
+- fix(react): try to make session-manager work with blocklet-service
+- chore: pass previousConnected when fetch remote api
+- chore: add i18n for handler errors #19
+- chore: update readme and fix test
+- fix: update readme #10
+- fix(test): authenticator test case
+
 ## 2.0.14 (July 18, 2022)
 
 - chore: polish test typings

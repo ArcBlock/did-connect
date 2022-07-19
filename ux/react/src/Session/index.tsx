@@ -3,6 +3,7 @@ import { TAnyObject, TSession, TLocaleCode, TI18nMessages, SessionTimeout } from
 import { createContext, Component, useContext } from 'react';
 import { AxiosInstance } from 'axios';
 import Cookie from 'js-cookie';
+import joinUrl from 'url-join';
 
 import { getCookieOptions } from '@arcblock/ux/lib/Util';
 import Center from '@arcblock/ux/lib/Center';
@@ -118,7 +119,6 @@ const { Provider, Consumer } = SessionContext;
 
 const AUTH_SERVICE_PREFIX = '/.well-known/service';
 
-// FIXME: this may not work with blocklet-server anymore
 export default function createSessionContext(
   storageKey: string = 'login_token',
   storageEngine: TStorageEngineCode = 'ls',
@@ -395,7 +395,6 @@ export default function createSessionContext(
         'switch-passport': this.onLogin,
       };
 
-      // FIXME: onConnect and onApprove callbacks
       return (
         <Provider value={state}>
           {!open && typeof children === 'function' ? (children as Function)(state) : children}
@@ -403,8 +402,8 @@ export default function createSessionContext(
             key={action}
             locale={locale}
             onClose={() => this.onClose(action)}
-            onConnect={() => []}
-            onApprove={() => []}
+            onConnect={joinUrl(relayUrl, `/${action}/connect`)}
+            onApprove={joinUrl(relayUrl, `/${action}/approve`)}
             onComplete={callbacks[action]}
             timeout={timeout}
             webWalletUrl={webWalletUrl}
