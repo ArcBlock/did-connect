@@ -345,7 +345,7 @@ export function createHandlers({
       type: 'authPrincipal',
       description: 'select the principal to be used for authentication',
       target: isValid(strategy) ? strategy : '',
-      supervised: onlyConnect || !!previousConnected,
+      supervised: onlyConnect || !previousConnected,
     };
   };
 
