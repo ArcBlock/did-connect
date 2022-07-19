@@ -235,7 +235,7 @@ export interface TSession {
     | 'rejected'
     | 'canceled'
     | 'completed';
-  strategy: string | 'default';
+  strategy: string | 'default' | 'smart';
   timeout: {
     app: number;
     relay: number;
@@ -293,8 +293,10 @@ export interface TVerifiableCredentialRequest {
 }
 
 export interface TVerifiableCredentialResponse {
+  assetDid?: string;
   meta?: any;
-  presentation: string;
+  optional?: boolean;
+  presentation?: string;
   type: 'verifiableCredential';
 }
 

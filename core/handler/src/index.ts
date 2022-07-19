@@ -234,7 +234,7 @@ export function createHandlers({
       sessionId,
       status: 'created',
       updaterPk,
-      strategy,
+      strategy: onlyConnect && strategy === 'smart' ? 'default' : strategy,
       authUrl,
       connectUrl,
       approveUrl,
@@ -345,43 +345,8 @@ export function createHandlers({
       type: 'authPrincipal',
       description: 'select the principal to be used for authentication',
       target: isValid(strategy) ? strategy : '',
-      supervised: onlyConnect || !!previousConnected,
+      supervised: onlyConnect || !previousConnected,
     };
-  };
-
-  const handleClaimRequest = async (context: TWalletHandlerContext): Promise<TAppResponseSigned> => {
-    const { sessionId, session, didwallet, locale } = context;
-
-    try {
-      if (isValidContext(context) === false) {
-        throw new CustomError('CONTEXT_INVALID', errors.invalidContext[locale]);
-      }
-
-      if (storage.isFinalized(session.status)) {
-        throw new CustomError(
-          'SESSION_FINALIZED',
-          t(errors.sessionFinalized[locale], {
-            status: `${session.status}${session.error ? `: ${session.error}` : ''}`,
-          })
-        );
-      }
-
-      // if we are in created status, we should return authPrincipal claim
-      if (session.status === 'created') {
-        logger.debug('session.walletScanned', sessionId);
-        wsServer.broadcast(sessionId, { status: 'walletScanned', didwallet });
-        await storage.update(sessionId, { status: 'walletScanned' });
-        return signClaims([getAuthPrincipalRequest(session)], context);
-      }
-
-      // else we should perform a step by step style
-      return signClaims(session.requestedClaims[session.currentStep], context);
-    } catch (err: any) {
-      logger.error(err);
-      wsServer.broadcast(sessionId, { status: 'error', error: err.message });
-      await storage.update(sessionId, { status: 'error', error: err.message });
-      return signJson({ error: err.message }, context);
-    }
   };
 
   const waitForSession = async (
@@ -457,6 +422,9 @@ export function createHandlers({
 
       return result.data;
     } catch (err: any) {
+      if (err.response) {
+        console.warn(err.response);
+      }
       throw new CustomError(
         'AppError',
         t(errors.invalidConnectUrl[locale], { url: session.connectUrl, error: err.message })
@@ -487,10 +455,87 @@ export function createHandlers({
 
       return result.data;
     } catch (err: any) {
+      if (err.response) {
+        console.warn(err.response);
+      }
       throw new CustomError(
         'AppError',
         t(errors.invalidApproveUrl[locale], { url: session.approveUrl, error: err.message })
       );
+    }
+  };
+
+  const ensureAppConnected = async (session: TSession, locale: TLocaleCode): Promise<TSession> => {
+    let newSession: TSession;
+    // If our claims are populated already, move to appConnected without waiting
+    if (session.requestedClaims.length > 0) {
+      newSession = await storage.update(session.sessionId, { status: 'appConnected' });
+    } else if (session.connectUrl) {
+      // If we should fetch claims from some url, fetch and verify
+      const requestedClaims = await fetchRequestList(session, locale);
+      newSession = await storage.update(session.sessionId, { status: 'appConnected', requestedClaims });
+    } else {
+      // else wait for webapp to fill the claims
+      newSession = await waitForAppConnect(session.sessionId, session.timeout.app, locale);
+      await storage.update(session.sessionId, { status: 'appConnected' });
+    }
+    wsServer.broadcast(session.sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
+    logger.debug('session.appConnected', session.sessionId);
+    return newSession;
+  };
+
+  const handleClaimRequest = async (context: TWalletHandlerContext): Promise<TAppResponseSigned> => {
+    const { sessionId, session, didwallet, locale } = context;
+
+    try {
+      if (isValidContext(context) === false) {
+        throw new CustomError('CONTEXT_INVALID', errors.invalidContext[locale]);
+      }
+
+      if (storage.isFinalized(session.status)) {
+        throw new CustomError(
+          'SESSION_FINALIZED',
+          t(errors.sessionFinalized[locale], {
+            status: `${session.status}${session.error ? `: ${session.error}` : ''}`,
+          })
+        );
+      }
+
+      let newSession: TSession;
+
+      // if we are in created status,
+      if (session.status === 'created') {
+        logger.debug('session.walletScanned', sessionId);
+        wsServer.broadcast(sessionId, { status: 'walletScanned', didwallet });
+        await storage.update(sessionId, { status: 'walletScanned' });
+
+        // skip authPrincipal step if we are using smart strategy
+        if (session.strategy === 'smart' && session.previousConnected) {
+          logger.debug('session.walletConnected', sessionId);
+          newSession = await storage.update(sessionId, {
+            status: 'walletConnected',
+            currentConnected: { ...session.previousConnected, didwallet },
+          });
+          wsServer.broadcast(sessionId, {
+            status: 'walletConnected',
+            currentConnected: { ...session.previousConnected, didwallet },
+          });
+
+          newSession = await ensureAppConnected(newSession, locale);
+          return signClaims(newSession.requestedClaims[session.currentStep], { ...context, session: newSession });
+        }
+
+        // else we should return authPrincipal claim
+        return signClaims([getAuthPrincipalRequest(session)], context);
+      }
+
+      // else we should perform a step by step style
+      return signClaims(session.requestedClaims[session.currentStep], context);
+    } catch (err: any) {
+      logger.error(err);
+      wsServer.broadcast(sessionId, { status: 'error', error: err.message });
+      await storage.update(sessionId, { status: 'error', error: err.message });
+      return signJson({ error: err.message }, context);
     }
   };
 
@@ -574,7 +619,7 @@ export function createHandlers({
       // once appConnected we return the first claim
       if (session.status === 'walletScanned') {
         logger.debug('session.walletConnected', sessionId);
-        await storage.update(sessionId, {
+        newSession = await storage.update(sessionId, {
           status: 'walletConnected',
           currentConnected: { userDid, userPk, didwallet },
         });
@@ -592,20 +637,7 @@ export function createHandlers({
           return signJson(newSession.approveResults[session.currentStep], context);
         }
 
-        // If our claims are populated already, move to appConnected without waiting
-        if (session.requestedClaims.length > 0) {
-          newSession = await storage.update(sessionId, { status: 'appConnected' });
-        } else if (session.connectUrl) {
-          // If we should fetch claims from some url, fetch and verify
-          const requestedClaims = await fetchRequestList(session, locale);
-          newSession = await storage.update(sessionId, { status: 'appConnected', requestedClaims });
-        } else {
-          // else wait for webapp to fill the claims
-          newSession = await waitForAppConnect(sessionId, session.timeout.app, locale);
-          await storage.update(sessionId, { status: 'appConnected' });
-        }
-        wsServer.broadcast(sessionId, { status: 'appConnected', requestedClaims: newSession.requestedClaims });
-        logger.debug('session.appConnected', sessionId);
+        newSession = await ensureAppConnected(newSession, locale);
         return signClaims(newSession.requestedClaims[session.currentStep], { ...context, session: newSession });
       }
 

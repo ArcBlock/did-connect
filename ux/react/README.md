@@ -14,13 +14,13 @@ Then:
 import axios from 'axios';
 
 // import each module individually
-import DidAddress from '@did-connect/react/lib/Address';
-import DidConnect from '@did-connect/react/lib/Connect';
-import DidAvatar from '@did-connect/react/lib/Avatar';
-import DidButton from '@did-connect/react/lib/Button';
-import DidLogo from '@did-connect/react/lib/Logo';
-import { SessionProvider, SessionConsumer } from '@did-connect/react/lib/Session';
-import SessionManager from '@did-connect/react/lib/SessionManager';
+import DidAddress from '@did-connect/react/Address';
+import DidConnect from '@did-connect/react/Connect';
+import DidAvatar from '@did-connect/react/Avatar';
+import DidButton from '@did-connect/react/Button';
+import DidLogo from '@did-connect/react/Logo';
+import { SessionProvider, SessionConsumer } from '@did-connect/react/Session';
+import SessionManager from '@did-connect/react/SessionManager';
 
 // or use ES6 named imports
 import {
@@ -31,7 +31,7 @@ import {
   Logo as DidLogo,
   Session,
   SessionManager,
-} from '@did-connect/react/lib';
+} from '@did-connect/react';
 ```
 
 ### DidConnect
