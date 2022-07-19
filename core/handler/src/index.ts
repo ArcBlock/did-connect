@@ -167,7 +167,9 @@ export function createHandlers({
 
   const isValidContext = (x: TContext): boolean => {
     const { error } = Context.validate(x);
-    if (error) logger.error(error);
+    if (error) {
+      logger.error(error);
+    }
     return !error;
   };
 
@@ -285,7 +287,7 @@ export function createHandlers({
       if (storage.isFinalized(session.status)) {
         throw new CustomError(
           'SESSION_FINALIZED',
-          t(errors.invalidContext[locale], {
+          t(errors.sessionFinalized[locale], {
             status: `${session.status}${session.error ? `: ${session.error}` : ''}`,
           })
         );

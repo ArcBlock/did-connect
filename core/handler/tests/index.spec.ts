@@ -181,7 +181,13 @@ describe('Handlers', () => {
 
     const storage = new MemoryStorage();
     const authenticator = new Authenticator({ wallet: app, appInfo, chainInfo });
-    const logger = { info: noop, error: console.error, warn: console.warn, debug: noop };
+    const logger = {
+      // eslint-disable-next-line no-console
+      info: process.env.CI ? noop : console.info,
+      error: process.env.CI ? noop : console.error,
+      warn: process.env.CI ? noop : console.warn,
+      debug: noop,
+    };
     const handlers = createHandlers({ storage, authenticator, logger });
 
     handlers.wsServer.attach(server.http);
