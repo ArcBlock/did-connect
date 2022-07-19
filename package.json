@@ -10,7 +10,7 @@
   "scripts": {
     "lint": "lerna run lint --parallel",
     "lint:fix": "lerna run lint:fix",
-    "coverage": "lerna run coverage --parallel",
+    "coverage": "lerna run coverage",
     "prepare": "husky install"
   },
   "keywords": [],
