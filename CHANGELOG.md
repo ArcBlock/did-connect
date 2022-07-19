@@ -1,3 +1,11 @@
+## 2.0.16 (July 19, 2022)
+
+- fix: supervised not correctly set for authPrincipal
+- feat: support smart connect strategy
+- fix: vc response presentation can be optional
+- fix: connectUrl should be requested with latest session
+- fix: session manager not working
+
 ## 2.0.15 (July 19, 2022)
 
 - fix(react): try to make session-manager work with blocklet-service
