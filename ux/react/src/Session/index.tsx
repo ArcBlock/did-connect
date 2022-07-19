@@ -77,7 +77,7 @@ const defaultProps = {
   messages: null,
 };
 
-export type ProviderProps = {
+type ProviderProps = typeof defaultProps & {
   children: React.ReactNode;
   serviceHost: string;
   relayUrl?: string;
@@ -89,9 +89,9 @@ export type ProviderProps = {
   autoDisconnect?: boolean;
   webWalletUrl?: string;
   messages?: I18nGroup;
-} & typeof defaultProps;
+};
 
-export type ProviderState = {
+type ProviderState = {
   action: string;
   error: string;
   initialized: boolean;
@@ -100,7 +100,7 @@ export type ProviderState = {
   user?: TSessionUser;
 };
 
-export type ContextState = {
+type ContextState = {
   api: AxiosInstance;
   session: ProviderState & {
     login(done: any): void;
@@ -113,7 +113,15 @@ export type ContextState = {
   };
 };
 
-export const SessionContext = createContext<ContextState>({} as ContextState);
+const SessionContext = createContext<ContextState>({} as ContextState);
+
+type TSessionContextResult = {
+  SessionProvider: React.ComponentType<ProviderProps>;
+  SessionConsumer: typeof SessionContext.Consumer;
+  SessionContext: typeof SessionContext;
+  withSession: (inner: any) => React.FunctionComponent;
+  useSessionContext: () => ContextState;
+};
 
 const { Provider, Consumer } = SessionContext;
 
@@ -124,7 +132,7 @@ export default function createSessionContext(
   storageEngine: TStorageEngineCode = 'ls',
   storageOptions: TAnyObject = {},
   appendAuthServicePrefix = false
-): any {
+): TSessionContextResult {
   const storage: TStorageEngine = createStorage(storageKey, storageEngine, storageOptions);
   const { getToken, setToken, removeToken } = storage;
 
@@ -142,10 +150,13 @@ export default function createSessionContext(
 
     service: AxiosInstance;
 
+    fullProps: ProviderProps;
+
     constructor(props: ProviderProps) {
       super(props);
 
-      const { serviceHost } = this.props;
+      this.fullProps = Object.assign({}, defaultProps, this.props);
+      const { serviceHost } = this.fullProps;
 
       this.service = createService(serviceHost, storage);
       this.state = {
@@ -170,7 +181,7 @@ export default function createSessionContext(
     }
 
     get fullPrefix() {
-      const { appendAuthServicePrefix: appendPrefix, relayUrl } = this.props;
+      const { appendAuthServicePrefix: appendPrefix, relayUrl } = this.fullProps;
       if (appendAuthServicePrefix && appendPrefix) {
         return `${AUTH_SERVICE_PREFIX}${relayUrl}`;
       }
@@ -179,7 +190,7 @@ export default function createSessionContext(
 
     // 不可以直接个性 props.autoConnect (readonly)
     get autoConnect() {
-      const { autoConnect, autoLogin } = this.props;
+      const { autoConnect, autoLogin } = this.fullProps;
       // for backward compatibility
       if (typeof autoConnect === 'boolean') {
         return autoConnect;
@@ -188,7 +199,7 @@ export default function createSessionContext(
     }
 
     componentDidMount() {
-      const { autoDisconnect } = this.props;
+      const { autoDisconnect } = this.fullProps;
       // ensure we are in the same app
       const connectedApp = Cookie.get('connected_app');
       const actualApp = getAppId();
@@ -360,7 +371,7 @@ export default function createSessionContext(
 
     render() {
       // @ts-ignore
-      const { children, locale, timeout, webWalletUrl, messages, ...rest } = this.props;
+      const { children, locale, timeout, webWalletUrl, messages, ...rest } = this.fullProps;
       const { autoConnect } = this;
       const { action, user, open, initialized, loading } = this.state;
 
@@ -395,6 +406,8 @@ export default function createSessionContext(
         'switch-passport': this.onLogin,
       };
 
+      console.log(messages || translations[action][locale]);
+
       return (
         <Provider value={state}>
           {!open && typeof children === 'function' ? (children as Function)(state) : children}
@@ -427,13 +440,18 @@ export default function createSessionContext(
   }
 
   function useSessionContext(): ContextState {
-    return useContext(SessionContext);
+    const result = useContext(SessionContext);
+    if (result === undefined) {
+      throw new Error('useSession must be inside a SessionProvider with a value');
+    }
+
+    return result;
   }
 
   return { SessionProvider, SessionConsumer: Consumer, SessionContext, withSession, useSessionContext };
 }
 
-export function createAuthServiceSessionContext({ storageEngine = 'cookie' } = {}) {
+export function createAuthServiceSessionContext({ storageEngine = 'cookie' } = {}): TSessionContextResult {
   const storageKey = 'login_token';
 
   if (storageEngine === 'cookie') {
