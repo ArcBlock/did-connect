@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import { TAnyObject, TSession, TLocaleCode, TI18nMessages, SessionTimeout } from '@did-connect/types';
+import { TAnyObject, TSession, TEvent, TLocaleCode, TI18nMessages, SessionTimeout } from '@did-connect/types';
 import { createContext, Component, useContext } from 'react';
 import { AxiosInstance } from 'axios';
 import Cookie from 'js-cookie';
@@ -67,8 +67,8 @@ const translations: I18nGroup = {
 
 const defaultProps = {
   locale: 'en',
-  relayUrl: '/api/connect/relay',
-  appendAuthServicePrefix: false,
+  relayUrl: '/.well-known/service/api/connect/relay',
+  sessionUrl: '/.well-known/service/api/did/session',
   autoConnect: true,
   autoDisconnect: true,
   autoLogin: false,
@@ -81,7 +81,7 @@ type ProviderProps = typeof defaultProps & {
   children: React.ReactNode;
   serviceHost: string;
   relayUrl?: string;
-  appendAuthServicePrefix?: boolean;
+  sessionUrl?: string;
   locale?: TLocaleCode;
   timeout?: typeof SessionTimeout;
   autoLogin?: boolean;
@@ -125,13 +125,10 @@ type TSessionContextResult = {
 
 const { Provider, Consumer } = SessionContext;
 
-const AUTH_SERVICE_PREFIX = '/.well-known/service';
-
 export default function createSessionContext(
   storageKey: string = 'login_token',
   storageEngine: TStorageEngineCode = 'ls',
-  storageOptions: TAnyObject = {},
-  appendAuthServicePrefix = false
+  storageOptions: TAnyObject = {}
 ): TSessionContextResult {
   const storage: TStorageEngine = createStorage(storageKey, storageEngine, storageOptions);
   const { getToken, setToken, removeToken } = storage;
@@ -178,14 +175,6 @@ export default function createSessionContext(
       this.switchPassport = this.switchPassport.bind(this);
       this.refresh = this.refresh.bind(this);
       this.listeners = { login: [], 'switch-profile': [], 'switch-passport': [] };
-    }
-
-    get fullPrefix() {
-      const { appendAuthServicePrefix: appendPrefix, relayUrl } = this.fullProps;
-      if (appendAuthServicePrefix && appendPrefix) {
-        return `${AUTH_SERVICE_PREFIX}${relayUrl}`;
-      }
-      return relayUrl;
     }
 
     // 不可以直接个性 props.autoConnect (readonly)
@@ -244,9 +233,9 @@ export default function createSessionContext(
         }
 
         const { autoConnect } = this;
-        const relayUrl = this.fullPrefix;
+        const { sessionUrl } = this.fullProps;
 
-        const { data, status } = await this.service.get(`${relayUrl}/session`.replace(/\/+/, '/'));
+        const { data, status } = await this.service.get(sessionUrl);
 
         if (status === 400) {
           removeToken();
@@ -338,18 +327,17 @@ export default function createSessionContext(
       this.setState({ open: true, action: 'switch-passport' });
     }
 
-    onLogin(result: any, decrypt: any) {
-      const { loginToken, sessionToken } = result;
-      const token = loginToken || sessionToken;
-      if (token) {
-        setToken(decrypt(token));
+    onLogin(session: TSession, e: TEvent) {
+      const [result] = session.approveResults;
+      if (result.sessionToken) {
+        setToken(result.sessionToken);
         this.setState({ loading: false }, async () => {
           await this.refresh(true);
           while (this.listeners.login.length) {
             const cb = this.listeners.login.shift();
             try {
               // @ts-ignore
-              cb(result, decrypt);
+              cb(session, e);
             } catch (err) {
               console.error('Error when call login listeners', err);
             }
@@ -371,11 +359,9 @@ export default function createSessionContext(
 
     render() {
       // @ts-ignore
-      const { children, locale, timeout, webWalletUrl, messages, ...rest } = this.fullProps;
+      const { children, locale, timeout, webWalletUrl, messages, relayUrl, ...rest } = this.fullProps;
       const { autoConnect } = this;
       const { action, user, open, initialized, loading } = this.state;
-
-      const relayUrl = this.fullPrefix;
 
       const state = {
         api: this.service,
@@ -406,13 +392,12 @@ export default function createSessionContext(
         'switch-passport': this.onLogin,
       };
 
-      console.log(messages || translations[action][locale]);
-
       return (
         <Provider value={state}>
           {!open && typeof children === 'function' ? (children as Function)(state) : children}
           <Connect
             key={action}
+            strategy="smart"
             locale={locale}
             onClose={() => this.onClose(action)}
             onConnect={joinUrl(relayUrl, `/${action}/connect`)}
@@ -466,19 +451,14 @@ export function createAuthServiceSessionContext({ storageEngine = 'cookie' } = {
       path = path || '/';
     }
 
-    return createSessionContext(
-      storageKey,
-      'cookie',
-      {
-        path,
-        returnDomain: false,
-      },
-      true
-    );
+    return createSessionContext(storageKey, 'cookie', {
+      path,
+      returnDomain: false,
+    });
   }
 
   if (storageEngine === 'localStorage') {
-    return createSessionContext(storageKey, 'ls', {}, true);
+    return createSessionContext(storageKey, 'ls', {});
   }
 
   throw new Error('storageEngine must be cookie or localStorage');

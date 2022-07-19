@@ -211,21 +211,20 @@ function SessionManager({
     });
   }
   function _onSwitchDid() {
+    setUserOpen(false);
     session.switchDid((...args: any[]) => {
-      setUserOpen(false);
       onSwitchDid(...args);
     });
   }
   function _onSwitchProfile() {
+    setUserOpen(false);
     session.switchProfile((...args: any[]) => {
-      setUserOpen(false);
       onSwitchProfile(...args);
     });
   }
   function _onSwitchPassport() {
     setUserOpen(false);
     session.switchPassport((...args: any[]) => {
-      setUserOpen(false);
       onSwitchPassport(...args);
     });
   }

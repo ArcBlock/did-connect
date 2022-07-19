@@ -337,7 +337,7 @@ const Session: ObjectSchema = Joi.object({
     )
     .required(),
   updaterPk: Joi.string().required(),
-  strategy: Joi.alternatives().try(Joi.DID(), Joi.string().valid('default')).required(),
+  strategy: Joi.alternatives().try(Joi.DID(), Joi.string().valid('default', 'smart')).required(),
   authUrl: Joi.string()
     .uri({ scheme: ['http', 'https'] })
     .required(),

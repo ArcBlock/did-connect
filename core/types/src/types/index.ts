@@ -235,7 +235,7 @@ export interface TSession {
     | 'rejected'
     | 'canceled'
     | 'completed';
-  strategy: string | 'default';
+  strategy: string | 'default' | 'smart';
   timeout: {
     app: number;
     relay: number;
