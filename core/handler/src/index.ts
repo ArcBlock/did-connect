@@ -438,7 +438,7 @@ export function createHandlers({
       const result: AxiosResponse = await axios.post(
         session.connectUrl as string,
         {
-          ...pick(session, ['sessionId', 'currentConnected', 'previousConnected']),
+          ...pick(session, ['sessionId', 'authUrl', 'currentConnected', 'previousConnected']),
           locale,
         },
         { timeout: session.timeout.app }
@@ -469,6 +469,7 @@ export function createHandlers({
         {
           ...pick(session, [
             'sessionId',
+            'authUrl',
             'challenge',
             'currentStep',
             'currentConnected',
