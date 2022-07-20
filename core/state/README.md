@@ -4,26 +4,44 @@
 
 ## Overview
 
-This library is implemented according to [ABT-DID-Protocol](https://github.com/ArcBlock/abt-did-spec), aiming to make it easier for developers to handle customized DID Connect Sessions in Node.js applications, and should always be used together with [DID Connect UX package](https://www.npmjs.com/package/@did-connect/react), if you are composing a blocklet, you may find the wrapped implementation in [Blocklet SDK](https://www.npmjs.com/package/@blocklet/sdk) more useful.
-
-Within a typical DID Connect Session, the application may request user to sign a transaction or provide some information, such as:
-
-- Provide a user profile, which may contain name, email
-- Prove ownership of a NFT
-- Prove ownership of a passport
-
-The following diagram demonstrates how a typical DID Connect Session works:
-
-![](./docs/workflow.png)
-
-`Claim` is the key concept in DID Connect Session, its used by the application to send specification of required info to finish the session. A claim is identified by `type`, and defined with a set of properties. Checkout the claim section for more information.
+This package leverages xstate to define the state machine of a DID Connect Session, can be used both in the browser and node.js environment. It's the foundation of DID Connect UX libraries of `@did-connect/react` and `@did-connect/vue`.
 
 ## Install
 
 ```sh
-npm install @arcblock/did-auth
+npm install @did-connect/state
 // or
-yarn add @arcblock/did-auth
+yarn add @did-connect/state
 ```
 
 ## Usage
+
+```ts
+const { interpret } = require('xstate');
+const { createStateMachine } = require('@did-connect/state');
+
+const stateHistory = [];
+
+const { machine } = createStateMachine({
+  relayUrl: '/.well-known/service/api/connect/relay',
+  dispatch: (...args) => service.send.apply(service, args),
+  onConnect: (ctx, e) => {
+    return [];
+  },
+  onApprove: (ctx) => ({}),
+  onComplete: () => {},
+  onCancel: (ctx, e) => {
+    hasCanceled = true;
+  },
+});
+
+const service = interpret(machine).onTransition((state) => {
+  if (state.changed !== false) {
+    stateHistory.push(state.value);
+  }
+});
+
+service.start();
+```
+
+TODO: add node.js example for `blocklet connect`
