@@ -1,13 +1,8 @@
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-> Storage engine that uses mongo to store data, implements interfaces defined in `@did-connect/storage`.
+## Introduction
 
-## Table of Contents
-
-- [Table of Contents](#table-of-contents)
-- [Install](#install)
-- [Usage](#usage)
-- [Contributors](#contributors)
+DID Connect session storage engine that uses memory to store data, implements interfaces defined in `@did-connect/storage`.
 
 ## Install
 
@@ -25,13 +20,7 @@ const { MemoryStorage } = require('@did-connect/storage-memory');
 const storage = new MemoryStorage();
 
 (async () => {
-  const token = '123456';
-  const item = await storage.create(token);
+  const sessionId = '123456';
+  const item = await storage.create(sessionId);
 })();
 ```
-
-## Contributors
-
-| Name           | Website                    |
-| -------------- | -------------------------- |
-| **wangshijun** | <https://ocap.arcblock.io> |
