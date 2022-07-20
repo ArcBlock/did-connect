@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable no-alert */
 import { storiesOf } from '@storybook/react';
+import get from 'lodash/get';
 
 import { LocaleProvider } from '@arcblock/ux/lib/Locale/context';
 import Box from '@mui/material/Box';
@@ -11,7 +12,7 @@ import SessionManager from '../src/SessionManager';
 import { createAuthServiceSessionContext } from '../src/Session';
 
 // 检查 SessionProvider 可正常渲染
-const { SessionProvider } = createAuthServiceSessionContext();
+const { SessionProvider, SessionConsumer } = createAuthServiceSessionContext();
 
 const sessionLogin = {
   login: () => {},
@@ -119,4 +120,16 @@ storiesOf('SessionManager', module)
       <SessionManager session={sessionNotLogin} size={40} />
       <SessionManager session={sessionLogin} size={40} />
     </LocaleProvider>
-  ));
+  ))
+  .add('Using Blocklet Service', () => {
+    const tmp = new URL(window.location.origin);
+    tmp.pathname = '/.well-known/service/api/connect/relay';
+
+    return (
+      <SessionProvider serviceHost={get(window, 'blocklet.prefix', '/')} relayUrl={tmp.href}>
+        <LocaleProvider>
+          <SessionConsumer>{({ session }) => <SessionManager session={session} showText showRole />}</SessionConsumer>
+        </LocaleProvider>
+      </SessionProvider>
+    );
+  });
