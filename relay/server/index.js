@@ -4,29 +4,13 @@ const path = require('path');
 const morgan = require('morgan');
 const express = require('express');
 const env = require('@blocklet/sdk/lib/env');
-const getWallet = require('@blocklet/sdk/lib/wallet');
+const Authenticator = require('@blocklet/sdk/lib/connect/authenticator');
+const createHandlers = require('@blocklet/sdk/lib/connect/handler');
 const { NedbStorage } = require('@did-connect/storage-nedb');
-const { Authenticator } = require('@did-connect/authenticator');
-const { createHandlers } = require('@did-connect/handler');
 const { attachHandlers } = require('@did-connect/relay-adapter-express');
 
 const storage = new NedbStorage({ dbPath: path.join(env.dataDir, 'sessions.db'), ttl: 60 * 1000 });
-const authenticator = new Authenticator({
-  wallet: getWallet(),
-  appInfo: {
-    name: env.appName,
-    description: env.appDescription,
-    icon: 'https://arcblock.oss-cn-beijing.aliyuncs.com/images/wallet-round.png',
-    link: env.appUrl,
-    // FIXME: following props should be wrapped in @blocklet/sdk
-    updateSubEndpoint: true,
-    subscriptionEndpoint: '/api/websocket',
-    nodeDid: process.env.ABT_NODE_DID,
-  },
-  chainInfo: {
-    host: process.env.CHAIN_HOST || 'none',
-  },
-});
+const authenticator = new Authenticator({});
 
 const noop = () => null;
 const logger = { info: console.info, error: console.error, warn: console.warn, debug: noop };
