@@ -4,7 +4,7 @@ import { storiesOf } from '@storybook/react';
 import Box from '@mui/material/Box';
 import ConnectButton from '../src/Button';
 
-storiesOf('DID-Connect/Button', module)
+storiesOf('Button', module)
   .addParameters({
     readme: {
       sidebar: '<!-- PROPS -->',

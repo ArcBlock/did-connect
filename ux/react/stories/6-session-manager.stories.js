@@ -34,7 +34,7 @@ const sessionNotLogin = {
   user: null,
 };
 
-storiesOf('DID-Connect/SessionManager', module)
+storiesOf('SessionManager', module)
   .add('has login', () => (
     <LocaleProvider>
       <h4>With role</h4>
