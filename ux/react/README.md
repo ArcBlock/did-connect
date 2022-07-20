@@ -127,8 +127,8 @@ const handleOnClose = () => {
 ### SessionManager
 
 ```jsx
-<SessionProvider serviceHost={get(window, 'blocklet.prefix', '/')} webWalletUrl={webWalletUrl}>
-  <SessionConsumer>{(value) => <SessionManager session={value.session} />}</SessionConsumer>
+<SessionProvider serviceHost={get(window, 'blocklet.prefix', '/')} relayUrl={relayUrl}>
+  <SessionConsumer>{({ session }) => <SessionManager session={session} showText showRole />}</SessionConsumer>
   ...
 </SessionProvider>
 ```
