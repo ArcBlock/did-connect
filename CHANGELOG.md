@@ -1,3 +1,8 @@
+## 2.0.17 (July 20, 2022)
+
+- chore: update readme for each package
+- chore: update storybook organization
+
 ## 2.0.16 (July 19, 2022)
 
 - fix: supervised not correctly set for authPrincipal

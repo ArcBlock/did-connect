@@ -71,7 +71,7 @@ const onApprove = async (ctx, e) => {
 /**
  * stories
  */
-storiesOf('DID-Connect/Examples', module)
+storiesOf('Connect', module)
   .addParameters({
     readme: {
       sidebar: '<!-- PROPS -->',

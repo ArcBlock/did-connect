@@ -19,8 +19,6 @@
   },
   "dependencies": {
     "@blocklet/sdk": "^1.8.3",
-    "@did-connect/authenticator": "2.0.16",
-    "@did-connect/handler": "2.0.16",
     "@did-connect/relay-adapter-express": "2.0.16",
     "@did-connect/storage-nedb": "2.0.16",
     "cors": "^2.8.5",

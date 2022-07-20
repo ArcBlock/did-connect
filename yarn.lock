@@ -16656,10 +16656,10 @@ vfile@^4.0.0:
     unist-util-stringify-position "^2.0.0"
     vfile-message "^2.0.0"
 
-vite-plugin-blocklet@^0.4.22:
-  version "0.4.22"
-  resolved "https://registry.yarnpkg.com/vite-plugin-blocklet/-/vite-plugin-blocklet-0.4.22.tgz#b42d52daa2e5b1fab3df8b6b7887a735d065c5c4"
-  integrity sha512-N4Ju9+gqT+7Mhz1YsY9HsfIQJ5TyJwjHwtOu6B3ZlDD5f87WeeFxXTBc+enR8Sk+h3v6R2K6sB38Z2gFVKxWJA==
+vite-plugin-blocklet@^0.4.24:
+  version "0.4.24"
+  resolved "https://registry.yarnpkg.com/vite-plugin-blocklet/-/vite-plugin-blocklet-0.4.24.tgz#b1b015fc31474e3a10548e5bde539bcead6ffcb5"
+  integrity sha512-5NXse3talmGanAubAwQ/wwAVNVKVi8ZKje2vVcnSZLy2huLcZwP6APsi6dI0joxv8+9U9CWoNfr3GV/pR5K1Ew==
   dependencies:
     "@arcblock/did" "^1.17.5"
     "@ocap/mcrypto" "^1.17.5"

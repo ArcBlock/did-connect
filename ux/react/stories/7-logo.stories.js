@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import { storiesOf } from '@storybook/react';
 import DidLogo from '../src/Logo';
 
-storiesOf('DID-Connect/Logo', module)
+storiesOf('Logo', module)
   .addParameters({
     readme: {
       sidebar: '<!-- PROPS -->',

@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 
 import Avatar from '../src/Avatar';
 
-storiesOf('DID-Connect/Avatar', module)
+storiesOf('Avatar', module)
   .addParameters({
     readme: {
       sidebar: '<!-- PROPS -->',

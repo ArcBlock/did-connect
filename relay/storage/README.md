@@ -1,31 +1,13 @@
-# [**@did-connect/storage**](https://github.com/ArcBlock/did-connect)
-
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-> Interface for define a storage class that can be used by [@arcblock/did-auth].
+## Introduction
 
-## Table of Contents
+Defines the interface for DID Connect Session Storage, basic APIs that a session storage includes:
 
-- [**@did-connect/storage**](#did-connectrelay-storage)
-  - [Table of Contents](#table-of-contents)
-  - [Motivation & Spec](#motivation--spec)
-  - [Install](#install)
-  - [Usage](#usage)
-  - [Contributors](#contributors)
-
-## Motivation & Spec
-
-> Since tokens are used everywhere make achieve better QR code experience, we should allow users to customize how to generate/store/update token records.
-
-Basic APIs that a token storage should support:
-
-- `async init()`, optional, **should be called before creating any instance**, open a database connection, creating a embed database on file system
-- `async create(token, status = created)`, create a new token record, persist in data store
-- `async exist?(token, did)`, check for token existense
-- `async read(token)`, read a token from database,
-- `async update(token, updates)`, update token record
-- `async delete(token)`, remove a token record
-- `async gc()`, optional, run garbage collection on the token storage
+- `async create(session, attrs)`, create a new session record, persist in storage
+- `async read(session)`, read a session from storage,
+- `async update(session, updates)`, update session record
+- `async delete(session)`, remove a session record
 
 ## Install
 
@@ -38,40 +20,30 @@ yarn add @did-connect/storage
 ## Usage
 
 ```js
-const StorageInterface = require('@did-connect/storage');
+const { BaseStorage } = require('@did-connect/storage');
 const keystone = require('keystone');
 
-module.exports = class KeystoneStorage extends StorageInterface {
+module.exports = class KeystoneStorage extends BaseStorage {
   constructor() {
-    this.model = keystone.list('LoginToken').model;
+    this.model = keystone.list('sessions').model;
   }
 
-  create(token, status = 'created') {
+  create(sessionId, attrs) {
     const LoginToken = this.model;
-    const item = new LoginToken({ token, status });
+    const item = new LoginToken({ sessionId, ...attrs });
     return item.save();
   }
 
-  read(token) {
-    return this.model.findOne({ token });
+  read(sessionId) {
+    return this.model.findOne({ sessionId });
   }
 
-  update(token, updates) {
-    return this.model.findOneAndUpdate({ token }, updates);
+  update(sessionId, updates) {
+    return this.model.findOneAndUpdate({ sessionId }, updates);
   }
 
-  delete(token) {
-    return this.model.remove({ token });
-  }
-
-  exist(token, did) {
-    return this.model.findOne({ token, did });
+  delete(sessionId) {
+    return this.model.remove({ sessionId });
   }
 };
 ```
-
-## Contributors
-
-| Name           | Website                    |
-| -------------- | -------------------------- |
-| **wangshijun** | <https://ocap.arcblock.io> |

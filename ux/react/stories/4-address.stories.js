@@ -12,7 +12,7 @@ import { useTheme } from '@mui/styles';
 import DidAddress from '../src/Address';
 import Avatar from '../src/Avatar';
 
-storiesOf('DID-Connect/Address', module)
+storiesOf('Address', module)
   .addParameters({
     readme: {
       sidebar: '<!-- PROPS -->',
