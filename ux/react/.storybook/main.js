@@ -30,7 +30,7 @@ module.exports = {
   webpackFinal: async (config) => {
 
     config.module.rules.unshift({
-      test: /\/demo\/[\w-]+\.js$/,
+      test: /\/demo\/[\w-]+\.[jt]sx?$/,
       use: [
         {
           loader: path.resolve(__dirname, './modules/demo-source-loader.js'),
