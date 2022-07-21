@@ -1,0 +1,1004 @@
+---
+layout: 'my-layout'
+blocks:
+  - name: SectionBlock
+    background:
+      color: '#fff'
+    className: text-center
+    classes:
+      section: '!xl:py-10'
+    title:
+      - name: Pic
+        className: w-[120px] m-auto mb-8
+        src: /logos/logo-ico.png
+      - name: div
+        className: font-bold text-center
+        children: Create Blocklet
+    description:
+      - name: div
+        className: text-center text-[#333]
+        children: Set up a blocklet app by running one command.
+      - name: div
+        className: text-center
+        children:
+          name: Button
+          varaint: border
+          className: mt-8 w-auto m-auto !text-#236FFF !border-#236FFF px-4 py-2 !inline-block
+          size: lg
+          color: primary
+          children:
+            name: SmartLink
+            to: /getting-started
+            base: docs
+            children: Get Started
+---
+
+## DID Connect Protocol
+
+DID Connect Protocol is an open protocol that provides a secure and decentralized mechanism for connecting users with DApps by using cryptography technology. In this protocol, we define `Connect` as the workflow that the user provides answers of the requested claims to the DApp.
+
+This protocol involves following parties:
+
+- User: The end user, usually involed in the workflow by using a Wallet, [DID Wallet](https://www.didWallet.io) is a solution provided by DID Labs.
+- DApp: The application that provides service to users.
+- Relay: Which acts as bridge between the DApp and the User.
+- REGISTRY_CHAIN: The decentralized trust authority. ArcBlock provides the ABT chain as the decentralized trust authority.
+
+The entire connect workflow contains three processes:
+
+- Pre-knowledge
+- Request DID Connect
+- Response DID Connect (could be multiple rounds)
+
+![](./imgs/did_auth_workflow.png)
+
+### Pre-knowledge
+
+Pre-knowledge refers to the process that user gets the information of a DApp before the real connect starts. DApp can provide the information in a QR code or deep link.
+
+The following is an example of the content of a QR code or deep link.
+
+```text
+https://didWallet.io/i?action=requestAuth&url=https://example-dapp.io/auth/
+```
+
+- `linkPath`: The `linkPath` is located at the beginning of the link and is used to locate the Wallet. In this example, the 'linkPath' is `https://didWallet.io/i` . This part is configurable, and the SDK allows developers to register their domain for their applications.
+  - If the QR code is scanned by a third-party camera, e.g. iPhone, Wallet should be open, and the parameters will be passed to Wallet if it is installed. If Wallet is not installed, an installation page should be open. The same behavior applies to the case when the user clicks such a link. The process illustrated above depends on the deep link technology of different platforms such as [iOS](https://developer.apple.com/ios/universal-links/) and [Android](https://developer.android.com/training/app-links/).
+  - If the QR code is scanned by Wallet, Wallet should ignore this section and parse the parameters.
+- `action`: the action Wallet should perform in the next step. Here the action should be `requestAuth` and the Wallet should use `GET` method to access the `url`
+- `url`: a [x-www-form-urlencoded](https://en.wikipedia.org/wiki/Percent-encoding#The_application.2Fx-www-form-urlencoded_type) URL. Wallet uses this url to start the Request DID Connect process latter.
+
+### Request DID Connect
+
+Request DID Connect is the step that the Wallet actually starts the connect process. The Wallet makes a request to the endpoint pointed by the `url` obtained from the previous step. The following is the step-by-step break down of what's going to happen of this process:
+
+1. Wallet makes a request to the endpoint.
+
+   ```text
+   GET https://example-dapp.io/api/connect/relay
+   ```
+
+2. The response returned by the DApp shall contain following fields:
+
+- `appPk`: required, the DApp's public key, encoded by Bitcoin Base58.
+- `agentPk`: optional, the public key of the agent that has authorization from an DApp.
+- `authInfo`: required, a standard JWT token.
+- `appSession`: optional, the encrypted information for the DApp to process this connect session. Wallet must return it to DApp with no change. It is up to the DApp to how to encrypt this field.
+  The following is an example response payload.
+
+```json
+{
+  "appPk": "zBdZEnbDJTijVVCx4Nx68bzDPPMFwVizSRorvzSS3SGG2",
+  "agentPk": "zNKtCNqYWLYWYW3gWRA1vnRykfCBZYHZvzKr",
+  "authInfo": "eyJhbGciOiJFZDI1NTE5IiwidHlwIjoiSldUIn0.eyJleHAiOjE1NDg4MDM0MjIsImlhdCI6MTU0ODcwMzQyMiwiaXNzIjoiZGlkOmFidDp6Tkt0Q05xWVdMWVdZVzNnV1JBMXZuUnlrZkNCWllIWnZ6S3IiLCJuYmYiOjE1NDg3MDM0MjIsInJlcXVlc3RlZENsYWltcyI6eyJkb2N1bWVudHMiOlt7Imhhc2giOiJUaGUgaGFzaCBvZiB0aGUgZG9jdW1lbnQncyBjb250ZW50IiwidXJpIjoiaHR0cHM6Ly9kb2N1bWVudC0xLmlvIn0seyJoYXNoIjoiVGhlIGhhc2ggb2YgdGhlIGRvY3VtZW50J3MgY29udGVudCIsInVyaSI6ImlwZnM6Ly9kb2N1bWVudC0yIn1dLCJwcm9maWxlIjpbImZ1bGxOYW1lIiwicGhvbmUiLCJzaGlwcGluZ0FkZHJlc3MiXSwicHJvb2ZPZkhvbGRpbmciOlt7InRva2VuIjoidG9rZW4gbmFtZSAxIiwidmFsdWUiOjE4MDAwMDB9LHsidG9rZW4iOiJ0b2tlbiBuYW1lIDIiLCJ2YWx1ZSI6MTAwMDAwMH1dfSwicmVzcG9uc2VBdXRoVXJpIjoiaHR0cHM6Ly9leGFtcGxlLWFwcGxpY2F0aW9uL3Jlc3BvbnNlLWF1dGgifQ.RasZv6ydSxOBj3H726P8THeo4K4IAd7wapqrdE4hrOVRONByAHYK1kr7uAXASc_-Mw9ShD3IcqAuwnLiEkvHCQ",
+  "appSession": ""
+}
+```
+
+The header and body part of `authInfo` displayed above decodes as
+
+```json
+{
+  "alg": "Ed25519",
+  "typ": "JWT"
+}
+```
+
+```json
+{
+  "iss": "did:abt:zNKtCNqYWLYWYW3gWRA1vnRykfCBZYHZvzKr",
+  "agentDid": "did:abt:zNKtCNqYWLYWYW3gWRA1vnRykfCBZYHZvzKr",
+  "iat": 1548703422,
+  "nbf": 1548703422,
+  "exp": 1548803422,
+  "challenge": "F16E730BFB914FA1",
+  "version": "1.0",
+  "appInfo": {
+    "name": "The name of the DApp",
+    "description": "The description of the DApp.",
+   "url": "https://example-dapp",
+    "logo": "https://example-dapp/logo"
+  },
+  "chainInfo": {
+    "host": "https://example-dapp/api"
+  },
+  "action": "responseAuth",
+  "url": "https://example-dapp/api/connect/relay/auth",
+  "requestedClaims": [
+    {
+      "type": "authPrincipal",
+      "description": "Please select account to continue."
+    }
+  ],
+  "verifiableClaims:" [
+    {
+      "type": "certificate",
+      "content": "eyJleHAiOjE1NDg4MDM0MjIsImlhdCI6MTU0ODcwMzQyMiwiaXNzIjoiVGhlIGlzc3VlcidzIGRpZCBvZiB0aGUgY2VydGlmaWNhdGUuIiwibmJmIjoxNTQ4NzAzNDIyLCJvcHMiOnsiYWdyZWVtZW50IjpbImRpZ2VzdCBvZiBhZ3JlZW1lbnQgb25lIiwiZGlnZXN0IG9mIGFncmVlbWVudCB0d28iXSwicHJvZmlsZSI6WyJmdWxsTmFtZSIsIm1vYmlsZVBob25lIiwibWFpbGluZ0FkZHJlc3MiXX0sInBrIjoiVGhlIHBrIG9mIHRoZSBpc3N1ZXIiLCJzdWIiOiJUbyB3aG9tIHRoZSBjZXJ0aWZpY2F0ZSBpcyBpc3N1ZWQuIn0",
+      "sig": "The signature"
+    }
+  ]
+}
+```
+
+- `iss`: The issuer of this JWT payload. In this example, it is the DApp's DID generated from `appPk`.
+- `iat`, `nbf` and `exp`: Follows the JWT standard.
+- `version`: The version of DID Auth Protocol.
+- `agentDid`: If this payload is signed by an agent with the authorization from another DApp, this should be the agent DID.
+- `challenge`: A 8 bytes random number in hex format that generated by DApp and must be returned unchanged by Wallet, and included when signing the auth response, the DApp should be able to verify that the both the signature and the challenge are correct.
+- `appInfo`: The basic information of this DApp, such as name, description, logo and so on.
+- `chainInfo`: The basic information of this chain. The protocol right now only supports `host` in side this field.
+- `url`: A must-have field that will be used by the Wallet in Response DID Connect process.
+- `action`: Tells what action should the Wallet perform in next step. Here it should be `responseAuth` and the Wallet shall use `POST` method to access the `url`.
+- `requestedClaims`: The verifiable claims required by the DApp's. In this example, the type of the requested claim is `authPrincipal` which usually is the first claim required by the DApp in the connect process. This claim means that the DApp is asking the Wallet to set the authentication principal before they can continue to the reset of operations. The authentication principal is the user's DID whose private key shall be used to sign all of the requests sent from the Wallet to the DApp.
+- `verifiableClaims`: The verifiable claims provided by the DApp, Wallet should verify those claims before any furthur processing.
+
+3. After gets the response, the Wallet should do following verifications:
+   1. Verifies if the `iat` is later than the request is sent.
+   2. Verifies if the response has expired by using `exp`.
+   3. Verifies if the signature matches the `appPk` and if the `appPk` matches the appDid in the `iss` field.
+4. **(TBD)** The Wallet could (may under users' request) ask a registry blockchain for the metadata of the DApp, `trustLevel` for example. ArcBlock provides ABT chain as a registry chain.
+5. **(TBD)** The `trustLevel` can be used by the Wallet when displaying requested claims to user. For the DApp whose `appDid` cannot be found on registry blockchain, the Wallet should make the entire page with high risk mark. If an DApp is asking verifiable claims whose required trust_level is higher than the `appDid`s', the Wallet should display those claims with high risk mark.
+6. The Wallet needs to determine the DID to use to set as the authentication principal. If the user has accessed the DApp before, then the Wallet should directly use extended DID as the `authPrincipal`. Otherwise, the Wallet shall create an [Extended DID](#create-extended-did) before any other operations.
+
+### Response DID Connect
+
+This step can be thought of as that the Wallet is answering the questions asked by the DApp through the `requestedClaims` field and the DApp would possibly return more questions depending on the answers.
+
+After determined the value of the `userDid` to respond to the DApp, the Wallet shall organize the response just in following format:
+
+```json
+{
+  "userPk": "",
+  "userInfo": "",
+  "userSession": "",
+  "appSession": ""
+}
+```
+
+- `userPk`: The corresponding public key of the `userDid`.
+- `userInfo`: The signed authentication object in JWT format.
+- `userSession`: The encrypted information for the Wallet to process this connect session. DApp must return this filed back to Wallet with no change. It is up to the Wallet to encrypt this part.
+- `appSession`: The encrypted information for the DApp to process this connect session. Wallet must return it to DApp with no change.
+
+Just like the `authInfo`, the `userInfo` is also a standard JWT object which can be decoded as follows in this example:
+
+```json
+{
+  "alg": "Ed25519",
+  "typ": "JWT"
+}
+{
+  "iss": "userDid",
+  "iat": "1548713422",
+  "nbf": "1548713422",
+  "exp": "1548813422",
+  "challenge": "F16E730BFB914FA1",
+}
+```
+
+The fields `iss` means the issuer of this JWT payload. It is also the **authentication principal** determined in the previous step.
+
+### More Response DID Authentication
+
+After the Wallet set the authentication principal, the DApp could send more claims back to the Wallet depending on its business logic. It is just like a customer manager in a bank could ask a serious of questions before he or she can process the business service for the customer. So let's see another example response that a DApp could return to the Wallet after the first round authentication.
+
+```json
+{
+  "appPk": "zBdZEnbDJTijVVCx4Nx68bzDPPMFwVizSRorvzSS3SGG2",
+  "authInfo": "eyJhbGciOiJFZDI1NTE5IiwidHlwIjoiSldUIn0.eyJleHAiOjE1NDg4MDM0MjIsImlhdCI6MTU0ODcwMzQyMiwiaXNzIjoiZGlkOmFidDp6Tkt0Q05xWVdMWVdZVzNnV1JBMXZuUnlrZkNCWllIWnZ6S3IiLCJuYmYiOjE1NDg3MDM0MjIsInJlcXVlc3RlZENsYWltcyI6eyJkb2N1bWVudHMiOlt7Imhhc2giOiJUaGUgaGFzaCBvZiB0aGUgZG9jdW1lbnQncyBjb250ZW50IiwidXJpIjoiaHR0cHM6Ly9kb2N1bWVudC0xLmlvIn0seyJoYXNoIjoiVGhlIGhhc2ggb2YgdGhlIGRvY3VtZW50J3MgY29udGVudCIsInVyaSI6ImlwZnM6Ly9kb2N1bWVudC0yIn1dLCJwcm9maWxlIjpbImZ1bGxOYW1lIiwicGhvbmUiLCJzaGlwcGluZ0FkZHJlc3MiXSwicHJvb2ZPZkhvbGRpbmciOlt7InRva2VuIjoidG9rZW4gbmFtZSAxIiwidmFsdWUiOjE4MDAwMDB9LHsidG9rZW4iOiJ0b2tlbiBuYW1lIDIiLCJ2YWx1ZSI6MTAwMDAwMH1dfSwicmVzcG9uc2VBdXRoVXJpIjoiaHR0cHM6Ly9leGFtcGxlLWFwcGxpY2F0aW9uL3Jlc3BvbnNlLWF1dGgifQ.RasZv6ydSxOBj3H726P8THeo4K4IAd7wapqrdE4hrOVRONByAHYK1kr7uAXASc_-Mw9ShD3IcqAuwnLiEkvHCQ",
+  "appSession": "",
+  "userSession": ""
+}
+```
+
+The header and body part of `authInfo` displayed above decodes as
+
+```json
+{
+  "alg": "Ed25519",
+  "typ": "JWT"
+}
+{
+  "iss": "did:abt:zNKtCNqYWLYWYW3gWRA1vnRykfCBZYHZvzKr",
+  "iat": 1548703422,
+  "nbf": 1548703422,
+  "exp": 1548803422,
+  "version": "1.0",
+  "challenge": "F16E730BFB914FA1",
+  "appInfo": {
+    "name": "The name of the application",
+    "description": "The description of the application.",
+    "logo": "https://example-dapp/logo"
+  },
+  "action": "responseAuth",
+  "url": "https://example-app/auth",
+  "requestedClaims": [
+    {
+      "type": "profile",
+      "description": "Please fill in basic information.",
+      "items": ["fullName", "mobilePhone", "mailingAddress"]
+    },
+    {
+      "type": "agreement",
+      "description": "The user data usage agreement.",
+      "meta": {
+        "name": "user_agreement",
+      },
+      "uri": "https://document-1.io",
+      "hash": {
+        "method": "sha2",
+        "digest": "The hash result of the document's content"
+      }
+    },
+    {
+      "type": "agreement",
+      "description": "The service agreement",
+      "meta": {
+        "name": "service_agreement"
+      },
+      "uri": "ipfs://document-2",
+      "hash": {
+        "method": "sha3",
+        "digest": "The hash result of the document's content"
+      }
+    }
+  ]
+}
+```
+
+- `meta`: An optional field in each requested claim, the Wallet **MUST** return this field to the DApp without any change.
+- `description`: The description to display to end user.
+
+So in this example, the DApp is asking the Wallet to provide some basic information of the user. The Wallet shall prompt a user to let him or her to finish this claims and send back to the DApp again. We will talk about how to process each type claim in next section.
+
+### Ends an Authentication Workflow
+
+To end an authentication workflow, you can send the last response like this:
+
+```json
+{
+  "alg": "Ed25519",
+  "typ": "JWT"
+}
+{
+  "iss": "did:abt:zNKtCNqYWLYWYW3gWRA1vnRykfCBZYHZvzKr",
+  "iat": 1548703422,
+  "nbf": 1548703422,
+  "exp": 1548803422,
+  "version": "1.0",
+  "challenge": "F16E730BFB914FA1",
+  "appInfo": {
+    "name": "The name of the application",
+    "description": "The description of the application.",
+    "logo": "https://example-dapp/logo"
+  },
+  "status": "ok",
+  "successMessage": "success message"
+  "response": {
+    "key": "value"
+  }
+}
+```
+
+Or you can return some error message like:
+
+```json
+{
+  "status": "error",
+  "errorMessage": "error message"
+}
+```
+
+Send some data back to Wallet to persist:
+
+```json
+{
+  "status": "ok",
+  "response": {
+    "disposition": "attachment",
+    "type": "VerifiableCredential",
+    "data": "json presentation of the credential"
+  }
+}
+```
+
+### Concatenate multiple Workflow
+
+If you hope the Wallet continue to process another workflow after the current one, you can put the deeplink of the next workflow into the last response. For example:
+
+```json
+{
+  "alg": "Ed25519",
+  "typ": "JWT"
+}
+{
+  "iss": "did:abt:zNKtCNqYWLYWYW3gWRA1vnRykfCBZYHZvzKr",
+  "iat": 1548703422,
+  "nbf": 1548703422,
+  "exp": 1548803422,
+  "version": "1.0",
+  "challenge": "F16E730BFB914FA1",
+  "appInfo": {
+    "name": "The name of the application",
+    "description": "The description of the application.",
+    "logo": "https://example-dapp/logo"
+  },
+  "nextWorkflow": "https://didWallet.io/i?action=requestAuth&url=https://example-dapp.io/next/workflow/"
+}
+```
+
+### Decline DID Authentication
+
+In some cases, user may choose to decline the request from the DApp, the Wallet should tell the DApp about user's decline to provide better user experience by setting `action` field to `declineAuth`, with an empty `requestedClaims` field.
+
+```json
+{
+  "iss": "did:abt:zNKtCNqYWLYWYW3gWRA1vnRykfCBZYHZvzKr",
+  "iat": 1548703422,
+  "nbf": 1548703422,
+  "exp": 1548803422,
+  "version": "1.0",
+  "action": "declineAuth",
+  "challenge": "F16E730BFB914FA1",
+  "requestedClaims": []
+}
+```
+
+### Revoke DID Authentication
+
+_TBD_
+
+## Verifiable Claims
+
+Verifiable claims is a list of claim item. Different types of claims have some common attributes even though they are designed to server under different scenarios.
+
+- `type`: This is a must-have field for types of claims items.
+- `description`: The message to display to end users, a must-have field for all types of claims items. The Wallet could omit this field when returning the claims for the sake of network bandwidth.
+- `meta`: An optional field available for all types of claim item. It is up to the DApp to put some information there so that it can easily process the claims sent back from the Wallet. The Wallet **MUST** return this field in each claim item without any changes.
+
+The supported types of claims are described as follows:
+
+### AuthPrincipal
+
+This is the first claim to ask by the DApp, it is used to informing the Wallet to set the authentication principal for the entire authentication process. The authentication principal is the `iss` field of the JWT payload sent from the Wallet.
+
+To ask the Wallet to set up authentication principal, the DApp should respond the Wallet with this claim, usually the authPrincipal claim is silent and completed without user notice, but the DApp can ask Wallet to display a connect screen by setting `supervised` field to `true` in the claim:
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "authPrincipal",
+      "description": "Please set the authentication principal.",
+      "supervised": true
+    }
+  ]
+}
+```
+
+Sometimes a DApp may want the Wallet to prove that it is a specific user. In such cases, the DApp can add the field `target` in the claim item. The Wallet must set the authentication principal to the specific DID.
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "authPrincipal",
+      "description": "Please set the authentication principal to start this atomic swap.",
+      "target": "did:abt:z1fw9Ycbb7cJnj1NUm6hyuSYHuTHEwph8yH",
+      "supervised": false
+    }
+  ]
+}
+```
+
+Sometimes a DApp may want the Wallet to generate a DID with customized arguments, the DApp can add the following fields in the claim item:
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "authPrincipal",
+      "description": "Please generate an application account with the following settings",
+      "declareParams": {
+        "moniker": "application_moniker",
+        "issuer": "z1fw9Ycbb7cJnj1NUm6hyuSYHuTHEwph8yH"
+      },
+      "targetType": {
+        "role": "application",
+        "hash": "sha3",
+        "key": "ed25519"
+      },
+      "supervised": false
+    }
+  ]
+}
+```
+
+> By default all DID are encoded into `base58_btc` format.
+
+The Wallet shall generate a new DID with `targetType` settings, and make sure the DID is declared with `declareParams" before answering the claim. The Wallet should just generate the key pair of the DID randomly.
+
+### Profile
+
+Profile is the verifiable claim used to gather users' basic information such as name, email, age and so on. The requested information is put in the `items` sub-field. For example, when the DApp requires users to provide their first name, mobile phone number and mailing address, it could respond a claim to the Wallet in following way.
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "profile",
+      "description": "Please provide the basic information.",
+      "items": ["fullName", "mobilePhone", "mailingAddress"]
+    }
+  ]
+}
+```
+
+The Wallet shall answer this claim in such way:
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "profile",
+      "fullName": "Alice Bean",
+      "mobilePhone": "123456789",
+      "mailingAddress": {
+        "addressLine1": "456 123th AVE",
+        "addressLine2": "Apt 106",
+        "city": "Redmond",
+        "state": "WA",
+        "postalCode": "98052",
+        "country": "USA"
+      }
+    }
+  ]
+}
+```
+
+Please see the [appendix](#profile-items) for the list of all profile items.
+
+### Agreement
+
+Agreement is another commonly used type of claim. It stands for the agreements that a DApp asks the user to sign. An `agreement` claim type contains following fields:
+
+- `uri`: An URI points to the content of the agreement.
+- `hash`: An object where `method` sub field specifies the algorithm (sha3, sha2 and so on) used, and `digest` sub field is the hash result.
+- `agreed`: A boolean value added by the Wallet to indicate if the user agrees the agreement.
+- `sig`: The DSA signature of the `hash`.
+
+When a DApp wants a user to sign agreements, it should add a list of such claim items in the response.
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "agreement",
+      "description": "The user data usage agreement.",
+      "meta": {
+        "name": "user_agreement."
+      },
+      "uri": "https://document-1.io",
+      "method": "sha2",
+      "digest": "The hash result of the document's content"
+    },
+    {
+      "type": "agreement",
+      "description": "The service agreement",
+      "meta": {
+        "name": "service_agreement"
+      },
+      "uri": "ipfs://document-2",
+      "method": "sha3",
+      "digest": "The hash result of the document's content"
+    }
+  ]
+}
+```
+
+When see this response, Wallet should prompt the user to sign the agreements. Later, the Wallet should submit a list of signed claim items back to the DApp. If the user agrees, Wallet shall add the `agreed` and the `sig` field. If the user declines, then the Wallet just need to add the `agreed` field with value `false`. No signature is required in this situation.
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "agreement",
+      "uri": "https://document-1.io",
+      "method": "sha2",
+      "digest": "The hash result of the document's content",
+      "meta": {
+        "name": "user_agreement."
+      },
+      "agreed": true,
+      "sig": "user's signature against the doc digest plus AGREED."
+    },
+    {
+      "type": "agreement",
+      "uri": "ipfs://document-2",
+      "method": "sha3",
+      "digest": "The hash result of the document's content",
+      "meta": {
+        "name": "service_agreement"
+      },
+      "agreed": false
+    }
+  ]
+}
+```
+
+### Asset
+
+The Asset claim item is used to let the Wallet to provide a on-chain Asset DID to the DApp. Usually the DApp would need to verify the ownership of the Asset against the signature and on chain Asset State. To ask the Wallet to provide an Asset DID, the DApp shall send the claim in following way:
+
+- `filters`: required field to specify a list of filters for Wallet to select assets, if multiple filters are specified, they should be interpreted as `OR`, multiple fields inside a filter should be interpreted as `AND`, multiple values inside a field should be interpreted as `OR`, each filter can contain any of the following parameters:
+  - `trustedIssuers`: did list of trusted issuers, default to empty list
+  - `trustedParents`: did list of trusted parents, usually this refers to the nft-factory address, default to empty list
+  - `tag`: asset tag for filter, default to empty
+  - `address`: did of the asset, either on-chain or off-chain, default to empty string
+- `optional`: field for user to skip this claim. If `optional` is true, claim response can be empty. The `optional` field is false default.
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "asset",
+      "description": "Please provide the coupon you own.",
+      "optional": false,
+      "filters": [
+        {
+          "address": "zje1uzZTCZN551EWGLyyCEW9AM2wAdjymfHb"
+        },
+        {
+          "trustedIssuers": ["zje1uzZTCZN551EWGLyyCEW9AM2wAdjymfHb"],
+          "tag": "abcd"
+        },
+        {
+          "trustedParents": ["zje1uzZTCZN551EWGLyyCEW9AM2wAdjymfHb"],
+          "tag": "abcd"
+        },
+        {
+          "trustedIssuers": ["zje1uzZTCZN551EWGLyyCEW9AM2wAdjymfHb"],
+          "trustedParents": ["zje1uzZTCZN551EWGLyyCEW9AM2wAdjymfHb"],
+          "tag": "abcd"
+        }
+      ],
+      "meta": {}
+    }
+  ]
+}
+```
+
+The Wallet shall return the response in following way:
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "Asset",
+      "asset": "did:abt:zje1uzZTCZN551EWGLyyCEW9AM2wAdjymfHb",
+      "ownerDid": "NFTOwner.address",
+      "ownerPk": "toBase58(NFTOwner.publicKey)",
+      "ownerProof": "toBase58(NFTOwner.sign(challenge))",
+      "meta": {}
+    }
+  ]
+}
+```
+
+- `asset` is the address of the on-chain asset owned by the USER, which can be any valid user within the same Wallet.
+- `ownerDid` is the did of the on-chain asset owner, this should always be included because sometimes the owner maybe different from the session userDid
+- `ownerPk` is the public key of the on-chain asset owner, this should always be included because sometimes the owner public key can not be found anywhere else.
+- `ownerProof` is the signature by the on-chain asset owner against the session challenge.
+
+### Signature
+
+Signature is a commonly used claim between the Wallet and the DApp. When the DApp need to guide the Wallet user through a certain business operation, they will probably end up with signing and broadcasting a transaction to the blockchain. In this situation, the DApp usually assembles a transaction and sends to the user and asks for signature. The DApp is supposed to send the origin full payload and the type URL of the transaction to the Wallet so that the Wallet can validate the hash and display transaction to the user.
+
+Besides the common fields among all types of claim items, the Signature claim item has following extra fields:
+
+- `typeUrl`: The type url of this transaction. This field helps the Wallet to decode and display the raw transaction.
+- `origin`: The Base58 encoded payload of the transaction. This payload should be decoded by using the `typeUrl`.
+- `method`: The Hash method to use to generate the message digest of the `origin`. This value should be equal to the hash method in user's DID.
+- `digest`: The message digest of the `origin`. This is the data that the Wallet signs. Wallet will validate if this digest matches with the origin data.
+- `display`: A visual presentation of what user will get when the transaction is executed.
+- `sig`: The signature to return.
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "signature",
+      "description": "Please sign this exchange transaction.",
+      "typeUrl": "fg:t:transaction",
+      "origin": "base58 encoded data",
+      "method": "sha3",
+      "display": "JSON stringified display info",
+      "digest": "base58 encoded digest",
+      "meta": {
+        "id": 12345
+      }
+    }
+  ]
+}
+```
+
+The Wallet shall return the signature in following format:
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "signature",
+      "typeUrl": "fg:t:transaction",
+      "origin": "base58 encoded data",
+      "method": "sha3",
+      "digest": "base58 encoded digest",
+      "meta": {
+        "id": 12345
+      },
+      "sig": "the value to return"
+    }
+  ]
+}
+```
+
+The list of known `typeUrl`:
+
+- `fg:t:transaction`: need Wallet decode the origin to a transaction and sign it.
+- `mime:text/plain`: need Wallet decode the origin to the text and show to user.
+- `mime:text/html`: need Wallet decode the origin to the html content and show to user.
+- `eth:transaction`: need Wallet decode the origin to a json string, the json format:
+
+  ```json
+  {
+    "network": 1, // the eth network id
+    "tx": {
+      "to": "<eth address>",
+      "value": "<number string>", // eg: "10000000000000000" => 0.1 ETH
+      "gasLimit": "<number string>", // eg: 25100, 80000...
+      "data": "xxxx" // if this is not contract call, just pass empty string
+    }
+  }
+  ```
+
+  Wallet will use the json data to create and send a ETH Transaction, before send it Wallet need display the tx detail to user, and let user use password double confirm before finally send it.
+
+### prepareTx
+
+prepareTx is a commonly used when the the DApp needs Wallet to pay certain amount of token to complete a business workflow, the DApp knows which kind of transaction to send, but does not know some parameters to assemble the transaction, the DApp first assembles a partial transaction and the payment requirements and sends them to the Wallet. The Wallet then figure out which accounts should be used to pay for the transaction, and then assembles the complete transaction for display and signing. Upon user confirmation, the Wallet shall submit the complete transaction with signatures to DApp for broadcasting.
+
+Besides the common fields among all types of claim items, the `prepareTx` claim item has following extra fields:
+
+- `partialTx`: The Base58 encoded result of the partial transaction. The Wallet shall leave it untouched on submit.
+- `requirement`: The payment requirement of the transaction. The Wallet shall leave it untouched on submit.
+  - `requirement.tokens`: Is a list to specify the required amount of each token address, token address is set to empty for primary token. When set to empty array, means that this transaction does not need any tokens.
+  - `requirement.assets`: Is an object for Wallet to select a list of assets, can filter by address or parent address. When set to empty object, means that this transaction does not need any assets
+- `finalTx`: The Base58 encoded result of the final signed transaction, which can be broadcasted to blockchain without any further operation. The Wallet can change the following fields to create the final transaction:
+  - `tx.signatures` and `tx.signature` and `tx.itx.inputs`: if the transaction requires multiple accounts to pay
+  - `tx.from` and `tx.delegator`: if the transaction requires delegation to complete
+- `display`: A visual presentation of what user will get when the transaction is executed.
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "prepareTx",
+      "description": "Please pay 2 ABT to buy VIP",
+      "partialTx": "base58 encoded partial tx",
+      "display": "JSON stringified display info",
+      "requirement": {
+        "tokens": [
+          {
+            "address": "TOKEN_ADDRESS",
+            "value": "TOKEN_AMOUNT_AS_BIG_NUMBER_STRING"
+          }
+        ],
+        "assets": {
+          "address": ["LIST_OF_SPECIFIC_ASSETS"],
+          "parent": ["LIST_OF_ASSET_PARENTS"],
+          "amount": 2
+        }
+      },
+      "meta": {
+        "orderId": 12345
+      }
+    }
+  ]
+}
+```
+
+The Wallet shall return the final transaction in following format:
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "prepareTx",
+      "partialTx": "base58 encoded partial tx",
+      "finalTx": "base58 encoded final tx",
+      "requirement": {
+        "tokens": [
+          {
+            "address": "TOKEN_ADDRESS",
+            "value": "TOKEN_AMOUNT_AS_BIG_NUMBER_STRING"
+          }
+        ],
+        "assets": {
+          "address": ["LIST_OF_SPECIFIC_ASSETS"],
+          "parent": ["LIST_OF_ASSET_PARENTS"],
+          "amount": 2
+        }
+      },
+      "meta": {
+        "orderId": 12345
+      }
+    }
+  ]
+}
+```
+
+### Swap [DEPRECATED]
+
+The swap claim item is used to let the Wallet to start an atomic-swap process:
+
+1. Wallet shall do some precheck before sending `SetupSwapTx`
+   - Whether the swap requirement is valid
+   - Make sure user have corresponding accounts on both the offer chain and demand chain
+   - Whether user have enough token/assets to complete the swap
+2. Wallet should submit the `Swap Address` to `SwapService` or `DApp`j for them to proceed
+3. Wallet should try to send `RetrieveSwapTx` when a `Swap Address` is fetched from `SwapService` or `DApp`
+   - Wallet should verify that the `Swap Address` returned by `SwapService` or `DApp` is valid
+4. Wallet should provide a way for user to send `RevokeSwapTx` is the swap failed or terminated due to some reason
+
+the DApp shall send the claims in following way:
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "swap",
+      "description": "Please setup swap on the asset chain",
+      "swapId": "1cee498e-03ed-4f36-8c0c-dba8dfc9f249",
+      "receiver": "zNKcTc28UUKQtPQ2xAQ9aE84YG5Zze7CjJDp",
+      "offerAssets": ["zNKcTc28UUKQtPQ2xAQ9aE84YG5Zze7CjJDp", "zNKcTc28UUKQtPQ2xAQ9aE84YG5Zze7CjJDp"],
+      "offerToken": "5000000000000000000",
+      "offerChain": "playground",
+      "demandAssets": ["zNKcTc28UUKQtPQ2xAQ9aE84YG5Zze7CjJDp", "zNKcTc28UUKQtPQ2xAQ9aE84YG5Zze7CjJDp"],
+      "demandToken": "1000000000000000000",
+      "demandLocktime": 1028377,
+      "demandChain": "play-asset-chain",
+      "meta": {}
+    }
+  ]
+}
+```
+
+- `swapId`: The trace id of the swap process
+- `receiver`: Who is the Wallet swapping with, usually the did of the DApp
+- `offerAssets`: The list of asset addresses to sell to the user.
+- `offerToken`: The token to sell to the user.
+- `offerChain`: The id of the chain to sell token and assets.
+- `demandAssets`: The list of asset addresses that the user is going to pay.
+- `demandToken`: The token that the user is going to pay.
+- `demandChain`: The id of the chain where the user is going to pay.
+- `demandLocktime`: The number of block that users must lock their swap.
+
+The Wallet shall return the response in following way:
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "swap",
+      "swapId": "1cee498e-03ed-4f36-8c0c-dba8dfc9f249",
+      "address": "z2UJBxzNYCL4somNhqWzEnkpWTT4Yi3v2Ce8Q"
+    }
+  ]
+}
+```
+
+### Certificate
+
+The core of a certificate is a JWT token signed by the issuer.
+
+```json
+{
+  "type": "certificate",
+  "content": "eyJhbGciOiJFZDI1NTE5IiwidHlwZSI6IkpXVCJ9.eyJhZ2VudERpZCI6ImRpZDphYnQ6ek5LcnJQSHdCbnlWb01WWjZaRnRwcW5MR3NDUVh3aXNFdTZqIiwiZXhwIjoxNjA1MDg3MjQyLCJpYXQiOjE1NzM1NTEyNDIsImlzcyI6ImRpZDphYnQ6ek5LZzVweGNaUExvZFJBYTVZcGJoQTRtTWZIdzlRRHFyNjVzIiwibmJmIjoxNTczNTUxMjQyLCJvcHMiOnsicHJvZmlsZSI6WyJmdWxsTmFtZSIsIm1vYmlsZVBob25lIiwibWFpbGluZ0FkZHJlc3MiXX0sInZlcnNpb24iOiIxLjAifQ.3O08a7Dgqlebg-2Pu6eZQ2hOsUdjqCu6yE7DsDKUXI18D2bf6hWOpiGvT2wkIAZyvFdiiD0kQm1PgKXcXLTeBw"
+}
+```
+
+The token payload looks like this:
+
+```json
+{
+  "iss": "The issuer's did of the certificate.",
+  "pk": "The pk of the issuer",
+  "agentDid": "To whom the certificate is issued.",
+  "iat": 1548703422,
+  "nbf": 1548703422,
+  "exp": 1548803422,
+  "ops": {
+    "profile": ["fullName", "mobilePhone", "mailingAddress"],
+    "agreement": ["digest of agreement one", "digest of agreement two"]
+  }
+}
+```
+
+### Verifiable Credential
+
+This claim is used by DApp to verify that the Wallet holds a valid desired verifiable credential.
+
+- `filters` required field to specify a list of filters for Wallet to select verifiable credential, if multiple filters are specified, they should be interpreted as `OR`, multiple fields inside a filter should be interpreted as `AND`, multiple values inside a field should be interpreted as `OR`, each filter can contain any of the following parameters:
+  - `trustedIssuers`: did list of trusted issuers, default to empty list
+  - `type`: list of valid verifiable credential types, default to empty list
+  - `tag`: verifiable credential tags, default to empty
+  - `target`: did of the verifiable credential, either on-chain or off-chain, default to empty string
+- `optional` field for user to skip this claim. If `optional` is true, claim response can be empty. The `optional` field is false default.
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "verifiableCredential",
+      "description": "Please provide the coupon you own.",
+      "optional": false,
+      "filters": [
+        {
+          "trustedIssuers": ["did:abt:z1RuF9Xa2AUTJ3VHZKy2xroKzphwWKsLrY6"],
+          "type": ["ServerOwnershipNFT"],
+          "tag": "extra tag to filter credential"
+        },
+        {
+          "trustedIssuers": ["did:abt:z1RuF9Xa2AUTJ3VHZKy2xroKzphwWKsLrY6"],
+          "type": ["BlockletServerPassport"]
+        },
+        {
+          "trustedIssuers": ["did:abt:z1RuF9Xa2AUTJ3VHZKy2xroKzphwWKsLrY6"],
+          "type": ["BlockletServerPassport"]
+        },
+        {
+          "target": "did:abt:z1RuF9Xa2AUTJ3VH"
+        }
+      ],
+      "meta": {}
+    }
+  ]
+}
+```
+
+return
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "verifiableCredential",
+      "presentation": "xxxx",
+      "assetDid": [""]
+    }
+  ]
+}
+```
+
+What's Presentation
+
+```json
+{
+  "@context": ["https://achema.arcblock.io/v0.1/context.jsonld"],
+  "challenge": "F16E730BFB914FA1",
+  "type": ["VerifiablePresentation"],
+  "verifiableCredential": [{}],
+  "proof": [{}]
+}
+```
+
+proof is generated same as Verifiable Credential. One Presentation can contains multiple VCs and it have to provide multiple proofs( if VC comes from different DID). And the challenge come from did-auth JWT.
+
+The proof‘s structure is
+
+```json
+{
+  "type": proofTypes[typeInfo.pk],
+  "created": new Date().toISOString(),
+  "proofPurpose": "assertionMethod",
+  "pk": "vc recipience's PK base58",
+  "jws": toBase64(signature)
+}
+```
+
+signature is signed by VC holder's private key.
+
+### userChoice
+
+The `userChoice` claim is used for the user to make a selection from the available options provided by the application to facilitate the subsequent process, such as selecting a specific product model. The Wallet returns the user's selected option ID to the application.
+
+Request:
+
+- type: userChoice
+- description: string, optional
+- choices: array, list of options
+  - id: string, unique identification，required
+  - price: string，optional, for Wallet display
+  - title: string, title of the choice，required, for Wallet display
+  - description: string, description of the choice，optional，for Wallet display
+  - icon: string, url or base64，optional，for Wallet display
+- multiple: boolean, is it multiple choice, optional, default value is false
+
+Request demo:
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "userChoice",
+      "description": "Please choose your new nodes",
+      "choices": [
+        {
+          "id": "zje1uzZTCZN551EWGLyyCEW9AM2wAdjymfHb",
+          "price": "1.12 ABT",
+          "title": "ABT Node",
+          "description": "Period: 1 Year, Disk Size: 1 T",
+          "icon": "base64 string"
+        }
+      ],
+      "multiple": false
+    }
+  ]
+}
+```
+
+The behavior of the Wallet:
+
+- If `choices` is empty, an error should be thrown
+- If `choices.id` is empty, an error should be thrown
+- The user must select at least one choice, otherwise the process cannot continue
+
+Wallet response:
+
+- type: userChoice
+- selected: array, list of selected choice ID, required; if it is a single choice, there should be only one element in the array
+
+Response Demo:
+
+```json
+{
+  "requestedClaims": [
+    {
+      "type": "choose",
+      "selected": ["zje1uzZTCZN551EWGLyyCEW9AM2wAdjymfHb"]
+    }
+  ]
+}
+```
+
+## Use Cases
+
+The ABT DID Authentication protocol is a generic peer-to-peer protocol that can be used in any case where authentication is required. It can be used in but is not limited to following scenarios:
+
+- User registration.
+- User logon.
+- Signing documents.
+- Requesting/issuing certificate.
+- Applying for VISA.
+- Peer-to-peer information exchange.

@@ -46,6 +46,14 @@ screenshots: []
 children: []
 navigation:
   - title:
+      en: Protocol
+      zh: 协议
+    link: /protocol
+  - title:
+      en: Workflow
+      zh: 流程
+    link: /workflow
+  - title:
       en: Docs
       zh: 文档
     link: /docs

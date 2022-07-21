@@ -5491,10 +5491,10 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@xmark/cli@^2.1.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@xmark/cli/-/cli-2.1.2.tgz#7208ab786994b9b8db1ade3c0ad98d2aa551cad8"
-  integrity sha512-MWunO2dnH6bZZzKCXvG/NtAFkuAr/r2RZtTgFR5PlEKs1Wd3d1G3Mr4CCV8OL0PsIlnijeMT4VEm0yWmnP5EDw==
+"@xmark/cli@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@xmark/cli/-/cli-2.1.4.tgz#261ea05432f87f072022cab28f6405b3f0c292c0"
+  integrity sha512-FSqihvOPMlt8ZfCEep6ncMY6XYez1R616Jifja3s9tiGymO0rqJwBt1fI5k4BQlXBMM6hBln4RU8DwgDI/PPbg==
   dependencies:
     "@antfu/utils" "^0.5.2"
     "@arcblock/ux" "^2.1.63"
@@ -5503,8 +5503,8 @@
     "@originjs/vite-plugin-commonjs" "^1.0.3"
     "@rollup/plugin-yaml" "^3.1.0"
     "@vitejs/plugin-react" "^2.0.0"
-    "@xmark/client" "2.1.2"
-    "@xmark/utils" "2.1.2"
+    "@xmark/client" "2.1.4"
+    "@xmark/utils" "2.1.4"
     change-case "^4.1.2"
     debug "^4.3.4"
     escape-html "^1.0.3"
@@ -5534,19 +5534,21 @@
     yaml "2.1.1"
     yargs "^17.5.1"
 
-"@xmark/client@2.1.2", "@xmark/client@^2.1.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@xmark/client/-/client-2.1.2.tgz#10c6fa2e7cf69344fb713b5c4a3a9d654fd19e36"
-  integrity sha512-SNh+r1rBkvSVy9Ne3bc8PHtIDYBCmzjtXZjcJk7/ITIfOUrYKCf9tfTj93NTuMAT9fhcVZzauGrvbjqFZmdCPg==
+"@xmark/client@2.1.4", "@xmark/client@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@xmark/client/-/client-2.1.4.tgz#1dce4ae2aa2de88863729701beed0cf81cd1cd61"
+  integrity sha512-YUvbczMEx7FyK/gWU0U0yTdX7UhT+r542p7ktep5Kl83brpZWk/0ts2998LbIWQGpDc9fQdBN2f+QP75QzfpQQ==
   dependencies:
     "@arcblock/ux" "^2.1.63"
     "@blocklet/ui-react" "^2.1.63"
     "@emotion/react" "^11.9.3"
     "@iconify-json/mdi" "^1.1.29"
+    "@mdx-js/react" "^2.1.2"
     "@mui/styles" "^5.9.1"
-    "@xmark/utils" "2.1.2"
+    "@xmark/utils" "2.1.4"
     ahooks "^3.5.2"
     clsx "^1.2.1"
+    github-markdown-css "^5.1.0"
     is-uri "^1.2.4"
     modern-normalize "^1.1.0"
     path-browserify "^1.0.1"
@@ -5558,30 +5560,27 @@
     react-router-dom "^6.3.0"
     unocss "^0.44.5"
 
-"@xmark/theme-docs@^2.1.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@xmark/theme-docs/-/theme-docs-2.1.2.tgz#67e2d9cb9d817167f4d3c62669720d7c373c3105"
-  integrity sha512-hiDSRMX+ridnGU45Hin+R0acW3vuD/jOe9i8MMrkwXE8yHGXmojoyUDK2m8ZQkvFjme66/75jmAU84n5uh3YtQ==
+"@xmark/theme-docs@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@xmark/theme-docs/-/theme-docs-2.1.4.tgz#ad0f49c6574c4576e06148264943c563403c15fe"
+  integrity sha512-XtQxbbsf9HM9z/q6FAHGQjf1TC2U36wdSPFXeTeg1Nc/lMu1EkMmkFuEzvxuXrXfhHqj0qxDkKR8WyBtuiit2A==
   dependencies:
     "@arcblock/ux" "^2.1.63"
     "@emotion/react" "^11.9.3"
     "@fontsource/lato" "^4.5.8"
-    "@mdx-js/react" "^2.1.2"
     "@mui/material" "^5.9.1"
-    "@xmark/client" "2.1.2"
-    "@xmark/utils" "2.1.2"
+    "@xmark/client" "2.1.4"
     ahooks "^3.5.2"
     clsx "^1.2.1"
-    github-markdown-css "^5.1.0"
     path-browserify "^1.0.1"
     prop-types "^15.8.1"
     react "^18.2.0"
     react-router-dom "^6.3.0"
 
-"@xmark/utils@2.1.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@xmark/utils/-/utils-2.1.2.tgz#546e1178bff208a573775fb731266bb920ee5144"
-  integrity sha512-UDbQWYUywupSIl8xmiq/8k0SE9vmv/O3mtWF27pNRipe6CFf6HaWHUTpq0o27mf0s+s2Ve1AGSffFjstFIYCSg==
+"@xmark/utils@2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@xmark/utils/-/utils-2.1.4.tgz#a3e8d3c3f5f505c6bce0c04deb0662b270023645"
+  integrity sha512-2IgZ3Ig07f6ggGrJx+MlshMCiifPYPNuAbkwRWoyMb2Wczvq1k0MzxZABv58usJrtpom2ACAb1DL5O/9VMPflA==
   dependencies:
     base-x "^4.0.0"
     react "^18.2.0"
