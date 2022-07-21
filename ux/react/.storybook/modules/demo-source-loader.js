@@ -60,7 +60,8 @@ const wrapModule = (requestString, rawSource) => `
 module.exports = require(${requestString});
 const _module = module.exports.default || module.exports;
 let storyParameters = {
-  storySource: { source: ${JSON.stringify(rawSource)} }
+  storySource: { source: ${JSON.stringify(rawSource)} },
+  docs: { source: { type: 'code' } },
 };
 Object.defineProperty(_module, 'parameters', {
   enumerable : true,
