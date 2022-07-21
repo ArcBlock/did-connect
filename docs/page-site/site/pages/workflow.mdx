@@ -1,36 +1,5 @@
 ---
 layout: 'my-layout'
-blocks:
-  - name: SectionBlock
-    background:
-      color: '#fff'
-    className: text-center
-    classes:
-      section: '!xl:py-10'
-    title:
-      - name: Pic
-        className: w-[120px] m-auto mb-8
-        src: /logos/logo-ico.png
-      - name: div
-        className: font-bold text-center
-        children: DID Connect
-    description:
-      - name: div
-        className: text-center text-[#333]
-        children: Set up a blocklet app by running one command.
-      - name: div
-        className: text-center
-        children:
-          name: Button
-          varaint: border
-          className: mt-8 w-auto m-auto !text-#236FFF !border-#236FFF px-4 py-2 !inline-block
-          size: lg
-          color: primary
-          children:
-            name: SmartLink
-            to: /getting-started
-            base: docs
-            children: Get Started
 ---
 
 我们可以把完整的 DID Connect 过程称为 `DID Connect 会话`，会话过程中的参与方包括：
