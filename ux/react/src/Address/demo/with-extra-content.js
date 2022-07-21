@@ -4,9 +4,9 @@ import LinkIcon from '@mui/icons-material/Link';
 import DidAddress from '..';
 import Avatar from '../../Avatar';
 
-export default function Demo() {
+export default function Demo(props) {
   return (
-    <>
+    <div {...props}>
       <div>
         <DidAddress
           size={12}
@@ -36,6 +36,6 @@ export default function Demo() {
           z1SBWdzYCEEY6WrvEPJv2umgpkkrvgdtBry
         </DidAddress>
       </div>
-    </>
+    </div>
   );
 }
