@@ -17,7 +17,7 @@ blocks:
     description:
       - name: div
         className: text-center text-[#333]
-        children: 创建一个 Blocklet 只需要一条命令
+        children: 基于 W3C DID 标准设计和实现的用于连接用户和去中心化应用的开放协议和开发套件
       - name: div
         className: text-center
         children:
@@ -34,29 +34,59 @@ blocks:
   - name: SectionBlock
     background:
       color: '#f8f8f8'
-    className: max-w-[1440px] m-auto
+    className: max-w-[1536px] m-auto
+    children:
+      - name: GridBlock
+        cols: 4
+        gap: '0'
+        children:
+          - name: InfoBlock
+            title: 遵循标准
+            description: 基于 W3C DID 标准设计和实现
+            className: '!max-w-full p-5'
+            classes:
+              title: '!font-700 !text-2xl'
+              description: '!text-lg'
+          - name: InfoBlock
+            title: 高安全性
+            description: 用户和应用的通信是点对点可信的
+            className: '!max-w-full p-5'
+            classes:
+              title: '!font-700 !text-2xl'
+              description: '!text-lg'
+          - name: InfoBlock
+            title: 强隐私
+            description: 用户可以在不暴露任何隐私的情况下和应用交互
+            className: '!max-w-full p-5'
+            classes:
+              title: '!font-700 !text-2xl'
+              description: '!text-lg'
+  - name: SectionBlock
+    background:
+      color: '#ffffff'
+    className: max-w-[1536px] m-auto
     children:
       - name: GridBlock
         cols: 3
         gap: '0'
         children:
           - name: InfoBlock
-            title: 快速创建 Blocklet
-            description: 你不需要学习和配置与 Blocklet Server 有关的东西，你就能够轻松的创建一个 Blocklet DAPP。
+            title: 可扩展
+            description: 可以根据需要扩展协议支持的消息类型
             className: '!max-w-full p-5'
             classes:
               title: '!font-700 !text-2xl'
               description: '!text-lg'
           - name: InfoBlock
-            title: 丰富的模板选择
-            description: 你可以选择任意 Starter 模板
+            title: 多链支持
+            description: 支持 ArcBlock、Ethereum、Solona 等区块链
             className: '!max-w-full p-5'
             classes:
               title: '!font-700 !text-2xl'
               description: '!text-lg'
           - name: InfoBlock
-            title: 与 Blocklet Server 无缝集成
-            description: 内置了 Blocklet Server 各类功能，你可以轻松的集成到你的 Blocklet DAPP 中。
+            title: 用户体验
+            description: 通过扫描二维码即可完成各种操作，自动连接技术会让体验更丝滑
             className: '!max-w-full p-5'
             classes:
               title: '!font-700 !text-2xl'
