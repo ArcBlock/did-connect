@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
   stories: ['../**/*.stories.@(js|mdx)'],
@@ -6,6 +7,14 @@ module.exports = {
     '@storybook/addon-essentials',
     '@storybook/addon-links',
     '@storybook/addon-storysource',
+    {
+      name: '@storybook/addon-docs',
+      options: {
+        sourceLoaderOptions: {
+          injectStoryParameters: false,
+        },
+      },
+    },
   ],
   core: {
     builder: {
@@ -19,6 +28,16 @@ module.exports = {
     };
   },
   webpackFinal: async (config) => {
+
+    config.module.rules.unshift({
+      test: /\/demo\/[\w-]+\.js$/,
+      use: [
+        {
+          loader: path.resolve(__dirname, './modules/demo-source-loader.js'),
+        },
+      ],
+    });
+
     // 解决: 开启 webpack 5 后, 启动 storybook 报 graphql 相关错误
     // https://github.com/aws-amplify/amplify-js/issues/7260#issuecomment-840750788
     config.module.rules.push({
