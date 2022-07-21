@@ -17,4 +17,5 @@ module.exports = {
     ['@babel/preset-typescript'],
   ],
   plugins: ['babel-plugin-styled-components', 'babel-plugin-inline-react-svg'],
+  ignore: ['src/**/*.stories.js', 'src/**/demo'],
 };
