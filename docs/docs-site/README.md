@@ -1,6 +1,6 @@
-# Getting Started with Create Blocklet
+# Getting Started with DID Connect
 
-This project was bootstrapped with [Create Blocklet](https://github.com/blocklet/create-blocklet).
+This project was bootstrapped with [DID Connect](https://github.com/blocklet/create-blocklet).
 
 This blocklet is a static project, which means this is a frontend application. It's contained `client` code.
 
@@ -26,15 +26,15 @@ This blocklet is a static project, which means this is a frontend application. I
 
 1. Make sure you have [@blocklet/cli](https://www.npmjs.com/package/@blocklet/cli) installed
 
-   Blocklet needs blocklet server as a dependency. So you need to install it first.  
-   `npm install -g @blocklet/cli`  
+   Blocklet needs blocklet server as a dependency. So you need to install it first.
+   `npm install -g @blocklet/cli`
    See details in [https://docs.arcblock.io/abtnode/en/introduction/abtnode-setup#use-the-binary-distribution](https://docs.arcblock.io/abtnode/en/introduction/abtnode-setup#use-the-binary-distribution)
 
 2. Init blocklet server & start blocklet server
 
-   Before starting an blocklet server, you need to init blocklet server.  
-   `blocklet server init --mode=debug`  
-   `blocklet server start`  
+   Before starting an blocklet server, you need to init blocklet server.
+   `blocklet server init --mode=debug`
+   `blocklet server start`
    See details in [https://docs.arcblock.io/abtnode/en/introduction/abtnode-setup#configure-abt-node](https://docs.arcblock.io/abtnode/en/introduction/abtnode-setup#configure-abt-node)
 
 3. Go to the project directory `cd [name]`
@@ -81,7 +81,7 @@ After developing a blocklet, you may need to bundle it. Use `npm run bundle` com
 
   Get a `accessToken` from blocklet store.
 
-  > Why we need a `accessToken`?  
+  > Why we need a `accessToken`?
   > A `accessToken` is genrate by blocklet store, which help us upload our blocklet to any store.
 
   Set `accessToken` to blocklet config
@@ -100,14 +100,14 @@ After developing a blocklet, you may need to bundle it. Use `npm run bundle` com
 
   Or you can simply use `npm run upload` command.
 
-- You also can upload a new version to blocklet store by Github CI.  
+- You also can upload a new version to blocklet store by Github CI.
   Bump version at first.
 
   ```shell
   make bump-version
   ```
 
-  Push your code to Github main/master branch, or make a pull request to the main/master branch.  
+  Push your code to Github main/master branch, or make a pull request to the main/master branch.
   The CI workflow will automatically upload a new version to a store.
 
 ## Q & A
