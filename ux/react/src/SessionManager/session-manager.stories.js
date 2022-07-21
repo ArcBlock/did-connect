@@ -13,7 +13,7 @@ export { default as UsingBlockletService } from './demo/using-blocklet-service';
 export default {
   title: 'SessionManager',
   component: SessionManager,
-  parameters: { actions: { argTypesRegex: '^on.*' } },
+  parameters: { actions: { argTypesRegex: '^on.*' }, controls: { include: [] } },
   decorators: [
     (Story) => (
       <LocaleProvider translations={{}}>

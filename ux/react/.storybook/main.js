@@ -4,9 +4,7 @@ const path = require('path');
 module.exports = {
   stories: ['../**/*.stories.@(js|mdx)'],
   addons: [
-    '@storybook/addon-essentials',
     '@storybook/addon-links',
-    '@storybook/addon-storysource',
     {
       name: '@storybook/addon-docs',
       options: {
@@ -15,6 +13,8 @@ module.exports = {
         },
       },
     },
+    '@storybook/addon-essentials',
+    '@storybook/addon-storysource',
   ],
   core: {
     builder: {
