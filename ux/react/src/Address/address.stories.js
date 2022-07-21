@@ -6,16 +6,6 @@ import Basic from './demo/basic';
 import WithInheritSize from './demo/with-inherit-size';
 import WithExtraContent from './demo/with-extra-content';
 
-const argTypes = {
-  size: { control: 'select', options: [14, 16, 20, 24, 36] },
-  copyable: { control: 'boolean', defaultValue: true },
-  responsive: { control: 'boolean', defaultValue: true },
-  compact: { control: 'boolean' },
-  inline: { control: 'boolean' },
-  component: { control: 'select', options: ['span', 'div'] },
-  locale: { control: 'select', options: ['en', 'zh'] },
-};
-
 export default {
   title: 'Address',
   component: DidAddress,
@@ -26,7 +16,16 @@ export default {
       </ResizableContainer>
     ),
   ],
-  argTypes,
+};
+
+Basic.argTypes = {
+  size: { control: 'select', options: [14, 16, 20, 24, 36] },
+  copyable: { control: 'boolean', defaultValue: true },
+  responsive: { control: 'boolean', defaultValue: true },
+  compact: { control: 'boolean' },
+  inline: { control: 'boolean' },
+  component: { control: 'select', options: ['span', 'div'] },
+  locale: { control: 'select', options: ['en', 'zh'] },
 };
 
 WithInheritSize.argTypes = {
@@ -35,10 +34,6 @@ WithInheritSize.argTypes = {
 
 WithInheritSize.parameters = {
   controls: { include: ['containerFontSize'] },
-};
-
-WithExtraContent.parameters = {
-  controls: { exclude: Object.keys(argTypes) },
 };
 
 export { Basic, WithInheritSize, WithExtraContent };

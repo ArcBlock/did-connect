@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-filename-extension */
 import Avatar from '..';
 
-export default function Demo(props) {
+export default function Demo() {
   return (
     <div
       style={{
@@ -11,8 +11,7 @@ export default function Demo(props) {
         border: '1px solid #eee',
         overflow: 'hidden',
         resize: 'both',
-      }}
-      {...props}>
+      }}>
       <Avatar did="z1YXMb8Souf2u8zVwWzexSNiD5Te7XGS313" responsive />
     </div>
   );

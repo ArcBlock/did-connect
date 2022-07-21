@@ -11,7 +11,12 @@ const dids = {
   'invalid-did': '',
 };
 
-const argTypes = {
+export default {
+  title: 'Avatar',
+  component: Avatar,
+};
+
+Basic.argTypes = {
   size: { control: { type: 'number', min: 20, max: 100, step: 4 }, defaultValue: 44 },
   did: {
     mapping: dids,
@@ -22,20 +27,6 @@ const argTypes = {
   variant: { control: 'select', options: ['rounded', 'circle'] },
   shape: { control: 'select', options: ['circle', 'hexagon', 'square', 'rectangle'] },
   src: { control: 'select', options: ['https://picsum.photos/200/100'] },
-};
-
-export default {
-  title: 'Avatar',
-  component: Avatar,
-  argTypes,
-};
-
-ResponsiveDidMotif.parameters = {
-  controls: { exclude: Object.keys(argTypes) },
-};
-
-EthBlockies.parameters = {
-  controls: { exclude: Object.keys(argTypes) },
 };
 
 export { Basic, ResponsiveDidMotif, EthBlockies };
