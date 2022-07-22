@@ -263,10 +263,10 @@
   resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.1.63.tgz#3ffddda7bea7ad3b36a7158e285ee2c9db93b761"
   integrity sha512-Uhubv9cj8n5k8srqwygLyD0EMynPeHn3J5Uv/UxeYj6aA+hRJqyPLsswMZmH4QNBZvYtrFrb6Yrttcf1gMuGig==
 
-"@arcblock/icons@^2.1.65":
-  version "2.1.65"
-  resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.1.65.tgz#f21fbfbd4d7be85bc8eee74c5896e5ba2998a97a"
-  integrity sha512-jzoOHku3nmUSHV9wKKKo2e2K4mkefYwlzN4zIdLAmwD50fb/BGzW58PNTTH8BnBdATdJXBwAQUmROZ5CamrnOg==
+"@arcblock/icons@^2.1.66":
+  version "2.1.66"
+  resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.1.66.tgz#06a6525fc6a97c13902101f3571be29077e21c83"
+  integrity sha512-ycAbxIpLxsy3N/sbZTeFhqW2deMqZYash0r+F/SV/fBZZe/CvaQ4/FJaKu53dEMjxUqagsGm/IgkiEhrRmO8yQ==
 
 "@arcblock/jwt@1.17.0", "@arcblock/jwt@1.17.5", "@arcblock/jwt@^1.17.0", "@arcblock/jwt@^1.17.5":
   version "1.17.0"
@@ -289,10 +289,10 @@
     event-target-shim "^5.0.1"
     ismobilejs "^1.0.3"
 
-"@arcblock/react-hooks@^2.1.65":
-  version "2.1.65"
-  resolved "https://registry.yarnpkg.com/@arcblock/react-hooks/-/react-hooks-2.1.65.tgz#3330f85713af66bd64f43c718aac0c463cca1a0f"
-  integrity sha512-Uk39GlgvJstspadkBi1Mnlo65MsdF1C/CjaCSLty70galEt5KO2bwurwGR2U5sVi3/ERpQYZTwhuIKb7uSkT4A==
+"@arcblock/react-hooks@^2.1.66":
+  version "2.1.66"
+  resolved "https://registry.yarnpkg.com/@arcblock/react-hooks/-/react-hooks-2.1.66.tgz#c9a2b1023f8f8e346774bafe58cd517bb77c5d32"
+  integrity sha512-XXHw+JMUNTxcGsQSwlyB31STDEHh9D3OjltCTfDFJrnPdThtJ8BWBnXZmn+CiFIbQfi+UruQo0lrcGcWQfGMQg==
   dependencies:
     core-js "^3.6.4"
     event-target-shim "^5.0.1"
@@ -351,13 +351,13 @@
     topojson-client "^3.0.0"
     versor "^0.0.4"
 
-"@arcblock/ux@^2.1.65":
-  version "2.1.65"
-  resolved "https://registry.yarnpkg.com/@arcblock/ux/-/ux-2.1.65.tgz#86cc53c7d349e0cf789b723eba34d0ea67a4e955"
-  integrity sha512-w5aZGlUTFlTyOUxMEA8oHtHPKZDziS96ogm3Am1S0yETwonoegMjKeAwLs51klr4xXQsGUNjkSCMMvbfcK60fw==
+"@arcblock/ux@^2.1.66":
+  version "2.1.66"
+  resolved "https://registry.yarnpkg.com/@arcblock/ux/-/ux-2.1.66.tgz#e061f6d67d12288ed176b6d7a3c3c7c4eac1a31d"
+  integrity sha512-4Fa0OoWStaDIkqExUjC7PFw9vVr9863aD16/1fznY/gbCOIqtxYHuKRYk3Vtj/2OrAoR2VH8RMBPbGSB12Xn2g==
   dependencies:
-    "@arcblock/icons" "^2.1.65"
-    "@arcblock/react-hooks" "^2.1.65"
+    "@arcblock/icons" "^2.1.66"
+    "@arcblock/react-hooks" "^2.1.66"
     "@babel/plugin-syntax-dynamic-import" "^7.8.3"
     "@emotion/react" "^11.9.0"
     "@emotion/styled" "^11.8.1"
