@@ -17,6 +17,8 @@
     "url": "git+https://github.com/ArcBlock/did-connect.git"
   },
   "scripts": {
+    "dev": "blocklet dev",
+    "dev:child": "blocklet dev --component --app-did=z8ia1dodZ52VDmtfUkmUtDHpBjXcpqjrhyHfS --mount-point=/playground/react",
     "lint": "eslint src stories tests",
     "clean": "rm -rf lib",
     "build": "npm run clean && npm run build:types && npm run build:code",
@@ -27,21 +29,22 @@
     "prepush": "CI=1 yarn test",
     "prepublish": "npm run build",
     "test": "jest --forceExit",
-    "start": "blocklet dev",
     "storybook:clean": "rm -rf dist && mkdir dist",
     "storybook:build": "npm run storybook:clean && NODE_ENV=production build-storybook --quiet --output-dir dist",
     "storybook:start": "start-storybook -p $BLOCKLET_PORT",
     "bundle": "npm run storybook:build && NODE_ENV=production blocklet bundle --zip --create-release --monorepo",
-    "deploy": "npm run bundle && blocklet deploy .blocklet/bundle"
+    "deploy": "npm run bundle && blocklet deploy .blocklet/bundle",
+    "deploy:child": "npm run bundle && blocklet deploy .blocklet/bundle --app-did=z8ia1dodZ52VDmtfUkmUtDHpBjXcpqjrhyHfS --mount-point=/playground/react",
+    "upload": "npm run bundle && blocklet upload .blocklet/release/blocklet.json"
   },
   "bugs": {
     "url": "https://github.com/ArcBlock/did-connect/issues"
   },
   "dependencies": {
     "@arcblock/did-motif": "^1.1.10",
-    "@arcblock/icons": "^2.1.63",
-    "@arcblock/react-hooks": "^2.1.63",
-    "@arcblock/ux": "^2.1.63",
+    "@arcblock/icons": "^2.1.65",
+    "@arcblock/react-hooks": "^2.1.65",
+    "@arcblock/ux": "^2.1.65",
     "@did-connect/state": "2.0.17",
     "@did-connect/types": "2.0.17",
     "@fontsource/lato": "^4.5.3",
