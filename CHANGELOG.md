@@ -1,3 +1,8 @@
+## 2.0.18 (July 22, 2022)
+
+- refactor(ux/react): improve storybook & refactor component stories (#28)
+- ci: add version check actions
+
 ## 2.0.17 (July 20, 2022)
 
 - chore: update readme for each package
