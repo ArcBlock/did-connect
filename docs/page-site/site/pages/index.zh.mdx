@@ -21,23 +21,32 @@ blocks:
       - name: div
         className: text-center
         children:
-          name: Button
-          varaint: border
-          className: mt-8 w-auto m-auto !text-#236FFF !border-#236FFF px-4 py-2 !inline-block
-          size: lg
-          color: primary
-          children:
-            name: SmartLink
-            to: /getting-started
-            base: docs
-            children: 立即开始
+          - name: Button
+            varaint: border
+            className: mt-8 w-auto m-auto !text-#236FFF !border-#236FFF px-4 py-2 !inline-block
+            size: lg
+            color: primary
+            children:
+              name: SmartLink
+              to: /intro
+              base: docs
+              children: Get Started
+          - name: Button
+            varaint: border
+            className: mt-8 w-auto m-auto ml !text-#236FFF !border-#236FFF px-4 py-2 !inline-block
+            size: lg
+            color: primary
+            children:
+              name: SmartLink
+              to: /playground/react
+              children: Playground
   - name: SectionBlock
     background:
       color: '#f8f8f8'
     className: max-w-[1536px] m-auto
     children:
       - name: GridBlock
-        cols: 4
+        cols: 3
         gap: '0'
         children:
           - name: InfoBlock

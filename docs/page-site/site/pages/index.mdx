@@ -17,46 +17,85 @@ blocks:
     description:
       - name: div
         className: text-center text-[#333]
-        children: Open protocols and development SDK for connecting users and decentralized applications designed and implemented based on the W3C DID standard
+        children: Open Protocol and Development SDK for connecting users and decentralized applications, Designed and Implemented based on the W3C DID standard
       - name: div
         className: text-center
         children:
-          name: Button
-          varaint: border
-          className: mt-8 w-auto m-auto !text-#236FFF !border-#236FFF px-4 py-2 !inline-block
-          size: lg
-          color: primary
-          children:
-            name: SmartLink
-            to: /getting-started
-            base: docs
-            children: Get Started
+          - name: Button
+            varaint: border
+            className: mt-8 w-auto m-auto !text-#236FFF !border-#236FFF px-4 py-2 !inline-block
+            size: lg
+            color: primary
+            children:
+              name: SmartLink
+              to: /intro
+              base: docs
+              children: Get Started
+          - name: Button
+            varaint: border
+            className: mt-8 w-auto m-auto ml !text-#236FFF !border-#236FFF px-4 py-2 !inline-block
+            size: lg
+            color: primary
+            children:
+              name: SmartLink
+              to: /playground/react
+              children: Playground
   - name: SectionBlock
     background:
       color: '#f8f8f8'
-    className: max-w-[1440px] m-auto
+    className: max-w-[1536px] m-auto
     children:
       - name: GridBlock
         cols: 3
         gap: '0'
         children:
           - name: InfoBlock
-            title: Quickly Setup Blocklet DAPP
-            description: You don't need to learn and configure many blocklet server things, you can easily setup a Blocklet DAPP.
+            title: Standard Compliance
+            description: Design and implementation based on W3C DID standard
             className: '!max-w-full p-5'
             classes:
               title: '!font-700 !text-2xl'
               description: '!text-lg'
           - name: InfoBlock
-            title: Plenty Of Templates
-            description: You can use any template you want.
+            title: Security
+            description: User-application communication is peer-to-peer trusted
             className: '!max-w-full p-5'
             classes:
               title: '!font-700 !text-2xl'
               description: '!text-lg'
           - name: InfoBlock
-            title: Seamless Integration With Blocklet Server
-            description: Built in all kinds of Blocklet Server functions, you can easily integrate your Blocklet DAPP.
+            title: Enhanced Privacy
+            description: Users can interact with the application without revealing any privacy
+            className: '!max-w-full p-5'
+            classes:
+              title: '!font-700 !text-2xl'
+              description: '!text-lg'
+  - name: SectionBlock
+    background:
+      color: '#ffffff'
+    className: max-w-[1536px] m-auto
+    children:
+      - name: GridBlock
+        cols: 3
+        gap: '0'
+        children:
+          - name: InfoBlock
+            title: Extensible
+            description: The types of messages supported by the protocol can be extended as needed
+            className: '!max-w-full p-5'
+            classes:
+              title: '!font-700 !text-2xl'
+              description: '!text-lg'
+          - name: InfoBlock
+            title: Multi-chain support
+            description: Supports ArcBlock, Ethereum, Solona and other blockchains
+            className: '!max-w-full p-5'
+            classes:
+              title: '!font-700 !text-2xl'
+              description: '!text-lg'
+          - name: InfoBlock
+            title: User Experience
+            description: Various operations can be completed by scanning the QR code, and the automatic connection technology will make the experience more silky smooth
             className: '!max-w-full p-5'
             classes:
               title: '!font-700 !text-2xl'

@@ -42,9 +42,9 @@
   },
   "dependencies": {
     "@arcblock/did-motif": "^1.1.10",
-    "@arcblock/icons": "^2.1.66",
-    "@arcblock/react-hooks": "^2.1.66",
-    "@arcblock/ux": "^2.1.66",
+    "@arcblock/icons": "^2.1.67",
+    "@arcblock/react-hooks": "^2.1.67",
+    "@arcblock/ux": "^2.1.67",
     "@did-connect/state": "2.0.18",
     "@did-connect/types": "2.0.18",
     "@fontsource/lato": "^4.5.3",
