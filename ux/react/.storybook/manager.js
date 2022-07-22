@@ -5,7 +5,7 @@ addons.setConfig({
   theme: create({
     base: 'light',
     brandTitle: 'DID Connect React',
-    brandUrl: '/playground/react',
+    brandUrl: '/',
     brandImage: '/logos/logo-h.png', // from root blocklet
     brandTarget: '_self',
   }),

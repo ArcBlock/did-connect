@@ -6,11 +6,15 @@ export const parameters = {
     isFullscreen: false,
     showNav: true,
     showPanel: true,
-    panelPosition: 'bottom',
+    panelPosition: 'right',
     sortStoriesByKind: false,
     sidebarAnimations: true,
     isToolshown: true,
     selectedPanel: 'storysource',
+    storySort: {
+      method: 'alphabetical',
+      order: ['Introduction', ['Address', 'Avatar', 'Button', 'Logo'], ['Connect', 'SessionManager']],
+    },
   },
   backgrounds: {
     values: [
