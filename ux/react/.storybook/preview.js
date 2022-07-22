@@ -13,6 +13,7 @@ addParameters({
     isToolshown: true,
     selectedPanel: 'storysource',
   },
+  controls: { hideNoControlsWarning: true },
 });
 
 addParameters({
