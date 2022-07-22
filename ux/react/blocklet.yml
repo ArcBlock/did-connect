@@ -42,13 +42,6 @@ capabilities:
   clusterMode: false
   component: true
 screenshots: []
-children:
-  - name: relay-server
-    mountPoint: /relay
-    source:
-      store:
-        - https://dev.store.blocklet.dev
-      name: '@did-connect/relay-server'
-      version: latest
+children: []
 scripts:
   dev: npm run storybook:start
