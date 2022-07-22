@@ -1,9 +1,12 @@
-import { create } from '@storybook/theming';
-import { addons } from '@storybook/addons';
+const { addons } = require('@storybook/addons');
+const { create } = require('@storybook/theming');
 
 addons.setConfig({
   theme: create({
+    base: 'light',
     brandTitle: 'DID Connect React',
-    brandUrl: 'https://arcblock.github.io/ux',
+    brandUrl: '/playground/react',
+    brandImage: '/logos/logo-h.png', // from root blocklet
+    brandTarget: '_self',
   }),
 });
