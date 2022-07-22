@@ -1,6 +1,6 @@
 # Getting Started with DID Connect
 
-This project was bootstrapped with [DID Connect](https://github.com/blocklet/create-blocklet).
+This project was bootstrapped with [DID Connect](https://github.com/ArcBlock/did-connect).
 
 This blocklet is a static project, which means this is a frontend application. It's contained `client` code.
 

@@ -1,40 +1,38 @@
 ---
 name: Sidebar
 menus:
-  - text: 快速上手
+  - text: 概念和流程
     children:
       - text: 介绍
         link: /intro
+      - text: 概念
+        link: /concepts
+      - text: 流程
+        link: /workflow
+  - text: 开发者指南
+    link: /developer
+    children:
       - text: 快速上手
-        link: /getting-started
-      - text: 目录结构
-        link: /folder-structure
-      - text: 可用脚本
-        link: /available-scripts
-      - text: 支持的模板
-        link: /available-templates
-  - text: 集成服务
-    link: /services
-    children:
-      - text: 认证服务
-        link: /services/auth-service
-      - text: 通知服务
-        link: /services/notification-service
-  - text: 最佳实践
-    children:
-      - text: 前端站点
-        link: /best-practice/demo-static
-      - text: 后端站点
-        link: /best-practice/demo-api
-      - text: 全栈站点
-        link: /best-practice/demo-dapp
+        link: /developer/getting-started
+      - text: 获取用户DID
+        link: /developer/request-did
+      - text: 获取用户身份
+        link: /developer/request-profile
+      - text: 获取可验证声明
+        link: /developer/request-vc
+      - text: 获取资产声明
+        link: /developer/request-asset
+      - text: 获取可验证声明
+        link: /developer/request-vc
+      - text: 获取资产声明
+        link: /developer/request-asset
+  - text: 协议
+    link: /protocol
   - text: FAQ
     link: /faq
     children:
-      - text: 如何发布到 Store？
-        link: /faq/publish-to-blocklet-store
-      - text: 如何通过开发 blocklet 赚钱？
-        link: /faq/earn-money-by-blocklet
+      - text: 在 Typescript 中使用？
+        link: /faq/use-with-typescript
       - text: 其他框架的支持？
         link: /faq/other-frameworks-support
 ---
