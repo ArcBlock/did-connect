@@ -1,6 +1,9 @@
 # DID Connect
 
-DID Connect is a decentralized identity protocol that enables seamless connection between decentralized identity and decentralized services.
+DID Connect is an open protocol that enables secure and seamless connection between decentralized identity and decentralized services.
+
+- Decentralized identity are managed with [DID Wallet](https://www.didwallet.io).
+- Decentralized services are usually served by Blocklets.
 
 This monorepo contains DID Connect implementation by ArcBlock. the implementation can be divided into 3 parts:
 

@@ -3,6 +3,9 @@ const path = require('path');
 
 module.exports = {
   stories: ['../**/*.stories.@(js|mdx)'],
+  features: {
+    storyStoreV7: true,
+  },
   addons: [
     '@storybook/addon-links',
     {
@@ -28,7 +31,6 @@ module.exports = {
     };
   },
   webpackFinal: async (config) => {
-
     config.module.rules.unshift({
       test: /\/demo\/[\w-]+\.[jt]sx?$/,
       use: [
@@ -51,7 +53,7 @@ module.exports = {
     config.plugins.push(
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
-      }),
+      })
     );
     return config;
   },

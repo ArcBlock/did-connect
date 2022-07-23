@@ -7,7 +7,7 @@ import WithInheritSize from './demo/with-inherit-size';
 import WithExtraContent from './demo/with-extra-content';
 
 export default {
-  title: 'Address',
+  title: 'Basic/Address',
   component: DidAddress,
   decorators: [
     (Story) => (

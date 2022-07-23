@@ -12,7 +12,7 @@ const dids = {
 };
 
 export default {
-  title: 'Avatar',
+  title: 'Basic/Avatar',
   component: Avatar,
 };
 

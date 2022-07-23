@@ -1,0 +1,305 @@
+---
+layout: 'documentation'
+title: 类型速查表
+priority: 14
+---
+
+## Agreement
+
+```ts
+interface TAgreementRequest {
+  chainInfo?: TChainInfo;
+  description: string;
+  digest: string;
+  meta?: any;
+  method?: 'keccak' | 'sha3' | 'keccak_384' | 'sha3_384' | 'keccak_512' | 'sha3_512' | 'sha2';
+  type: 'agreement';
+  uri: string;
+}
+
+interface TAgreementResponse {
+  agreed: boolean;
+  meta?: any;
+  sig?: string;
+  type: 'agreement';
+}
+```
+
+## Asset
+
+```ts
+interface TAssetRequest {
+  address?: string;
+  chainInfo?: TChainInfo;
+  description: string;
+  filters?: {
+    address?: string;
+    tag?: string;
+    trustedIssuers?: (
+      | {
+          did: string;
+          endpoint: string;
+        }
+      | string
+    )[];
+    trustedParents?: string[];
+  }[];
+  meta?: any;
+  optional?: boolean;
+  tag?: string;
+  trustedIssuers?: (
+    | {
+        did: string;
+        endpoint: string;
+      }
+    | string
+  )[];
+  trustedParents?: string[];
+  type: 'asset';
+}
+
+interface TAssetResponse {
+  asset: string;
+  meta?: any;
+  ownerDid: string;
+  ownerPk: string;
+  ownerProof: string;
+  type: 'asset';
+}
+```
+
+## AuthPrincipal
+
+```ts
+interface TAuthPrincipalRequest {
+  chainInfo?: TChainInfo;
+  declareParams?: {
+    issuer: string;
+    moniker: string;
+  };
+  description: string;
+  meta?: any;
+  supervised?: boolean;
+  target?: string;
+  targetType?: {
+    hash: 'keccak' | 'sha3' | 'keccak_384' | 'sha3_384' | 'keccak_512' | 'sha3_512' | 'sha2';
+    key: 'ed25519' | 'secp256k1' | 'ethereum';
+    role:
+      | 'account'
+      | 'node'
+      | 'device'
+      | 'application'
+      | 'contract'
+      | 'bot'
+      | 'asset'
+      | 'stake'
+      | 'validator'
+      | 'group'
+      | 'tx'
+      | 'tether'
+      | 'swap'
+      | 'delegation'
+      | 'vc'
+      | 'blocklet'
+      | 'registry'
+      | 'token'
+      | 'factory'
+      | 'rollup'
+      | 'any';
+  };
+  type: 'authPrincipal';
+}
+
+interface TAuthPrincipalResponse {
+  meta?: any;
+  type: 'authPrincipal';
+  userDid: string;
+  userPk: string;
+}
+```
+
+## PrepareTx (Request Payment)
+
+```ts
+interface TPrepareTxRequest {
+  chainInfo?: TChainInfo;
+  description: string;
+  display?: string;
+  meta?: any;
+  partialTx: string;
+  requirement: {
+    assets?: {
+      address?: string[];
+      issuer?: string[];
+      parent?: string[];
+    };
+    tokens: {
+      address: string;
+      value: string;
+    }[];
+  };
+  type: 'prepareTx';
+}
+
+interface TPrepareTxResponse {
+  finalTx: string;
+  meta?: any;
+  type: 'prepareTx';
+}
+```
+
+## Profile
+
+```ts
+interface TProfileRequest {
+  chainInfo?: TChainInfo;
+  description: string;
+  items?: ('fullName' | 'email' | 'phone' | 'signature' | 'avatar' | 'birthday')[];
+  meta?: any;
+  type: 'profile';
+}
+
+interface TProfileResponse {
+  avatar?: string;
+  birthday?: string;
+  email?: string;
+  fullName?: string;
+  meta?: any;
+  phone?: string;
+  signature?: string;
+  type: 'profile';
+}
+```
+
+## Signature (Sign Any thing from Any Blockchain)
+
+```ts
+interface TSignatureRequest {
+  chainInfo?: TChainInfo;
+  description: string;
+  digest?: string;
+  display?: string;
+  meta?: any;
+  method?: 'none' | 'keccak' | 'sha3' | 'keccak_384' | 'sha3_384' | 'keccak_512' | 'sha3_512' | 'sha2';
+  origin?: string;
+  type: 'signature';
+  typeUrl: 'fg:t:transaction' | 'mime:text/plain' | 'mime:text/html' | 'eth:transaction';
+}
+
+interface TSignatureResponse {
+  meta?: any;
+  sig: string;
+  type: 'signature';
+}
+```
+
+## Verifiable Credential
+
+```ts
+interface TVerifiableCredentialRequest {
+  chainInfo?: TChainInfo;
+  description: string;
+  filters?: {
+    tag?: string;
+    target?: string;
+    trustedIssuers?: (
+      | {
+          did: string;
+          endpoint: string;
+        }
+      | string
+    )[];
+    type?: string[];
+  }[];
+  item?: string[];
+  meta?: any;
+  optional?: boolean;
+  tag?: string;
+  target?: string;
+  trustedIssuers?: (
+    | {
+        did: string;
+        endpoint: string;
+      }
+    | string
+  )[];
+  type: 'verifiableCredential';
+}
+
+interface TVerifiableCredentialResponse {
+  assetDid?: string;
+  meta?: any;
+  optional?: boolean;
+  presentation?: string;
+  type: 'verifiableCredential';
+}
+```
+
+## DID Connect Session
+
+```ts
+interface TSession {
+  appInfo: TAppInfo;
+  approveResults: any[];
+  approveUrl?: string;
+  authUrl: string;
+  autoConnect: boolean;
+  challenge: string;
+  connectUrl?: string;
+  currentConnected?: {
+    didwallet: TWalletInfo;
+    userDid: string;
+    userPk: string;
+  } | null;
+  currentStep: number;
+  error?: string;
+  onlyConnect: boolean;
+  previousConnected?: {
+    didwallet: 'ios' | 'android' | 'web' | '';
+    userDid: string;
+    userPk: string;
+  } | null;
+  requestedClaims: TAnyRequest[][];
+  responseClaims: TAnyResponse[][];
+  sessionId: string;
+  status:
+    | 'created'
+    | 'walletScanned'
+    | 'walletConnected'
+    | 'appConnected'
+    | 'walletApproved'
+    | 'appApproved'
+    | 'error'
+    | 'timeout'
+    | 'rejected'
+    | 'canceled'
+    | 'completed';
+  strategy: string | 'default' | 'smart';
+  timeout: {
+    app: number;
+    relay: number;
+    wallet: number;
+  };
+  updaterPk: string;
+}
+```
+
+## DID Connect Context
+
+```ts
+interface TContext {
+  body: object;
+  didwallet: TWalletInfo;
+  headers: object;
+  locale: string;
+  previousConnected?: {
+    didwallet: 'ios' | 'android' | 'web' | '';
+    userDid: string;
+    userPk: string;
+  } | null;
+  session: TSession | null;
+  sessionId: string;
+  signerPk: string;
+  signerToken: string;
+}
+```

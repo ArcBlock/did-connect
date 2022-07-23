@@ -18,7 +18,7 @@ export { default as MultipleWorkflow } from './demo/multiple-workflow';
 export { default as ReuseExistingSession } from './demo/reuse-existing-session';
 
 export default {
-  title: 'Connect',
+  title: 'Composed/Connect',
   component: Connect,
   argTypes: {
     relayUrl: { control: 'text', defaultValue: relayUrl },

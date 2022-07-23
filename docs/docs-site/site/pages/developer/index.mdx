@@ -1,0 +1,127 @@
+---
+layout: 'documentation'
+title: Getting Started
+priority: 2
+---
+
+集成 DID Connect 最简单的方式是先创建 Blocklet，因为 Blocklet 的运行环境就自动包含了去中心化的 DID Connect Relay。
+如果你还不清楚如何创建 Blocklet，请参考：https://www.createblocklet.dev/docs/getting-started
+
+## 前置条件
+
+- 已经安装并且配置好 [DID Wallet](https://www.didwallet.io)，并且手机和电脑连接到相同的局域网
+- 已经创建好使用 React 模板的 Blocklet，下面的文档用的是 `@did-connect/react`，已经将 Blocklet 运行起来
+
+## 安装依赖
+
+```shell
+npm install @did-connect/react -S
+# yanr add @did-connect/react
+```
+
+## 项目准备
+
+在 React 项目的入口文件（通常是 src/app.js）中增加 `ConnectProvider`：
+
+```jsx
+import { ConnectProvider } from '@did-connect/react';
+
+export default function WrappedApp() {
+  return (
+    <ConnectProvider>
+      <App />
+    </ConnectProvider>
+  );
+}
+```
+
+## 连接钱包
+
+在应用中添加如下组件，然后将组建挂在到某个页面：
+
+```js
+import { useState } from 'react';
+import { Connect, Button } from '@did-connect/react';
+import useLocalStorage from 'react-use/lib/useLocalStorage';
+
+function HelloConnect() {
+  const [open, setOpen] = useState(false);
+  const [connectedUser, setConnectedUser] = useLocalStorage('connectedUser', null);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleApprove = (ctx, e) => {
+    console.log('onApprove', ctx, e);
+  };
+  const handleComplete = (ctx) => {
+    setConnectedUser(ctx.currentConnected);
+    setOpen(false);
+  };
+
+  return (
+    <header className="app-header">
+      {!connectedUser && (
+        <Button type="button" variant="contained" size="large" onClick={() => setOpen(true)}>
+          Continue With
+        </Button>
+      )}
+      {connectedUser && (
+        <div style={{ textAlign: 'left' }}>
+          Connected: <pre>{JSON.stringify(connectedUser, null, 2)}</pre>
+          <button type="button" onClick={() => setConnectedUser(null)}>
+            Switch User
+          </button>
+        </div>
+      )}
+      <Connect
+        popup
+        open={open}
+        onlyConnect
+        onClose={handleClose}
+        onConnect={[]}
+        onApprove={handleApprove}
+        onComplete={handleComplete}
+        messages={{
+          title: 'Connect DID Wallet',
+          scan: 'You will always see the app connection screen on DID Wallet when scan follow qrcode',
+          confirm: 'Confirm operation on your DID Wallet',
+          success: 'You have successfully connected!',
+        }}
+        relayUrl="/.well-known/service/api/connect/relay"
+      />
+    </header>
+  );
+}
+
+export default HelloConnect;
+```
+
+这个组件的作用是：用户连接钱包之后，把用户信息存储在 LocalStorage 中，即使刷新页面也无需重新链接，体验和 Web3.js 开发的应用完全相同。
+
+代码中关键的部分：
+
+```js
+<Connect
+  popup
+  open={open}
+  onlyConnect
+  onClose={handleClose}
+  onConnect={[]}
+  onApprove={handleApprove}
+  onComplete={handleComplete}
+  messages={{
+    title: 'Connect DID Wallet',
+    scan: 'You will always see the app connection screen on DID Wallet when scan follow qrcode',
+    confirm: 'Confirm operation on your DID Wallet',
+    success: 'You have successfully connected!',
+  }}
+  relayUrl="/.well-known/service/api/connect/relay"
+/>
+```
+
+- onlyConnect：表示当前会话只需要用户提供身份，无需其他信息
+- onConnect：设置为空数组，与 onlyConnect 呼应
+- onApprove：在钱包同意并提供身份之后的回调
+- onComplete：整个流程结束时的回调
+- relayUrl: 当前会话使用的 Relay 服务的地址
+- messages：会话过程中用户看到的文案
