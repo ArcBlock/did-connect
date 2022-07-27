@@ -27,7 +27,7 @@
   "dependencies": {
     "@arcblock/did-motif": "^1.1.10",
     "@arcblock/event-client": "^1.6.3",
-    "@arcblock/ux": "^2.1.67",
+    "@arcblock/ux": "^2.1.71",
     "@solana/qr-code-styling": "1.6.0-beta.0",
     "@vueuse/core": "^8.5.0",
     "buffer": "^6.0.3",
@@ -64,7 +64,7 @@
     "less": "^4.1.2",
     "prettier": "^2.6.2",
     "vite": "^2.9.9",
-    "vite-plugin-blocklet": "^0.4.25",
+    "vite-plugin-blocklet": "^0.4.28",
     "vite-plugin-css-injected-by-js": "^1.5.0",
     "vue-loader": "^17.0.0",
     "vue-router": "^4.0.15"
