@@ -18,7 +18,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@blocklet/sdk": "^1.8.4",
+    "@blocklet/sdk": "^1.8.6",
     "@did-connect/relay-adapter-express": "2.0.18",
     "@did-connect/storage-nedb": "2.0.18",
     "cors": "^2.8.5",
@@ -26,7 +26,7 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.19"
   },
   "homepage": "https://github.com/ArcBlock/did-connect",
   "keywords": [
