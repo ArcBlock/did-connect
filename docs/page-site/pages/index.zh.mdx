@@ -2,124 +2,84 @@
 layout: 'my-layout'
 blocks:
   - name: SectionBlock
-    background:
-      color: '#fff'
-    className: text-center
-    classes:
-      section: '!xl:py-10'
+    center: true
+    logo: /logos/logo-ico.png
+    title: !md |
+      **DID Connect**
+    description: 基于 W3C DID 标准设计和实现的用于连接用户和去中心化应用的开放协议和开发套件
+    actions:
+      - name: SmartLink
+        to: /intro
+        base: docs
+        children:
+          name: Button
+          variant: outlined
+          size: large
+          color: primary
+          children: Get Started
+      - name: SmartLink
+        to: /playground/react
+        children:
+          name: Button
+          variant: outlined
+          size: large
+          color: primary
+          children: Playground
+  - name: SectionFeatureList
+    list:
+      - title: 遵循标准
+        description: 基于 W3C DID 标准设计和实现
+        className: '!max-w-full p-5'
+        classes:
+          title: '!font-700 !text-2xl'
+          description: '!text-lg'
+      - title: 高安全性
+        description: 用户和应用的通信是点对点可信的
+        className: '!max-w-full p-5'
+        classes:
+          title: '!font-700 !text-2xl'
+          description: '!text-lg'
+      - title: 强隐私
+        description: 用户可以在不暴露任何隐私的情况下和应用交互
+        className: '!max-w-full p-5'
+        classes:
+          title: '!font-700 !text-2xl'
+          description: '!text-lg'
+  - name: SectionFeatureList
+    list:
+      - title: 可扩展
+        description: 可以根据需要扩展协议支持的消息类型
+        className: '!max-w-full p-5'
+        classes:
+          title: '!font-700 !text-2xl'
+          description: '!text-lg'
+      - title: 多链支持
+        description: 支持 ArcBlock、Ethereum、Solona 等区块链
+        className: '!max-w-full p-5'
+        classes:
+          title: '!font-700 !text-2xl'
+          description: '!text-lg'
+      - title: 用户体验
+        description: 通过扫描二维码即可完成各种操作，自动连接技术会让体验更丝滑
+        className: '!max-w-full p-5'
+        classes:
+          title: '!font-700 !text-2xl'
+          description: '!text-lg'
+  - name: SectionBlock
     title:
-      - name: Pic
-        className: w-[120px] m-auto mb-8
-        src: /logos/logo-ico.png
-      - name: div
-        className: font-bold text-center
-        children: DID Connect
+      name: div
+      className: font-bold text-4xl
+      children: 数秒内即可开始使用
     description:
-      - name: div
-        className: text-center text-[#333]
-        children: 基于 W3C DID 标准设计和实现的用于连接用户和去中心化应用的开放协议和开发套件
-      - name: div
-        className: text-center
-        children:
-          - name: Button
-            varaint: border
-            className: mt-8 w-auto m-auto !text-#236FFF !border-#236FFF px-4 py-2 !inline-block
-            size: lg
-            color: primary
-            children:
-              name: SmartLink
-              to: /intro
-              base: docs
-              children: Get Started
-          - name: Button
-            varaint: border
-            className: mt-8 w-auto m-auto ml !text-#236FFF !border-#236FFF px-4 py-2 !inline-block
-            size: lg
-            color: primary
-            children:
-              name: SmartLink
-              to: /playground/react
-              children: Playground
-  - name: SectionBlock
-    background:
-      color: '#f8f8f8'
-    className: max-w-[1536px] m-auto
-    children:
-      - name: GridBlock
-        cols: 3
-        gap: '0'
-        children:
-          - name: InfoBlock
-            title: 遵循标准
-            description: 基于 W3C DID 标准设计和实现
-            className: '!max-w-full p-5'
-            classes:
-              title: '!font-700 !text-2xl'
-              description: '!text-lg'
-          - name: InfoBlock
-            title: 高安全性
-            description: 用户和应用的通信是点对点可信的
-            className: '!max-w-full p-5'
-            classes:
-              title: '!font-700 !text-2xl'
-              description: '!text-lg'
-          - name: InfoBlock
-            title: 强隐私
-            description: 用户可以在不暴露任何隐私的情况下和应用交互
-            className: '!max-w-full p-5'
-            classes:
-              title: '!font-700 !text-2xl'
-              description: '!text-lg'
-  - name: SectionBlock
-    background:
-      color: '#ffffff'
-    className: max-w-[1536px] m-auto
-    children:
-      - name: GridBlock
-        cols: 3
-        gap: '0'
-        children:
-          - name: InfoBlock
-            title: 可扩展
-            description: 可以根据需要扩展协议支持的消息类型
-            className: '!max-w-full p-5'
-            classes:
-              title: '!font-700 !text-2xl'
-              description: '!text-lg'
-          - name: InfoBlock
-            title: 多链支持
-            description: 支持 ArcBlock、Ethereum、Solona 等区块链
-            className: '!max-w-full p-5'
-            classes:
-              title: '!font-700 !text-2xl'
-              description: '!text-lg'
-          - name: InfoBlock
-            title: 用户体验
-            description: 通过扫描二维码即可完成各种操作，自动连接技术会让体验更丝滑
-            className: '!max-w-full p-5'
-            classes:
-              title: '!font-700 !text-2xl'
-              description: '!text-lg'
-  - name: SectionBlock
-    className: max-w-[1520px] m-auto
-    left:
-      name: InfoBlock
-      title:
-        name: div
-        className: font-bold text-4xl
-        children: 数秒内即可开始使用
-      description:
-        name: div
-        className: text-xl
-        children:
-          - !md |
-            DID Connect 让你专注于代码，而不是构建工具。
+      name: div
+      className: text-xl
+      children:
+        - !md |
+          DID Connect 让你专注于代码，而不是构建工具。
 
-            要创建一个名为 my-blocklet 的项目，请运行以下命令：
-          - name: CodeBlock
-            language: shell
-            children: npx create-blocklet@latest my-blocklet
-    right:
-      name: Pic
-      src: /images/create-blocklet.gif
+          要创建一个名为 my-blocklet 的项目，请运行以下命令：
+        - name: CodeBlock
+          language: shell
+          children: npx create-blocklet@latest my-blocklet
+    image: /images/create-blocklet.gif
 ---

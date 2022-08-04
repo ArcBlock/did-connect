@@ -2,124 +2,84 @@
 layout: 'my-layout'
 blocks:
   - name: SectionBlock
-    background:
-      color: '#fff'
-    className: text-center
-    classes:
-      section: '!xl:py-10'
+    center: true
+    logo: /logos/logo-ico.png
+    title: !md |
+      **DID Connect**
+    description: Open Protocol and Development SDK for connecting users and decentralized applications, Designed and Implemented based on the W3C DID standard
+    actions:
+      - name: SmartLink
+        to: /intro
+        base: docs
+        children:
+          name: Button
+          variant: outlined
+          size: large
+          color: primary
+          children: Get Started
+      - name: SmartLink
+        to: /playground/react
+        children:
+          name: Button
+          variant: outlined
+          size: large
+          color: primary
+          children: Playground
+  - name: SectionFeatureList
+    list:
+      - title: Standard Compliance
+        description: Design and implementation based on W3C DID standard
+        className: '!max-w-full p-5'
+        classes:
+          title: '!font-700 !text-2xl'
+          description: '!text-lg'
+      - title: Security
+        description: User-application communication is peer-to-peer trusted
+        className: '!max-w-full p-5'
+        classes:
+          title: '!font-700 !text-2xl'
+          description: '!text-lg'
+      - title: Enhanced Privacy
+        description: Users can interact with the application without revealing any privacy
+        className: '!max-w-full p-5'
+        classes:
+          title: '!font-700 !text-2xl'
+          description: '!text-lg'
+  - name: SectionFeatureList
+    list:
+      - title: Extensible
+        description: The types of messages supported by the protocol can be extended as needed
+        className: '!max-w-full p-5'
+        classes:
+          title: '!font-700 !text-2xl'
+          description: '!text-lg'
+      - title: Multi-chain support
+        description: Supports ArcBlock, Ethereum, Solona and other blockchains
+        className: '!max-w-full p-5'
+        classes:
+          title: '!font-700 !text-2xl'
+          description: '!text-lg'
+      - title: User Experience
+        description: Various operations can be completed by scanning the QR code, and the automatic connection technology will make the experience more silky smooth
+        className: '!max-w-full p-5'
+        classes:
+          title: '!font-700 !text-2xl'
+          description: '!text-lg'
+  - name: SectionBlock
     title:
-      - name: Pic
-        className: w-[120px] m-auto mb-8
-        src: /logos/logo-ico.png
-      - name: div
-        className: font-bold text-center
-        children: DID Connect
+      name: div
+      className: font-bold text-4xl
+      children: Get started in seconds
     description:
-      - name: div
-        className: text-center text-[#333]
-        children: Open Protocol and Development SDK for connecting users and decentralized applications, Designed and Implemented based on the W3C DID standard
-      - name: div
-        className: text-center
-        children:
-          - name: Button
-            varaint: border
-            className: mt-8 w-auto m-auto !text-#236FFF !border-#236FFF px-4 py-2 !inline-block
-            size: lg
-            color: primary
-            children:
-              name: SmartLink
-              to: /intro
-              base: docs
-              children: Get Started
-          - name: Button
-            varaint: border
-            className: mt-8 w-auto m-auto ml !text-#236FFF !border-#236FFF px-4 py-2 !inline-block
-            size: lg
-            color: primary
-            children:
-              name: SmartLink
-              to: /playground/react
-              children: Playground
-  - name: SectionBlock
-    background:
-      color: '#f8f8f8'
-    className: max-w-[1536px] m-auto
-    children:
-      - name: GridBlock
-        cols: 3
-        gap: '0'
-        children:
-          - name: InfoBlock
-            title: Standard Compliance
-            description: Design and implementation based on W3C DID standard
-            className: '!max-w-full p-5'
-            classes:
-              title: '!font-700 !text-2xl'
-              description: '!text-lg'
-          - name: InfoBlock
-            title: Security
-            description: User-application communication is peer-to-peer trusted
-            className: '!max-w-full p-5'
-            classes:
-              title: '!font-700 !text-2xl'
-              description: '!text-lg'
-          - name: InfoBlock
-            title: Enhanced Privacy
-            description: Users can interact with the application without revealing any privacy
-            className: '!max-w-full p-5'
-            classes:
-              title: '!font-700 !text-2xl'
-              description: '!text-lg'
-  - name: SectionBlock
-    background:
-      color: '#ffffff'
-    className: max-w-[1536px] m-auto
-    children:
-      - name: GridBlock
-        cols: 3
-        gap: '0'
-        children:
-          - name: InfoBlock
-            title: Extensible
-            description: The types of messages supported by the protocol can be extended as needed
-            className: '!max-w-full p-5'
-            classes:
-              title: '!font-700 !text-2xl'
-              description: '!text-lg'
-          - name: InfoBlock
-            title: Multi-chain support
-            description: Supports ArcBlock, Ethereum, Solona and other blockchains
-            className: '!max-w-full p-5'
-            classes:
-              title: '!font-700 !text-2xl'
-              description: '!text-lg'
-          - name: InfoBlock
-            title: User Experience
-            description: Various operations can be completed by scanning the QR code, and the automatic connection technology will make the experience more silky smooth
-            className: '!max-w-full p-5'
-            classes:
-              title: '!font-700 !text-2xl'
-              description: '!text-lg'
-  - name: SectionBlock
-    className: max-w-[1520px] m-auto
-    left:
-      name: InfoBlock
-      title:
-        name: div
-        className: font-bold text-4xl
-        children: Get started in seconds
-      description:
-        name: div
-        className: text-xl
-        children:
-          - !md |
-            DID Connect lets you focus on code, not build tools.
+      name: div
+      className: text-xl
+      children:
+        - !md |
+          DID Connect lets you focus on code, not build tools.
 
-            To create a project called my-blocklet, run this command:
-          - name: CodeBlock
-            language: shell
-            children: npx create-blocklet@latest my-blocklet
-    right:
-      name: Pic
-      src: /images/create-blocklet.gif
+          To create a project called my-blocklet, run this command:
+        - name: CodeBlock
+          language: shell
+          children: npx create-blocklet@latest my-blocklet
+    image: /images/create-blocklet.gif
 ---
