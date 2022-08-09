@@ -6,14 +6,15 @@ blocks:
     logo: /logos/logo-ico.png
     title: !md |
       **DID Connect**
-    description: Open Protocol and Development SDK for connecting users and decentralized applications, Designed and Implemented based on the W3C DID standard
+    description: !md |
+      **Open Protocol** and **Development SDK** for connecting users and decentralized applications<br/> Designed and Implemented based on the [W3C DID Standard](https://www.w3.org/TR/did-core/)
     actions:
       - name: SmartLink
         to: /intro
         base: docs
         children:
           name: Button
-          variant: outlined
+          variant: contained
           size: large
           color: primary
           children: Get Started
@@ -21,50 +22,30 @@ blocks:
         to: /playground/react
         children:
           name: Button
-          variant: outlined
+          variant: contained
           size: large
-          color: primary
+          color: secondary
           children: Playground
   - name: SectionFeatureList
+    background:
+      color: green
     list:
       - title: Standard Compliance
-        description: Design and implementation based on W3C DID standard
-        className: '!max-w-full p-5'
-        classes:
-          title: '!font-700 !text-2xl'
-          description: '!text-lg'
+        description: Designed and implemented based on W3C DID standard
       - title: Security
         description: User-application communication is peer-to-peer trusted
-        className: '!max-w-full p-5'
-        classes:
-          title: '!font-700 !text-2xl'
-          description: '!text-lg'
       - title: Enhanced Privacy
         description: Users can interact with the application without revealing any privacy
-        className: '!max-w-full p-5'
-        classes:
-          title: '!font-700 !text-2xl'
-          description: '!text-lg'
   - name: SectionFeatureList
+    background:
+      color: blue
     list:
       - title: Extensible
         description: The types of messages supported by the protocol can be extended as needed
-        className: '!max-w-full p-5'
-        classes:
-          title: '!font-700 !text-2xl'
-          description: '!text-lg'
       - title: Multi-chain support
         description: Supports ArcBlock, Ethereum, Solona and other blockchains
-        className: '!max-w-full p-5'
-        classes:
-          title: '!font-700 !text-2xl'
-          description: '!text-lg'
       - title: User Experience
         description: Various operations can be completed by scanning the QR code, and the automatic connection technology will make the experience more silky smooth
-        className: '!max-w-full p-5'
-        classes:
-          title: '!font-700 !text-2xl'
-          description: '!text-lg'
   - name: SectionBlock
     title:
       name: div
@@ -76,7 +57,6 @@ blocks:
       children:
         - !md |
           DID Connect lets you focus on code, not build tools.
-
           To create a project called my-blocklet, run this command:
         - name: CodeBlock
           language: shell

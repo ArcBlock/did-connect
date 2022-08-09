@@ -23,12 +23,12 @@
     "vite-plugin-blocklet": "^0.1.2"
   },
   "dependencies": {
-    "@arcblock/did": "^1.17.9",
+    "@arcblock/did": "^1.17.10",
     "@blocklet/sdk": "^1.8.6",
     "@did-connect/storage-nedb": "^1.6.3",
     "@did-connect/vue": "workspace:*",
-    "@ocap/client": "^1.17.9",
-    "@ocap/wallet": "^1.17.9",
+    "@ocap/client": "^1.17.10",
+    "@ocap/wallet": "^1.17.10",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
