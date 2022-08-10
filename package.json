@@ -42,15 +42,15 @@
     "typescript": "^4.7.4"
   },
   "resolutions": {
-    "@arcblock/did": "^1.17.9",
-    "@arcblock/jwt": "^1.17.9",
-    "@arcblock/validator": "^1.17.9",
-    "@arcblock/ws": "^1.17.9",
-    "@ocap/asset": "^1.17.9",
-    "@ocap/client": "^1.17.9",
-    "@ocap/mcrypto": "^1.17.9",
-    "@ocap/util": "^1.17.9",
-    "@ocap/wallet": "^1.17.9"
+    "@arcblock/did": "^1.17.10",
+    "@arcblock/jwt": "^1.17.10",
+    "@arcblock/validator": "^1.17.10",
+    "@arcblock/ws": "^1.17.10",
+    "@ocap/asset": "^1.17.10",
+    "@ocap/client": "^1.17.10",
+    "@ocap/mcrypto": "^1.17.10",
+    "@ocap/util": "^1.17.10",
+    "@ocap/wallet": "^1.17.10"
   },
   "dependencies": {
     "@types/node": "^18.6.5"
