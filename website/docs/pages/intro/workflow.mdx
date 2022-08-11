@@ -1,81 +1,83 @@
 ---
 layout: 'documentation'
-title: DID Connect 流程
+title: DID Connect Workflow
 priority: 1
 ---
 
-### 术语表
+### Glossary
 
-我们可以把完整的 DID Connect 过程称为 `DID Connect 会话`，会话过程中的参与方包括：
+We can refer to the complete DID Connect process as a `DID Connect session`, and the parties involved in the session include
 
-- `User(Agent)`: 通常指支持 DID Connect 协议的数字钱包，可帮助管理用户的数字身份和数字资产，比如 [DID Wallet](https://didwallet.io/)
-- `DApp`: 可以是任何类型的去中心化应用，DID Connect 会话中的应用通常需要用户提供某些信息以完成特定业务流程，在 ArcBlock 生态中，应用通常用 [Blocklet](https://blocklet.io) 代称。
-- `Relay`: 在 DID Connect 过程中维护会话的状态、中转并校验应用的请求和用户的响应，Relay 通常会寄生在某个 Web Server 中并且依赖某个底层的存储来保存会话状态
-- `Requested Claims`：应用根据协议组装并发送给用户的用于描述需要用户做什么的数据片段，可以单次发送多个请求
-- `Response Claims`：用户在审查应用的请求并同意之后，由钱包组装并提交给应用的数据片段
+- `User(Agent)`: usually refers to a digital wallet that supports the DID Connect protocol and can help manage a user's digital identity and digital assets, such as [DID Wallet](https://didwallet.io/)
+- `DApp`: can be any type of decentralized application, applications in a DID Connect session usually require certain information from the user to complete a specific business process, in the ArcBlock ecosystem, applications are usually referred to by [Blocklet](https://blocklet.io).
+- `Relay`: Maintains the state of the session during the DID Connect process, relaying and verifying application requests and user responses, Relay is usually hosted in a Web Server and relies on some underlying storage to hold the session state
+- `Requested Claims`: data pieces that the application assembles and sends to the user to describe what it needs the user to do according to the protocol, multiple requests can be sent at once
+- `Response Claims`: data pieces assembled and submitted to the application by the wallet after the user has reviewed the application's request and agreed to it
 
-### 流程图解
+### Flow diagram
 
-完整的 `DID Connect 会话` 流程如下图所示：
+The complete `DID Connect session` flow is illustrated in the following diagram.
 
 ![](./images/did-connect-v2.png)
 
-每个步骤解释如下：
+Each step is explained as follows.
 
-1. 用户和应用交互时需要提供数字身份、数据签名、交易签名、可验证声明、资产所有权证明、通行证等数据
-2. 应用生成 DID Connect 会话，并将会话保存到 Relay 中，获得会话的 deepLink
-3. 应用将 deepLink 二维码呈现给用户，用户用钱包扫码
-4. 应用在钱包扫码后用标准格式将需要用户提供的信息（Requested Claims）保存到 Relay 中
-5. 钱包拿到应用的 Requested Claims，解析并呈现给用户
-6. 用户在钱包审查并同意
-7. 钱包把响应（Response Claims）提交给 Relay，通过 Relay 的校验之后被保存到会话中
-8. 应用通过订阅或者轮询的方式拿到钱包的响应，继续后面的业务流程
+1. the user interacts with the application by providing data such as digital identity, data signature, transaction signature, verifiable statement, proof of asset ownership, pass, etc.
+2. the application generates a DID Connect session and saves the session in Relay to obtain the deepLink of the session
+3. the application presents the deepLink QR code to the user, and the user sweeps the code with his wallet
+4. the application saves the information required from the user (Requested Claims) to Relay in a standard format after the wallet sweeps the code
+5. the wallet gets the Requested Claims from the application, parses them and presents them to the user
+6. The user reviews and agrees with the wallet
+7. The wallet submits the response (Response Claims) to Relay, which is verified by Relay and saved in the session
+8. the application gets the wallet's response by subscription or polling and continues the business process
 
-关于上述流程的额外说明：
+Additional notes on the above process.
 
-- 步骤 4 合并和步骤 2 是分开的，以满足应用在某些情况下知道用户身份之后才能精确确定需要用户提供的信息，比如必须提供某个账户下面的通行证
-- 步骤 6 中用户可以在钱包中选择拒绝，拒绝时应用也会收到通知，并可执行相应的回调
-- 步骤 7 中如果当前会话分多个步骤，则会回到第 5 步直到所有的的步骤都完成
-- 为了良好的用户体验，DID Connect 会话过程中的大部分等待都设置了超时
+- Step 4 is merged separately from Step 2 to allow the application to know the identity of the user in some cases before it can determine exactly what information it needs from the user, for example, if it has to provide a pass under an account
+- In Step 6, the user can choose to reject in the wallet, and the application will be notified of the rejection and can execute the corresponding callback.
+- In step 7, if the current session is divided into multiple steps, it will go back to step 5 until all steps are completed.
+- For a good user experience, most of the waits during a DID Connect session are set to timeout
 
-此外，步骤 4 和 步骤 8 可能并不是发生在浏览器中，主要是因为某些计算无法在浏览器端完成，某些计算比较敏感不适合在浏览器完成：
+In addition, steps 4 and 8 may not occur in the browser, mainly because some calculations cannot be done in the browser and some calculations are sensitive and not suitable for the browser.
 
-- 应用可以在会话创建的时候提供一个 API，Relay 在钱包扫码时请求该 API 获取 Requested Claims
-- 应用可以在会话创建的时候提供一个 API，Relay 在钱包提交 Response Claims 时转发请求到这里
+- The application can provide an API at session creation time, which Relay requests to get Requested Claims when the wallet is swept
+- The application can provide an API at session creation time, and Relay forwards the request here when the wallet submits Response Claims
 
-这种情况下，整个流程就变成下图：
+In this case, the entire process becomes the following diagram.
 
 ![](./images/did-connect-v2-2.png)
 
-### 状态机视角
+### State machine perspective
 
-> 如果你不是开发者，可以安全的跳过这个部分。
+> If you are not a developer, you can safely skip this part.
 
-因为整个 DID Connect 流程涉及钱包、应用、用户以及可能的远程 API，状态变化流程和分支比较复杂，用状态机来描述 `DID Connect 会话`的完整过程再合适不过了：
+Because the entire DID Connect process involves the wallet, the application, the user, and possibly the remote API, the state change flow and branching is complex, and the complete process of a `DID Connect session` is best described by a state machine: the
 
 <iframe
-  src="https://stately.ai/viz/embed/98beeb99-5b56-4c3f-9743-3250bac3ec50?mode=viz&panel=code&showOriginalLink=1&readOnly=1&pan=0&zoom=1&controls=1"
+  src="https://stately.ai/viz/embed/98beeb99-5b56-4c3f-9743-3250bac3ec50?mode=viz&panel=code&showOriginalLink=1&readOnly=1&pan=0& zoom=1&controls=1"
   sandbox="allow-same-origin allow-scripts"
   width="100%"
   height="480"></iframe>
 
-> 如果你想更好的查看并和 DID Connect 状态机交互，可以猛击[这里](https://stately.ai/viz/98beeb99-5b56-4c3f-9743-3250bac3ec50)
+> If you want to better view and interact with the DID Connect state machine, you can pound [here](https://stately.ai/viz/98beeb99-5b56-4c3f-9743-3250bac3ec50)
 
-正常情况下，成功的 `DID Connect 会话` 的完整状态变化顺序为：
+Under normal circumstances, the complete sequence of state changes for a successful `DID Connect session` is
 
-- start：会话开始
-- loading：表示正在创建或者加载会话
-- created：已经创建成功，等待扫码
-- walletScanned：钱包已经扫码
-- walletConnected：钱包已经选择了当前会话使用的身份
-- appConnected：应用已经确定当前会话需要的 Requested Claims
-- walletApproved：钱包已经审查并提交 Response Claims
-- appApproved：应用已经消费 Response Claims 并给出响应
-- completed：会话完成
+- start: session started
+- loading: means the session is being created or loaded
+- created: the session has been created successfully and is waiting to be scanned
+- walletScanned: the wallet has been scanned
+- walletConnected: the wallet has selected the identity to use for the current session
+- appConnected: the application has determined the Requested Claims required for the current session
+- walletApproved: The wallet has reviewed and submitted Response Claims
+- appApproved: The application has consumed the Response Claims and given a response
+- completed: The session is complete
 
-除了这些正常流程外，DID Connect 会话还可能会出现一些异常状态：
+In addition to these normal processes, a DID Connect session may have a number of exception states.
 
-- rejected：用户在钱包中拒绝了当前操作
-- error：任何环节发生的错误都会导致会话终止
-- timeout：等待钱包、应用完成某个动作超时了
-- canceled：用户在浏览器中取消了操作
+- rejected: The user has rejected the current operation in the wallet
+- error: An error in any part of the process will cause the session to be terminated
+- timeout: Waiting for the wallet or application to complete an action has timed out
+- canceled: the user cancelled the operation in the browser
+
+Translated with www.DeepL.com/Translator (free version)
