@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeProvider } from '../src/Theme';
+import { ThemeProvider } from '../src';
 
 export const parameters = {
   options: {
@@ -13,7 +13,7 @@ export const parameters = {
     selectedPanel: 'storysource',
     storySort: {
       method: 'alphabetical',
-      order: ['Introduction', ['Address', 'Avatar', 'Button', 'Logo'], ['Connect', 'SessionManager']],
+      order: ['Introduction', ['Connect', 'SessionManager'], ['Address', 'Avatar', 'Button', 'Logo']],
     },
   },
   backgrounds: {

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { useState, useEffect, useMemo } from 'react';
-import styled, { css } from 'styled-components';
-import { useTheme } from '@mui/styles';
+import styled from '@emotion/styled';
+import { css } from '@emotion/react';
+import { useTheme } from '@mui/material/styles';
 import Cookie from 'js-cookie';
 import Box from '@mui/material/Box';
 import useMeasure from 'react-use/lib/useMeasure';
@@ -197,7 +198,7 @@ export default function BasicConnect({
           </ActionInfo>
         )}
 
-        <Main isMobile={isMobile} className={matchSmallScreen ? 'auth_main--small' : ''}>
+        <Main className={matchSmallScreen ? 'auth_main--small' : ''}>
           <div>
             {!showStatus && !shouldAutoConnect && (
               <Box display="flex" alignItems="center" justifyContent="center">

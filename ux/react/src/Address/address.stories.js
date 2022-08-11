@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-filename-extension */
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import DidAddress from '.';
 
 import Basic from './demo/basic';

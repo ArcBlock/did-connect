@@ -3,8 +3,8 @@
 /* eslint-disable react/jsx-no-bind */
 import { useMemo, useRef, useState } from 'react';
 import { TLocaleCode } from '@did-connect/types';
+import styled from '@emotion/styled';
 import { IconButton, ClickAwayListener, MenuList, MenuItem, Paper, Popper, SvgIcon, Button, Chip } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import AccountOutline from 'mdi-material-ui/AccountOutline';
 import ShieldCheck from 'mdi-material-ui/ShieldCheck';
 import OpenInIcon from '@arcblock/icons/lib/OpenIn';
@@ -39,79 +39,6 @@ const messages: { [key: string]: { [key: string]: string } } = {
   },
 };
 
-const useStyles = makeStyles((theme) => ({
-  root: {},
-  user: {
-    fontSize: 12,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    padding: '24px 24px 10px',
-  },
-  userName: {
-    fontSize: 20,
-    // @ts-ignore
-    color: ({ dark }) => (dark ? '#aaa' : '#222'),
-    fontWeight: 'bold',
-    marginBottom: 10,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  menuList: {
-    padding: 0,
-  },
-  menuItem: {
-    padding: '18.5px 24px',
-    color: '#777',
-    fontSize: 16,
-    '&:hover': {
-      backgroundColor: '#fbfbfb',
-    },
-  },
-  menuIcon: {
-    color: '#999',
-    marginRight: 16,
-  },
-  popper: {
-    zIndex: (theme as any).zIndex.tooltip,
-  },
-  paper: {
-    borderColor: '#F0F0F0',
-    boxShadow: '0px 8px 12px rgba(92, 92, 92, 0.04)',
-    borderRadius: (theme as any).spacing(2),
-    overflow: 'hidden',
-    maxWidth: 'calc(100vw - 10px)',
-    '& .MuiChip-root .MuiChip-icon': {
-      color: (theme as any).palette.success.main,
-    },
-  },
-  darkPaper: {
-    backgroundColor: '#27282c',
-    color: '#fff',
-    border: 0,
-    '& .MuiChip-root': {
-      borderColor: '#aaa',
-    },
-    '& .MuiListItem-root, & .MuiChip-label': {
-      color: '#aaa',
-    },
-    '& .MuiListItem-root:hover': {
-      backgroundColor: '#363434',
-    },
-  },
-  role: {
-    height: 'auto',
-    marginRight: 0,
-  },
-  loginButton: {
-    borderRadius: '100vw',
-  },
-  darkLoginButton: {
-    color: '#fff',
-    borderColor: '#fff',
-  },
-}));
-
 type SessionManagerProps = {
   session: {
     user?: TSessionUser;
@@ -139,7 +66,7 @@ type SessionManagerProps = {
   size?: number;
 };
 
-function SessionManager({
+export default function SessionManager({
   session,
   locale = 'en',
   showText = false,
@@ -160,7 +87,6 @@ function SessionManager({
   ...rest
 }: SessionManagerProps): JSX.Element {
   const userAnchorRef = useRef(null);
-  const classes = useStyles({ dark });
   const [userOpen, setUserOpen] = useState(false);
 
   // base64 img maybe have some blank char, need encodeURIComponent to transform it
@@ -174,9 +100,10 @@ function SessionManager({
   if (!session.user) {
     return showText ? (
       <Button
-        className={`${classes.loginButton} ${dark && classes.darkLoginButton}`}
+        sx={[{ borderRadius: '100vw' }, dark && { color: '#fff', borderColor: '#fff' }]}
         variant="outlined"
         onClick={_onLogin}
+        aria-label="login button"
         {...rest}
         data-cy="sessionManager-login">
         <SvgIcon component={AccountOutline} />
@@ -234,32 +161,58 @@ function SessionManager({
       <IconButton
         ref={userAnchorRef}
         onClick={onToggleUser}
-        className={classes.root}
         {...rest}
         data-cy="sessionManager-logout-popup"
         size="large">
         <DidAvatar variant="circle" did={session.user.did} src={avatar} size={size} shape="circle" />
       </IconButton>
       {userAnchorRef.current && (
-        <Popper
-          className={classes.popper}
+        <StyledPopper
           open={userOpen}
           disablePortal
           anchorEl={userAnchorRef.current}
-          placement="bottom-end">
-          <Paper className={`${classes.paper} ${dark && classes.darkPaper}`} variant="outlined">
+          placement="bottom-end"
+          $dark={dark}>
+          <Paper
+            sx={[
+              (theme) => ({
+                borderColor: '#F0F0F0',
+                boxShadow: '0px 8px 12px rgba(92, 92, 92, 0.04)',
+                borderRadius: theme.spacing(2),
+                overflow: 'hidden',
+                maxWidth: 'calc(100vw - 10px)',
+                '& .MuiChip-root .MuiChip-icon': {
+                  color: theme.palette.success.main,
+                },
+              }),
+              dark && {
+                backgroundColor: '#27282c',
+                color: '#fff',
+                border: 0,
+                '& .MuiChip-root': {
+                  borderColor: '#aaa',
+                },
+                '& .MuiListItem-root, & .MuiChip-label': {
+                  color: '#aaa',
+                },
+                '& .MuiListItem-root:hover': {
+                  backgroundColor: '#363434',
+                },
+              },
+            ]}
+            variant="outlined">
             <ClickAwayListener onClickAway={onCloseUser}>
-              <MenuList className={classes.menuList}>
-                <div className={classes.user}>
-                  <div className={classes.userName}>
+              <MenuList sx={{ p: 0 }}>
+                <div className="session-manager-user">
+                  <div className="session-manager-user-name">
                     <span>{session.user.fullName}</span>
                     {!!showRole && (currentRole?.title || session.user?.role.toUpperCase()) && (
                       <Chip
                         label={currentRole?.title || session.user?.role.toUpperCase()}
                         size="small"
                         variant="outlined"
-                        className={classes.role}
-                        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+                        sx={{ height: 'auto', marginRight: 0 }}
+                        // @ts-ignore
                         icon={<SvgIcon component={ShieldCheck} size="small" />}
                       />
                     )}
@@ -268,17 +221,18 @@ function SessionManager({
                 </div>
                 {Array.isArray(menu) &&
                   menu.map((menuItem, index) => {
+                    const { svgIcon, ...menuProps } = menuItem;
                     return (
                       <MenuItem
                         key={index}
-                        className={classes.menuItem}
+                        className="session-manager-menu-item"
                         {...{
-                          ...menuItem,
+                          ...menuProps,
                           icon: undefined,
                           label: undefined,
                         }}>
-                        {menuItem.svgIcon
-                          ? menuItem.svgIcon && <SvgIcon component={menuItem.svgIcon} className={classes.menuIcon} />
+                        {svgIcon
+                          ? svgIcon && <SvgIcon component={svgIcon} className="session-manager-menu-icon" />
                           : menuItem.icon}
                         {menuItem.label}
                       </MenuItem>
@@ -286,60 +240,95 @@ function SessionManager({
                   })}
                 {menuRender({
                   classes: {
-                    menuItem: classes.menuItem,
-                    menuIcon: classes.menuIcon,
+                    menuItem: 'session-manager-menu-item',
+                    menuIcon: 'session-manager-menu-icon',
                   },
                 })}
                 {!browser.wallet && (
                   <MenuItem
                     component="a"
-                    className={classes.menuItem}
+                    className="session-manager-menu-item"
                     data-cy="sessionManager-openInWallet"
                     href="https://www.abtwallet.io/"
                     target="_blank">
-                    <SvgIcon component={OpenInIcon} className={classes.menuIcon} />
+                    <SvgIcon component={OpenInIcon} className="session-manager-menu-icon" />
                     {messages[locale].openInWallet}
                   </MenuItem>
                 )}
                 {!!switchDid && (
-                  <MenuItem className={classes.menuItem} onClick={_onSwitchDid} data-cy="sessionManager-switch-trigger">
-                    <SvgIcon component={SwitchDidIcon} className={classes.menuIcon} />
+                  <MenuItem
+                    className="session-manager-menu-item"
+                    onClick={_onSwitchDid}
+                    data-cy="sessionManager-switch-trigger">
+                    <SvgIcon component={SwitchDidIcon} className="session-manager-menu-icon" />
                     {messages[locale].switchDid}
                   </MenuItem>
                 )}
                 {!!switchProfile && (
                   <MenuItem
-                    className={classes.menuItem}
+                    className="session-manager-menu-item"
                     onClick={_onSwitchProfile}
                     data-cy="sessionManager-switch-profile-trigger">
-                    <SvgIcon component={SwitchProfileIcon} className={classes.menuIcon} />
+                    <SvgIcon component={SwitchProfileIcon} className="session-manager-menu-icon" />
                     {messages[locale].switchProfile}
                   </MenuItem>
                 )}
                 {!!switchPassport && (
                   <MenuItem
-                    className={classes.menuItem}
+                    className="session-manager-menu-item"
                     onClick={_onSwitchPassport}
                     data-cy="sessionManager-switch-passport-trigger">
-                    <SvgIcon component={SwitchPassportIcon} className={classes.menuIcon} />
+                    <SvgIcon component={SwitchPassportIcon} className="session-manager-menu-icon" />
                     {messages[locale].switchPassport}
                   </MenuItem>
                 )}
                 <MenuItem
-                  className={classes.menuItem}
+                  className="session-manager-menu-item"
                   onClick={_onLogout}
                   disabled={disableLogout}
                   data-cy="sessionManager-logout-trigger">
-                  <SvgIcon component={DisconnectIcon} className={classes.menuIcon} />
+                  <SvgIcon component={DisconnectIcon} className="session-manager-menu-icon" />
                   {messages[locale].disconnect}
                 </MenuItem>
               </MenuList>
             </ClickAwayListener>
           </Paper>
-        </Popper>
+        </StyledPopper>
       )}
     </>
   );
 }
 
-export default SessionManager;
+const StyledPopper = styled(Popper)<any>`
+  z-index: ${({ theme }) => theme.zIndex.tooltip};
+  .MuiList-root {
+    width: 280px;
+  }
+  .session-manager-user {
+    font-size: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px 24px 10px;
+  }
+  .session-manager-user-name {
+    font-size: 20px;
+    color: ${({ $dark }) => ($dark ? '#aaa' : '#222')};
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .session-manager-menu-item {
+    padding: 18.5px 24px;
+    color: #777;
+    font-size: 16px;
+    &:hover {
+      background-color: #fbfbfb;
+    }
+  }
+  .session-manager-menu-icon {
+    color: #999;
+    margin-right: 16px;
+  }
+`;

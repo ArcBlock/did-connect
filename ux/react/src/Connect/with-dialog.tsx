@@ -1,9 +1,9 @@
 import { forwardRef } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/styles';
+import { useTheme } from '@mui/material/styles';
 import Slide from '@mui/material/Slide';
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 

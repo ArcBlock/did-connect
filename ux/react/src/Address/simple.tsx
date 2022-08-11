@@ -1,7 +1,7 @@
 import type { TI18nMessages } from '@did-connect/types';
 
 import { useRef, useState, forwardRef } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import '@fontsource/ubuntu-mono/400.css';
 import useMountedState from 'react-use/lib/useMountedState';
 import Tooltip from '@mui/material/Tooltip';

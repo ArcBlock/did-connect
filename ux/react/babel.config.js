@@ -16,5 +16,5 @@ module.exports = {
     ['@babel/preset-react', { useBuiltIns: true, runtime: 'automatic' }],
     ['@babel/preset-typescript'],
   ],
-  plugins: ['babel-plugin-styled-components', 'babel-plugin-inline-react-svg'],
+  plugins: ['babel-plugin-inline-react-svg'],
 };
