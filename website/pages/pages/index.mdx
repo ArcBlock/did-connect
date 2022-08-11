@@ -1,13 +1,12 @@
 ---
 layout: 'my-layout'
 blocks:
-  - name: SectionBlock
-    center: true
-    logo: /logos/logo-ico.png
+  - name: SectionHero
+    variant: did
     title: !md |
       **DID Connect**
     description: !md |
-      **Open Protocol** and **Development SDK** for connecting users and decentralized applications<br/> Designed and Implemented based on the [W3C DID Standard](https://www.w3.org/TR/did-core/)
+      **Open Protocol** and **Development SDK** for connecting decentralized identities and decentralized applications<br/> Designed and Implemented based on the [W3C DID Standard](https://www.w3.org/TR/did-core/)
     actions:
       - name: SmartLink
         to: /intro
@@ -27,31 +26,32 @@ blocks:
           color: secondary
           children: Playground
   - name: SectionFeatureList
+    center: true
+    title: !md |
+      **Why** DID Connect?
     list:
       - title: Standard Compliance
-        description: Designed and implemented based on W3C DID standard
+        description: Designed and implemented based on the W3C DID standard, allowing users to connect with decentralized applications
         icon: i-mdi:check-decagram
         iconColor: '#1DC1C7'
       - title: Security
-        description: User-application communication is peer-to-peer trusted
+        description: User and application communication is peer-to-peer encrypted and trusted, not subject to eavesdropping or man-in-the-middle attacks
         icon: i-mdi:security
         iconColor: '#1DC1C7'
       - title: Enhanced Privacy
-        description: Users can interact with the application without revealing any privacy
+        description: Users can interact with the application without revealing any privacy, providing only the necessary information
         icon: i-mdi:lock-check
         iconColor: '#1DC1C7'
-  - name: SectionFeatureList
-    list:
       - title: Extensible
-        description: The types of messages supported by the protocol can be extended as needed
+        description: The types of messages supported by the protocol can be extended as needed to provide additional functionality
         icon: i-mdi:puzzle
         iconColor: '#1DC1C7'
       - title: Multi-chain support
-        description: Supports ArcBlock, Ethereum, Solona and other blockchains
+        description: Supports ArcBlock, Ethereum, Solona and other blockchains, so applications don't need to be locked to a particular chain
         icon: i-mdi:source-fork
         iconColor: '#1DC1C7'
       - title: User Experience
-        description: Various operations can be completed by scanning the QR code, and the automatic connection technology will make the experience more silky smooth
+        description: Various operations can be completed by scanning the QR code, and the automatic connection technology will make the user experience more silky smooth
         icon: i-mdi:account-check
         iconColor: '#1DC1C7'
   - name: SectionBlock
