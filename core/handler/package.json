@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@arcblock/eslint-config-ts": "0.2.2",
-    "@types/semver": "^7.3.10",
+    "@types/semver": "^7.3.12",
     "axios": "^0.27.2",
     "eslint": "^8.21.0",
     "jest": "^28.1.3",

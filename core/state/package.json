@@ -31,7 +31,7 @@
     "object-hash": "^3.0.0",
     "type-fest": "^2.18.0",
     "url-join": "^4.0.1",
-    "xstate": "^4.33.0"
+    "xstate": "^4.33.1"
   },
   "devDependencies": {
     "@arcblock/eslint-config-ts": "0.2.2",
