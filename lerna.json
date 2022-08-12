@@ -1,8 +1,13 @@
 {
-  "version": "2.0.18",
+  "version": "2.1.0",
   "useWorkspaces": true,
   "npmClient": "yarn",
-  "packages": ["core/*", "website/*", "relay/*", "ux/*"],
+  "packages": [
+    "core/*",
+    "website/*",
+    "relay/*",
+    "ux/*"
+  ],
   "command": {
     "publish": {
       "message": "[skip ci] %s"

@@ -1,7 +1,7 @@
 {
   "name": "@did-connect/vue",
   "private": "true",
-  "version": "2.0.18",
+  "version": "2.1.0",
   "files": [
     "dist"
   ],
