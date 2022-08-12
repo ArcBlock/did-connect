@@ -1,5 +1,5 @@
 import { LiteralUnion } from 'type-fest';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import Box, { BoxProps } from '@mui/material/Box';
 
 export type CardProps = {

@@ -15,20 +15,20 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@unocss/preset-icons": "^0.36.0",
-    "@unocss/preset-uno": "^0.36.0",
+    "@unocss/preset-icons": "^0.45.6",
+    "@unocss/preset-uno": "^0.45.6",
     "@vitejs/plugin-vue": "^2.3.3",
-    "unocss": "^0.36.0",
-    "vite": "^2.9.9",
+    "unocss": "^0.45.6",
+    "vite": "^2.9.14",
     "vite-plugin-blocklet": "^0.1.2"
   },
   "dependencies": {
-    "@arcblock/did": "^1.16.15",
+    "@arcblock/did": "^1.17.10",
+    "@blocklet/sdk": "^1.8.6",
     "@did-connect/storage-nedb": "^1.6.3",
-    "@blocklet/sdk": "^1.7.19",
     "@did-connect/vue": "workspace:*",
-    "@ocap/client": "^1.16.15",
-    "@ocap/wallet": "^1.16.15",
+    "@ocap/client": "^1.17.10",
+    "@ocap/wallet": "^1.17.10",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -36,6 +36,6 @@
     "express": "^4.18.1",
     "express-async-errors": "^3.1.1",
     "express-history-api-fallback": "^2.2.1",
-    "vue": "^3.2.36"
+    "vue": "^3.2.37"
   }
 }

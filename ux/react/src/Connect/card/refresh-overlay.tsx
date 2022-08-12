@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import Refresh from '@mui/icons-material/Refresh';
 
 interface RefreshOverlayProps {

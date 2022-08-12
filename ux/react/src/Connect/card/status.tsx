@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Check from '@mui/icons-material/Check';
@@ -99,7 +99,7 @@ export default function Status({
   );
 }
 
-const Root = styled(Card)`
+const Root = styled(Card)<any>`
   display: flex;
   justify-content: center;
   align-items: center;

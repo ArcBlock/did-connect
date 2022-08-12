@@ -1,0 +1,72 @@
+---
+layout: 'my-layout'
+blocks:
+  - name: SectionHero
+    variant: did
+    title: !md |
+      **DID Connect**
+    description: 基于 W3C DID 标准设计和实现的用于连接用户和去中心化应用的开放协议和开发套件
+    actions:
+      - name: SmartLink
+        to: /intro
+        base: docs
+        children:
+          name: Button
+          variant: outlined
+          size: large
+          color: primary
+          children: Get Started
+      - name: SmartLink
+        to: /playground/react
+        children:
+          name: Button
+          variant: outlined
+          size: large
+          color: primary
+          children: Playground
+  - name: SectionFeatureList
+    title: !md |
+      **为什么** 要有 DID Connect?
+    list:
+      - title: 遵循标准
+        description: 基于 W3C DID 标准设计和实现，允许用户和去中心化应用进行连接
+        icon: i-mdi:check-decagram
+        iconColor: '#1DC1C7'
+      - title: 高安全性
+        description: 用户和应用的通信是点对点加密的可信的，不会被窃听或中间人攻击
+        icon: i-mdi:security
+        iconColor: '#1DC1C7'
+      - title: 强隐私
+        description: 用户可以在不暴露任何隐私的情况下和应用交互，只提供必要的信息
+        icon: i-mdi:lock-check
+        iconColor: '#1DC1C7'
+      - title: 可扩展
+        description: 可以根据需要扩展协议支持的消息类型，提供更多的功能
+        icon: i-mdi:puzzle
+        iconColor: '#1DC1C7'
+      - title: 多链支持
+        description: 支持 ArcBlock、Ethereum、Solona 等区块链，应用无需锁定在某条链上
+        icon: i-mdi:source-fork
+        iconColor: '#1DC1C7'
+      - title: 用户体验
+        description: 通过扫描二维码即可完成各种操作，自动连接技术会让用户体验更丝滑
+        icon: i-mdi:account-check
+        iconColor: '#1DC1C7'
+  - name: SectionBlock
+    title:
+      name: div
+      className: font-bold text-4xl
+      children: 数秒内即可开始使用
+    description:
+      name: div
+      className: text-xl
+      children:
+        - !md |
+          DID Connect 让你专注于代码，而不是构建工具。
+
+          要创建一个名为 my-blocklet 的项目，请运行以下命令：
+        - name: CodeBlock
+          language: shell
+          children: npx create-blocklet@latest my-blocklet
+    image: /images/create-blocklet.gif
+---

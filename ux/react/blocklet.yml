@@ -1,5 +1,5 @@
-name: '@did-connect/react'
-version: 2.0.18
+name: did-connect-react
+version: 2.1.0
 description: DID Connect React Component Library
 keywords:
   - relay
@@ -25,7 +25,7 @@ interfaces:
     prefix: '*'
     port: BLOCKLET_PORT
     protocol: http
-did: z8ia434fB5maV98sHJLp7BjsMvdT9fsZrmqf4
+did: z8ia1M5UMqdqFvjLJmPaNdQ7UueRzGw6agp7R
 community: ''
 documentation: ''
 payment:
@@ -42,13 +42,6 @@ capabilities:
   clusterMode: false
   component: true
 screenshots: []
-children:
-  - name: relay-server
-    mountPoint: /relay
-    source:
-      store:
-        - https://dev.store.blocklet.dev
-      name: '@did-connect/relay-server'
-      version: latest
+children: []
 scripts:
   dev: npm run storybook:start

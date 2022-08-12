@@ -1,29 +1,29 @@
 import React from 'react';
-import { addParameters } from '@storybook/react';
-import { ThemeProvider } from '../src/Theme';
+import { ThemeProvider } from '../src';
 
-addParameters({
+export const parameters = {
   options: {
     isFullscreen: false,
     showNav: true,
     showPanel: true,
-    panelPosition: 'bottom',
+    panelPosition: 'right',
     sortStoriesByKind: false,
     sidebarAnimations: true,
     isToolshown: true,
     selectedPanel: 'storysource',
+    storySort: {
+      method: 'alphabetical',
+      order: ['Introduction', ['Connect', 'SessionManager'], ['Address', 'Avatar', 'Button', 'Logo']],
+    },
   },
-  controls: { hideNoControlsWarning: true },
-});
-
-addParameters({
   backgrounds: {
     values: [
       { name: 'light', value: '#f8f8f7', default: true },
       { name: 'dark', value: '#222222' },
     ],
   },
-});
+  controls: { hideNoControlsWarning: true },
+};
 
 // - 为每一个 story 包裹 ThemeProvider
 // - <StoryFn /> 解决在 story 中使用 useTheme 的问题

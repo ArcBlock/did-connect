@@ -1,0 +1,41 @@
+name: Deploy Docs Site
+
+on: workflow_dispatch
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip actions]')"
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          ref: main
+          token: ${{ secrets.GIT_HUB_TOKEN }}
+
+      - name: Use Node.js v16
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Initialize
+        run: make github-init
+
+      - name: Deploy Docs Site
+        uses: blocklet/action-workflow@v1
+        with:
+          skip-deps: true
+          skip-bundle: false
+          skip-upload: true
+          skip-deploy: false
+          skip-release: true
+          deploy-app-did: z8ia1dodZ52VDmtfUkmUtDHpBjXcpqjrhyHfS
+          deploy-mount-point: docs
+          bundle-command: npm run bundle
+          working-directory: website/docs
+          server-endpoint: ${{ secrets.STAGING_NODE_ENDPOINT }}
+          server-access-key: ${{ secrets.STAGING_NODE_ACCESS_KEY }}
+          server-access-secret: ${{ secrets.STAGING_NODE_ACCESS_SECRET }}
+          slack-webhook: ${{ secrets.SLACK_WEBHOOK }}

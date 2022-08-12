@@ -1,0 +1,47 @@
+name: did-connect-docs
+title: DID Connect Docs
+description: Documentation for DID Connect
+keywords:
+  - blocklet
+  - blocklet-page
+  - xmark
+group: static
+did: z8iZiL2TgFJSxiEQ9NV7eQXeUBSicViGmdrrE
+main: dist
+author:
+  name: wangshijun
+  email: shijun@arcblock.io
+repository:
+  type: git
+  url: git+https://github.com/arcblock/did-connect.git
+specVersion: 1.1.1
+version: 0.1.0
+logo: logo.png
+files:
+  - logo.png
+interfaces:
+  - type: web
+    name: publicUrl
+    path: /
+    prefix: '*'
+    port: BLOCKLET_PORT
+    protocol: http
+community: ''
+documentation: ''
+homepage: ''
+license: ''
+payment:
+  price: []
+  share: []
+timeout:
+  start: 60
+requirements:
+  abtnode: '>=1.6.22'
+  os: '*'
+  cpu: '*'
+scripts:
+  dev: npm run start
+environments: []
+capabilities: {}
+screenshots: []
+children: []

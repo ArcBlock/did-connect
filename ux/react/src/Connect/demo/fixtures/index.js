@@ -20,8 +20,7 @@ export const assetRequest = {
   description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
 };
 
-export const baseUrl =
-  process.env.NODE_ENV === 'production' ? '/relay' : 'https://did-connect-relay-server-vwb-192-168-1-87.ip.abtnet.io';
+export const baseUrl = '/.well-known/service';
 export const relayUrl = joinUrl(baseUrl, '/api/connect/relay');
 export const chainHost = 'https://beta.abtnetwork.io/api/';
 export const connectUrl = joinUrl(baseUrl, '/connect/profile');

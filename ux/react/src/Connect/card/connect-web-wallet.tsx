@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import Box, { BoxProps } from '@mui/material/Box';
 import ComputerIcon from '@arcblock/icons/lib/Computer';
 

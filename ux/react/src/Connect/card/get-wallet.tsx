@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import Box, { BoxProps } from '@mui/material/Box';
 import { TLocaleCode } from '@did-connect/types';
 

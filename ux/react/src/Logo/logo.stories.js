@@ -3,7 +3,7 @@ import Basic from './demo/basic';
 import CustomStyle from './demo/custom-style';
 
 export default {
-  title: 'Logo',
+  title: 'Basic/Logo',
   component: DidLogo,
 };
 

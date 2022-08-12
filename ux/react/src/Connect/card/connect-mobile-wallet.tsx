@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { useRef } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import Box, { BoxProps } from '@mui/material/Box';
 import MobileIcon from '@arcblock/icons/lib/Mobile';
 

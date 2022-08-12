@@ -1,5 +1,5 @@
 import { useState, createRef, useEffect } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import useMeasure from 'react-use/lib/useMeasure';
 
 import DidAddress from './simple';
