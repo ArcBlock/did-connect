@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unused-prop-types */
 import { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
+import { styled } from '@arcblock/ux/lib/Theme';
 import { ErrorBoundary } from 'react-error-boundary';
 import Img from '@arcblock/ux/lib/Img';
 import { mergeProps } from '@arcblock/ux/lib/Util';
@@ -102,7 +102,7 @@ Avatar.defaultProps = {
   src: '',
 };
 
-const BlockyIconContainer = styled.div`
+const BlockyIconContainer = styled('div')`
   display: flex;
   align-items: center;
   width: ${(props: any) => props.$size}px;

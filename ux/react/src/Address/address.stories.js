@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-filename-extension */
-import styled from '@emotion/styled';
+import { styled } from '@arcblock/ux/lib/Theme';
 import DidAddress from '.';
 
 import Basic from './demo/basic';
@@ -38,7 +38,7 @@ WithInheritSize.parameters = {
 
 export { Basic, WithInheritSize, WithExtraContent };
 
-const ResizableContainer = styled.div`
+const ResizableContainer = styled('div')`
   width: 600px;
   max-width: 100%;
   padding: 16px;

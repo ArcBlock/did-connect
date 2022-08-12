@@ -1,5 +1,5 @@
 import { LiteralUnion } from 'type-fest';
-import styled from '@emotion/styled';
+import { styled } from '@arcblock/ux/lib/Theme';
 import Box, { BoxProps } from '@mui/material/Box';
 
 export type CardProps = {

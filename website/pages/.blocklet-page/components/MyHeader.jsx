@@ -1,4 +1,4 @@
-import styled from '@emotion/styled';
+import { styled } from '@arcblock/ux/lib/Theme';
 import PropTypes from 'prop-types';
 import CommonHeader from '@xmark/client/src/components/Header';
 import NavMenu from '@arcblock/ux/lib/NavMenu';

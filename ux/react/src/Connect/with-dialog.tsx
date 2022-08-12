@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import styled from '@emotion/styled';
+import { styled } from '@arcblock/ux/lib/Theme';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -78,7 +78,7 @@ export default function withDialog(Component: any) {
   return WrappedComponent;
 }
 
-const CloseButton = styled.div`
+const CloseButton = styled('div')`
   position: absolute;
   top: 1rem;
   right: 1rem;

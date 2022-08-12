@@ -3,7 +3,7 @@
 /* eslint-disable react/jsx-no-bind */
 import { useMemo, useRef, useState } from 'react';
 import { TLocaleCode } from '@did-connect/types';
-import styled from '@emotion/styled';
+import { styled } from '@arcblock/ux/lib/Theme';
 import { IconButton, ClickAwayListener, MenuList, MenuItem, Paper, Popper, SvgIcon, Button, Chip } from '@mui/material';
 import AccountOutline from 'mdi-material-ui/AccountOutline';
 import ShieldCheck from 'mdi-material-ui/ShieldCheck';
@@ -300,7 +300,7 @@ export default function SessionManager({
 }
 
 const StyledPopper = styled(Popper)<any>`
-  z-index: ${({ theme }) => theme.zIndex.tooltip};
+  z-index: ${(props: any) => props.theme.zIndex.tooltip};
   .MuiList-root {
     width: 280px;
   }
@@ -312,7 +312,7 @@ const StyledPopper = styled(Popper)<any>`
   }
   .session-manager-user-name {
     font-size: 20px;
-    color: ${({ $dark }) => ($dark ? '#aaa' : '#222')};
+    color: ${(props: any) => (props.$dark ? '#aaa' : '#222')};
     font-weight: bold;
     margin-bottom: 10px;
     display: flex;

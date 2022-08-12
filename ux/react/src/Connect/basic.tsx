@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { useState, useEffect, useMemo } from 'react';
-import styled from '@emotion/styled';
+import { styled } from '@arcblock/ux/lib/Theme';
 import { css } from '@emotion/react';
 import { useTheme } from '@mui/material/styles';
 import Cookie from 'js-cookie';
@@ -299,7 +299,7 @@ const centerMixin = css`
   width: 100%;
 `;
 
-const Root = styled.div`
+const Root = styled('div')`
   ${centerMixin};
   position: relative;
   height: 100%;
@@ -323,13 +323,13 @@ const Root = styled.div`
   }
 `;
 
-const LoadingContainer = styled.div`
+const LoadingContainer = styled('div')`
   ${centerMixin};
   height: 100%;
   min-width: 160px;
   min-height: 160px;
 `;
-const AppInfo = styled.div`
+const AppInfo = styled('div')`
   display: flex;
   align-items: center;
   position: absolute;
@@ -364,7 +364,7 @@ const AppInfo = styled.div`
     font-size: 12px;
   }
 `;
-const ActionInfo = styled.div`
+const ActionInfo = styled('div')`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -389,7 +389,7 @@ const ActionInfo = styled.div`
     }
   }
 `;
-const Main = styled.main`
+const Main = styled('main')`
   ${centerMixin};
   margin-top: 48px;
   .auth_main-inner {
