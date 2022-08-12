@@ -1,3 +1,7 @@
+## 2.1.0 (August 12, 2022)
+
+- chore: add website (pages, docs, storybook)
+
 ## 2.0.18 (July 22, 2022)
 
 - refactor(ux/react): improve storybook & refactor component stories (#28)
