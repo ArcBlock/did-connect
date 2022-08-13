@@ -1,3 +1,7 @@
+## 2.1.3 (August 13, 2022)
+
+- chore: trigger release
+
 ## 2.1.2 (August 13, 2022)
 
 - fix: ci publish
