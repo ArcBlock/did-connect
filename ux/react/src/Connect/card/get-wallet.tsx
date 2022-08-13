@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import styled from '@emotion/styled';
+import { styled } from '@arcblock/ux/lib/Theme';
 import Box, { BoxProps } from '@mui/material/Box';
 import { TLocaleCode } from '@did-connect/types';
 

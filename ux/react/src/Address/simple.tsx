@@ -1,7 +1,7 @@
 import type { TI18nMessages } from '@did-connect/types';
 
 import { useRef, useState, forwardRef } from 'react';
-import styled from '@emotion/styled';
+import { styled } from '@arcblock/ux/lib/Theme';
 import '@fontsource/ubuntu-mono/400.css';
 import useMountedState from 'react-use/lib/useMountedState';
 import Tooltip from '@mui/material/Tooltip';
@@ -130,7 +130,7 @@ const getFontSize = (size: any) => {
   return 'inherit';
 };
 
-const Root = styled.div`
+const Root = styled('div')`
   font-family: 'Ubuntu Mono', monospace;
   && {
     display: ${({ inline }: any) => (inline ? 'inline-flex' : 'flex')};

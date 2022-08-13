@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import styled from '@emotion/styled';
+import { styled } from '@arcblock/ux/lib/Theme';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Check from '@mui/icons-material/Check';

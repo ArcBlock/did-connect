@@ -45,14 +45,16 @@ screenshots: []
 children: []
 navigation:
   - title:
+      en: Docs
+      zh: 文档
+    link: /docs
+    child: 'did-connect-docs'
+  - title:
       en: Playground
       zh: 试验场
     items:
       - title: React
         link: /playground/react
         child: 'did-connect-react'
-  - title:
-      en: Docs
-      zh: 文档
-    link: /docs
-    child: 'did-connect-docs'
+  - title: GitHub
+    link: https://github.com/ArcBlock/did-connect

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import styled from '@emotion/styled';
+import { styled } from '@arcblock/ux/lib/Theme';
 import Refresh from '@mui/icons-material/Refresh';
 
 interface RefreshOverlayProps {
@@ -22,7 +22,7 @@ export default function RefreshOverlay({ onRefresh, ...rest }: RefreshOverlayPro
   );
 }
 
-const Root = styled.div`
+const Root = styled('div')`
   position: absolute;
   top: 0;
   bottom: 0;

@@ -1,4 +1,4 @@
-import styled from '@emotion/styled';
+import { styled } from '@mui/material/styles';
 import CommonFooter from '@xmark/client/src/components/Footer';
 
 function MyFooter({ ...rest }) {

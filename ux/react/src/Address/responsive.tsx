@@ -1,5 +1,5 @@
 import { useState, createRef, useEffect } from 'react';
-import styled from '@emotion/styled';
+import { styled } from '@arcblock/ux/lib/Theme';
 import useMeasure from 'react-use/lib/useMeasure';
 
 import DidAddress from './simple';
@@ -47,7 +47,7 @@ export default function ResponsiveDidAddress({
   );
 }
 
-const Root = styled.div`
+const Root = styled('div')`
   display: block;
   overflow: hidden;
   ${({ inline }: any) =>
