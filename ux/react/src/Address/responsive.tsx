@@ -58,7 +58,7 @@ const Root = styled('div')`
   `}
 `;
 
-const StyledDidAddress = styled('DidAddress')`
+const StyledDidAddress = styled(DidAddress)`
   && {
     max-width: none;
   }
