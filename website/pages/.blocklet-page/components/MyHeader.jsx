@@ -1,4 +1,4 @@
-import { styled } from '@arcblock/ux/lib/Theme';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import CommonHeader from '@xmark/client/src/components/Header';
 import NavMenu from '@arcblock/ux/lib/NavMenu';
