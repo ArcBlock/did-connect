@@ -1,3 +1,7 @@
+## 2.1.2 (August 13, 2022)
+
+- fix: ci publish
+
 ## 2.1.1 (August 13, 2022)
 
 - chore: bump xmark to latest
