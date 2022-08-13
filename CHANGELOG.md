@@ -1,3 +1,11 @@
+## 2.1.1 (August 13, 2022)
+
+- chore: bump xmark to latest
+- chore: update deploy target machine
+- fix: doc skeleton files
+- chore: use styled from ux lib
+- chore: update deps to latest
+
 ## 2.1.0 (August 12, 2022)
 
 - chore: add website (pages, docs, storybook)
