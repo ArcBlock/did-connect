@@ -1,7 +1,7 @@
 {
   "name": "@did-connect/relay-adapter-express",
   "description": "Helper function to setup DID authentication support on a node.js web server",
-  "version": "2.1.0",
+  "version": "2.1.2",
   "author": {
     "name": "wangshijun",
     "email": "shijun@arcblock.io",
@@ -18,17 +18,17 @@
     "access": "public"
   },
   "dependencies": {
-    "@did-connect/authenticator": "2.1.0",
-    "@did-connect/handler": "2.1.0",
-    "@did-connect/storage": "2.1.0",
-    "@did-connect/types": "2.1.0",
+    "@did-connect/authenticator": "2.1.2",
+    "@did-connect/handler": "2.1.2",
+    "@did-connect/storage": "2.1.2",
+    "@did-connect/types": "2.1.2",
     "@types/express": "^4.17.13",
     "express": "^4.18.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@arcblock/eslint-config-ts": "0.2.2",
-    "@did-connect/storage-memory": "2.1.0",
+    "@did-connect/storage-memory": "2.1.2",
     "axios": "^0.27.2",
     "eslint": "^8.21.0",
     "jest": "^28.1.3",
