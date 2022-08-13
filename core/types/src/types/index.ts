@@ -117,10 +117,11 @@ export interface TAuthPrincipalRequest {
       | 'delegation'
       | 'vc'
       | 'blocklet'
-      | 'registry'
+      | 'store'
       | 'token'
       | 'factory'
       | 'rollup'
+      | 'storage'
       | 'any';
   };
   type: 'authPrincipal';
