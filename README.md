@@ -36,3 +36,32 @@ The implementation also includes a few blocklets that can be used to test the im
 - start the storybook: `cd ux/react && blocklet dev install && blocklet dev start`
 - play with the demo and open your pull request
 - make sure `make lint` and `make coverage` pass before your PR
+
+## Website Update
+
+```bash
+git clone git@github.com:arcblock/did-connect.git
+cd did-connect
+make dep
+```
+
+Page site:
+
+```bash
+cd website/pages
+blocklet dev
+```
+
+Doc site:
+
+```bash
+cd website/docs
+npm run dev:child
+```
+
+React storybook site:
+
+```bash
+cd ux/react
+npm run dev:child
+```
