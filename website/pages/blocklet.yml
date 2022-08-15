@@ -56,5 +56,3 @@ navigation:
       - title: React
         link: /playground/react
         child: 'did-connect-react'
-  - title: GitHub
-    link: https://github.com/ArcBlock/did-connect

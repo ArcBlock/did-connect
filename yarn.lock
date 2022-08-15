@@ -5097,10 +5097,10 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@xmark/cli@^2.4.0":
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/@xmark/cli/-/cli-2.4.0.tgz#1435c0af730f7338d61669ef3e8c8d62c9340506"
-  integrity sha512-v1PIqHjt/gJZuQQyEJ5AegtkHCpe63AG1NTARQ1heMcStGRc5VCxj5iDAByDTVtznwvGjFmxKV8y+yUNoBmDBQ==
+"@xmark/cli@^2.4.3":
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/@xmark/cli/-/cli-2.4.3.tgz#c365e8067f37fd4b7f2b60db54fae37122616fe7"
+  integrity sha512-mBfDcJXMng2crcxaeuNICtPGRvmkaaxOY+V1ZKuDiQwR3FNRZe0XWmkJvQiHw/0WYnILf0TRIX0anmwcgu7iuA==
   dependencies:
     "@antfu/utils" "^0.5.2"
     "@arcblock/ux" "^2.4.4"
@@ -5108,8 +5108,8 @@
     "@mdx-js/rollup" "^2.1.2"
     "@rollup/plugin-yaml" "^3.1.0"
     "@vitejs/plugin-react" "^2.0.1"
-    "@xmark/client" "2.4.0"
-    "@xmark/utils" "2.4.0"
+    "@xmark/client" "2.4.3"
+    "@xmark/utils" "2.4.3"
     change-case "^4.1.2"
     debug "^4.3.4"
     escape-string-regexp "^5.0.0"
@@ -5132,15 +5132,15 @@
     unist-util-visit "^4.1.0"
     unocss "^0.45.6"
     vite "^3.0.7"
-    vite-plugin-blocklet "^0.4.35"
+    vite-plugin-blocklet "^0.4.36"
     vite-plugin-svgr "^2.2.1"
     yaml "2.1.1"
     yargs "^17.5.1"
 
-"@xmark/client@2.4.0", "@xmark/client@^2.4.0":
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/@xmark/client/-/client-2.4.0.tgz#1400a01c6c14c3d720d17a4b1b9905415253e86c"
-  integrity sha512-hf3M576FKx2TX7qN4qlWf3gQc0UYpZvgBHlqimPY/fNR1Ci0Rkd8rdxcStP9x6WSOHkYu6Kbw65Rh/00HhpVig==
+"@xmark/client@2.4.3", "@xmark/client@^2.4.3":
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/@xmark/client/-/client-2.4.3.tgz#e4f406dbf91938cb08a66da9e2d317195102eb54"
+  integrity sha512-FJ8RWNKcw/i5+kZHV2G2VWEWrwXEHIHR/vAWY1OKsmCNQT1Q4lJxMPHONXUwTvF1zPeAzDLCQbjycO0oOsUuBw==
   dependencies:
     "@arcblock/ux" "^2.4.4"
     "@blocklet/ui-react" "^2.4.4"
@@ -5150,7 +5150,7 @@
     "@iconify-json/mdi" "^1.1.30"
     "@mdx-js/react" "^2.1.2"
     "@mui/material" "^5.10.0"
-    "@xmark/utils" "2.4.0"
+    "@xmark/utils" "2.4.3"
     ahooks "^3.7.0"
     clsx "^1.2.1"
     defu "^6.0.0"
@@ -5167,17 +5167,17 @@
     react-router-dom "^6.3.0"
     unocss "^0.45.6"
 
-"@xmark/theme-docs@^2.4.0":
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/@xmark/theme-docs/-/theme-docs-2.4.0.tgz#88b0678b08a1432e1899c5f2e930021e3be432f4"
-  integrity sha512-4+Xtfv2lMr6V3XJ7vGFwUniw1aKfnE+A9ww5Z1UbCAg0JfZ29T81bHw3QIWxFzbBn8lLHPuxESqh19vhDNgLKg==
+"@xmark/theme-docs@^2.4.3":
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/@xmark/theme-docs/-/theme-docs-2.4.3.tgz#d3b0f9767f34a1b1d0688382be63e0482a328ad7"
+  integrity sha512-7MOlmFL4i/6eEtL+YNnRJQrtSltjlEAyGNpXxuXp1H9yCOkq7MR8ALXw1iGO9eGcRVhnT2V1NOGjcPLgoFvDFg==
   dependencies:
     "@arcblock/ux" "^2.4.4"
     "@emotion/react" "^11.10.0"
     "@emotion/styled" "^11.10.0"
     "@fontsource/lato" "^4.5.9"
     "@mui/material" "^5.10.0"
-    "@xmark/client" "2.4.0"
+    "@xmark/client" "2.4.3"
     ahooks "^3.7.0"
     clsx "^1.2.1"
     path-browserify "^1.0.1"
@@ -5185,10 +5185,10 @@
     react "^18.2.0"
     react-router-dom "^6.3.0"
 
-"@xmark/utils@2.4.0":
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/@xmark/utils/-/utils-2.4.0.tgz#543b52de733df857ab0e976ef23d3c580a015fcb"
-  integrity sha512-2BxBK4Xf62MkH0Vt3qPgvozun9KaicLB3Vy2J4pEVL4G6/cZKWpqn0k+X3PdJUI0PpqW+kngxqmyB3B/MYp0aw==
+"@xmark/utils@2.4.3":
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/@xmark/utils/-/utils-2.4.3.tgz#19d808fffc8b578eda1eaacb86e9874d2d006ef5"
+  integrity sha512-saNvVcgSE/IDfZ6b/cxdnSccG/mSc/5Da/98VaopEDGhLWx71oqlw9dKDgkdAtxbwp99qprIv9xl1fSHpo4AzA==
   dependencies:
     base-x "^4.0.0"
     hast-util-from-html "^1.0.0"
@@ -17273,10 +17273,10 @@ ts-easing@^0.2.0:
   resolved "https://registry.yarnpkg.com/ts-easing/-/ts-easing-0.2.0.tgz#c8a8a35025105566588d87dbda05dd7fbfa5a4ec"
   integrity sha512-Z86EW+fFFh/IFB1fqQ3/+7Zpf9t2ebOAxNI/V6Wo7r5gqiqtxmgTlQ1qbqQcjLKYeSHPTsEmvlJUDg/EuL0uHQ==
 
-ts-jest@^28.0.7:
-  version "28.0.7"
-  resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-28.0.7.tgz#e18757a9e44693da9980a79127e5df5a98b37ac6"
-  integrity sha512-wWXCSmTwBVmdvWrOpYhal79bDpioDy4rTT+0vyUnE3ZzM7LOAAGG9NXwzkEL/a516rQEgnMmS/WKP9jBPCVJyA==
+ts-jest@^28.0.8:
+  version "28.0.8"
+  resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-28.0.8.tgz#cd204b8e7a2f78da32cf6c95c9a6165c5b99cc73"
+  integrity sha512-5FaG0lXmRPzApix8oFG8RKjAz4ehtm8yMKOTy5HX3fY6W8kmvOrmcY0hKDElW52FJov+clhUbrKAqofnj4mXTg==
   dependencies:
     bs-logger "0.x"
     fast-json-stable-stringify "2.x"
@@ -18049,10 +18049,20 @@ vfile@^5.0.0:
     unist-util-stringify-position "^3.0.0"
     vfile-message "^3.0.0"
 
-vite-plugin-blocklet@^0.4.35:
-  version "0.4.35"
-  resolved "https://registry.yarnpkg.com/vite-plugin-blocklet/-/vite-plugin-blocklet-0.4.35.tgz#2cef2763a456c1d228f78ff69fbf247e3102222d"
-  integrity sha512-ImvK+cES0CHgxZpgDoFkpPZUmw2TFHp+CoQgcUw66QW68uIiVVnyOII2osWFcPKP9Jei43wk5LTjYuTq+WTNsA==
+vite-plugin-blocklet@^0.4.36:
+  version "0.4.36"
+  resolved "https://registry.yarnpkg.com/vite-plugin-blocklet/-/vite-plugin-blocklet-0.4.36.tgz#8ef86b8a9f9783f7c03983065b9965b9f77435ea"
+  integrity sha512-Cn+ZW0C3tKDZQC62jSFWu3QWy6EFZsz5JRO88svlPiXlv+BolF/dDYYpE+kAo5t1OKsP6MtoZ9L70/51KOtnNQ==
+  dependencies:
+    "@arcblock/did" "^1.17.11"
+    "@ocap/mcrypto" "^1.17.11"
+    "@ocap/util" "^1.17.11"
+    yaml "^2.1.1"
+
+vite-plugin-blocklet@^0.4.37:
+  version "0.4.37"
+  resolved "https://registry.yarnpkg.com/vite-plugin-blocklet/-/vite-plugin-blocklet-0.4.37.tgz#d762915dd8332ae0b01840aef45a3e48a6ee30e4"
+  integrity sha512-65izvMRc+gbFjY0Kxh+OlbHxTEOO4JXNJ5BssKeuAp9FxrT47iUxSyRHi+7ddzLyzvpAFg4R6MW217L8ICaYLA==
   dependencies:
     "@arcblock/did" "^1.17.11"
     "@ocap/mcrypto" "^1.17.11"
