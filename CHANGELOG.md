@@ -1,3 +1,8 @@
+## 2.1.4 (August 15, 2022)
+
+- chore: update xmark and cleanup page theme
+- fix: bump version script
+
 ## 2.1.3 (August 13, 2022)
 
 - chore: trigger release

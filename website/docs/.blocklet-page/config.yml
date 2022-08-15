@@ -2,3 +2,4 @@ name: DID Connect Docs
 title: DID Connect Docs
 description: This is DID Connect Docs Site, powered by Blocklet Page
 theme: docs
+github: https://github.com/ArcBlock/did-connect
