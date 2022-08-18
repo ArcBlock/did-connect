@@ -1,3 +1,7 @@
+## 2.1.7 (August 19, 2022)
+
+- chore: update xmark
+
 ## 2.1.6 (August 18, 2022)
 
 - chore: use latest xmark doc theme
