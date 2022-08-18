@@ -21,7 +21,7 @@
     "@arcblock/validator": "^1.17.11",
     "@ocap/mcrypto": "^1.17.11",
     "joi": "^17.6.0",
-    "type-fest": "^2.18.0"
+    "type-fest": "^2.18.1"
   },
   "devDependencies": {
     "@arcblock/eslint-config-ts": "0.2.2",

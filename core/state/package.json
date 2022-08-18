@@ -29,7 +29,7 @@
     "nanoid": "^3.3.4",
     "node-localstorage": "^2.2.1",
     "object-hash": "^3.0.0",
-    "type-fest": "^2.18.0",
+    "type-fest": "^2.18.1",
     "url-join": "^4.0.1",
     "xstate": "^4.33.2"
   },
