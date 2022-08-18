@@ -15,16 +15,16 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@unocss/preset-icons": "^0.45.6",
-    "@unocss/preset-uno": "^0.45.6",
+    "@unocss/preset-icons": "^0.45.7",
+    "@unocss/preset-uno": "^0.45.7",
     "@vitejs/plugin-vue": "^2.3.4",
-    "unocss": "^0.45.6",
+    "unocss": "^0.45.7",
     "vite": "^2.9.15",
     "vite-plugin-blocklet": "^0.1.2"
   },
   "dependencies": {
     "@arcblock/did": "^1.17.11",
-    "@blocklet/sdk": "^1.8.7",
+    "@blocklet/sdk": "^1.8.8",
     "@did-connect/storage-nedb": "^1.6.3",
     "@did-connect/vue": "workspace:*",
     "@ocap/client": "^1.17.11",

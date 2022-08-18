@@ -42,9 +42,9 @@
   },
   "dependencies": {
     "@arcblock/did-motif": "^1.1.10",
-    "@arcblock/icons": "^2.4.4",
-    "@arcblock/react-hooks": "^2.4.4",
-    "@arcblock/ux": "^2.4.4",
+    "@arcblock/icons": "^2.4.8",
+    "@arcblock/react-hooks": "^2.4.8",
+    "@arcblock/ux": "^2.4.8",
     "@did-connect/state": "2.1.4",
     "@did-connect/types": "2.1.4",
     "@emotion/react": "^11.10.0",
@@ -52,7 +52,7 @@
     "@fontsource/lato": "^4.5.9",
     "@fontsource/ubuntu-mono": "^4.5.11",
     "@mui/icons-material": "^5.8.4",
-    "@mui/material": "^5.10.0",
+    "@mui/material": "^5.10.1",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "copy-to-clipboard": "^3.3.2",
@@ -68,7 +68,7 @@
     "tweetnacl-sealedbox-js": "^1.2.0",
     "type-fest": "^2.18.0",
     "url-join": "^4.0.1",
-    "xstate": "^4.33.1"
+    "xstate": "^4.33.2"
   },
   "peerDependencies": {
     "react": ">=18.1.0"
@@ -92,8 +92,8 @@
     "@storybook/builder-webpack5": "^6.5.10",
     "@storybook/manager-webpack5": "^6.5.10",
     "@storybook/react": "^6.5.10",
-    "@types/jest": "^28.1.6",
-    "@types/node": "^18.7.3",
+    "@types/jest": "^28.1.7",
+    "@types/node": "^18.7.6",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "babel-plugin-inline-react-svg": "^2.0.1",

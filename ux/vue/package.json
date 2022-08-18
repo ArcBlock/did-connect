@@ -27,7 +27,7 @@
   "dependencies": {
     "@arcblock/did-motif": "^1.1.10",
     "@arcblock/event-client": "^1.6.3",
-    "@arcblock/ux": "^2.4.4",
+    "@arcblock/ux": "^2.4.8",
     "@solana/qr-code-styling": "1.6.0-beta.0",
     "@vueuse/core": "^9.1.0",
     "buffer": "^6.0.3",
@@ -38,7 +38,7 @@
     "svgo": "^2.8.0",
     "tweetnacl": "^1.0.3",
     "tweetnacl-sealedbox-js": "^1.2.0",
-    "unocss": "^0.45.6",
+    "unocss": "^0.45.7",
     "vue": "^3.2.37"
   },
   "devDependencies": {
@@ -52,8 +52,8 @@
     "@storybook/builder-vite": "^0.1.41",
     "@storybook/testing-library": "^0.0.13",
     "@storybook/vue3": "^6.5.10",
-    "@unocss/preset-icons": "^0.45.6",
-    "@unocss/preset-uno": "^0.45.6",
+    "@unocss/preset-icons": "^0.45.7",
+    "@unocss/preset-uno": "^0.45.7",
     "@vitejs/plugin-vue": "^2.3.4",
     "babel-loader": "^8.2.5",
     "eslint": "^8.22.0",

@@ -2,3 +2,4 @@ name: DID Connect
 title: DID Connect
 description: This is DID Connect Page Site, powered by Blocklet Page
 github: https://github.com/ArcBlock/did-connect
+theme: arcblock

@@ -49,7 +49,9 @@ navigation:
   - title:
       en: Docs
       zh: 文档
-    link: /docs
+    link:
+      en: /docs/en
+      zh: /docs/zh
     child: did-connect-docs
   - title:
       en: Playground
