@@ -1,3 +1,9 @@
+## 2.1.5 (August 18, 2022)
+
+- chore: eliminate missing doc files
+- chore: cleanup icon color
+- chore: update xmark and use arcblock theme
+
 ## 2.1.4 (August 15, 2022)
 
 - chore: update xmark and cleanup page theme
