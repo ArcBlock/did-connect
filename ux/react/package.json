@@ -1,6 +1,6 @@
 {
   "name": "@did-connect/react",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "Client side library to work with DID Connect by ArcBlock.",
   "keywords": [
     "react",
@@ -45,8 +45,8 @@
     "@arcblock/icons": "^2.4.9",
     "@arcblock/react-hooks": "^2.4.9",
     "@arcblock/ux": "^2.4.9",
-    "@did-connect/state": "2.1.5",
-    "@did-connect/types": "2.1.5",
+    "@did-connect/state": "2.1.6",
+    "@did-connect/types": "2.1.6",
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
     "@fontsource/lato": "^4.5.9",
