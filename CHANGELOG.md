@@ -1,3 +1,7 @@
+## 2.1.10 (八月 19, 2022)
+
+- chore: polish docs header logo size
+
 ## 2.1.9 (August 19, 2022)
 
 - fix: nav link for child
