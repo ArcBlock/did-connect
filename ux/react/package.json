@@ -42,9 +42,9 @@
   },
   "dependencies": {
     "@arcblock/did-motif": "^1.1.10",
-    "@arcblock/icons": "^2.4.10",
-    "@arcblock/react-hooks": "^2.4.10",
-    "@arcblock/ux": "^2.4.10",
+    "@arcblock/icons": "^2.4.11",
+    "@arcblock/react-hooks": "^2.4.11",
+    "@arcblock/ux": "^2.4.11",
     "@did-connect/state": "2.1.9",
     "@did-connect/types": "2.1.9",
     "@emotion/react": "^11.10.0",
@@ -77,7 +77,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@arcblock/addon-storysource": "^2.4.10",
+    "@arcblock/addon-storysource": "^2.4.11",
     "@babel/cli": "^7.18.10",
     "@babel/core": "^7.18.10",
     "@babel/preset-env": "^7.18.10",

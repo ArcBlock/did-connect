@@ -11,9 +11,9 @@
     "upload": "npm run bundle && blocklet upload .blocklet/release/blocklet.json"
   },
   "dependencies": {
-    "@xmark/cli": "^2.4.20",
-    "@xmark/client": "^2.4.20",
-    "@xmark/theme-arcblock": "^2.4.20"
+    "@xmark/cli": "^2.4.24",
+    "@xmark/client": "^2.4.24",
+    "@xmark/theme-arcblock": "^2.4.24"
   },
   "version": "2.1.9"
 }
