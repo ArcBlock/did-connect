@@ -47,3 +47,10 @@ capabilities:
   component: true
 screenshots: []
 children: []
+navigation:
+  - title:
+      en: Docs
+      zh: 文档
+    link:
+      en: /en
+      zh: /zh
