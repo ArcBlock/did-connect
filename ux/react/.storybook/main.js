@@ -17,7 +17,7 @@ module.exports = {
       },
     },
     '@storybook/addon-essentials',
-    '@storybook/addon-storysource',
+    '@arcblock/addon-storysource',
   ],
   core: {
     builder: {

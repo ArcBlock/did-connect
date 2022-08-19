@@ -1,3 +1,7 @@
+## 2.1.8 (August 19, 2022)
+
+- chore: use arcblock storysource to improve copy-paste behavior in chrome
+
 ## 2.1.7 (August 19, 2022)
 
 - chore: update xmark
