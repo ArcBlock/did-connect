@@ -1,3 +1,7 @@
+## 2.1.9 (August 19, 2022)
+
+- fix: nav link for child
+
 ## 2.1.8 (August 19, 2022)
 
 - chore: use arcblock storysource to improve copy-paste behavior in chrome
