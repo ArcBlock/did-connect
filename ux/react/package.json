@@ -1,6 +1,6 @@
 {
   "name": "@did-connect/react",
-  "version": "2.1.7",
+  "version": "2.1.8",
   "description": "Client side library to work with DID Connect by ArcBlock.",
   "keywords": [
     "react",
@@ -45,8 +45,8 @@
     "@arcblock/icons": "^2.4.10",
     "@arcblock/react-hooks": "^2.4.10",
     "@arcblock/ux": "^2.4.10",
-    "@did-connect/state": "2.1.7",
-    "@did-connect/types": "2.1.7",
+    "@did-connect/state": "2.1.8",
+    "@did-connect/types": "2.1.8",
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
     "@fontsource/lato": "^4.5.9",
@@ -77,6 +77,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@arcblock/addon-storysource": "^2.4.10",
     "@babel/cli": "^7.18.10",
     "@babel/core": "^7.18.10",
     "@babel/preset-env": "^7.18.10",
@@ -88,7 +89,6 @@
     "@storybook/addon-essentials": "^6.5.10",
     "@storybook/addon-links": "^6.5.10",
     "@storybook/addon-storysource": "^6.5.10",
-    "@arcblock/addon-storysource": "^2.4.10",
     "@storybook/addons": "^6.5.10",
     "@storybook/builder-webpack5": "^6.5.10",
     "@storybook/manager-webpack5": "^6.5.10",
