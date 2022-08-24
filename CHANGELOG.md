@@ -1,3 +1,7 @@
+## 2.1.11 (August 24, 2022)
+
+- chore: bump deps to latest safely
+
 ## 2.1.10 (八月 19, 2022)
 
 - chore: polish docs header logo size
