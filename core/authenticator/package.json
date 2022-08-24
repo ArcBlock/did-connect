@@ -18,17 +18,17 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/did": "^1.17.11",
-    "@arcblock/jwt": "^1.17.11",
+    "@arcblock/did": "^1.17.12",
+    "@arcblock/jwt": "^1.17.12",
     "@did-connect/types": "2.1.10",
-    "@ocap/util": "^1.17.11",
-    "@ocap/wallet": "^1.17.11",
+    "@ocap/util": "^1.17.12",
+    "@ocap/wallet": "^1.17.12",
     "debug": "^4.3.4",
     "lodash": "^4.17.21",
     "type-fest": "^2.18.1"
   },
   "devDependencies": {
-    "@arcblock/eslint-config-ts": "0.2.2",
+    "@arcblock/eslint-config-ts": "0.2.3",
     "@types/debug": "^4.1.7",
     "axios": "^0.27.2",
     "eslint": "^8.22.0",

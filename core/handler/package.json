@@ -18,14 +18,14 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/did": "^1.17.11",
-    "@arcblock/jwt": "^1.17.11",
-    "@arcblock/ws": "^1.17.11",
+    "@arcblock/did": "^1.17.12",
+    "@arcblock/jwt": "^1.17.12",
+    "@arcblock/ws": "^1.17.12",
     "@did-connect/authenticator": "2.1.10",
     "@did-connect/storage": "2.1.10",
     "@did-connect/types": "2.1.10",
-    "@ocap/mcrypto": "^1.17.11",
-    "@ocap/util": "^1.17.11",
+    "@ocap/mcrypto": "^1.17.12",
+    "@ocap/util": "^1.17.12",
     "axios": "^0.27.2",
     "lodash": "^4.17.21",
     "object-hash": "^3.0.0",
@@ -34,7 +34,7 @@
     "type-fest": "^2.18.1"
   },
   "devDependencies": {
-    "@arcblock/eslint-config-ts": "0.2.2",
+    "@arcblock/eslint-config-ts": "0.2.3",
     "@types/semver": "^7.3.12",
     "axios": "^0.27.2",
     "eslint": "^8.22.0",

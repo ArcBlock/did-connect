@@ -27,7 +27,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@arcblock/eslint-config-ts": "0.2.2",
+    "@arcblock/eslint-config-ts": "0.2.3",
     "@did-connect/storage-memory": "2.1.10",
     "axios": "^0.27.2",
     "eslint": "^8.22.0",
