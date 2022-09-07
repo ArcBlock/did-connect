@@ -13,7 +13,7 @@ repository:
   type: git
   url: git+https://github.com/arcblock/did-connect.git
 specVersion: 1.2.7
-version: 2.1.12
+version: 2.1.13
 logo: logo.png
 files:
   - logo.png
