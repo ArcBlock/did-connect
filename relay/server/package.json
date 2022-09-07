@@ -18,7 +18,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@blocklet/sdk": "^1.8.15",
+    "@blocklet/sdk": "^1.8.16",
     "@did-connect/relay-adapter-express": "2.1.12",
     "@did-connect/storage-nedb": "2.1.12",
     "cors": "^2.8.5",
