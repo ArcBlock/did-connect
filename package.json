@@ -18,30 +18,32 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@arcblock/did": "^1.17.12",
+    "@arcblock/did": "^1.17.18",
     "@arcblock/eslint-config": "^0.2.3",
     "@arcblock/eslint-config-ts": "0.2.3",
-    "@arcblock/jwt": "^1.17.12",
-    "@arcblock/validator": "^1.17.12",
-    "@arcblock/ws": "^1.17.12",
-    "@ocap/asset": "^1.17.12",
-    "@ocap/client": "^1.17.12",
-    "@ocap/mcrypto": "^1.17.12",
-    "@ocap/util": "^1.17.12",
-    "@ocap/wallet": "^1.17.12",
+    "@arcblock/jwt": "^1.17.18",
+    "@arcblock/validator": "^1.17.18",
+    "@arcblock/ws": "^1.17.18",
+    "@nedb/core": "^2.0.2",
+    "@ocap/asset": "^1.17.18",
+    "@ocap/client": "^1.17.18",
+    "@ocap/mcrypto": "^1.17.18",
+    "@ocap/util": "^1.17.18",
+    "@ocap/wallet": "^1.17.18",
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
     "create-cert": "^1.0.6",
-    "eslint": "^8.22.0",
+    "eslint": "^8.23.0",
     "express": "^4.18.1",
     "lint-staged": "^12.5.0",
     "morgan": "^1.10.0",
     "pify": "^5.0.0",
     "prettier": "^2.7.1",
     "tslint": "^6.1.3",
-    "typescript": "^4.7.4"
+    "typescript": "^4.8.2"
   },
   "resolutions": {
+    "@nedb/core": "^2.0.2",
     "@arcblock/did": "^1.17.12",
     "@arcblock/jwt": "^1.17.12",
     "@arcblock/validator": "^1.17.12",
@@ -53,6 +55,6 @@
     "@ocap/wallet": "^1.17.12"
   },
   "dependencies": {
-    "@types/node": "^18.7.6"
+    "@types/node": "^18.7.15"
   }
 }

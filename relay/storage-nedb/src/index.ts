@@ -1,38 +1,15 @@
 /* eslint-disable no-underscore-dangle */
-// @ts-ignore
-import NeDB from '@nedb/core';
-// @ts-ignore
-import NedbMulti from '@nedb/multi';
+import { DataStore, DataStoreOptions } from '@nedb/core';
+import { createDataStore } from '@nedb/multi';
 import { BaseStorage, SessionStorageOptions, SessionStorage } from '@did-connect/storage';
 import { TSession } from '@did-connect/types';
 
-export type NedbStorageOptions = SessionStorageOptions & {
-  dbPath: string;
-  dbPort?: number;
-};
+export type NedbStorageOptions = SessionStorageOptions & DataStoreOptions & { dbPath: string; dbPort?: number };
 
 const debug = require('debug')(require('../package.json').name);
 
-type Callback = (...args: any[]) => void;
-
-export interface NedbInstance {
-  loadDatabase(cb: Callback): Promise<void>;
-  closeDatabase(cb: Callback): Promise<void>;
-
-  findOne(conditions: any, cb: Callback): Promise<any>;
-
-  update(query: any, update: any, cb: Callback): Promise<any>;
-  update(query: any, update: any, options: any, cb: Callback): Promise<any>;
-
-  insert(doc: any, cb: Callback): Promise<any>;
-  insert(doc: any, options: any, cb: Callback): Promise<any>;
-
-  remove(conditions: any, cb: Callback): Promise<any>;
-  remove(conditions: any, options: any, cb: Callback): Promise<any>;
-}
-
 export class NedbStorage extends BaseStorage implements SessionStorage {
-  readonly db: NedbInstance;
+  readonly db: typeof DataStore;
 
   constructor(options: NedbStorageOptions) {
     super(options);
@@ -41,9 +18,10 @@ export class NedbStorage extends BaseStorage implements SessionStorage {
       throw new Error('DiskSessionStorage requires a valid dbPath option to initialize');
     }
 
-    const DataStore = options.dbPort ? NedbMulti(options.dbPort) : NeDB;
+    const DB = options.dbPort ? createDataStore(options.dbPort) : DataStore;
 
-    this.db = new DataStore(
+    // @ts-ignore
+    this.db = new DB<TSession>(
       Object.assign(
         {
           filename: options.dbPath,
@@ -54,7 +32,8 @@ export class NedbStorage extends BaseStorage implements SessionStorage {
       )
     );
 
-    this.db.loadDatabase((err) => {
+    // @ts-ignore
+    this.db.loadDatabase((err: any) => {
       if (err) {
         debug(`failed to load disk database ${options.dbPath}`, { error: err });
       }
@@ -65,7 +44,8 @@ export class NedbStorage extends BaseStorage implements SessionStorage {
 
   read(sessionId: string): Promise<TSession> {
     return new Promise((resolve, reject) => {
-      this.db.findOne({ sessionId }, (err, doc) => {
+      // @ts-ignore
+      this.db.findOne({ sessionId }, (err: any, doc: TSession) => {
         if (err) {
           reject(err);
         } else {
@@ -77,7 +57,8 @@ export class NedbStorage extends BaseStorage implements SessionStorage {
 
   create(sessionId: string, attributes: Partial<TSession>): Promise<TSession> {
     return new Promise((resolve, reject) => {
-      this.db.insert({ sessionId, ...attributes }, (err, doc) => {
+      // @ts-ignore
+      this.db.insert({ sessionId, ...attributes }, (err: any, doc: TSession) => {
         if (err) {
           reject(err);
         } else {
@@ -91,11 +72,13 @@ export class NedbStorage extends BaseStorage implements SessionStorage {
 
   update(sessionId: string, updates: Partial<TSession>): Promise<TSession> {
     return new Promise((resolve, reject) => {
+      // @ts-ignore
       this.db.update(
         { sessionId },
         { $set: updates },
         { multi: false, upsert: false, returnUpdatedDocs: true },
-        (err, numAffected, doc) => {
+        // @ts-ignore
+        (err: any, [, doc]) => {
           if (err) {
             reject(err);
           } else {
@@ -117,7 +100,8 @@ export class NedbStorage extends BaseStorage implements SessionStorage {
         reject(new Error('sessionId is required to delete auth record'));
         return;
       }
-      this.db.remove({ sessionId }, { multi: true }, (err, numRemoved: number) => {
+      // @ts-ignore
+      this.db.remove({ sessionId }, { multi: true }, (err: any, numRemoved: number) => {
         if (err) {
           reject(err);
         } else {
@@ -130,11 +114,12 @@ export class NedbStorage extends BaseStorage implements SessionStorage {
 
   clear(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.db.remove({}, { multi: true }, (err, numRemoved) => {
+      // @ts-ignore
+      this.db.remove({}, { multi: true }, (err: any) => {
         if (err) {
           reject(err);
         } else {
-          resolve(numRemoved);
+          resolve();
         }
       });
     });
