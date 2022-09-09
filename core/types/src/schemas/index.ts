@@ -54,7 +54,7 @@ const DIDWalletInfo = Joi.object({
 
 // did-connect claim type utils
 type TRequest = LiteralUnion<'authPrincipal' | 'profile' | 'signature' | 'prepareTx' | 'agreement' | 'verifiableCredential' | 'asset', string>; // prettier-ignore
-type TSignature = LiteralUnion<'fg:g:transaction' | 'eth:transaction' | 'mime:text/html' | 'mime:text/plain', string>; // prettier-ignore
+type TSignature = LiteralUnion<'fg:g:transaction' | 'eth:transaction' | 'eth:standard-data' | 'eth:personal-data' | 'eth:typed-data' | 'eth:legacy-data' | 'mime:text/html' | 'mime:text/plain', string>; // prettier-ignore
 
 const createStandardFields = (type: string, description: string, isRequest: boolean) => {
   if (isRequest) {
@@ -127,7 +127,16 @@ const createClaimTypes = (type: TRequest, description: string): ObjectSchema[] =
     signature: {
       request: {
         typeUrl: Joi.string()
-          .valid('fg:t:transaction', 'mime:text/plain', 'mime:text/html', 'eth:transaction')
+          .valid(
+            'fg:t:transaction',
+            'mime:text/plain',
+            'mime:text/html',
+            'eth:transaction',
+            'eth:standard-data',
+            'eth:personal-data',
+            'eth:typed-data',
+            'eth:legacy-data'
+          )
           .required(),
         display: Joi.string().allow('').default(''),
         method: Joi.string()
