@@ -41,7 +41,7 @@
     "jest": "^28.1.3",
     "nanoid": "^3.3.4",
     "ts-jest": "^28.0.8",
-    "typescript": "^4.8.2"
+    "typescript": "^4.8.3"
   },
   "homepage": "https://github.com/ArcBlock/did-connect",
   "keywords": [
@@ -62,7 +62,7 @@
     "lint": "eslint src tests",
     "lint:fix": "eslint --fix src tests",
     "test": "jest",
-    "coverage": "yarn test --coverage",
+    "coverage": "npm run test --coverage",
     "prebuild": "npm run clean",
     "build": "tsc",
     "watch": "tsc -b --watch",

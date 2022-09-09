@@ -34,7 +34,7 @@
     "jest": "^28.1.3",
     "nanoid": "^3.3.4",
     "ts-jest": "^28.0.8",
-    "typescript": "^4.8.2",
+    "typescript": "^4.8.3",
     "url-join": "^4.0.1"
   },
   "homepage": "https://github.com/ArcBlock/did-connect",
@@ -61,7 +61,7 @@
     "check": "tsc --noEmit",
     "clean": "rm -rf ./lib",
     "test": "jest --forceExit",
-    "coverage": "yarn test --coverage"
+    "coverage": "npm run test --coverage"
   },
   "resolutions": {},
   "gitHead": "87990c8b5e215107fc587c1ced0d6b3e2cd2483e"

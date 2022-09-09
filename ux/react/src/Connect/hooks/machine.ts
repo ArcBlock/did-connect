@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/indent */
 // Note: this custom hook exists because of: https://github.com/statelyai/xstate/issues/1101
+import Debug from 'debug';
 import { useState, useEffect, useMemo } from 'react';
 import {
   interpret,
@@ -12,6 +13,8 @@ import {
   StateConfig,
   Typestate,
 } from 'xstate';
+
+const debug = Debug('@did-connect/react');
 
 interface UseMachineOptions<TContext, TEvent extends EventObject> {
   /**
@@ -71,6 +74,7 @@ export function useMachine<TContext, TEvent extends EventObject, TTypestate exte
 
   useEffect(() => {
     service.onTransition((currentState) => {
+      debug('transition', currentState);
       if (currentState.changed) {
         setState(currentState);
       }

@@ -39,7 +39,7 @@
     "tweetnacl": "^1.0.3",
     "tweetnacl-sealedbox-js": "^1.2.0",
     "unocss": "^0.45.18",
-    "vue": "^3.2.38"
+    "vue": "^3.2.39"
   },
   "devDependencies": {
     "@babel/core": "^7.19.0",

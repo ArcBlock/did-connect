@@ -7,7 +7,7 @@ import joinUrl from 'url-join';
 
 import { getCookieOptions } from '@arcblock/ux/lib/Util';
 import Center from '@arcblock/ux/lib/Center';
-import Spinner from '@arcblock/ux/lib/Spinner';
+import Spinner from '@mui/material/CircularProgress';
 
 import { TEventCallback } from '@did-connect/state';
 
