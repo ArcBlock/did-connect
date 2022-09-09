@@ -58,6 +58,6 @@
     "check": "tsc --noEmit",
     "clean": "rm -rf ./lib",
     "test": "jest --forceExit",
-    "coverage": "yarn test --coverage"
+    "coverage": "npm run test --coverage"
   }
 }

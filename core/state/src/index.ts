@@ -327,6 +327,7 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
   const machine = createMachine<TSessionContext, TSessionEvent, TSessionState>(
     {
       id: `connect.session.${sid}`,
+      predictableActionArguments: true,
       initial,
       context: {
         sessionId: sid,
