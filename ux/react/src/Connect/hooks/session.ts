@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { useMemo, useState, useEffect } from 'react';
 import Cookie from 'js-cookie';
+import Debug from 'debug';
 import { interpret } from 'xstate';
 import useBrowser from '@arcblock/react-hooks/lib/useBrowser';
 import { createStateMachine, TSessionMachine } from '@did-connect/state';
@@ -9,6 +10,8 @@ import { TSession, TSessionStatus, TEvent, SessionTimeout } from '@did-connect/t
 import { decodeConnectUrl, parseSessionId, updateConnectedInfo, noop } from '../../utils';
 import { useMachine } from './machine';
 import { THookProps, THookResult } from '../../types';
+
+const debug = Debug('@did-connect/react');
 
 // 从 url params 中获取已存在的 session (sessionId & connect url)
 const parseExistingSession = (sid?: string): { sessionId: string } => {
@@ -61,8 +64,11 @@ export function useSession({
   };
 
   const session: TSessionMachine = useMemo(
-    () =>
-      createStateMachine({
+    () => {
+      const _autoConnect =
+        autoConnect && !browser.wallet && !cancelCount && Cookie.get('connected_wallet_os') !== 'web';
+      debug('create session', { _autoConnect, onlyConnect, strategy });
+      return createStateMachine({
         relayUrl,
         sessionId: existingSession.sessionId,
         // initial = 'start', // we maybe reusing existing session
@@ -83,13 +89,14 @@ export function useSession({
         //   (避免 "无限自动连接问题")
         // - 如果上次使用了 web wallet 进行连接, 则 autoConnect 请求参数 为 false (web wallet 并非像 native 钱包一样基于通知实现自动连接)
         //   (防止 native 钱包收到通知自动唤起 auth 窗口)
-        autoConnect: autoConnect && !browser.wallet && !cancelCount && Cookie.get('connected_wallet_os') !== 'web',
+        autoConnect: _autoConnect,
         // do supervised authPrincipal and end the session
         onlyConnect,
         // timeout for each stage
         timeout,
-      }),
-    [retryCount] // eslint-disable-line
+      });
+    },
+    [retryCount, cancelCount] // eslint-disable-line
   );
 
   const { machine, deepLink, sessionId, cleanup } = session;
