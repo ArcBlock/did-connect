@@ -57,6 +57,7 @@
     "buffer": "^6.0.3",
     "copy-to-clipboard": "^3.3.2",
     "core-js": "^3.25.1",
+    "debug": "^4.3.4",
     "dsbridge": "3.1.4",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.21",
