@@ -254,7 +254,15 @@ export interface TSignatureRequest {
   method?: 'none' | 'keccak' | 'sha3' | 'keccak_384' | 'sha3_384' | 'keccak_512' | 'sha3_512' | 'sha2';
   origin?: string;
   type: 'signature';
-  typeUrl: 'fg:t:transaction' | 'mime:text/plain' | 'mime:text/html' | 'eth:transaction';
+  typeUrl:
+    | 'fg:t:transaction'
+    | 'mime:text/plain'
+    | 'mime:text/html'
+    | 'eth:transaction'
+    | 'eth:standard-data'
+    | 'eth:personal-data'
+    | 'eth:typed-data'
+    | 'eth:legacy-data';
 }
 
 export interface TSignatureResponse {
