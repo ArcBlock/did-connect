@@ -6,7 +6,7 @@ export const parameters = {
     isFullscreen: false,
     showNav: true,
     showPanel: true,
-    panelPosition: 'right',
+    panelPosition: 'bottom',
     sortStoriesByKind: false,
     sidebarAnimations: true,
     isToolshown: true,

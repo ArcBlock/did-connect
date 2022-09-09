@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-filename-extension */
 import { useState } from 'react';
+import CodeBlock from '@arcblock/ux/lib/CodeBlock';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { action } from '@storybook/addon-actions';
@@ -50,7 +51,7 @@ export default function Demo(props) {
       <Button variant="contained" size="small" onClick={() => setOpen(true)}>
         {message}
       </Button>
-      {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
+      {response && <CodeBlock language="json">{JSON.stringify(response, null, 2)}</CodeBlock>}
       <Connect
         popup
         open={open}

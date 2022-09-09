@@ -1473,6 +1473,7 @@ describe('Handlers', () => {
     expect(res.code).toMatch('UPDATER_MISMATCH');
   });
 
+  // eslint-disable-next-line jest/no-disabled-tests
   test.skip('should not throw onDelete when updater match', async () => {
     const { deleteSession } = prepareTest();
     const res = await deleteSession();

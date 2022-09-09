@@ -61,7 +61,7 @@
     "check": "tsc --noEmit",
     "clean": "rm -rf ./lib",
     "test": "jest --forceExit",
-    "coverage": "yarn test --coverage"
+    "coverage": "npm run test --coverage"
   },
   "resolutions": {},
   "gitHead": "87990c8b5e215107fc587c1ced0d6b3e2cd2483e"

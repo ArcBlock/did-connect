@@ -8,7 +8,7 @@ import Box from '@mui/material/Box';
 import useMeasure from 'react-use/lib/useMeasure';
 import Img from '@arcblock/ux/lib/Img';
 import { openWebWallet } from '@arcblock/ux/lib/Util';
-import Spinner from '@arcblock/ux/lib/Spinner';
+import Spinner from '@mui/material/CircularProgress';
 import colors from '@arcblock/ux/lib/Colors';
 import DidWalletLogo from '@arcblock/icons/lib/DidWalletLogo';
 import { TAppInfo } from '@did-connect/types';

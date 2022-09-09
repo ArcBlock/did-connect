@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-filename-extension */
 import { useState, useEffect } from 'react';
+import CodeBlock from '@arcblock/ux/lib/CodeBlock';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { action } from '@storybook/addon-actions';
@@ -83,8 +84,8 @@ export default function Demo(props) {
       <Button variant="contained" size="small" onClick={() => setOpen(true)}>
         {message}
       </Button>
-      {response1 && <pre>{JSON.stringify(response1, null, 2)}</pre>}
-      {response2 && <pre>{JSON.stringify(response2, null, 2)}</pre>}
+      {response1 && <CodeBlock language="json">{JSON.stringify(response1, null, 2)}</CodeBlock>}
+      {response2 && <CodeBlock language="json">{JSON.stringify(response2, null, 2)}</CodeBlock>}
       <Connect
         key="asset"
         popup
