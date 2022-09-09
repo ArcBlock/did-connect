@@ -1,3 +1,11 @@
+## 2.1.14 (September 09, 2022)
+
+- chore: polish connect test case
+- feat: enable debugger in connect machine
+- fix: disable autoConnect when cancelCount has changed
+- fix: life-cycle-callback case not working after canceled
+- feat: add debug in connect state machine
+
 ## 2.1.13 (September 08, 2022)
 
 - chore: use 2.x nedb
