@@ -3,8 +3,10 @@ import type { Promisable } from 'type-fest';
 import type { TAppResponse, TSession, TAnyRequest, TAnyObject, TSessionStatus, TEvent } from '@did-connect/types';
 
 import get from 'lodash/get';
+import pick from 'lodash/pick';
 import isFunction from 'lodash/isFunction';
 import isArray from 'lodash/isArray';
+import Debug from 'debug';
 import { nanoid } from 'nanoid';
 import { createMachine, assign, StateMachine } from 'xstate';
 import { SessionTimeout, CustomError, isUrl, isRequestList } from '@did-connect/types';
@@ -13,6 +15,7 @@ import { createApiUrl, createDeepLink, createSocketEndpoint, doSignedRequest, ge
 import { createConnection, destroyConnections } from './socket';
 
 const noop = () => undefined;
+const debug = Debug('@did-connect/state');
 
 export type TSessionContext = TSession;
 export type TSessionEvent = TEvent;
@@ -255,7 +258,7 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
   // report some client error to relay, and execute callback
   const _onError = async (ctx: TSessionContext, e: TSessionEvent) => {
     if (e.data) {
-      console.error('Client', e.data);
+      console.error('Client', pick(e.data, ['message', 'code', 'name']));
       if (['SESSION_NOT_FOUND', 'SESSION_FINALIZED'].includes(e.data.code) === false) {
         doSignedRequest({
           url: sessionApiUrl,
@@ -271,6 +274,7 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
   // TODO: fallback to polling when socket connection failed
   createConnection(createSocketEndpoint(relayUrl)).then((socket) => {
     socket.on(sid, (e: TSessionEvent) => {
+      debug('socket event', e);
       switch (e.status) {
         case 'walletScanned':
           return dispatch({ ...e, type: 'WALLET_SCAN' });
