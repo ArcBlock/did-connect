@@ -23,8 +23,8 @@ export const assetRequest = {
 export const baseUrl = '/.well-known/service';
 export const relayUrl = joinUrl(baseUrl, '/api/connect/relay');
 export const chainHost = 'https://beta.abtnetwork.io/api/';
-export const connectUrl = joinUrl(baseUrl, '/connect/profile');
-export const approveUrl = joinUrl(baseUrl, '/approve/profile');
+export const connectUrl = joinUrl(window.location.origin, baseUrl, '/connect/profile');
+export const approveUrl = joinUrl(window.location.origin, baseUrl, '/approve/profile');
 
 export const defaultActions = {
   onStart: action('onStart'),

@@ -66,8 +66,13 @@ export function useSession({
   const session: TSessionMachine = useMemo(
     () => {
       const _autoConnect =
-        autoConnect && !browser.wallet && !cancelCount && Cookie.get('connected_wallet_os') !== 'web';
-      debug('create session', { _autoConnect, onlyConnect, strategy });
+        autoConnect && !browser.wallet && !retryCount && !cancelCount && Cookie.get('connected_wallet_os') !== 'web';
+      debug('create session', {
+        autoConnect: _autoConnect,
+        onlyConnect,
+        strategy,
+        sessionId: existingSession.sessionId,
+      });
       return createStateMachine({
         relayUrl,
         sessionId: existingSession.sessionId,
