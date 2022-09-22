@@ -305,7 +305,7 @@ export interface TVerifiableCredentialResponse {
   assetDid?: string;
   meta?: any;
   optional?: boolean;
-  presentation?: string;
+  presentation: string;
   type: 'verifiableCredential';
 }
 
