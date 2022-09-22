@@ -218,8 +218,8 @@ const createClaimTypes = (type: TRequest, description: string): ObjectSchema[] =
       },
       response: {
         optional: Joi.boolean().default(false),
-        assetDid: Joi.DID().optional(),
-        presentation: Joi.string().optional(),
+        assetDid: Joi.DID().optional().allow('').default(''),
+        presentation: Joi.string().required(),
       },
     },
     asset: {

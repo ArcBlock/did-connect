@@ -177,6 +177,7 @@ export class Authenticator {
     };
 
     const wallet = await this.getWalletInfo(context);
+    debug('sign.claims', { claims, payload });
 
     return {
       appPk: toBase58(wallet.publicKey),

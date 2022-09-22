@@ -11,7 +11,7 @@ export { default as Sizes } from './demo/sizes';
 export { default as UsingBlockletService } from './demo/using-blocklet-service';
 
 export default {
-  title: 'Composed/SessionManager',
+  title: 'SessionManager',
   component: SessionManager,
   parameters: { actions: { argTypesRegex: '^on.*' }, controls: { include: ['onLogin', 'onLogout'] } },
   decorators: [

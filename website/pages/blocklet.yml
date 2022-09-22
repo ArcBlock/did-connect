@@ -13,7 +13,7 @@ repository:
   type: git
   url: git+https://github.com/arcblock/did-connect.git
 specVersion: 1.2.7
-version: 2.1.14
+version: 2.1.15
 logo: logo.png
 files:
   - logo.png
@@ -39,12 +39,25 @@ requirements:
   cpu: '*'
 scripts:
   dev: npm run start
-environments: []
+environments:
+  - name: CHAIN_HOST
+    description: Please provide endpoint of the chain where NFT factory are stored
+    required: true
+    default: https://beta.abtnetwork.io/api/
+    secure: false
+    shared: true
 capabilities:
   clusterMode: false
   component: true
 screenshots: []
-children: []
+children:
+  - name: meilisearch
+    mountPoint: /meilisearch
+    source:
+      store:
+        - https://test.store.blocklet.dev
+      name: meilisearch
+      version: latest
 navigation:
   - title:
       en: Docs

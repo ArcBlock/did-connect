@@ -10,15 +10,15 @@ export { default as RequestTextSignature } from './demo/request-text-signature';
 export { default as RequestDigestSignature } from './demo/request-digest-signature';
 export { default as RequestTransactionSignature } from './demo/request-transaction-signature';
 export { default as RequestPayment } from './demo/request-payment';
-export { default as RequestEthereumSignature } from './demo/request-ethereum-signature';
+// export { default as RequestEthereumSignature } from './demo/request-ethereum-signature';
 export { default as MultipleClaims } from './demo/multiple-claims';
-export { default as RemoteAPI } from './demo/remote-api';
+// export { default as RemoteAPI } from './demo/remote-api';
 export { default as MultipleSteps } from './demo/multiple-steps';
-export { default as MultipleWorkflow } from './demo/multiple-workflow';
-export { default as ReuseExistingSession } from './demo/reuse-existing-session';
+// export { default as MultipleWorkflow } from './demo/multiple-workflow';
+// export { default as ReuseExistingSession } from './demo/reuse-existing-session';
 
 export default {
-  title: 'Composed/Connect',
+  title: 'Connect',
   component: Connect,
   argTypes: {
     relayUrl: { control: 'text', defaultValue: relayUrl },

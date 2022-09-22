@@ -1,3 +1,10 @@
+## 2.1.15 (September 22, 2022)
+
+- fix: #34 #41
+- feat: enable doc search
+- chore: polish storybook
+- chore: update deps
+
 ## 2.1.14 (September 09, 2022)
 
 - chore: polish connect test case
