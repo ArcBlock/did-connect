@@ -6,6 +6,6 @@ export { default as Sizes } from './demo/sizes';
 export { default as CustomText } from './demo/custom-text';
 
 export default {
-  title: 'Basic/Button',
+  title: 'Components/Button',
   component: ConnectButton,
 };

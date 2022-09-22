@@ -12,7 +12,6 @@ export const parameters = {
     isToolshown: true,
     selectedPanel: 'storysource',
     storySort: {
-      method: 'alphabetical',
       order: ['Introduction', ['Connect', 'SessionManager'], ['Address', 'Avatar', 'Button', 'Logo']],
     },
   },
