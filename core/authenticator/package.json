@@ -31,7 +31,7 @@
     "@arcblock/eslint-config-ts": "0.2.3",
     "@types/debug": "^4.1.7",
     "axios": "^0.27.2",
-    "eslint": "^8.23.0",
+    "eslint": "^8.23.1",
     "jest": "^28.1.3",
     "ts-jest": "^28.0.8",
     "typescript": "^4.8.3"
