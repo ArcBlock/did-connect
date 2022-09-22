@@ -38,6 +38,8 @@
     "url": "https://github.com/ArcBlock/did-connect"
   },
   "scripts": {
+    "dev": "blocklet dev",
+    "dev:child": "blocklet dev --component --app-did=z8ia1M5UMqdqFvjLJmPaNdQ7UueRzGw6agp7R --mount-point=/relay",
     "lint": "eslint index.js",
     "start": "NODE_ENV=development nodemon index.js --watch index.js --watch ../../core",
     "bundle": "NODE_ENV=production blocklet bundle --zip --create-release --monorepo",

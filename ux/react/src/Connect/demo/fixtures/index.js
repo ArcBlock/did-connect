@@ -20,7 +20,10 @@ export const assetRequest = {
   description: 'Please provide NFT issued by Blocklet Launcher (Staging)',
 };
 
-export const baseUrl = '/.well-known/service';
+const mountPoints = window.blocklet?.componentMountPoints || [];
+const relayComponent = mountPoints.find((x) => x.mountPoint === '/relay');
+
+export const baseUrl = relayComponent ? relayComponent.mountPoint : '/.well-known/service';
 export const relayUrl = joinUrl(baseUrl, '/api/connect/relay');
 export const chainHost = 'https://beta.abtnetwork.io/api/';
 export const connectUrl = joinUrl(window.location.origin, baseUrl, '/connect/profile');
