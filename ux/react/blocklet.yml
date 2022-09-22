@@ -1,5 +1,5 @@
 name: did-connect-react
-version: 2.1.15
+version: 2.1.16
 description: DID Connect React Component Library
 keywords:
   - relay
@@ -37,7 +37,13 @@ requirements:
   server: '>=1.7.0'
   os: '*'
   cpu: '*'
-environments: []
+environments:
+  - name: CHAIN_HOST
+    description: Please provide endpoint of the chain where NFT factory are stored
+    required: true
+    default: https://beta.abtnetwork.io/api/
+    secure: false
+    shared: true
 capabilities:
   clusterMode: false
   component: true
