@@ -2,6 +2,11 @@ name: DID Connect Docs
 title: DID Connect Docs
 description: This is DID Connect Docs Site, powered by Blocklet Page
 github: https://github.com/ArcBlock/did-connect
+plugins:
+  - resolve: "@xmark/plugin-docs-indexer"
+optimizeDeps:
+  include:
+    - docs-searchbar.js
 theme: docs
 themeConfig:
   sidebar:
