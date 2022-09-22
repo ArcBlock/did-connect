@@ -11,10 +11,12 @@ export default function Demo(props) {
   const [open, setOpen] = useState(false);
   const [message] = useState('Present Passport');
   const [response, setResponse] = useState(null);
+
   const handleClose = () => {
     action('close')();
     setOpen(false);
   };
+
   const handleConnect = async (ctx, e) => {
     action('onConnect')(ctx, e);
     return [
