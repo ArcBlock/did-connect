@@ -1,3 +1,8 @@
+## 2.1.16 (September 23, 2022)
+
+- chore: enable remote api case
+- chore: use relay server component
+
 ## 2.1.15 (September 22, 2022)
 
 - fix: #34 #41

@@ -1,4 +1,4 @@
-name: 'Lint PR Title'
+name: "Lint PR Title"
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ on:
       - edited
       - synchronize
     branches:
-      - dev
+      - main
 
 jobs:
   main:

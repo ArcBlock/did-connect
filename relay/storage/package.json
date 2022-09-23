@@ -43,7 +43,7 @@
     "precommit": "CI=1 yarn test",
     "prepush": "CI=1 yarn test",
     "test": "jest",
-    "coverage": "npm run test --coverage",
+    "coverage": "npm run test -- --coverage",
     "prebuild": "npm run clean",
     "build": "tsc",
     "check": "tsc --noEmit",

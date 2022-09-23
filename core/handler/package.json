@@ -62,7 +62,7 @@
     "lint": "eslint src tests",
     "lint:fix": "eslint --fix src tests",
     "test": "jest",
-    "coverage": "npm run test --coverage",
+    "coverage": "npm run test -- --coverage",
     "prebuild": "npm run clean",
     "build": "tsc",
     "watch": "tsc -b --watch",
