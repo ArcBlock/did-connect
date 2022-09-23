@@ -1,7 +1,7 @@
 {
   "name": "@did-connect/types",
   "description": "Type definition and validator for did-connect protocol",
-  "version": "2.1.15",
+  "version": "2.1.16",
   "author": {
     "name": "wangshijun",
     "email": "shijun@arcblock.io",
