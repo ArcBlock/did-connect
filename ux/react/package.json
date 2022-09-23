@@ -42,9 +42,9 @@
   },
   "dependencies": {
     "@arcblock/did-motif": "^1.1.10",
-    "@arcblock/icons": "^2.4.29",
-    "@arcblock/react-hooks": "^2.4.29",
-    "@arcblock/ux": "^2.4.29",
+    "@arcblock/icons": "^2.4.30",
+    "@arcblock/react-hooks": "^2.4.30",
+    "@arcblock/ux": "^2.4.30",
     "@did-connect/state": "2.1.16",
     "@did-connect/types": "2.1.16",
     "@emotion/react": "^11.10.4",
@@ -78,7 +78,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@arcblock/addon-storysource": "^2.4.29",
+    "@arcblock/addon-storysource": "^2.4.30",
     "@babel/cli": "^7.18.10",
     "@babel/core": "^7.19.1",
     "@babel/preset-env": "^7.19.1",
@@ -99,7 +99,7 @@
     "@storybook/test-runner": "^0.7.2",
     "@types/jest": "^28.1.8",
     "@types/node": "^18.7.18",
-    "@types/react": "^18.0.20",
+    "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
     "babel-plugin-inline-react-svg": "^2.0.1",
     "eslint-plugin-react-hooks": "^4.6.0",

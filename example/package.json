@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@arcblock/did": "^1.17.19",
-    "@blocklet/sdk": "^1.8.23",
+    "@blocklet/sdk": "^1.8.24",
     "@did-connect/storage-nedb": "^1.6.3",
     "@did-connect/vue": "workspace:*",
     "@ocap/client": "^1.17.19",
