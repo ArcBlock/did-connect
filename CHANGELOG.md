@@ -1,3 +1,7 @@
+## 2.1.17 (September 23, 2022)
+
+- chore: bump xmark to latest
+
 ## 2.1.16 (September 23, 2022)
 
 - chore: enable remote api case
