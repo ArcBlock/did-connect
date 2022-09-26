@@ -1,3 +1,8 @@
+## 2.1.18 (September 26, 2022)
+
+- chore: use relay from blocklet server
+- chore: bump xmark to latest
+
 ## 2.1.17 (September 23, 2022)
 
 - chore: bump xmark to latest
