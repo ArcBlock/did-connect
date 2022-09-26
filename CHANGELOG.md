@@ -1,3 +1,7 @@
+## 2.1.19 (September 26, 2022)
+
+- fix: attempt to fix onComplete error
+
 ## 2.1.18 (September 26, 2022)
 
 - chore: use relay from blocklet server
