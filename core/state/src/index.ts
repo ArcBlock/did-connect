@@ -462,6 +462,7 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
           invoke: approveUrl ? undefined : approveService,
           on: {
             APP_APPROVED: { target: 'appApproved' },
+            COMPLETE: { target: 'completed' },
             ERROR: { target: 'error' },
             CANCEL: { target: 'canceled' },
             TIMEOUT: { target: 'timeout' },

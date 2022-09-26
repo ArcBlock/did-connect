@@ -1,3 +1,4 @@
+import Debug from 'debug';
 import Cookie from 'js-cookie';
 import { TAppInfo, TSession } from '@did-connect/types';
 import { getCookieOptions } from '@arcblock/ux/lib/Util';
@@ -6,6 +7,8 @@ export const providerName = 'wallet_url';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const noop = (...args: any[]) => undefined;
+
+const debug = Debug('@did-connect/react');
 
 /**
  * 获取 web wallet url, 常用于为 did connect 组件传递 webWalletUrl 参数,
@@ -74,6 +77,7 @@ export const getAppId = (appInfo?: TAppInfo): string => {
 
 export const updateConnectedInfo = (ctx: TSession): void => {
   const cookieOptions = getCookieOptions({ expireInDays: 7, returnDomain: false });
+  debug('updateConnectedInfo', ctx.currentConnected);
 
   if (ctx.currentConnected) {
     // connected_did and connected_pk are used to skip authPrincipal
