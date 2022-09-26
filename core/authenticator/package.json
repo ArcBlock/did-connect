@@ -1,7 +1,7 @@
 {
   "name": "@did-connect/authenticator",
   "description": "Helper function to setup DID Connect support on a node.js web server",
-  "version": "2.1.18",
+  "version": "2.1.19",
   "author": {
     "name": "wangshijun",
     "email": "shijun@arcblock.io",
@@ -20,7 +20,7 @@
   "dependencies": {
     "@arcblock/did": "^1.17.19",
     "@arcblock/jwt": "^1.17.19",
-    "@did-connect/types": "2.1.18",
+    "@did-connect/types": "2.1.19",
     "@ocap/util": "^1.17.19",
     "@ocap/wallet": "^1.17.19",
     "debug": "^4.3.4",
