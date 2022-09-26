@@ -1,3 +1,7 @@
+## 2.1.20 (September 26, 2022)
+
+- fix: allow assetDid as none in vc-claim-response
+
 ## 2.1.19 (September 26, 2022)
 
 - fix: attempt to fix onComplete error
