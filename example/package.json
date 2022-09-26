@@ -15,10 +15,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@unocss/preset-icons": "^0.45.22",
-    "@unocss/preset-uno": "^0.45.22",
+    "@unocss/preset-icons": "^0.45.23",
+    "@unocss/preset-uno": "^0.45.23",
     "@vitejs/plugin-vue": "^2.3.4",
-    "unocss": "^0.45.22",
+    "unocss": "^0.45.23",
     "vite": "^2.9.15",
     "vite-plugin-blocklet": "^0.1.2"
   },

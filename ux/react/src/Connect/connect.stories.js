@@ -13,7 +13,7 @@ export { default as RequestPayment } from './demo/request-payment';
 // export { default as RequestEthereumSignature } from './demo/request-ethereum-signature';
 export { default as MultipleClaims } from './demo/multiple-claims';
 export { default as MultipleSteps } from './demo/multiple-steps';
-export { default as UseRemoteAPI } from './demo/remote-api';
+// export { default as UseRemoteAPI } from './demo/remote-api';
 // export { default as MultipleWorkflow } from './demo/multiple-workflow';
 // export { default as ReuseExistingSession } from './demo/reuse-existing-session';
 
