@@ -20,7 +20,7 @@
   "dependencies": {
     "@arcblock/validator": "^1.17.19",
     "@ocap/mcrypto": "^1.17.19",
-    "joi": "^17.6.1",
+    "joi": "17.6.0",
     "type-fest": "^2.19.0"
   },
   "devDependencies": {
