@@ -175,13 +175,8 @@ export default function createSessionContext(
       this.listeners = { login: [], 'switch-profile': [], 'switch-passport': [] };
     }
 
-    // 不可以直接个性 props.autoConnect (readonly)
     get autoConnect() {
       const { autoConnect } = this.fullProps;
-      // for backward compatibility
-      if (typeof autoConnect === 'boolean') {
-        return autoConnect;
-      }
       return !!autoConnect;
     }
 
