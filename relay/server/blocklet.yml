@@ -1,4 +1,4 @@
-name: '@did-connect/relay-server'
+name: "@did-connect/relay-server"
 description: Simple relay server built on top of express
 version: 2.1.22
 author:
@@ -9,10 +9,10 @@ contributors:
   - name: wangshijun
     email: shijun@arcblock.io
     url: https://github.com/wangshijun
-homepage: ''
+homepage: ""
 keywords:
   - relay
-license: ''
+license: ""
 repository:
   type: git
   url: git+https://github.com/ArcBlock/did-connect.git
@@ -26,21 +26,21 @@ interfaces:
   - type: web
     name: publicUrl
     path: /
-    prefix: '*'
+    prefix: "*"
     port: BLOCKLET_PORT
     protocol: http
 did: z8ia46ePwnscVS4X2vKUTrdRKhNJ64pWguvwb
-community: ''
-documentation: ''
+community: ""
+documentation: ""
 payment:
   price: []
   share: []
 timeout:
   start: 60
 requirements:
-  server: '>=1.7.0'
-  os: '*'
-  cpu: '*'
+  server: ">=1.7.0"
+  os: "*"
+  cpu: "*"
 environments: []
 capabilities:
   clusterMode: false

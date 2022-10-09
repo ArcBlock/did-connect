@@ -7,8 +7,8 @@ author:
   name: wangshijun
   email: shijun@arcblock.io
   url: https://github.com/wangshijun
-homepage: ''
-license: ''
+homepage: ""
+license: ""
 main: dist
 repository:
   type: git
@@ -22,21 +22,21 @@ interfaces:
   - type: web
     name: publicUrl
     path: /
-    prefix: '*'
+    prefix: "*"
     port: BLOCKLET_PORT
     protocol: http
 did: z8ia1M5UMqdqFvjLJmPaNdQ7UueRzGw6agp7R
-community: ''
-documentation: ''
+community: ""
+documentation: ""
 payment:
   price: []
   share: []
 timeout:
   start: 60
 requirements:
-  server: '>=1.7.0'
-  os: '*'
-  cpu: '*'
+  server: ">=1.7.0"
+  os: "*"
+  cpu: "*"
 environments:
   - name: CHAIN_HOST
     description: Please provide endpoint of the chain where NFT factory are stored
