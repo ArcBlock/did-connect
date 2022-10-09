@@ -195,6 +195,9 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
         wallet: updater,
         method: 'POST',
       });
+      if (session.error) {
+        throw new CustomError(session.code, session.error);
+      }
     }
 
     await onCreate(ctx, e);
