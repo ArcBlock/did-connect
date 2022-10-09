@@ -71,7 +71,6 @@ const defaultProps = {
   sessionUrl: '/.well-known/service/api/did/session',
   autoConnect: true,
   autoDisconnect: true,
-  autoLogin: false,
   timeout: SessionTimeout,
   webWalletUrl: '',
   messages: null,
@@ -84,7 +83,6 @@ type ProviderProps = typeof defaultProps & {
   sessionUrl?: string;
   locale?: TLocaleCode;
   timeout?: typeof SessionTimeout;
-  autoLogin?: boolean;
   autoConnect?: boolean;
   autoDisconnect?: boolean;
   webWalletUrl?: string;
@@ -177,14 +175,9 @@ export default function createSessionContext(
       this.listeners = { login: [], 'switch-profile': [], 'switch-passport': [] };
     }
 
-    // 不可以直接个性 props.autoConnect (readonly)
     get autoConnect() {
-      const { autoConnect, autoLogin } = this.fullProps;
-      // for backward compatibility
-      if (typeof autoConnect === 'boolean') {
-        return autoConnect;
-      }
-      return !!autoLogin;
+      const { autoConnect } = this.fullProps;
+      return !!autoConnect;
     }
 
     componentDidMount() {

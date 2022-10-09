@@ -13,7 +13,7 @@ repository:
   type: git
   url: git+https://github.com/arcblock/did-connect.git
 specVersion: 1.2.7
-version: 2.1.20
+version: 2.1.21
 logo: logo.png
 files:
   - logo.png
@@ -50,7 +50,19 @@ capabilities:
   clusterMode: false
   component: true
 screenshots: []
-children:
+navigation:
+  - title:
+      en: Docs
+      zh: 文档
+    component: did-connect-docs
+  - title:
+      en: Playground
+      zh: 试验场
+    items:
+      - title: React
+        link: /playground/react
+        component: did-connect-react
+components:
   - name: meilisearch
     mountPoint: /meilisearch
     source:
@@ -58,15 +70,3 @@ children:
         - https://test.store.blocklet.dev
       name: meilisearch
       version: latest
-navigation:
-  - title:
-      en: Docs
-      zh: 文档
-    child: did-connect-docs
-  - title:
-      en: Playground
-      zh: 试验场
-    items:
-      - title: React
-        link: /playground/react
-        child: did-connect-react
