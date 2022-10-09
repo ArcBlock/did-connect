@@ -53,6 +53,7 @@ export type TSessionOptions = {
   onTimeout?: TEventCallback;
   onError?: TEventCallback;
   autoConnect?: boolean;
+  forceConnected?: boolean;
   onlyConnect?: boolean;
   timeout?: typeof SessionTimeout;
 };
@@ -81,6 +82,7 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
     onTimeout = noop,
     onError = noop,
     autoConnect = true,
+    forceConnected = true,
     onlyConnect = false,
     timeout = SessionTimeout,
   } = options;
@@ -184,8 +186,9 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
           authUrl: authApiUrl,
           connectUrl,
           approveUrl,
-          autoConnect,
-          onlyConnect,
+          autoConnect: !!autoConnect,
+          forceConnected: !!forceConnected,
+          onlyConnect: !!onlyConnect,
           requestedClaims,
           timeout,
         },
@@ -344,8 +347,9 @@ export function createStateMachine(options: TSessionOptions): TSessionMachine {
         requestedClaims, // app requested claims, authPrincipal should not be listed here
         responseClaims: [], // wallet submitted claims
         approveResults: [],
-        autoConnect,
-        onlyConnect,
+        autoConnect: !!autoConnect,
+        forceConnected: !!forceConnected,
+        onlyConnect: !!onlyConnect,
         authUrl: authApiUrl,
         timeout,
         challenge: '',

@@ -32,6 +32,8 @@ const session = {
   authUrl: 'http://localhost:65325/api/connect/relay/auth?sid=4V7cETiWKk3eimLMbe-WN',
   challenge: '0553621E72367FCCB1AF23836D65AB1B',
   autoConnect: true,
+  forceConnected: true,
+  withinSession: false,
   onlyConnect: false,
   appInfo: {
     name: 'DID Wallet Demo',
