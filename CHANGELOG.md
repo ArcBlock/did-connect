@@ -1,3 +1,8 @@
+## 2.1.21 (October 09, 2022)
+
+- chore: bump deps to latest safely
+- fix: deprecate autoLogin prop
+
 ## 2.1.20 (September 26, 2022)
 
 - fix: allow assetDid as none in vc-claim-response

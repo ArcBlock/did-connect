@@ -15,7 +15,7 @@ repository:
   type: git
   url: git+https://github.com/arcblock/did-connect.git
 specVersion: 1.2.7
-version: 2.1.20
+version: 2.1.21
 logo: logo.png
 files:
   - hooks/post-start.js
@@ -47,7 +47,6 @@ capabilities:
   clusterMode: false
   component: true
 screenshots: []
-children: []
 navigation:
   - title:
       en: Docs
@@ -55,3 +54,4 @@ navigation:
     link:
       en: /en
       zh: /zh
+components: []
