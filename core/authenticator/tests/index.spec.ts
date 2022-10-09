@@ -63,6 +63,8 @@ const context: TAuthContext = {
     currentConnected: null,
     currentStep: 0,
     autoConnect: true,
+    forceConnected: true,
+    withinSession: false,
     onlyConnect: false,
     requestedClaims: [],
     responseClaims: [],

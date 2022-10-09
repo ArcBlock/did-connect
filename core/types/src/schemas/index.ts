@@ -354,6 +354,8 @@ const Session: ObjectSchema = Joi.object({
   appInfo: AppInfo.required(),
   onlyConnect: Joi.boolean().default(false).required(),
   autoConnect: Joi.boolean().default(true).required(),
+  forceConnected: Joi.boolean().default(true).required(),
+  withinSession: Joi.boolean().default(false).required(),
   previousConnected: PreviousConnected,
   currentConnected: Joi.object({
     userDid: Joi.DID().required(),

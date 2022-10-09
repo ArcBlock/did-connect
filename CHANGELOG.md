@@ -1,3 +1,9 @@
+## 2.1.22 (October 09, 2022)
+
+- chore: deprecate `autoLogin` for `SessionManager`
+- feat: support enforce connected user when connect within web session
+- fix: state not handling errors thrown on create
+
 ## 2.1.21 (October 09, 2022)
 
 - chore: bump deps to latest safely

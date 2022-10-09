@@ -45,6 +45,7 @@ export function useSession({
   onError = noop,
   strategy = 'default',
   autoConnect = true,
+  forceConnected = true,
   saveConnect = true,
   onlyConnect = false,
   timeout = SessionTimeout,
@@ -66,7 +67,7 @@ export function useSession({
   const session: TSessionMachine = useMemo(
     () => {
       const _autoConnect =
-        autoConnect && !browser.wallet && !retryCount && !cancelCount && Cookie.get('connected_wallet_os') !== 'web';
+        !!autoConnect && !browser.wallet && !retryCount && !cancelCount && Cookie.get('connected_wallet_os') !== 'web';
       debug('create session', {
         autoConnect: _autoConnect,
         onlyConnect,
@@ -95,8 +96,9 @@ export function useSession({
         // - 如果上次使用了 web wallet 进行连接, 则 autoConnect 请求参数 为 false (web wallet 并非像 native 钱包一样基于通知实现自动连接)
         //   (防止 native 钱包收到通知自动唤起 auth 窗口)
         autoConnect: _autoConnect,
+        forceConnected: !!forceConnected,
         // do supervised authPrincipal and end the session
-        onlyConnect,
+        onlyConnect: !!onlyConnect,
         // timeout for each stage
         timeout,
       });
@@ -170,6 +172,7 @@ export function createSession({
   onError = noop,
   strategy = 'default',
   autoConnect = true,
+  forceConnected = true,
   onlyConnect = false,
   timeout = SessionTimeout,
 }: THookProps): Promise<TSessionMachine> {
@@ -188,6 +191,7 @@ export function createSession({
       onCancel,
       onError,
       autoConnect,
+      forceConnected,
       onlyConnect,
       timeout,
     });

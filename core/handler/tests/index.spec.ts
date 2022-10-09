@@ -16,7 +16,7 @@ import waitFor from 'p-wait-for';
 // @ts-ignore
 import joinUrl from 'url-join';
 
-import { SessionTimeout, TAnyRequest } from '@did-connect/types';
+import { SessionTimeout } from '@did-connect/types';
 import type {
   TAppInfo,
   TAnyObject,
@@ -40,7 +40,7 @@ import { createHandlers } from '../src';
 // @ts-ignore
 const createTestServer = require('../../../scripts/create-test-server');
 
-const noop = () => null;
+const noop = (...args: any[]) => {}; // eslint-disable-line
 const user = fromRandom();
 const updater = fromRandom();
 const evil = fromRandom();
@@ -221,11 +221,10 @@ describe('Handlers', () => {
     return obj.href;
   };
 
-  const runSingleTest = async (authUrl: string, statusHistory: string[], args: any, skipConnect: boolean = false) => {
+  const runSingleTest = async (authUrl: string, statusHistory: string[], args: any, authPrincipalAssertFn = noop) => {
     let res: any = {};
     let nextUrl: string;
     let challenge: string;
-    let claims: TAnyRequest[];
 
     // @ts-ignore
     let authInfo: TAuthResponse = {};
@@ -237,37 +236,26 @@ describe('Handlers', () => {
     // @ts-ignore
     authInfo = Jwt.decode(res.data.authInfo);
 
-    if (skipConnect) {
-      // @ts-ignore
-      expect(authInfo.requestedClaims[0].type).toEqual('profile');
-      claims = authInfo.requestedClaims;
-      challenge = authInfo.challenge;
-      nextUrl = getAuthUrl(authUrl);
-    } else {
-      // @ts-ignore
-      expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
-      expect(authInfo.url).toEqual(authUrl);
+    // @ts-ignore
+    expect(authInfo.requestedClaims[0].type).toEqual('authPrincipal');
+    expect(authInfo.url).toEqual(authUrl);
+    authPrincipalAssertFn(authInfo.requestedClaims[0]);
 
-      // 3. submit auth principal
-      claims = authInfo.requestedClaims;
-      nextUrl = getAuthUrl(authUrl);
-      challenge = authInfo.challenge; // eslint-disable-line
-      if (claims.find((x) => x.type === 'authPrincipal')) {
-        res = await api.post(getAuthUrl(authInfo.url), {
-          userPk: toBase58(user.publicKey),
-          userInfo: Jwt.sign(user.address, user.secretKey as string, {
-            requestedClaims: [],
-            challenge: authInfo.challenge,
-          }),
-        });
-        // @ts-ignore
-        authInfo = Jwt.decode(res.data.authInfo);
-        expect(authInfo.requestedClaims[0].type).toEqual('profile');
-        claims = authInfo.requestedClaims;
-        challenge = authInfo.challenge;
-        nextUrl = authInfo.url;
-      }
-    }
+    // 3. submit auth principal
+    nextUrl = getAuthUrl(authUrl);
+    challenge = authInfo.challenge; // eslint-disable-line
+    res = await api.post(getAuthUrl(authInfo.url), {
+      userPk: toBase58(user.publicKey),
+      userInfo: Jwt.sign(user.address, user.secretKey as string, {
+        requestedClaims: [],
+        challenge: authInfo.challenge,
+      }),
+    });
+    // @ts-ignore
+    authInfo = Jwt.decode(res.data.authInfo);
+    expect(authInfo.requestedClaims[0].type).toEqual('profile');
+    challenge = authInfo.challenge;
+    nextUrl = authInfo.url;
 
     // 4. submit requested claims
     res = await api.post(nextUrl, {
@@ -414,6 +402,7 @@ describe('Handlers', () => {
       undefined,
       undefined,
       {
+        'x-user-did': user.address,
         Cookie: Object.keys(cookies)
           .map((x) => `${x}=${cookies[x]}`)
           .join('; '),
@@ -421,7 +410,10 @@ describe('Handlers', () => {
     );
     expect(session.sessionId).toEqual(sessionId);
 
-    await runSingleTest(authUrl, statusHistory, args, true);
+    await runSingleTest(authUrl, statusHistory, args, (claim: TAuthPrincipalRequest) => {
+      expect(claim.supervised).toEqual(false);
+      expect(claim.target).toEqual(user.address);
+    });
   });
 
   test('should connect complete when everything is working: single + connectUrl + approveUrl', async () => {

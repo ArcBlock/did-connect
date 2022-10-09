@@ -26,6 +26,7 @@ const defaultProps = {
   webWalletUrl: '',
   strategy: 'default',
   autoConnect: true,
+  forceConnected: true,
   saveConnect: true,
   onlyConnect: false,
 };
@@ -48,6 +49,7 @@ function Connect(props: TConnectProps): JSX.Element {
     sessionId,
     strategy,
     autoConnect,
+    forceConnected,
     saveConnect,
     onlyConnect,
     ...rest
@@ -67,9 +69,10 @@ function Connect(props: TConnectProps): JSX.Element {
     onReject,
     onCancel,
     onError,
-    autoConnect,
-    saveConnect,
-    onlyConnect,
+    autoConnect: !!autoConnect,
+    forceConnected: !!forceConnected,
+    saveConnect: !!saveConnect,
+    onlyConnect: !!onlyConnect,
   };
   const { session, generate, cancel }: THookResult = useSession(hookProps);
 

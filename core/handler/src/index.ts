@@ -120,6 +120,7 @@ export type TLogger = {
 
 export type TSessionCreateContext = TAuthContext & {
   body: TSession;
+  headers: { [key: string]: string };
 };
 
 export type TSessionUpdateResult = TSession | { code: string; error?: string };
@@ -216,6 +217,7 @@ export function createHandlers({
       connectUrl = '',
       approveUrl = '',
       autoConnect = true,
+      forceConnected = true,
       onlyConnect = false,
       requestedClaims = [],
       timeout,
@@ -240,6 +242,8 @@ export function createHandlers({
       approveUrl,
       challenge: getStepChallenge(),
       autoConnect,
+      forceConnected,
+      withinSession: !!context.previousConnected && context.headers['x-user-did'] === context.previousConnected.userDid,
       onlyConnect,
       appInfo: await authenticator.getAppInfo({ ...context, baseUrl: new URL(authUrl).origin }),
       previousConnected: context.previousConnected,
@@ -340,12 +344,27 @@ export function createHandlers({
   };
 
   const getAuthPrincipalRequest = (session: TSession): TAuthPrincipalRequest => {
-    const { strategy, previousConnected, onlyConnect } = session;
+    const { strategy, previousConnected, forceConnected, withinSession, onlyConnect } = session;
+
+    let description = 'Select an account to continue';
+    let target = '';
+    let supervised = false;
+
+    if (onlyConnect || !previousConnected) {
+      description = isValid(strategy) ? 'Select following account to continue' : 'Select an account to continue';
+      target = isValid(strategy) ? strategy : '';
+      supervised = true;
+    } else if (forceConnected && withinSession && previousConnected) {
+      description = 'Select following account to continue';
+      target = previousConnected.userDid;
+      supervised = false;
+    }
+
     return {
       type: 'authPrincipal',
-      description: 'select the principal to be used for authentication',
-      target: isValid(strategy) ? strategy : '',
-      supervised: onlyConnect || !previousConnected,
+      description,
+      target,
+      supervised,
     };
   };
 
@@ -501,31 +520,13 @@ export function createHandlers({
         );
       }
 
-      let newSession: TSession;
-
       // if we are in created status,
       if (session.status === 'created') {
         logger.debug('session.walletScanned', sessionId);
         wsServer.broadcast(sessionId, { status: 'walletScanned', didwallet });
         await storage.update(sessionId, { status: 'walletScanned' });
 
-        // skip authPrincipal step if we are using smart strategy
-        if (session.strategy === 'smart' && session.previousConnected) {
-          logger.debug('session.walletConnected', sessionId);
-          newSession = await storage.update(sessionId, {
-            status: 'walletConnected',
-            currentConnected: { ...session.previousConnected, didwallet },
-          });
-          wsServer.broadcast(sessionId, {
-            status: 'walletConnected',
-            currentConnected: { ...session.previousConnected, didwallet },
-          });
-
-          newSession = await ensureAppConnected(newSession, locale);
-          return signClaims(newSession.requestedClaims[session.currentStep], { ...context, session: newSession });
-        }
-
-        // else we should return authPrincipal claim
+        // return authPrincipal claim
         return signClaims([getAuthPrincipalRequest(session)], context);
       }
 

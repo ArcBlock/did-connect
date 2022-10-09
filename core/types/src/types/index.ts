@@ -215,6 +215,7 @@ export interface TSession {
   } | null;
   currentStep: number;
   error?: string;
+  forceConnected: boolean;
   onlyConnect: boolean;
   previousConnected?: {
     didwallet: 'ios' | 'android' | 'web' | '';
@@ -243,6 +244,7 @@ export interface TSession {
     wallet: number;
   };
   updaterPk: string;
+  withinSession: boolean;
 }
 
 export interface TSignatureRequest {

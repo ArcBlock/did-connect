@@ -38,6 +38,7 @@ export type THookProps = {
   strategy?: string;
 
   autoConnect?: boolean;
+  forceConnected?: boolean;
   saveConnect?: boolean;
   onlyConnect?: boolean;
 };
