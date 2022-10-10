@@ -5,7 +5,7 @@ import { sign, verify, decode, JwtBody } from '@arcblock/jwt';
 import { toBase58 } from '@ocap/util';
 import { toAddress } from '@arcblock/did';
 import { isValid, WalletObject } from '@ocap/wallet';
-import { AppInfo, isUrl } from '@did-connect/types';
+import { AppInfo, ChainInfo } from '@did-connect/types';
 import { Promisable } from 'type-fest';
 import type {
   TLocaleCode,
@@ -52,7 +52,7 @@ export type TWalletResponseSigned = {
 const debug = Debug('@did-connect/authenticator');
 
 const DEFAULT_TIMEOUT = 8000;
-const DEFAULT_CHAIN_INFO: TChainInfo = { host: 'none' };
+const DEFAULT_CHAIN_INFO: TChainInfo = { type: 'arcblock', id: 'none', host: 'none' };
 
 const errors: TI18nMessages = {
   pkMissing: {
@@ -164,14 +164,24 @@ export class Authenticator {
     tmp.searchParams.set('sid', sessionId);
     const nextUrl = tmp.href;
 
-    // TODO: we should set and respect chainInfo in each claim in future
-    const claimWithChainInfo = claims.find((x: TAnyRequest) => x.chainInfo);
+    // use first chainInfo from claim
+    const claim = claims.find((x: TAnyRequest) => x.chainInfo);
+    let chainInfo;
+    if (claim) {
+      const { error, value } = ChainInfo.validate(claim.chainInfo);
+      if (!error) {
+        chainInfo = value;
+      }
+    }
+    if (!chainInfo) {
+      chainInfo = await this.getChainInfo(context);
+    }
 
     const payload: Partial<TAuthResponse> = {
       action: 'responseAuth',
       challenge,
       appInfo,
-      chainInfo: claimWithChainInfo?.chainInfo || (await this.getChainInfo(context)),
+      chainInfo,
       requestedClaims: claims,
       url: nextUrl,
     };
@@ -226,7 +236,12 @@ export class Authenticator {
     if (typeof this.chainInfo === 'function') {
       // @ts-ignore
       const result: TChainInfo = await this.tryWithTimeout<TChainInfo>(() => this.chainInfo(params));
-      return isUrl(result.host) ? result : DEFAULT_CHAIN_INFO;
+      const { value, error } = ChainInfo.validate(result);
+      if (error) {
+        console.warn('invalid chainInfo function', error);
+      }
+      // @ts-ignore
+      return error ? DEFAULT_CHAIN_INFO : value;
     }
 
     return this.chainInfo || DEFAULT_CHAIN_INFO;

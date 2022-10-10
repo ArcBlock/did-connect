@@ -66,6 +66,47 @@ describe('Validator', () => {
     expect(ChainInfo.validate({ host: 'none', id: 'none' }).error).toBeFalsy();
     expect(ChainInfo.validate({ host: 'https://beta.abtnetwork.io' }).error).toBeFalsy();
     expect(ChainInfo.validate({ host: 'https://beta.abtnetwork.io', id: 'beta' }).error).toBeFalsy();
+
+    // type
+    expect(String(ChainInfo.validate({ type: 'xxx' }).error)).toMatch(/type/);
+    expect(String(ChainInfo.validate({ id: 'beta' }).error)).toMatch(/host/);
+    expect(ChainInfo.validate({ id: 'none' }).error).toBeFalsy();
+    expect(ChainInfo.validate({ host: 'https://beta.abtnetwork.io/api/' }).value).toEqual({
+      host: 'https://beta.abtnetwork.io/api/',
+      id: 'none',
+      type: 'arcblock',
+    });
+
+    // defaults
+    expect(ChainInfo.validate({}).error).toBeFalsy();
+    expect(ChainInfo.validate({}).value).toEqual({ type: 'arcblock', id: 'none', host: 'none' });
+
+    // arcblock
+    expect(ChainInfo.validate({ type: 'arcblock', id: 'none' }).error).toBeFalsy();
+    expect(
+      ChainInfo.validate({ type: 'arcblock', id: 'none', host: 'https://beta.abtnetwork.io/api/' }).error
+    ).toBeFalsy();
+    expect(ChainInfo.validate({ type: 'arcblock', id: 'none' }).value).toEqual({
+      type: 'arcblock',
+      id: 'none',
+      host: 'none',
+    });
+    expect(String(ChainInfo.validate({ type: 'arcblock', id: 'beta' }).error)).toMatch(/host/);
+    expect(
+      ChainInfo.validate({ type: 'arcblock', id: 'beta', host: 'https://beta.abtnetwork.io/api/' }).error
+    ).toBeFalsy();
+
+    // ethereum
+    expect(String(ChainInfo.validate({ type: 'ethereum' }).error)).toMatch(/id/);
+    expect(ChainInfo.validate({ type: 'ethereum', id: '1' }).error).toBeFalsy();
+    expect(ChainInfo.validate({ type: 'ethereum', id: '1', host: '' }).error).toBeFalsy();
+    expect(String(ChainInfo.validate({ type: 'ethereum', id: 'abc' }).error)).toMatch(/id/);
+
+    // solona
+    expect(String(ChainInfo.validate({ type: 'solona' }).error)).toMatch(/id/);
+    expect(ChainInfo.validate({ type: 'solona', id: '1' }).error).toBeFalsy();
+    expect(ChainInfo.validate({ type: 'solona', id: '1', host: '' }).error).toBeFalsy();
+    expect(String(ChainInfo.validate({ type: 'solona', id: 'abc' }).error)).toMatch(/id/);
   });
 
   test('should trusted issuers work', () => {

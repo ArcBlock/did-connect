@@ -13,13 +13,34 @@ type TSessionStatus = LiteralUnion<'start' | 'created' | 'walletScanned' | 'wall
 
 // Basic Types
 const ChainInfo: ObjectSchema = Joi.object({
-  id: Joi.string().optional(),
-  host: Joi.alternatives().try(
-    Joi.string()
-      .uri({ scheme: ['http', 'https'] })
-      .required(),
-    Joi.string().valid('none').required()
-  ),
+  type: Joi.string().optional().valid('arcblock', 'ethereum', 'solona').default('arcblock'),
+  id: Joi.string()
+    .when('type', { is: 'arcblock', then: Joi.string().optional().default('none') })
+    .when('type', {
+      is: 'ethereum',
+      then: Joi.string()
+        .required()
+        .pattern(/^[0-9]+$/, 'numbers'),
+    })
+    .when('type', {
+      is: 'solona',
+      then: Joi.string()
+        .required()
+        .pattern(/^[0-9]+$/, 'numbers'),
+    }),
+  host: Joi.string().when('id', {
+    is: 'none',
+    then: Joi.string().optional().default('none'),
+    otherwise: Joi.any()
+      .when('type', {
+        is: 'arcblock',
+        then: Joi.string()
+          .uri({ scheme: ['http', 'https'] })
+          .required(),
+      })
+      .when('type', { is: 'ethereum', then: Joi.string().optional().allow('') })
+      .when('type', { is: 'solona', then: Joi.string().optional().allow('') }),
+  }),
 })
   .options(options)
   .meta({ unknownType: 'string', className: 'TChainInfo' });
