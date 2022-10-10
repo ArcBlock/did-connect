@@ -15,7 +15,7 @@ repository:
   type: git
   url: git+https://github.com/arcblock/did-connect.git
 specVersion: 1.2.7
-version: 2.1.22
+version: 2.1.23
 logo: logo.png
 files:
   - hooks/post-start.js
@@ -23,22 +23,22 @@ interfaces:
   - type: web
     name: publicUrl
     path: /
-    prefix: "*"
+    prefix: '*'
     port: BLOCKLET_PORT
     protocol: http
-community: ""
-documentation: ""
-homepage: ""
-license: ""
+community: ''
+documentation: ''
+homepage: ''
+license: ''
 payment:
   price: []
   share: []
 timeout:
   start: 60
 requirements:
-  abtnode: ">=1.6.22"
-  os: "*"
-  cpu: "*"
+  abtnode: '>=1.6.22'
+  os: '*'
+  cpu: '*'
 scripts:
   dev: npm run start
   postStart: node hooks/post-start.js
