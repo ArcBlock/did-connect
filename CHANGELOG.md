@@ -1,3 +1,8 @@
+## 2.1.23 (October 10, 2022)
+
+- chore: bump deps to latest safely
+- feat: support new chainInfo schema for did-connect
+
 ## 2.1.22 (October 09, 2022)
 
 - chore: deprecate `autoLogin` for `SessionManager`

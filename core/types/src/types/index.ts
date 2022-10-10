@@ -135,8 +135,9 @@ export interface TAuthPrincipalResponse {
 }
 
 export interface TChainInfo {
-  host?: string | 'none';
+  host?: string;
   id?: string;
+  type?: 'arcblock' | 'ethereum' | 'solona';
 }
 
 export interface TContext {

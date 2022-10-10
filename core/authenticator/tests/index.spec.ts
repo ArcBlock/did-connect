@@ -103,7 +103,7 @@ describe('Authenticator', () => {
     expect(typeof auth.verify).toEqual('function');
     expect(typeof auth.signJson).toEqual('function');
     expect(typeof auth.signClaims).toEqual('function');
-    expect(auth.chainInfo).toEqual({ host: 'none' });
+    expect(auth.chainInfo).toEqual({ host: 'none', id: 'none', type: 'arcblock' });
   });
 
   test('should throw if sign without claims', async () => {
@@ -138,7 +138,7 @@ describe('Authenticator', () => {
     // @ts-ignore
     expect((await tmp.getAppInfo({})).name).toEqual(appInfo.name);
     // @ts-ignore
-    expect(await tmp.getChainInfo({})).toEqual({ host: chainHost });
+    expect(await tmp.getChainInfo({})).toEqual({ host: chainHost, id: 'none', type: 'arcblock' });
   });
 
   test('should sign correct claims and verify those claims', async () => {
@@ -193,7 +193,7 @@ describe('Authenticator', () => {
     // should respect chainInfo from authenticator
     let signed = await auth.signClaims(claims, context);
     const decoded: JwtBody = decode(signed.authInfo, true);
-    expect(decoded.chainInfo).toEqual({ host: 'none' });
+    expect(decoded.chainInfo).toEqual({ host: 'none', id: 'none', type: 'arcblock' });
 
     // should respect chainInfo from claim
     signed = await auth.signClaims(
@@ -208,7 +208,7 @@ describe('Authenticator', () => {
       context
     );
     const decoded3: JwtBody = decode(signed.authInfo, true);
-    expect(decoded3.chainInfo).toEqual({ host: chainHost });
+    expect(decoded3.chainInfo).toEqual({ host: chainHost, id: 'none', type: 'arcblock' });
   });
 
   test('should _validateAppInfo work', () => {
