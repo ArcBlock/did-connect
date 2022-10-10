@@ -18,30 +18,30 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/did": "^1.17.22",
-    "@arcblock/jwt": "^1.17.22",
-    "@arcblock/ws": "^1.17.22",
+    "@arcblock/did": "^1.17.23",
+    "@arcblock/jwt": "^1.17.23",
+    "@arcblock/ws": "^1.17.23",
     "@did-connect/authenticator": "2.1.22",
     "@did-connect/storage": "2.1.22",
     "@did-connect/types": "2.1.22",
-    "@ocap/mcrypto": "^1.17.22",
-    "@ocap/util": "^1.17.22",
+    "@ocap/mcrypto": "^1.17.23",
+    "@ocap/util": "^1.17.23",
     "axios": "^0.27.2",
     "lodash": "^4.17.21",
     "object-hash": "^3.0.0",
     "p-wait-for": "^3.2.0",
-    "semver": "^7.3.7",
+    "semver": "^7.3.8",
     "type-fest": "^2.19.0"
   },
   "devDependencies": {
     "@arcblock/eslint-config-ts": "0.2.3",
     "@types/semver": "^7.3.12",
     "axios": "^0.27.2",
-    "eslint": "^8.24.0",
+    "eslint": "^8.25.0",
     "jest": "^28.1.3",
     "nanoid": "^3.3.4",
     "ts-jest": "^28.0.8",
-    "typescript": "^4.8.3"
+    "typescript": "^4.8.4"
   },
   "homepage": "https://github.com/ArcBlock/did-connect",
   "keywords": [
