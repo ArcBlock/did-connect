@@ -10,39 +10,6 @@ export const noop = (...args: any[]) => undefined;
 
 const debug = Debug('@did-connect/react');
 
-/**
- * 获取 web wallet url, 常用于为 did connect 组件传递 webWalletUrl 参数,
- * 更明确的说, 这里获取的应该是 **default web wallet url**,
- * 如果用户使用自定义的 web wallet url, 不应该使用该方法, 应该显式的将自定义的 web wallet url 传递给 did connect 组件
- * (参考: https://github.com/blocklet/ocap-playground/issues/98)
- *
- * 获取优先级:
- * - localStorage  使用 provider 注册
- * - blocklet.webWalletUrl
- * - env.webWalletUrl
- * - production web wallet url
- */
-export const getWebWalletUrl = (): string => {
-  return (
-    window.localStorage.getItem(providerName) ||
-    (window as any).blocklet?.webWalletUrl ||
-    (window as any).env?.webWalletUrl ||
-    'https://web.abtwallet.io/'
-  );
-};
-
-// 检查 wallet url protocol 和当前页面地址的 protocol 是否一致
-export const checkSameProtocol = (webWalletUrl: any): boolean => {
-  const { protocol } = window.location;
-  let walletProtocol = '';
-  try {
-    walletProtocol = new URL(webWalletUrl).protocol;
-  } catch (error) {
-    walletProtocol = '';
-  }
-  return protocol === walletProtocol;
-};
-
 // https://github.com/joaquimserafim/base64-url/blob/54d9c9ede66a8724f280cf24fd18c38b9a53915f/index.js#L10
 function unescape(str: string): string {
   return (str + '==='.slice((str.length + 3) % 4)).replace(/-/g, '+').replace(/_/g, '/');
