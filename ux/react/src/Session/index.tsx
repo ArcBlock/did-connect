@@ -276,14 +276,13 @@ export default function createSessionContext(
       }
     }
 
-    login(done: any) {
-      if (this.state.user) {
-        return;
+    login(done: any, origin: string) {
+      if (!this.state.user || origin === 'switch-did') {
+        if (typeof done === 'function') {
+          this.listeners.login.push(done);
+        }
+        this.setState({ open: true, action: 'login' });
       }
-      if (typeof done === 'function') {
-        this.listeners.login.push(done);
-      }
-      this.setState({ open: true, action: 'login' });
     }
 
     logout(done: any) {
@@ -295,9 +294,16 @@ export default function createSessionContext(
       this.setState({ user: undefined, error: '', open: false, loading: false }, done);
     }
 
+    // See:
+    // - https://github.com/ArcBlock/ux/issues/520
+    // - https://github.com/ArcBlock/did-connect/issues/56
     switchDid(done: any) {
-      clearSession();
-      this.setState({ user: undefined, error: '', open: false, loading: false }, done);
+      const cookieOptions = getCookieOptions({ returnDomain: false });
+      Cookie.remove('connected_did', cookieOptions);
+      Cookie.remove('connected_pk', cookieOptions);
+      Cookie.remove('connected_app', cookieOptions);
+      Cookie.remove('connected_wallet_os', cookieOptions);
+      this.login(done, 'switch-did');
     }
 
     switchProfile(done: any) {
