@@ -98,7 +98,3 @@ export interface TStorageEngine {
   engine?: TStorageEngineCode;
   key?: string;
 }
-
-// avatar related
-export type TAvatarVariant = LiteralUnion<'default' | 'rounded' | 'circle', string>;
-export type TAvatarShape = LiteralUnion<'' | 'rectangle' | 'square' | 'hexagon' | 'circle', string>;
