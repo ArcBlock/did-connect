@@ -101,7 +101,7 @@ type ProviderState = {
 type ContextState = {
   api: AxiosInstance;
   session: ProviderState & {
-    login(done: any): void;
+    login(done: any, origin?: string): void;
     logout(done: any): void;
     switchDid(done: any): void;
     switchProfile(done: any): void;
@@ -276,7 +276,7 @@ export default function createSessionContext(
       }
     }
 
-    login(done: any, origin: string) {
+    login(done: any, origin?: string) {
       if (!this.state.user || origin === 'switch-did') {
         if (typeof done === 'function') {
           this.listeners.login.push(done);

@@ -100,10 +100,10 @@
   resolved "https://registry.yarnpkg.com/@antfu/utils/-/utils-0.5.2.tgz#8c2d931ff927be0ebe740169874a3d4004ab414b"
   integrity sha512-CQkeV+oJxUazwjlHD0/3ZD08QWKuGQkhnrKo3e6ly5pd48VUpXbb77q0xMU4+vc2CkJnDS02Eq/M9ugyX20XZA==
 
-"@arcblock/addon-storysource@^2.4.38":
-  version "2.4.38"
-  resolved "https://registry.yarnpkg.com/@arcblock/addon-storysource/-/addon-storysource-2.4.38.tgz#03b164739f386ddbe78582d790cbb00285d1c513"
-  integrity sha512-eeLL6hgrwMwiDWfURhu0SLTIto4H2PKWzUz/fiPlAAI31Zq9/inslz/oNYV9zR+Wd38YMcdxo0bM+hQ/gnJaLw==
+"@arcblock/addon-storysource@^2.4.45":
+  version "2.4.45"
+  resolved "https://registry.yarnpkg.com/@arcblock/addon-storysource/-/addon-storysource-2.4.45.tgz#e4b9c67812a3e727e55f89a2bc93fcdb24802bf0"
+  integrity sha512-nbmPpJx/cJ8Rq/yaCV327dnoMGNBOaZ+9uE5wzWkS40CQuh4h/eNfTOZLJPu+MTp7Ygl2Pe3278/358SWKMhWQ==
 
 "@arcblock/did-auth@1.17.20":
   version "1.17.20"
@@ -137,6 +137,30 @@
     "@emotion/styled" "^11.10.4"
     "@fontsource/lato" "^4.5.10"
     "@fontsource/ubuntu-mono" "^4.5.11"
+    "@mui/icons-material" "^5.10.6"
+    "@mui/material" "^5.10.8"
+    axios "^0.21.4"
+    buffer "^6.0.3"
+    core-js "^3.25.5"
+    dsbridge "3.1.4"
+    js-cookie "^2.2.1"
+    mdi-material-ui "^7.5.0"
+    react-use "^17.4.0"
+    tweetnacl "^1.0.3"
+    tweetnacl-sealedbox-js "^1.2.0"
+
+"@arcblock/did-connect@^2.4.44", "@arcblock/did-connect@^2.4.45":
+  version "2.4.45"
+  resolved "https://registry.yarnpkg.com/@arcblock/did-connect/-/did-connect-2.4.45.tgz#8994ef057e117ac2a76562f7ef9f6e06e389c399"
+  integrity sha512-C2XUrBAYzNehwBmG/IxvsG9LDBrdKrMSSyNpQp45P5U944vTLCjCqLI14E1/WuV72VoBmAKrebNiVTu/E5z1Ug==
+  dependencies:
+    "@arcblock/event-client" "^1.7.1"
+    "@arcblock/icons" "^2.4.45"
+    "@arcblock/react-hooks" "^2.4.45"
+    "@arcblock/ux" "^2.4.45"
+    "@emotion/react" "^11.10.4"
+    "@emotion/styled" "^11.10.4"
+    "@fontsource/lato" "^4.5.10"
     "@mui/icons-material" "^5.10.6"
     "@mui/material" "^5.10.8"
     axios "^0.21.4"
@@ -297,6 +321,11 @@
   resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.4.38.tgz#32fdd6bfc91dd9fd482f7d1352ce3bddb218fa6a"
   integrity sha512-jo4LvwnxUl3Px0DKohTIxkLWmw6tCYUkEM1YaNgbzvueoIWmIiXczbaiAucXw/Zi9fFAxy0cALSXHNVmke0XhA==
 
+"@arcblock/icons@^2.4.45":
+  version "2.4.45"
+  resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.4.45.tgz#88f8c311b30620cb2b2f0965d2066901dc1c1322"
+  integrity sha512-idH+YCX8yRSyh3qtVJfxM+5DBfYQyR8WRfSkyzekUKvPw0AdL9H/SZO/y13jZodPrP60bZLn42ksQ2LQUMjXwg==
+
 "@arcblock/jwt@1.17.19", "@arcblock/jwt@1.17.20", "@arcblock/jwt@1.17.23", "@arcblock/jwt@^1.17.12", "@arcblock/jwt@^1.17.20", "@arcblock/jwt@^1.17.23":
   version "1.17.19"
   resolved "https://registry.yarnpkg.com/@arcblock/jwt/-/jwt-1.17.19.tgz#b8e7124492be02b61c0161cc3e743b10d7ed6743"
@@ -313,6 +342,15 @@
   version "2.4.38"
   resolved "https://registry.yarnpkg.com/@arcblock/react-hooks/-/react-hooks-2.4.38.tgz#c2d8eb26f02af6d67e03623bbb7d42c98b1895f2"
   integrity sha512-MN7FRUxTQa+CK8UMLnpJkRLY+tHCRyndIsxnJ5TGxjMLeBbU7h28HqStwvLqH2r8ZWgucdAks1NDS8PnZ9KpYA==
+  dependencies:
+    core-js "^3.25.5"
+    event-target-shim "^5.0.1"
+    ismobilejs "^1.1.1"
+
+"@arcblock/react-hooks@^2.4.45":
+  version "2.4.45"
+  resolved "https://registry.yarnpkg.com/@arcblock/react-hooks/-/react-hooks-2.4.45.tgz#0067c7fa202d50d27344979da4add7c843595b7b"
+  integrity sha512-itnZjxwf1S9qUgespV9TMr+ymAKrBXLnuLvXGl3nKNE+j2mRHtRu+6Bl8vtCU4MvVy0N9MAz8D2hX1fWgDoObA==
   dependencies:
     core-js "^3.25.5"
     event-target-shim "^5.0.1"
@@ -340,6 +378,49 @@
     "@emotion/react" "^11.10.4"
     "@emotion/styled" "^11.10.4"
     "@fontsource/lato" "^4.5.10"
+    "@mui/icons-material" "^5.10.6"
+    "@mui/material" "^5.10.8"
+    "@solana/qr-code-styling" "^1.6.0-beta.0"
+    axios "^0.21.4"
+    base64-url "^2.3.3"
+    copy-to-clipboard "^3.3.2"
+    core-js "^3.25.5"
+    d3-geo "^1.12.1"
+    dayjs "^1.11.5"
+    devices.css "^0.1.15"
+    highlight.js "^11.6.0"
+    is-svg "^4.3.2"
+    js-cookie "^2.2.1"
+    lodash "^4.17.21"
+    mdi-material-ui "^7.5.0"
+    mui-datatables "^4.2.2"
+    notistack "^2.0.5"
+    react-cookie-consent "^6.4.1"
+    react-error-boundary "^3.1.4"
+    react-helmet "^6.1.0"
+    react-intersection-observer "^8.34.0"
+    react-lottie-player "^1.4.3"
+    react-player "^1.15.3"
+    react-router-dom "^6.4.2"
+    react-shadow "^19.0.3"
+    react-use "^17.4.0"
+    rebound "^0.1.0"
+    topojson-client "^3.1.0"
+    versor "^0.0.4"
+
+"@arcblock/ux@^2.4.44", "@arcblock/ux@^2.4.45":
+  version "2.4.45"
+  resolved "https://registry.yarnpkg.com/@arcblock/ux/-/ux-2.4.45.tgz#951e252d9d434cc734f79e6630c0de0140c6c59f"
+  integrity sha512-OVGwfuenFXRj2g7R3yAA9Q3d8YBDt4E8jF3OFnVORw5blXMkFpthfzMZdUY50/FE0S9bEehcJUTTU6PaWBJTqg==
+  dependencies:
+    "@arcblock/did-motif" "^1.1.10"
+    "@arcblock/icons" "^2.4.45"
+    "@arcblock/react-hooks" "^2.4.45"
+    "@babel/plugin-syntax-dynamic-import" "^7.8.3"
+    "@emotion/react" "^11.10.4"
+    "@emotion/styled" "^11.10.4"
+    "@fontsource/lato" "^4.5.10"
+    "@fontsource/ubuntu-mono" "^4.5.11"
     "@mui/icons-material" "^5.10.6"
     "@mui/material" "^5.10.8"
     "@solana/qr-code-styling" "^1.6.0-beta.0"
@@ -1869,6 +1950,20 @@
     core-js "^3.25.5"
     react-error-boundary "^3.1.4"
 
+"@blocklet/ui-react@^2.4.44":
+  version "2.4.45"
+  resolved "https://registry.yarnpkg.com/@blocklet/ui-react/-/ui-react-2.4.45.tgz#c041483275806f97f61a59fbfd7f2b2faafcaf68"
+  integrity sha512-y0tRZHjF4NTfwfEIhiqDB3h4eYX/XhGUwrHNPHkJGBd+e0mOHazIwO8N8xBN6pwnTplRSSUXRXK0pNIconAquA==
+  dependencies:
+    "@arcblock/did-connect" "^2.4.45"
+    "@arcblock/ux" "^2.4.45"
+    "@emotion/react" "^11.10.4"
+    "@emotion/styled" "^11.10.4"
+    "@iconify/iconify" "^2.2.1"
+    "@mui/material" "^5.10.8"
+    core-js "^3.25.5"
+    react-error-boundary "^3.1.4"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
@@ -2207,6 +2302,13 @@
   version "1.1.33"
   resolved "https://registry.yarnpkg.com/@iconify-json/mdi/-/mdi-1.1.33.tgz#c479990263d19a7c5639ea6b41cb48add8e7d89b"
   integrity sha512-P8zIjwYvQ6SsmHc02O4oNV3jsqbL4bXcfKSt9MfCPMBvF9CLzz6QHMzQgt/Okgsb8wfhkfSQeREp+dSxV9pLRA==
+  dependencies:
+    "@iconify/types" "*"
+
+"@iconify-json/mdi@^1.1.34":
+  version "1.1.34"
+  resolved "https://registry.yarnpkg.com/@iconify-json/mdi/-/mdi-1.1.34.tgz#fe2541448975e39cadcb4f4de07c42bbd4650422"
+  integrity sha512-Jle/BrVmaKMMPVitsO3lbJ8VpXUVCAhfMFAMo0VoxLDX8ZiKiQyVDHXPug9wGaXYb9mrFZE4UWVK63Cjx8L3rQ==
   dependencies:
     "@iconify/types" "*"
 
@@ -2628,6 +2730,14 @@
     "@types/mdx" "^2.0.0"
     "@types/react" ">=16"
 
+"@mdx-js/react@^2.1.5":
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/@mdx-js/react/-/react-2.1.5.tgz#8225a867dae6f845ae5b0ec15bb454c23be3f576"
+  integrity sha512-3Az1I6SAWA9R38rYjz5rXBrGKeZhq96CSSyQtqY+maPj8stBsoUH5pNcmIixuGkufYsh8F5+ka2CVPo2fycWZw==
+  dependencies:
+    "@types/mdx" "^2.0.0"
+    "@types/react" ">=16"
+
 "@mdx-js/rollup@^2.1.4":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@mdx-js/rollup/-/rollup-2.1.4.tgz#bbf27824a8206e21a197b3f9013002ea43bf6a35"
@@ -2665,6 +2775,25 @@
     prop-types "^15.8.1"
     react-is "^18.2.0"
 
+"@mui/base@5.0.0-alpha.102":
+  version "5.0.0-alpha.102"
+  resolved "https://registry.yarnpkg.com/@mui/base/-/base-5.0.0-alpha.102.tgz#53b07d0b73d3afe1d2a3feb3b43c8188bb821796"
+  integrity sha512-5e/qAIP+DlkrZxIt/cwnDw/A3ii22WkoEoWKHyu4+oeGs3/1Flh7qLaN4h5EAIBB9TvTEZEUzvmsTInmIj6ghg==
+  dependencies:
+    "@babel/runtime" "^7.19.0"
+    "@emotion/is-prop-valid" "^1.2.0"
+    "@mui/types" "^7.2.0"
+    "@mui/utils" "^5.10.9"
+    "@popperjs/core" "^2.11.6"
+    clsx "^1.2.1"
+    prop-types "^15.8.1"
+    react-is "^18.2.0"
+
+"@mui/core-downloads-tracker@^5.10.10":
+  version "5.10.10"
+  resolved "https://registry.yarnpkg.com/@mui/core-downloads-tracker/-/core-downloads-tracker-5.10.10.tgz#a3e5d2f6e5146e9a85d48824c386a31be1746ba3"
+  integrity sha512-aDuE2PNEh+hAndxEWlZgq7uiFPZKJtnkPDX7v6kSCrMXA32ZaQ6rZi5olmC7DUHt/BaOSxb7N/im/ss0XBkDhA==
+
 "@mui/core-downloads-tracker@^5.10.8":
   version "5.10.8"
   resolved "https://registry.yarnpkg.com/@mui/core-downloads-tracker/-/core-downloads-tracker-5.10.8.tgz#b00402dd0796e7e99a09cfc23cb0b0a6196c8e09"
@@ -2676,6 +2805,24 @@
   integrity sha512-QwxdRmLA46S94B0hExPDx0td+A2unF+33bQ6Cs+lNpJKVsm1YeHwNdYXYcnpWeHeQQ07055OXl7IB2GKDd0MfA==
   dependencies:
     "@babel/runtime" "^7.19.0"
+
+"@mui/material@^5.10.10":
+  version "5.10.10"
+  resolved "https://registry.yarnpkg.com/@mui/material/-/material-5.10.10.tgz#df780d933c0aa9d4a5272f32c9cc24bf1ea72cff"
+  integrity sha512-ioLvqY7VvcePz9dnEIRhpiVvtJmAFmvG6rtLXXzVdMmAVbSaelr5Io07mPz/mCyqE+Uv8/4EuJV276DWO7etzA==
+  dependencies:
+    "@babel/runtime" "^7.19.0"
+    "@mui/base" "5.0.0-alpha.102"
+    "@mui/core-downloads-tracker" "^5.10.10"
+    "@mui/system" "^5.10.10"
+    "@mui/types" "^7.2.0"
+    "@mui/utils" "^5.10.9"
+    "@types/react-transition-group" "^4.4.5"
+    clsx "^1.2.1"
+    csstype "^3.1.1"
+    prop-types "^15.8.1"
+    react-is "^18.2.0"
+    react-transition-group "^4.4.5"
 
 "@mui/material@^5.10.8":
   version "5.10.8"
@@ -2704,6 +2851,15 @@
     "@mui/utils" "^5.10.6"
     prop-types "^15.8.1"
 
+"@mui/private-theming@^5.10.9":
+  version "5.10.9"
+  resolved "https://registry.yarnpkg.com/@mui/private-theming/-/private-theming-5.10.9.tgz#c427bfa736455703975cdb108dbde6a174ba7971"
+  integrity sha512-BN7/CnsVPVyBaQpDTij4uV2xGYHHHhOgpdxeYLlIu+TqnsVM7wUeF+37kXvHovxM6xmL5qoaVUD98gDC0IZnHg==
+  dependencies:
+    "@babel/runtime" "^7.19.0"
+    "@mui/utils" "^5.10.9"
+    prop-types "^15.8.1"
+
 "@mui/styled-engine@^5.10.8":
   version "5.10.8"
   resolved "https://registry.yarnpkg.com/@mui/styled-engine/-/styled-engine-5.10.8.tgz#2db411e4278f06f70ccb6b5cd56ace67109513f6"
@@ -2711,6 +2867,20 @@
   dependencies:
     "@babel/runtime" "^7.19.0"
     "@emotion/cache" "^11.10.3"
+    csstype "^3.1.1"
+    prop-types "^15.8.1"
+
+"@mui/system@^5.10.10":
+  version "5.10.10"
+  resolved "https://registry.yarnpkg.com/@mui/system/-/system-5.10.10.tgz#fbc34f29a3b62268c3d2b2be92819a35fc52de90"
+  integrity sha512-TXwtKN0adKpBrZmO+eilQWoPf2veh050HLYrN78Kps9OhlvO70v/2Kya0+mORFhu9yhpAwjHXO8JII/R4a5ZLA==
+  dependencies:
+    "@babel/runtime" "^7.19.0"
+    "@mui/private-theming" "^5.10.9"
+    "@mui/styled-engine" "^5.10.8"
+    "@mui/types" "^7.2.0"
+    "@mui/utils" "^5.10.9"
+    clsx "^1.2.1"
     csstype "^3.1.1"
     prop-types "^15.8.1"
 
@@ -2737,6 +2907,17 @@
   version "5.10.6"
   resolved "https://registry.yarnpkg.com/@mui/utils/-/utils-5.10.6.tgz#98d432d2b05544c46efe356cf095cea3a37c2e59"
   integrity sha512-g0Qs8xN/MW2M3fLL8197h5J2VB9U+49fLlnKKqC6zy/yus5cZwdT+Gwec+wUMxgwQoxMDn+J8oDWAn28kEOR/Q==
+  dependencies:
+    "@babel/runtime" "^7.19.0"
+    "@types/prop-types" "^15.7.5"
+    "@types/react-is" "^16.7.1 || ^17.0.0"
+    prop-types "^15.8.1"
+    react-is "^18.2.0"
+
+"@mui/utils@^5.10.9":
+  version "5.10.9"
+  resolved "https://registry.yarnpkg.com/@mui/utils/-/utils-5.10.9.tgz#9dc455f9230f43eeb81d96a9a4bdb3855bb9ea39"
+  integrity sha512-2tdHWrq3+WCy+G6TIIaFx3cg7PorXZ71P375ExuX61od1NOAJP1mK90VxQ8N4aqnj2vmO3AQDkV4oV2Ktvt4bA==
   dependencies:
     "@babel/runtime" "^7.19.0"
     "@types/prop-types" "^15.7.5"
@@ -5903,6 +6084,39 @@
     ufo "^0.8.5"
     unocss "^0.45.29"
 
+"@xmark/client@2.4.83":
+  version "2.4.83"
+  resolved "https://registry.yarnpkg.com/@xmark/client/-/client-2.4.83.tgz#00074444fd9060cf894a23221145aeeb60a6fb4f"
+  integrity sha512-UnzsCZKYLH/hYe3yvRGgADV34az27kxZwJgRT4gZ+Bq8glZ3tTBon7fjjIXI/L4gI7nltXd2exDKdPXT4GHdhA==
+  dependencies:
+    "@arcblock/did-connect" "^2.4.44"
+    "@arcblock/ux" "^2.4.44"
+    "@blocklet/ui-react" "^2.4.44"
+    "@emotion/react" "^11.10.4"
+    "@emotion/styled" "^11.10.4"
+    "@iconify-json/ion" "^1.1.4"
+    "@iconify-json/mdi" "^1.1.34"
+    "@mdx-js/react" "^2.1.5"
+    "@mui/material" "^5.10.10"
+    "@xmark/utils" "2.4.83"
+    ahooks "^3.7.2"
+    clsx "^1.2.1"
+    defu "^6.1.0"
+    github-markdown-css "^5.1.0"
+    is-uri "^1.2.4"
+    js-yaml "^4.1.0"
+    lodash "^4.17.21"
+    modern-normalize "^1.1.0"
+    pathe "^0.3.9"
+    prop-types "^15.8.1"
+    react "^18.2.0"
+    react-dom "^18.2.0"
+    react-error-boundary "^3.1.4"
+    react-helmet "^6.1.0"
+    react-router-dom "^6.4.2"
+    ufo "^0.8.6"
+    unocss "^0.45.29"
+
 "@xmark/plugin-docs-indexer@^2.4.78":
   version "2.4.78"
   resolved "https://registry.yarnpkg.com/@xmark/plugin-docs-indexer/-/plugin-docs-indexer-2.4.78.tgz#0448e7d8c9d131b494612980c55cae3aa6456a76"
@@ -5921,29 +6135,29 @@
     pathe "^0.3.9"
     react "^18.2.0"
 
-"@xmark/theme-arcblock@^2.4.78":
-  version "2.4.78"
-  resolved "https://registry.yarnpkg.com/@xmark/theme-arcblock/-/theme-arcblock-2.4.78.tgz#91cbdc93a4ed7e54968ed3842c6b587e523a831b"
-  integrity sha512-UuvgO6qxrokyTfUI7Wnrsy/ab49e9bm1zZOFrONYRD7GfOC/3OD/XE1bv095txLQxrBaTTYvd3mSuGhUycQ7ag==
+"@xmark/theme-arcblock@^2.4.83":
+  version "2.4.83"
+  resolved "https://registry.yarnpkg.com/@xmark/theme-arcblock/-/theme-arcblock-2.4.83.tgz#e71069e73fcd4632d3781d9bb6605cf83038cc4a"
+  integrity sha512-HtnJUi+6zBjOC+6okRIXzLEohxcToZtiS5431loGYOsZdw8zHm0o4x/vbjgzKs2sgJRQ3qeVpYAbKr0yWs/8bg==
   dependencies:
-    "@arcblock/did-connect" "^2.4.38"
-    "@arcblock/ux" "^2.4.38"
+    "@arcblock/did-connect" "^2.4.44"
+    "@arcblock/ux" "^2.4.44"
     "@emotion/react" "^11.10.4"
     "@emotion/styled" "^11.10.4"
     "@fontsource/lato" "^4.5.10"
     "@iconify-json/uim" "^1.1.2"
-    "@mui/material" "^5.10.8"
+    "@mui/material" "^5.10.10"
     "@popperjs/core" "^2.11.6"
-    "@xmark/client" "2.4.78"
-    "@xmark/utils" "2.4.78"
-    ahooks "^3.7.1"
+    "@xmark/client" "2.4.83"
+    "@xmark/utils" "2.4.83"
+    ahooks "^3.7.2"
     clsx "^1.2.1"
     pathe "^0.3.9"
     prop-types "^15.8.1"
     react "^18.2.0"
     react-popper "^2.3.0"
     react-router-dom "^6.4.2"
-    ufo "^0.8.5"
+    ufo "^0.8.6"
 
 "@xmark/theme-docs@^2.4.78":
   version "2.4.78"
@@ -5984,6 +6198,25 @@
     react "^18.2.0"
     react-use "^17.4.0"
     ufo "^0.8.5"
+    yaml "2.1.1"
+
+"@xmark/utils@2.4.83":
+  version "2.4.83"
+  resolved "https://registry.yarnpkg.com/@xmark/utils/-/utils-2.4.83.tgz#3971628d15b5d38fdd5dfd9b11f14b6dd8c5dc39"
+  integrity sha512-sPZj/HdVMW/YY4CSqaRkLKxKasevOom2llWrrlHT8uQCz0elYs3Abvj+wPIitOoOjgBaOX00HtbvoUWo7cjrQQ==
+  dependencies:
+    "@sindresorhus/transliterate" "^1.5.0"
+    base-x "^4.0.0"
+    cjk-slug "^0.3.0"
+    hast-util-from-html "^1.0.0"
+    hast-util-to-html "^8.0.3"
+    lodash "^4.17.21"
+    micromark "^3.1.0"
+    micromark-extension-gfm "^2.0.1"
+    pathe "^0.3.9"
+    react "^18.2.0"
+    react-use "^17.4.0"
+    ufo "^0.8.6"
     yaml "2.1.1"
 
 "@xobotyi/scrollbar-width@1.9.5", "@xobotyi/scrollbar-width@^1.9.5":
@@ -6079,6 +6312,20 @@ ahooks@^3.7.1:
   version "3.7.1"
   resolved "https://registry.yarnpkg.com/ahooks/-/ahooks-3.7.1.tgz#f0c51ed85c82144fb1356e89b995584ece1edaf2"
   integrity sha512-9fooKjhScNyJaIPnlWd13LkY1gQYqv3BqwSA9ynHg1ZUtDqAICuCRoedV97ylrEL6QqI4zeq3bO3lQxkfWVNcg==
+  dependencies:
+    "@types/js-cookie" "^2.x.x"
+    ahooks-v3-count "^1.0.0"
+    dayjs "^1.9.1"
+    intersection-observer "^0.12.0"
+    js-cookie "^2.x.x"
+    lodash "^4.17.21"
+    resize-observer-polyfill "^1.5.1"
+    screenfull "^5.0.0"
+
+ahooks@^3.7.2:
+  version "3.7.2"
+  resolved "https://registry.yarnpkg.com/ahooks/-/ahooks-3.7.2.tgz#0afa42625e77ae1cc4b60b19c45cf12a8cf29b56"
+  integrity sha512-nJPsQJcmJnGaNXiqgZdfO7UMs+o926LQg6VyDYt2vzKhXU8Ze/U87NsA/FeIvlIZB0rQr/j7uotFb1bGPp627A==
   dependencies:
     "@types/js-cookie" "^2.x.x"
     ahooks-v3-count "^1.0.0"
@@ -19423,6 +19670,11 @@ ufo@^0.8.5:
   resolved "https://registry.yarnpkg.com/ufo/-/ufo-0.8.5.tgz#e367b4205ece9d9723f2fa54f887d43ed1bce5d0"
   integrity sha512-e4+UtA5IRO+ha6hYklwj6r7BjiGMxS0O+UaSg9HbaTefg4kMkzj4tXzEBajRR+wkxf+golgAWKzLbytCUDMJAA==
 
+ufo@^0.8.6:
+  version "0.8.6"
+  resolved "https://registry.yarnpkg.com/ufo/-/ufo-0.8.6.tgz#c0ec89bc0e0c9fa59a683680feb0f28b55ec323b"
+  integrity sha512-fk6CmUgwKCfX79EzcDQQpSCMxrHstvbLswFChHS0Vump+kFkw7nJBfTZoC1j0bOGoY9I7R3n2DGek5ajbcYnOw==
+
 uglify-js@^3.1.4:
   version "3.17.0"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.17.0.tgz#55bd6e9d19ce5eef0d5ad17cd1f587d85b180a85"
@@ -19990,6 +20242,16 @@ vite-plugin-blocklet@^0.4.69:
     "@arcblock/did" "^1.17.22"
     "@ocap/mcrypto" "^1.17.22"
     "@ocap/util" "^1.17.22"
+    yaml "^2.1.3"
+
+vite-plugin-blocklet@^0.4.76:
+  version "0.4.76"
+  resolved "https://registry.yarnpkg.com/vite-plugin-blocklet/-/vite-plugin-blocklet-0.4.76.tgz#cb140928849ccae713db62caf3e9c820cdd261b2"
+  integrity sha512-tMWAEEjYc2aZoeBAzdpHHzwMpxylk9oePmzPjlk7rYj7xz9cAB+/x+XQtwVz4+e73HETxQ+bnRY5yT+nB6CcwQ==
+  dependencies:
+    "@arcblock/did" "^1.17.23"
+    "@ocap/mcrypto" "^1.17.23"
+    "@ocap/util" "^1.17.23"
     yaml "^2.1.3"
 
 vite-plugin-css-injected-by-js@^1.5.1:
