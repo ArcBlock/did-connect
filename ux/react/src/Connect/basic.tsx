@@ -13,12 +13,13 @@ import colors from '@arcblock/ux/lib/Colors';
 import DidWalletLogo from '@arcblock/icons/lib/DidWalletLogo';
 import { TAppInfo } from '@did-connect/types';
 
+import DidAddress from '@arcblock/ux/lib/Address';
+import DidAvatar from '@arcblock/ux/lib/Avatar';
+import { getWebWalletUrl, checkSameProtocol } from '@arcblock/ux/lib/Util/wallet';
 import { useBrowserEnvContext } from './contexts/browser';
 import translations from './assets/locale';
-import DidAddress from '../Address';
-import DidAvatar from '../Avatar';
 import { StatusCard, MobileWalletCard, ConnectWebWalletCard, ConnectMobileWalletCard, GetWalletCard } from './card';
-import { getWebWalletUrl, checkSameProtocol, isSessionFinalized, isSessionActive, isSessionLoading } from '../utils';
+import { isSessionFinalized, isSessionActive, isSessionLoading } from '../utils';
 
 import { TBasicProps } from '../types';
 

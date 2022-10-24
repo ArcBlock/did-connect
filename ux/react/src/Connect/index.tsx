@@ -1,9 +1,9 @@
 import { SessionTimeout } from '@did-connect/types';
 
+import { withWebWalletSWKeeper } from '@arcblock/ux/lib/WebWalletSWKeeper';
 import BasicConnect from './basic';
 import { BrowserEnvProvider } from './contexts/browser';
 import withDialog from './with-dialog';
-import { withWebWalletSWKeeper } from '../WebWalletSWKeeper';
 import { useSession, createSession } from './hooks/session';
 import { TConnectProps, THookProps, TBasicProps, THookResult } from '../types';
 
