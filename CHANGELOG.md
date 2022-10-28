@@ -1,3 +1,7 @@
+## 2.1.25 (October 28, 2022)
+
+- chore: update deps to latest
+
 ## 2.1.24 (October 19, 2022)
 
 - refactor(ux): remove useless components & improve switch-did logic
