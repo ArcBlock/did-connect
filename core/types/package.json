@@ -18,8 +18,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/validator": "^1.17.23",
-    "@ocap/mcrypto": "^1.17.23",
+    "@arcblock/validator": "^1.18.2",
+    "@ocap/mcrypto": "^1.18.2",
     "joi": "17.6.3",
     "type-fest": "^2.19.0"
   },
