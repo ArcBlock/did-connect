@@ -18,18 +18,18 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/jwt": "^1.18.2",
-    "@arcblock/ws": "^1.18.2",
+    "@arcblock/jwt": "^1.18.9",
+    "@arcblock/ws": "^1.18.9",
     "@did-connect/types": "2.1.25",
-    "@ocap/util": "^1.18.2",
-    "@ocap/wallet": "^1.18.2",
+    "@ocap/util": "^1.18.9",
+    "@ocap/wallet": "^1.18.9",
     "axios": "^0.27.2",
     "debug": "^4.3.4",
     "lodash": "^4.17.21",
     "nanoid": "^3.3.4",
     "node-localstorage": "^2.2.1",
     "object-hash": "^3.0.0",
-    "type-fest": "^2.19.0",
+    "type-fest": "^3.1.0",
     "url-join": "^4.0.1",
     "xstate": "^4.33.6"
   },

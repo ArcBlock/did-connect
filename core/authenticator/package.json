@@ -18,14 +18,14 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/did": "^1.18.2",
-    "@arcblock/jwt": "^1.18.2",
+    "@arcblock/did": "^1.18.9",
+    "@arcblock/jwt": "^1.18.9",
     "@did-connect/types": "2.1.25",
-    "@ocap/util": "^1.18.2",
-    "@ocap/wallet": "^1.18.2",
+    "@ocap/util": "^1.18.9",
+    "@ocap/wallet": "^1.18.9",
     "debug": "^4.3.4",
     "lodash": "^4.17.21",
-    "type-fest": "^2.19.0"
+    "type-fest": "^3.1.0"
   },
   "devDependencies": {
     "@arcblock/eslint-config-ts": "0.2.3",

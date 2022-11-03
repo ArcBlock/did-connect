@@ -18,10 +18,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/validator": "^1.18.2",
-    "@ocap/mcrypto": "^1.18.2",
+    "@arcblock/validator": "^1.18.9",
+    "@ocap/mcrypto": "^1.18.9",
     "joi": "17.6.3",
-    "type-fest": "^2.19.0"
+    "type-fest": "^3.1.0"
   },
   "devDependencies": {
     "@arcblock/eslint-config-ts": "0.2.3",
