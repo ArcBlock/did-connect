@@ -13214,10 +13214,10 @@ joi-extension-semver@^5.0.0:
   dependencies:
     semver "^6.1.1"
 
-joi-to-typescript@^4.0.6:
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/joi-to-typescript/-/joi-to-typescript-4.0.6.tgz#b18c4e8aa14548221091e5245fd3d750317edcd6"
-  integrity sha512-quxDpmiyhDemI1rUWktz4/sRdYiiRG9ZjVCfozeAeTsskpSbift/UWTv7UDTNnqi3WcHIGg7ifd6Ox34Ib4xzg==
+joi-to-typescript@^4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/joi-to-typescript/-/joi-to-typescript-4.0.7.tgz#3287e79f6ec25da243864109fbf00f04ce9becae"
+  integrity sha512-erxRXYw2dSH5XAfG4QRSZxJhObCu9zgd42nBVh2IOl0wOToa56kFcJN+uahx8F6+TcNJPAUBnb2PWtyBIYrPuQ==
 
 joi@17.6.3, joi@^17.3.0:
   version "17.6.3"
@@ -13230,7 +13230,7 @@ joi@17.6.3, joi@^17.3.0:
     "@sideway/formula" "^3.0.0"
     "@sideway/pinpoint" "^2.0.0"
 
-joi@^17.6.3:
+joi@17.7.0, joi@^17.6.3:
   version "17.7.0"
   resolved "https://registry.yarnpkg.com/joi/-/joi-17.7.0.tgz#591a33b1fe1aca2bc27f290bcad9b9c1c570a6b3"
   integrity sha512-1/ugc8djfn93rTE3WRKdCzGGt/EtiYKxITMO4Wiv6q5JL1gl9ePt4kBsl1S499nbosspfctIQTpYIhSmHA3WAg==
