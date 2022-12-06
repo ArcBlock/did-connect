@@ -1,3 +1,7 @@
+## 2.1.29 (December 06, 2022)
+
+- fix: release error
+
 ## 2.1.28 (December 06, 2022)
 
 - fix: navigation
