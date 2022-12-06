@@ -1,5 +1,5 @@
 name: did-connect-react
-version: 2.1.26
+version: 2.1.27
 description: DID Connect React Component Library
 keywords:
   - relay
@@ -47,6 +47,7 @@ environments:
 capabilities:
   clusterMode: false
   component: true
+  navigation: true
 screenshots: []
 scripts:
   dev: npm run storybook:start
