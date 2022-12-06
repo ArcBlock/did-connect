@@ -1,3 +1,7 @@
+## 2.1.28 (December 06, 2022)
+
+- fix: navigation
+
 ## 2.1.27 (December 06, 2022)
 
 - chore: bump deps to latest
