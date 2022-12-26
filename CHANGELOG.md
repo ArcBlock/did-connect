@@ -1,3 +1,7 @@
+## 2.1.30 (December 26, 2022)
+
+- chore: bump deps to latest
+
 ## 2.1.29 (December 06, 2022)
 
 - fix: release error
