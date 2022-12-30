@@ -3085,12 +3085,12 @@
   resolved "https://registry.yarnpkg.com/@nedb/binary-search-tree/-/binary-search-tree-2.0.4.tgz#d5bacee6a5038c189ae5fb4ebb8a5c3b05e78b62"
   integrity sha512-CqrOltK53ZR5jOBuZ7/KxtYO8QwR6tXojSEyw9Jmoq4ecZ//8S0iakwZCb7o6dCz5tGQnRDp8klNh11T8jJOxg==
 
-"@nedb/binary-search-tree@2.0.5":
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/@nedb/binary-search-tree/-/binary-search-tree-2.0.5.tgz#17f2d6e30989aed11e713711a43dd7c8a8163db4"
-  integrity sha512-zjCn1xjlmlP51yKA9XEzxWtvaWieqe2j2G6ap2zxUF0VfJMrCo21WjYl0GJcX5sLiWkBr69AXJLQTWN2KGqaAA==
+"@nedb/binary-search-tree@2.0.6":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@nedb/binary-search-tree/-/binary-search-tree-2.0.6.tgz#7c294185b9280784bdd6b85c06f5f2c66fee06cd"
+  integrity sha512-y+ByKpT/uBPG9RZkRAFcd8HoY056lQ+EqYwcS6y8D3JOPzg9JAQib98kp2Lbxivy9KebLck60hxJi/xFw/rjrA==
 
-"@nedb/core@2.0.4", "@nedb/core@2.0.5", "@nedb/core@2.x", "@nedb/core@^2.0.5":
+"@nedb/core@2.0.4", "@nedb/core@2.0.6", "@nedb/core@2.x", "@nedb/core@^2.0.5", "@nedb/core@^2.0.6":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@nedb/core/-/core-2.0.4.tgz#73c8a5f24dbe1a9d1aa61dcb86c2d824e4daed30"
   integrity sha512-UlODy/I0WSgY5/eIjIRdopqgJKlUsUPHacxZqszRxRWxp1npi44yberP4cb8N4BmZP6nlTtSZaRpI+C9xX5jqg==
@@ -3103,7 +3103,7 @@
     node-line-reader "0.0.3"
     standard-as-callback "^2.1.0"
 
-"@nedb/multi@2.x", "@nedb/multi@^2.0.5":
+"@nedb/multi@2.x", "@nedb/multi@^2.0.6":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@nedb/multi/-/multi-2.0.4.tgz#c9b51fba90ab9a3e9f9cd85e5f7da0401a36febd"
   integrity sha512-EVyFew3Mm0GYtyTEZ9/iFX9GmwpZRfTKj5fjfTjvuvpeZacdBum5VA4DqQzVlRUBSrpHgW7LdGrMMJ9zIn4k8g==
