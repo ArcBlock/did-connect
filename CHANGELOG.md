@@ -1,3 +1,7 @@
+## 2.1.32 (December 31, 2022)
+
+- chore: update deps
+
 ## 2.1.31 (December 30, 2022)
 
 - chore: use latest nedb
