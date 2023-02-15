@@ -1,6 +1,6 @@
 name: '@did-connect/relay-server'
 description: Simple relay server built on top of express
-version: 2.1.33
+version: 2.1.34
 author:
   name: wangshijun
   email: shijun@arcblock.io

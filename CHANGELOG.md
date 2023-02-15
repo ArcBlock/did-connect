@@ -1,3 +1,7 @@
+## 2.1.34 (February 15, 2023)
+
+- chore: bump deps to latest
+
 ## 2.1.33 (January 02, 2023)
 
 - chore: use latest nedb
