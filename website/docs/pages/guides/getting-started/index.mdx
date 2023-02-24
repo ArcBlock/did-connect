@@ -21,16 +21,16 @@ npm install @did-connect/react -S
 
 ## 项目准备
 
-在 React 项目的入口文件（通常是 src/app.js）中增加 `ConnectProvider`：
+在 React 项目的入口文件（通常是 src/app.js）中增加 `ThemeProvider`：
 
 ```jsx
-import { ConnectProvider } from '@did-connect/react';
+import { ThemeProvider } from '@did-connect/react';
 
 export default function WrappedApp() {
   return (
-    <ConnectProvider>
+    <ThemeProvider>
       <App />
-    </ConnectProvider>
+    </ThemeProvider>
   );
 }
 ```
