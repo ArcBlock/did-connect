@@ -1,5 +1,5 @@
 name: did-connect-react
-version: 2.1.35
+version: 2.1.36
 description: DID Connect React Component Library
 keywords:
   - relay
@@ -16,7 +16,7 @@ repository:
 title: DID Connect React
 group: static
 logo: logo.png
-specVersion: 1.2.7
+specVersion: 1.2.8
 files: []
 interfaces:
   - type: web

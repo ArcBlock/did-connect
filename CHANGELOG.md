@@ -1,3 +1,10 @@
+## 2.1.36 (February 25, 2023)
+
+- chore: bump deps to latest
+- fix: add themed-connect export
+- fix: button connect props type
+- fix: error in docs
+
 ## 2.1.35 (February 21, 2023)
 
 - chore: update deps to latest
