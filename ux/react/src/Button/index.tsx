@@ -1,11 +1,8 @@
 import Button from '@arcblock/ux/lib/Button';
 import ConnectLogo from '@arcblock/icons/lib/ConnectLogo';
+import { ButtonProps } from '@mui/material';
 
-interface Props {
-  children?: React.ReactNode;
-}
-
-export default function ConnectButton({ children = 'Continue With', ...rest }: Props): JSX.Element {
+export default function ConnectButton({ children = 'Continue With', ...rest }: ButtonProps): JSX.Element {
   return (
     <Button color="did" variant="contained" {...rest}>
       <span style={{ fontWeight: 400 }}>{children}</span>
