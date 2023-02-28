@@ -1,7 +1,7 @@
 {
   "name": "@did-connect/relay-server",
   "description": "Simple relay server built on top of express",
-  "version": "2.1.37",
+  "version": "2.1.38",
   "author": {
     "name": "wangshijun",
     "email": "shijun@arcblock.io",
@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "@blocklet/sdk": "^1.8.65",
-    "@did-connect/relay-adapter-express": "2.1.37",
-    "@did-connect/storage-nedb": "2.1.37",
+    "@did-connect/relay-adapter-express": "2.1.38",
+    "@did-connect/storage-nedb": "2.1.38",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "morgan": "^1.10.0"
