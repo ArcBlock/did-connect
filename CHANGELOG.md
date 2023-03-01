@@ -1,3 +1,7 @@
+## 2.1.39 (March 01, 2023)
+
+- chore: bump deps to latest
+
 ## 2.1.38 (February 28, 2023)
 
 - chore: bump deps to latest
