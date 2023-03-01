@@ -1,7 +1,7 @@
 {
   "name": "@did-connect/handler",
   "description": "Abstract handler for did-connect relay server",
-  "version": "2.1.38",
+  "version": "2.1.39",
   "author": {
     "name": "wangshijun",
     "email": "shijun@arcblock.io",
@@ -21,9 +21,9 @@
     "@arcblock/did": "^1.18.54",
     "@arcblock/jwt": "^1.18.54",
     "@arcblock/ws": "^1.18.54",
-    "@did-connect/authenticator": "2.1.38",
-    "@did-connect/storage": "2.1.38",
-    "@did-connect/types": "2.1.38",
+    "@did-connect/authenticator": "2.1.39",
+    "@did-connect/storage": "2.1.39",
+    "@did-connect/types": "2.1.39",
     "@ocap/mcrypto": "^1.18.54",
     "@ocap/util": "^1.18.54",
     "axios": "^0.27.2",
