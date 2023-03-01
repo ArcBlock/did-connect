@@ -109,10 +109,10 @@
   resolved "https://registry.yarnpkg.com/@antfu/utils/-/utils-0.5.2.tgz#8c2d931ff927be0ebe740169874a3d4004ab414b"
   integrity sha512-CQkeV+oJxUazwjlHD0/3ZD08QWKuGQkhnrKo3e6ly5pd48VUpXbb77q0xMU4+vc2CkJnDS02Eq/M9ugyX20XZA==
 
-"@arcblock/addon-storysource@^2.5.3":
-  version "2.5.3"
-  resolved "https://registry.yarnpkg.com/@arcblock/addon-storysource/-/addon-storysource-2.5.3.tgz#a597e78938c1204f86bb2c1cd1d27153612067d0"
-  integrity sha512-NyYxPKkWbA/kxbi513mr1kGG5XR9a6uLKAKooXLbVUNXx3T1Cs5M9kBh3duzWsth1KhbOOitkPjNiokTBnaGzQ==
+"@arcblock/addon-storysource@^2.5.4":
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/@arcblock/addon-storysource/-/addon-storysource-2.5.4.tgz#6789235e9db78967b9d2335b328e4259db560a03"
+  integrity sha512-w/lJKBQT1c5nK+k4390axLUWVWd/0yPWx13eTMpC+2j8GJtFtq1Z5AsXWdYudxBOJyngZ7mlyRuo1PEclS3eHQ==
 
 "@arcblock/did-auth@1.18.42":
   version "1.18.42"
@@ -203,7 +203,7 @@
     "@ocap/util" "1.18.54"
     "@ocap/wallet" "1.18.54"
 
-"@arcblock/did@1.18.42", "@arcblock/did@1.18.54", "@arcblock/did@^1.18.36", "@arcblock/did@^1.18.50", "@arcblock/did@^1.18.54":
+"@arcblock/did@1.18.42", "@arcblock/did@1.18.54", "@arcblock/did@^1.18.50", "@arcblock/did@^1.18.54":
   version "1.18.54"
   resolved "https://registry.yarnpkg.com/@arcblock/did/-/did-1.18.54.tgz#4ba67246bb32410a74f9df454ba668025e90948d"
   integrity sha512-KJNUhB6YkmvE1HP6Xdkvir3Zeh4pj56vuFaH7DGHfr7dFeP+tcOzaXccEvz7Ra+Msv7yBfHZesqWL+gs6lUV/Q==
@@ -275,15 +275,10 @@
     amp-message "~0.1.2"
     axon "^2.0.3"
 
-"@arcblock/icons@^2.4.64", "@arcblock/icons@^2.5.0":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.5.0.tgz#c72fb85717afd7e1de4432617cae730d2a4b3fe0"
-  integrity sha512-in9ZrDwBVCQRv7mdVMHWONgtBcvQhvtFFOZKCWdlXnmqMX7gEP0OPRLxw5r1h0TkI1xHpViayecXq70Szeo4wQ==
-
-"@arcblock/icons@^2.5.3":
-  version "2.5.3"
-  resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.5.3.tgz#db4d46ccb0e1b54ec1c84e14bedb66cf577370f7"
-  integrity sha512-4RRKo/YfmnIH27q/8mocWaN6nvD30TBBfoECxGMgSF/UTI43MU+aVLvDFAzI+uCs17d6IoQGAaSrKYYO45qjjw==
+"@arcblock/icons@^2.4.64", "@arcblock/icons@^2.5.4":
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.5.4.tgz#79307970fab811c4a18140fb58bdf0acc284cc3f"
+  integrity sha512-MkHR9v1f9MyE2ztXECEN3242jls8Bf1PyWq+k14CJfBPg13+JCYQ7RIlDvzzr/oBGdPyefcxSeudOnS0wJ9h1Q==
 
 "@arcblock/jwt@1.18.42", "@arcblock/jwt@1.18.54", "@arcblock/jwt@^1.18.42", "@arcblock/jwt@^1.18.54":
   version "1.18.54"
@@ -297,19 +292,10 @@
     json-stable-stringify "^1.0.1"
     semver "^7.3.8"
 
-"@arcblock/react-hooks@^2.4.64", "@arcblock/react-hooks@^2.5.0":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@arcblock/react-hooks/-/react-hooks-2.5.0.tgz#d5c644313eccb49186e53efe9ce0cfa99a195c7a"
-  integrity sha512-fIv76x1opnIwJOIwGXv0+hDcL+c5LXMid3wsH/2xlhJfQCdW05KR6Bp3p8APBdDgUzkYcXHCRxuN5VgKQKc5dw==
-  dependencies:
-    core-js "^3.25.5"
-    event-target-shim "^5.0.1"
-    ismobilejs "^1.1.1"
-
-"@arcblock/react-hooks@^2.5.3":
-  version "2.5.3"
-  resolved "https://registry.yarnpkg.com/@arcblock/react-hooks/-/react-hooks-2.5.3.tgz#1e0a37f06e629817fbce5b3e44af9e475291cf38"
-  integrity sha512-PDg951PFKnOCKI/1jAf9np1c8/XEry3t4BiQw9RWOsYVK5+hDQTRY7+6x3GIzYzKCJUYdvkduXXH4ssiADOJ5A==
+"@arcblock/react-hooks@^2.4.64", "@arcblock/react-hooks@^2.5.4":
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/@arcblock/react-hooks/-/react-hooks-2.5.4.tgz#60e854863c54ff2310eadc97bf0b431c569fb8ff"
+  integrity sha512-WyOb7L9IUymKz8vrJLlDjFA9BcYrDaPL4iDY2DbTWRltV7kC5B3YFueAU/BWXUU99LkxQV1+0tWD1dzfcQ2fEQ==
   dependencies:
     core-js "^3.25.5"
     event-target-shim "^5.0.1"
@@ -326,57 +312,14 @@
     lodash.get "^4.4.2"
     lodash.set "^4.3.2"
 
-"@arcblock/ux@^2.4.64":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@arcblock/ux/-/ux-2.5.0.tgz#a5ab7d53e97cb161267a39b2bdcb823189870b6c"
-  integrity sha512-oQhJtIl7ExvFxI8L1aJq0Y1l345p/pdUz7kwvYjGsUDmIMx5UNzBlSNcgryilVbA7I3bffFZoEFmfD1B4Fe+8w==
+"@arcblock/ux@^2.4.64", "@arcblock/ux@^2.5.4":
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/@arcblock/ux/-/ux-2.5.4.tgz#5b69e7276f8f4cf8498445ecc78707d0b5604acc"
+  integrity sha512-yKXjDfD4yDU905QoWxmE+RTBn/p4rf6P6M5joXukl0Jgtgrh/TOd7fa9oUCF/8AO55ZZz/mUgHfhAzFjxbfCnw==
   dependencies:
     "@arcblock/did-motif" "^1.1.10"
-    "@arcblock/icons" "^2.5.0"
-    "@arcblock/react-hooks" "^2.5.0"
-    "@babel/plugin-syntax-dynamic-import" "^7.8.3"
-    "@emotion/react" "^11.10.4"
-    "@emotion/styled" "^11.10.4"
-    "@fontsource/lato" "^4.5.10"
-    "@fontsource/ubuntu-mono" "^4.5.11"
-    "@mui/icons-material" "^5.10.6"
-    "@mui/material" "^5.10.8"
-    "@solana/qr-code-styling" "^1.6.0-beta.0"
-    axios "^0.21.4"
-    base64-url "^2.3.3"
-    copy-to-clipboard "^3.3.2"
-    core-js "^3.25.5"
-    d3-geo "^1.12.1"
-    dayjs "^1.11.5"
-    devices.css "^0.1.15"
-    highlight.js "^11.6.0"
-    is-svg "^4.3.2"
-    js-cookie "^2.2.1"
-    lodash "^4.17.21"
-    mdi-material-ui "^7.5.0"
-    mui-datatables "^4.2.2"
-    notistack "^2.0.5"
-    react-cookie-consent "^6.4.1"
-    react-error-boundary "^3.1.4"
-    react-helmet "^6.1.0"
-    react-intersection-observer "^8.34.0"
-    react-lottie-player "^1.4.3"
-    react-player "^1.15.3"
-    react-router-dom "^6.4.2"
-    react-shadow "^19.0.3"
-    react-use "^17.4.0"
-    rebound "^0.1.0"
-    topojson-client "^3.1.0"
-    versor "^0.0.4"
-
-"@arcblock/ux@^2.5.3":
-  version "2.5.3"
-  resolved "https://registry.yarnpkg.com/@arcblock/ux/-/ux-2.5.3.tgz#14dc60ed3edf07df89c278eb4d26c2d64478cea1"
-  integrity sha512-cLhX6+dUbrEDyodYbTa2TxEkj5ezlaWS3mbPG0AjhxQPnNPdrj3zarAy4QBSr33AneTE4+KTWvePoIjx0/ozpQ==
-  dependencies:
-    "@arcblock/did-motif" "^1.1.10"
-    "@arcblock/icons" "^2.5.3"
-    "@arcblock/react-hooks" "^2.5.3"
+    "@arcblock/icons" "^2.5.4"
+    "@arcblock/react-hooks" "^2.5.4"
     "@babel/plugin-syntax-dynamic-import" "^7.8.3"
     "@emotion/react" "^11.10.4"
     "@emotion/styled" "^11.10.4"
@@ -2707,7 +2650,7 @@
     esprima "^4.0.1"
     lodash "^4.17.21"
 
-"@ocap/mcrypto@1.18.42", "@ocap/mcrypto@1.18.54", "@ocap/mcrypto@^1.18.36", "@ocap/mcrypto@^1.18.50", "@ocap/mcrypto@^1.18.54":
+"@ocap/mcrypto@1.18.42", "@ocap/mcrypto@1.18.54", "@ocap/mcrypto@^1.18.50", "@ocap/mcrypto@^1.18.54":
   version "1.18.54"
   resolved "https://registry.yarnpkg.com/@ocap/mcrypto/-/mcrypto-1.18.54.tgz#c10294af792b60ec3c95f7fffb245d25a87547a3"
   integrity sha512-KpltQKx07cJRHIRdO1WnYQzJ1yUZSDhrL4RxwxE1rSlcYmDoH3YEvy7xzxHTVMM0xeAl6HEnvjwEZ8hqM3p5Gw==
@@ -2768,7 +2711,7 @@
   dependencies:
     google-protobuf "3.21.0"
 
-"@ocap/util@1.18.42", "@ocap/util@1.18.54", "@ocap/util@^1.18.36", "@ocap/util@^1.18.50", "@ocap/util@^1.18.54":
+"@ocap/util@1.18.42", "@ocap/util@1.18.54", "@ocap/util@^1.18.50", "@ocap/util@^1.18.54":
   version "1.18.54"
   resolved "https://registry.yarnpkg.com/@ocap/util/-/util-1.18.54.tgz#2aa39628c6459518d41b757486cd7cc579151296"
   integrity sha512-vPNb5TF2H/zeeoX7OlxsrEEf/nTHPOky8t7V3CcW1nBtZqCDiEBjmVAYJWSyKdYvdhydnWPYNLbBxQAQ1aWvMg==
@@ -19350,7 +19293,7 @@ vfile@^5.0.0:
     unist-util-stringify-position "^3.0.0"
     vfile-message "^3.0.0"
 
-vite-plugin-blocklet@^0.5.17:
+vite-plugin-blocklet@^0.5.17, vite-plugin-blocklet@^0.5.9:
   version "0.5.17"
   resolved "https://registry.yarnpkg.com/vite-plugin-blocklet/-/vite-plugin-blocklet-0.5.17.tgz#00d0ca49e258e440cb10faf572c110cffabe0408"
   integrity sha512-2MO9oXhda2vIyjdjPw1sx7ub3MPSyZLskYl/9CTwNv0Pv6Ivk6kedysLy8trACOGNRjvSmLdavbIeEIDkw9s5g==
@@ -19358,19 +19301,6 @@ vite-plugin-blocklet@^0.5.17:
     "@arcblock/did" "^1.18.50"
     "@ocap/mcrypto" "^1.18.50"
     "@ocap/util" "^1.18.50"
-    get-port "^5.1.1"
-    mri "^1.2.0"
-    semver "^7.3.8"
-    yaml "^2.2.1"
-
-vite-plugin-blocklet@^0.5.9:
-  version "0.5.16"
-  resolved "https://registry.yarnpkg.com/vite-plugin-blocklet/-/vite-plugin-blocklet-0.5.16.tgz#d2ff96f56756eb16dbdf5162ac0182ecc1560850"
-  integrity sha512-Ki5m0C1MGZf2n/T7GhrPN79xy+yfk2vcDDnwyCZwYjRt4tui0s9LvAzCnrlszf3EjKRDLkWWlcOUCcFYYiicYw==
-  dependencies:
-    "@arcblock/did" "^1.18.36"
-    "@ocap/mcrypto" "^1.18.36"
-    "@ocap/util" "^1.18.36"
     get-port "^5.1.1"
     mri "^1.2.0"
     semver "^7.3.8"
