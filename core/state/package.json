@@ -1,7 +1,7 @@
 {
   "name": "@did-connect/state",
   "description": "State machine for did-connect session",
-  "version": "2.1.40",
+  "version": "2.1.41",
   "author": {
     "name": "wangshijun",
     "email": "shijun@arcblock.io",
@@ -20,7 +20,7 @@
   "dependencies": {
     "@arcblock/jwt": "^1.18.57",
     "@arcblock/ws": "^1.18.57",
-    "@did-connect/types": "2.1.40",
+    "@did-connect/types": "2.1.41",
     "@ocap/util": "^1.18.57",
     "@ocap/wallet": "^1.18.57",
     "axios": "^0.27.2",
