@@ -18,11 +18,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/jwt": "^1.18.56",
-    "@arcblock/ws": "^1.18.56",
+    "@arcblock/jwt": "^1.18.57",
+    "@arcblock/ws": "^1.18.57",
     "@did-connect/types": "2.1.40",
-    "@ocap/util": "^1.18.56",
-    "@ocap/wallet": "^1.18.56",
+    "@ocap/util": "^1.18.57",
+    "@ocap/wallet": "^1.18.57",
     "axios": "^0.27.2",
     "debug": "^4.3.4",
     "lodash": "^4.17.21",
