@@ -195,10 +195,10 @@
   resolved "https://registry.yarnpkg.com/@antfu/utils/-/utils-0.5.2.tgz#8c2d931ff927be0ebe740169874a3d4004ab414b"
   integrity sha512-CQkeV+oJxUazwjlHD0/3ZD08QWKuGQkhnrKo3e6ly5pd48VUpXbb77q0xMU4+vc2CkJnDS02Eq/M9ugyX20XZA==
 
-"@arcblock/addon-storysource@^2.5.5":
-  version "2.5.5"
-  resolved "https://registry.yarnpkg.com/@arcblock/addon-storysource/-/addon-storysource-2.5.5.tgz#04fd9432bef5d503d790f35027fc07287902c588"
-  integrity sha512-TFXV0qSXNi28lpri/BkWd+HJEY/V46MueRRpRFlzamcBTxxPG6PHzd40IDfjsQd3UHhucSeO7JOqkIl3iodYIA==
+"@arcblock/addon-storysource@^2.5.8":
+  version "2.5.8"
+  resolved "https://registry.yarnpkg.com/@arcblock/addon-storysource/-/addon-storysource-2.5.8.tgz#4b232f0fc08a22675777c6a104dc375eef2b58b9"
+  integrity sha512-R+htg8iiEETcur9wp9KwdWa6sXE/SEPeZYXw3owVjEcTYfT5Njus/rN79tGkZ8eI5a12XPR4Wlv+50CscTOukA==
 
 "@arcblock/did-auth@1.18.42":
   version "1.18.42"
@@ -366,10 +366,10 @@
   resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.5.4.tgz#79307970fab811c4a18140fb58bdf0acc284cc3f"
   integrity sha512-MkHR9v1f9MyE2ztXECEN3242jls8Bf1PyWq+k14CJfBPg13+JCYQ7RIlDvzzr/oBGdPyefcxSeudOnS0wJ9h1Q==
 
-"@arcblock/icons@^2.5.5":
-  version "2.5.5"
-  resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.5.5.tgz#ea999694ef7cb23b1341ad95908406c1439b2372"
-  integrity sha512-bIzwbseGPhDG2UsqGHa0SAO1Z/tOnZ/1EmFqZkWujAM3v7TL3cVVdqe6jbEObxZWol0GEctkkRFTniK94u4GhQ==
+"@arcblock/icons@^2.5.8":
+  version "2.5.8"
+  resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.5.8.tgz#08ea1999d13df4e691abf5730476320e6b17b334"
+  integrity sha512-QvFvyqDxZp8llmVlFbSOmCauG2gLyXmGHA0HVk7/KjnaVRM3m6jXMWRGC7ibwgULjwjL7DWyoUn/BVkXeCrFrg==
 
 "@arcblock/jwt@1.18.42", "@arcblock/jwt@1.18.58", "@arcblock/jwt@^1.18.42", "@arcblock/jwt@^1.18.58":
   version "1.18.58"
@@ -392,10 +392,10 @@
     event-target-shim "^5.0.1"
     ismobilejs "^1.1.1"
 
-"@arcblock/react-hooks@^2.5.5":
-  version "2.5.5"
-  resolved "https://registry.yarnpkg.com/@arcblock/react-hooks/-/react-hooks-2.5.5.tgz#d9a24c3f1e60c19ddddb8b1cc4136f52dcef9971"
-  integrity sha512-TyYQtzUB5HCNPhoxhs1S4uDVqopcHvMBl4CqgOz5obj5SLbci12GSSVfhcVpExBHIGt0KcI2DpAnUfThmN52wQ==
+"@arcblock/react-hooks@^2.5.8":
+  version "2.5.8"
+  resolved "https://registry.yarnpkg.com/@arcblock/react-hooks/-/react-hooks-2.5.8.tgz#d620f2c10e0c0efbe343a71af65f3c6c9f9cbebe"
+  integrity sha512-G9qJvf+cr/sTleaPP2NpQ3dehAUMJwUHl8IRkSGIlQDbpy/3nHYL1vBGQd59BZGWReFLSoCED8xTfmZaa/Z5Hw==
   dependencies:
     core-js "^3.25.5"
     event-target-shim "^5.0.1"
@@ -455,14 +455,14 @@
     topojson-client "^3.1.0"
     versor "^0.0.4"
 
-"@arcblock/ux@^2.5.5":
-  version "2.5.5"
-  resolved "https://registry.yarnpkg.com/@arcblock/ux/-/ux-2.5.5.tgz#42c57cc486413c0dfa6e20047a7c5dbb0058b628"
-  integrity sha512-zOEFAfxcLOBSu6yOzQJU7gSbgoD61E87DPjufNXzvab/QZnosXORKlQiTkHWOA0dbUT6XLJbnFz1TVtaMYOl/w==
+"@arcblock/ux@^2.5.8":
+  version "2.5.8"
+  resolved "https://registry.yarnpkg.com/@arcblock/ux/-/ux-2.5.8.tgz#4e355eacdc94d234312c98f6bf8c1443ce9e9230"
+  integrity sha512-BXye1kNPJ6q0Gff/ejBRFxbYlKWPGh24i6CZjH6nlCLohlAn9YNrV0HtASEbEteanUYzAM2IiSs2IUqTirMUSg==
   dependencies:
     "@arcblock/did-motif" "^1.1.10"
-    "@arcblock/icons" "^2.5.5"
-    "@arcblock/react-hooks" "^2.5.5"
+    "@arcblock/icons" "^2.5.8"
+    "@arcblock/react-hooks" "^2.5.8"
     "@babel/plugin-syntax-dynamic-import" "^7.8.3"
     "@emotion/react" "^11.10.4"
     "@emotion/styled" "^11.10.4"
