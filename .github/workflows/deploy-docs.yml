@@ -32,7 +32,7 @@ jobs:
           skip-deploy: false
           skip-release: true
           deploy-app-did: zNKaCsDYZnQnbkaWkWPVees97oYND6ja8Y5a
-          deploy-mount-point: docs
+          deploy-mount-point: /docs
           bundle-command: npm run bundle
           working-directory: website/docs
           server-endpoint: ${{ secrets.XMARK_NODE_ENDPOINT }}

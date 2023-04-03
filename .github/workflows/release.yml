@@ -80,6 +80,8 @@ jobs:
           skip-upload: true
           skip-deploy: false
           skip-release: true
+          deploy-app-did: zNKaCsDYZnQnbkaWkWPVees97oYND6ja8Y5a
+          deploy-mount-point: /
           bundle-command: npm run bundle
           working-directory: website/pages
           server-endpoint: ${{ secrets.XMARK_NODE_ENDPOINT }}
@@ -96,7 +98,7 @@ jobs:
           skip-deploy: false
           skip-release: true
           deploy-app-did: zNKaCsDYZnQnbkaWkWPVees97oYND6ja8Y5a
-          deploy-mount-point: docs
+          deploy-mount-point: /docs
           bundle-command: npm run bundle
           working-directory: website/docs
           server-endpoint: ${{ secrets.XMARK_NODE_ENDPOINT }}
@@ -120,20 +122,3 @@ jobs:
           server-access-key: ${{ secrets.XMARK_NODE_ACCESS_KEY }}
           server-access-secret: ${{ secrets.XMARK_NODE_ACCESS_SECRET }}
           slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
-
-      # - name: Deploy React Server
-      #   uses: blocklet/action-workflow@v1
-      #   with:
-      #     skip-deps: true
-      #     skip-bundle: false
-      #     skip-upload: true
-      #     skip-deploy: false
-      #     skip-release: true
-      #     deploy-app-did: zNKaCsDYZnQnbkaWkWPVees97oYND6ja8Y5a
-      #     deploy-mount-point: /relay
-      #     bundle-command: npm run bundle
-      #     working-directory: relay/server
-      #     server-endpoint: ${{ secrets.XMARK_NODE_ENDPOINT }}
-      #     server-access-key: ${{ secrets.XMARK_NODE_ACCESS_KEY }}
-      #     server-access-secret: ${{ secrets.XMARK_NODE_ACCESS_SECRET }}
-      #     slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
