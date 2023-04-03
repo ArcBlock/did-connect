@@ -276,7 +276,7 @@
     amp-message "~0.1.2"
     axon "^2.0.3"
 
-"@arcblock/icons@^2.5.15", "@arcblock/icons@^2.5.17", "@arcblock/icons@^2.5.18":
+"@arcblock/icons@^2.5.15", "@arcblock/icons@^2.5.18":
   version "2.5.18"
   resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.5.18.tgz#16ea95e7c2b039a427e5d63f28cd74790319a400"
   integrity sha512-Hq4n3ZWjNkcu6Av3g8EyCYy7vCnDFpxMyE8pm/K9zc69B3DH81vpKz4w5rJ3F31SyLOE8b/lPCD6lWOSxjnvmw==
@@ -293,7 +293,7 @@
     json-stable-stringify "^1.0.1"
     semver "^7.3.8"
 
-"@arcblock/react-hooks@^2.5.15", "@arcblock/react-hooks@^2.5.17", "@arcblock/react-hooks@^2.5.18":
+"@arcblock/react-hooks@^2.5.15", "@arcblock/react-hooks@^2.5.18":
   version "2.5.18"
   resolved "https://registry.yarnpkg.com/@arcblock/react-hooks/-/react-hooks-2.5.18.tgz#18bd2efed0801afc8a143fcb1a629ba3d677c94c"
   integrity sha512-+SIUAaHGFR43B7zIPK+nruzcrcrvl+qTu/lj31NwqkNHEz4YdZ3xRUCr/A2ptI6CDuMm69oD40hkZmYm5ej7wg==
