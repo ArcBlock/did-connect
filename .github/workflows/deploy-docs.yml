@@ -31,7 +31,7 @@ jobs:
           skip-upload: true
           skip-deploy: false
           skip-release: true
-          deploy-app-did: z8ia1dodZ52VDmtfUkmUtDHpBjXcpqjrhyHfS
+          deploy-app-did: zNKaCsDYZnQnbkaWkWPVees97oYND6ja8Y5a
           deploy-mount-point: docs
           bundle-command: npm run bundle
           working-directory: website/docs
