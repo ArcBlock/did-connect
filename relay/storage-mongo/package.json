@@ -1,7 +1,7 @@
 {
   "name": "@did-connect/storage-mongo",
   "description": "Storage engine that uses mongodb for did-auth",
-  "version": "2.1.49",
+  "version": "2.1.50",
   "author": "wangshijun <shijun@arcblock.io> (https://ocap.arcblock.io)",
   "bugs": {
     "url": "https://github.com/ArcBlock/did-connect/issues",
@@ -44,8 +44,8 @@
   },
   "gitHead": "570a366418890ded86422e168417bae0c9967e35",
   "dependencies": {
-    "@did-connect/storage": "2.1.49",
-    "@did-connect/types": "2.1.49",
+    "@did-connect/storage": "2.1.50",
+    "@did-connect/types": "2.1.50",
     "debug": "^4.3.4",
     "mongodb": "3.1.13"
   }
