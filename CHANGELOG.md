@@ -1,3 +1,7 @@
+## 2.1.50 (April 12, 2023)
+
+- chore: bump deps to latest
+
 ## 2.1.49 (April 04, 2023)
 
 - chore: update ci after migration
