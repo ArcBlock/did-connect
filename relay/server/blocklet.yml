@@ -1,6 +1,6 @@
 name: '@did-connect/relay-server'
 description: Simple relay server built on top of express
-version: 2.1.54
+version: 2.1.55
 author:
   name: wangshijun
   email: shijun@arcblock.io
@@ -46,6 +46,7 @@ capabilities:
   clusterMode: false
   component: true
   navigation: true
+  serverless: true
 screenshots: []
 scripts:
   dev: npm run start
