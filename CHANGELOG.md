@@ -1,3 +1,7 @@
+## 2.1.58 (May 19, 2023)
+
+- fix(deps): move type-fest to dev deps
+
 ## 2.1.57 (May 16, 2023)
 
 - chore: bump deps to latest
