@@ -1,4 +1,4 @@
-import { LiteralUnion } from 'type-fest';
+import type { LiteralUnion } from 'type-fest';
 import { styled } from '@arcblock/ux/lib/Theme';
 import Box, { BoxProps } from '@mui/material/Box';
 

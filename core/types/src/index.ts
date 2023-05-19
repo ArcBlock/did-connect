@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/indent */
 import { Joi } from '@arcblock/validator';
-import { LiteralUnion } from 'type-fest';
+import type { LiteralUnion } from 'type-fest';
 import { TAppInfo, TChainInfo, TWalletInfo, TSession, TContext, TAnyResponse, TAnyRequest } from './types';
 import {
   AuthPrincipalRequest,

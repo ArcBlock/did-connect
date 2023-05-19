@@ -42,9 +42,9 @@
   },
   "dependencies": {
     "@arcblock/did-motif": "^1.1.10",
-    "@arcblock/icons": "^2.5.39",
-    "@arcblock/react-hooks": "^2.5.39",
-    "@arcblock/ux": "^2.5.39",
+    "@arcblock/icons": "^2.5.40",
+    "@arcblock/react-hooks": "^2.5.40",
+    "@arcblock/ux": "^2.5.40",
     "@did-connect/state": "2.1.57",
     "@did-connect/types": "2.1.57",
     "@emotion/react": "^11.10.4",
@@ -67,7 +67,6 @@
     "react-use": "^17.4.0",
     "tweetnacl": "^1.0.3",
     "tweetnacl-sealedbox-js": "^1.2.0",
-    "type-fest": "^3.1.0",
     "url-join": "^4.0.1",
     "xstate": "^4.33.6"
   },
@@ -78,15 +77,15 @@
     "access": "public"
   },
   "devDependencies": {
-    "@arcblock/addon-storysource": "^2.5.39",
+    "@arcblock/addon-storysource": "^2.5.40",
     "@babel/cli": "^7.19.3",
     "@babel/core": "^7.19.6",
     "@babel/preset-env": "^7.19.4",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.18.6",
-    "@ocap/client": "^1.18.79",
-    "@ocap/util": "^1.18.79",
-    "@ocap/wallet": "^1.18.79",
+    "@ocap/client": "^1.18.80",
+    "@ocap/util": "^1.18.80",
+    "@ocap/wallet": "^1.18.80",
     "@storybook/addon-actions": "^6.5.13",
     "@storybook/addon-coverage": "^0.0.4",
     "@storybook/addon-essentials": "^6.5.13",
@@ -107,6 +106,7 @@
     "object-hash": "^3.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "type-fest": "^3.1.0",
     "ts-migrate": "^0.1.34",
     "typescript": "^4.8.4"
   },

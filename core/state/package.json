@@ -18,18 +18,17 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/jwt": "^1.18.79",
-    "@arcblock/ws": "^1.18.79",
+    "@arcblock/jwt": "^1.18.80",
+    "@arcblock/ws": "^1.18.80",
     "@did-connect/types": "2.1.57",
-    "@ocap/util": "^1.18.79",
-    "@ocap/wallet": "^1.18.79",
+    "@ocap/util": "^1.18.80",
+    "@ocap/wallet": "^1.18.80",
     "axios": "^0.27.2",
     "debug": "^4.3.4",
     "lodash": "^4.17.21",
     "nanoid": "^3.3.4",
     "node-localstorage": "^2.2.1",
     "object-hash": "^3.0.0",
-    "type-fest": "^3.1.0",
     "url-join": "^4.0.1",
     "xstate": "^4.33.6"
   },
@@ -38,6 +37,7 @@
     "eslint": "^8.26.0",
     "jest": "^28.1.3",
     "ts-jest": "^28.0.8",
+    "type-fest": "^3.1.0",
     "typescript": "^4.8.4"
   },
   "homepage": "https://github.com/ArcBlock/did-connect",

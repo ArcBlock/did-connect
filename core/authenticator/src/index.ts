@@ -6,7 +6,7 @@ import { toBase58 } from '@ocap/util';
 import { toAddress } from '@arcblock/did';
 import { isValid, WalletObject } from '@ocap/wallet';
 import { AppInfo, ChainInfo } from '@did-connect/types';
-import { Promisable } from 'type-fest';
+import type { Promisable } from 'type-fest';
 import type {
   TLocaleCode,
   TAppInfo,
