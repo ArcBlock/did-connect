@@ -1,5 +1,5 @@
 {
-  "version": "2.1.58",
+  "version": "2.1.59",
   "useWorkspaces": true,
   "npmClient": "yarn",
   "packages": ["core/*", "website/*", "relay/*", "ux/*"],
