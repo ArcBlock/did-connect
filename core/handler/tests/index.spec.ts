@@ -129,7 +129,7 @@ describe('Handlers', () => {
     return res.data;
   };
 
-  const getWsClient = async (endpoint: string) => {
+  const getWsClient = (endpoint: string): Promise<any> => {
     if (!client) {
       client = new WsClient(`${endpoint}/api/connect/relay`, { heartbeatIntervalMs: 10 * 1000 });
     }
@@ -422,7 +422,7 @@ describe('Handlers', () => {
     const { sessionId, updaterPk, authUrl, getSession } = prepareTest();
     const args = { completed: false, sessionId };
     const statusHistory: string[] = [];
-    client.on(sessionId, async (e: RelayEvent) => {
+    client.on(sessionId, (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
@@ -664,7 +664,7 @@ describe('Handlers', () => {
 
     const { sessionId, updaterPk, authUrl } = prepareTest();
 
-    client.on(sessionId, async (e: RelayEvent) => {
+    client.on(sessionId, (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
     });
@@ -714,7 +714,7 @@ describe('Handlers', () => {
 
     const { sessionId, updaterPk, authUrl } = prepareTest();
 
-    client.on(sessionId, async (e: RelayEvent) => {
+    client.on(sessionId, (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
     });
@@ -901,7 +901,7 @@ describe('Handlers', () => {
     const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl } = prepareTest();
 
-    client.on(sessionId, async (e: RelayEvent) => {
+    client.on(sessionId, (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
 
@@ -953,7 +953,7 @@ describe('Handlers', () => {
     const statusHistory: string[] = [];
     const { sessionId, updaterPk, authUrl } = prepareTest();
 
-    client.on(sessionId, async (e: RelayEvent) => {
+    client.on(sessionId, (e: RelayEvent) => {
       expect(e.status).toBeTruthy();
       statusHistory.push(e.status);
     });

@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 /* eslint-disable @typescript-eslint/indent */
 // Note: this custom hook exists because of: https://github.com/statelyai/xstate/issues/1101
 import Debug from 'debug';

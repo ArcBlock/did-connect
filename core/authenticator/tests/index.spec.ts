@@ -296,7 +296,7 @@ describe('Authenticator', () => {
     }
 
     try {
-      await auth.tryWithTimeout(async () => {
+      await auth.tryWithTimeout(() => {
         throw new Error('test');
       });
       expect(false).toBeTruthy();

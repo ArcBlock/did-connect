@@ -127,15 +127,15 @@ export class MongoStorage extends BaseStorage implements SessionStorage {
     return promise;
   }
 
-  async read(sessionId: string): Promise<TSession> {
+  read(sessionId: string): Promise<TSession> {
     return this.collectionReady().then((collection: any) => collection.findOne({ sessionId }));
   }
 
-  async create(sessionId: string, attrs: Partial<TSession>): Promise<TSession> {
+  create(sessionId: string, attrs: Partial<TSession>): Promise<TSession> {
     return this.update(sessionId, { ...attrs }, true);
   }
 
-  async update(sessionId: string, updates: Partial<TSession>, upsert = false): Promise<TSession> {
+  update(sessionId: string, updates: Partial<TSession>, upsert = false): Promise<TSession> {
     // @ts-ignore
     if (!updates.updatedAt) {
       // @ts-ignore
@@ -167,13 +167,13 @@ export class MongoStorage extends BaseStorage implements SessionStorage {
       });
   }
 
-  async delete(sessionId: string): Promise<number> {
+  delete(sessionId: string): Promise<number> {
     return this.collectionReady()
       .then((collection: any) => collection.deleteOne({ sessionId }))
       .then(() => this.emit('delete', sessionId));
   }
 
-  async clear(): Promise<void> {
+  clear(): Promise<void> {
     return this.collectionReady().then((collection: any) => collection.drop());
   }
 

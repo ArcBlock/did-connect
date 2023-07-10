@@ -37,7 +37,7 @@ install:
 
 dep:
 	@echo "Install dependencies required for this repo..."
-	@lerna bootstrap
+	@yarn
 
 all: pre-build build post-build
 

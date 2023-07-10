@@ -7,6 +7,7 @@ interface StorageObject {
 
 let storage: StorageObject = {};
 
+// eslint-disable-next-line import/prefer-default-export
 export class MemoryStorage extends BaseStorage implements SessionStorage {
   read(sessionId: string): Promise<TSession> {
     return Promise.resolve(storage[sessionId]);

@@ -25,9 +25,9 @@
     "lint-staged": "lint-staged"
   },
   "dependencies": {
-    "@arcblock/did-motif": "^1.1.10",
+    "@arcblock/did-motif": "^1.1.13",
     "@arcblock/event-client": "^1.7.1",
-    "@arcblock/ux": "^2.5.46",
+    "@arcblock/ux": "^2.5.61",
     "@solana/qr-code-styling": "1.6.0-beta.0",
     "@vueuse/core": "^9.3.1",
     "buffer": "^6.0.3",
@@ -64,7 +64,7 @@
     "less": "^4.1.3",
     "prettier": "^2.7.1",
     "vite": "^3.2.5",
-    "vite-plugin-blocklet": "^0.6.3",
+    "vite-plugin-blocklet": "^0.6.6",
     "vite-plugin-css-injected-by-js": "^2.1.1",
     "vue-loader": "^17.0.0",
     "vue-router": "^4.1.6"

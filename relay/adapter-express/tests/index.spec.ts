@@ -104,7 +104,7 @@ describe('RelayAdapterExpress', () => {
     return res.data;
   };
 
-  const getWsClient = async (endpoint: string) => {
+  const getWsClient = (endpoint: string): Promise<any> => {
     if (!client) {
       client = new WsClient(`${endpoint}/api/connect/relay`, { heartbeatIntervalMs: 10 * 1000 });
 

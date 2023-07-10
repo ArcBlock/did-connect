@@ -277,7 +277,7 @@ export function createHandlers({
     return storage.create(sessionId, value);
   };
 
-  const handleSessionRead = async (sessionId: string): Promise<TSession> => {
+  const handleSessionRead = (sessionId: string): Promise<TSession> => {
     return storage.read(sessionId);
   };
 

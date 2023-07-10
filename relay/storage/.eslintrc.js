@@ -6,4 +6,7 @@ module.exports = {
   parserOptions: {
     project: path.resolve(__dirname, 'tsconfig.eslint.json'),
   },
+  rules: {
+    '@typescript-eslint/comma-dangle': 'off',
+  },
 };

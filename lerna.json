@@ -1,6 +1,5 @@
 {
   "version": "2.1.59",
-  "useWorkspaces": true,
   "npmClient": "yarn",
   "packages": ["core/*", "website/*", "relay/*", "ux/*"],
   "command": {
