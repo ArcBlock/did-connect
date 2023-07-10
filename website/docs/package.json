@@ -18,5 +18,5 @@
     "@xmark/plugin-docs-indexer": "^2.5.6",
     "@xmark/theme-docs": "^2.5.6"
   },
-  "version": "2.1.59"
+  "version": "2.2.0"
 }
