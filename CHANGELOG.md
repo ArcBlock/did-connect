@@ -1,3 +1,7 @@
+## 2.2.1 (November 08, 2023)
+
+- chore: bump deps to latest
+
 ## 2.2.0 (July 11, 2023)
 
 - chore: bump deps and fix eslint errors
