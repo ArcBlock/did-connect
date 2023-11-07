@@ -18,9 +18,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/validator": "^1.18.87",
-    "@ocap/mcrypto": "^1.18.87",
-    "joi": "17.7.0"
+    "@arcblock/validator": "^1.18.95",
+    "@ocap/mcrypto": "^1.18.95",
+    "joi": "17.11.0"
   },
   "devDependencies": {
     "@arcblock/eslint-config-ts": "0.2.4",
