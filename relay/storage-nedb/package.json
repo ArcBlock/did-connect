@@ -50,8 +50,8 @@
   "dependencies": {
     "@did-connect/storage": "2.2.1",
     "@did-connect/types": "2.2.1",
-    "@nedb/core": "^2.x",
-    "@nedb/multi": "^2.x",
+    "@nedb/core": "^2.1.5",
+    "@nedb/multi": "^2.1.5",
     "debug": "^4.3.4"
   }
 }
