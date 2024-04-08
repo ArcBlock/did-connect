@@ -51,6 +51,7 @@
     "@arcblock/jwt": "^1.18.115",
     "@arcblock/validator": "^1.18.115",
     "@arcblock/ws": "^1.18.115",
+    "@blocklet/js-sdk": "^1.16.25",
     "@nedb/core": "2.x",
     "@nedb/multi": "2.x",
     "@ocap/asset": "^1.18.115",
