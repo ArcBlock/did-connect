@@ -18,11 +18,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@arcblock/jwt": "^1.18.95",
-    "@arcblock/ws": "^1.18.95",
+    "@arcblock/jwt": "^1.18.115",
+    "@arcblock/ws": "^1.18.115",
     "@did-connect/types": "2.2.1",
-    "@ocap/util": "^1.18.95",
-    "@ocap/wallet": "^1.18.95",
+    "@ocap/util": "^1.18.115",
+    "@ocap/wallet": "^1.18.115",
     "axios": "^0.27.2",
     "debug": "^4.3.4",
     "lodash": "^4.17.21",
@@ -36,6 +36,7 @@
     "@arcblock/eslint-config-ts": "0.2.4",
     "eslint": "^8.26.0",
     "jest": "^28.1.3",
+    "p-wait-for": "^3.2.0",
     "ts-jest": "^28.0.8",
     "type-fest": "^3.1.0",
     "typescript": "^4.8.4"

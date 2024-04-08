@@ -12,15 +12,16 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: main
           token: ${{ secrets.GIT_HUB_TOKEN }}
 
-      - name: Use Node.js v16
-        uses: actions/setup-node@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
+          cache: yarn
 
       - name: Initialize
         run: make github-init
@@ -31,10 +32,10 @@ jobs:
           CURRENT_VERSION=$(cat version | awk '{$1=$1;print}')
           echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
 
-      - name: Config Git
-        run: |
-          git config --local user.name "bot"
-          git config --local user.email "bot@arcblock.io"
+      # - name: Config Git
+      #   run: |
+      #     git config --local user.name "bot"
+      #     git config --local user.email "bot@arcblock.io"
 
       - name: Publish to NPM
         run: |
@@ -51,74 +52,89 @@ jobs:
           github_token: ${{ secrets.GIT_HUB_TOKEN }}
           branch: ${{ github.ref }}
 
-      - name: Bundle Blocklets
-        run: make bundle
+      # - name: Bundle Blocklets
+      #   run: make bundle
 
-      - name: Upload Relay Server Test Store
+      # - name: Upload Relay Server Test Store
+      #   uses: blocklet/action-workflow@v1
+      #   with:
+      #     skip-deps: true
+      #     skip-upload: false
+      #     skip-deploy: true
+      #     skip-release: true
+      #     skip-bundle: true
+      #     working-directory: relay/server
+      #     store-endpoint: ${{ secrets.STORE_ENDPOINT_DEV }}
+      #     store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_DEV }}
+      #     slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
+
+      # - name: Sleep for 60 seconds
+      #   uses: juliangruber/sleep-action@v1
+      #   with:
+      #     time: "60s"
+
+      # - name: Deploy Page Site
+      #   uses: blocklet/action-workflow@v1
+      #   with:
+      #     skip-deps: false
+      #     skip-bundle: false
+      #     skip-upload: true
+      #     skip-deploy: false
+      #     skip-release: true
+      #     deploy-app-did: zNKaCsDYZnQnbkaWkWPVees97oYND6ja8Y5a
+      #     deploy-mount-point: /
+      #     bundle-command: npm run bundle
+      #     working-directory: website/pages
+      #     server-endpoint: ${{ secrets.XMARK_NODE_ENDPOINT }}
+      #     server-access-key: ${{ secrets.XMARK_NODE_ACCESS_KEY }}
+      #     server-access-secret: ${{ secrets.XMARK_NODE_ACCESS_SECRET }}
+      #     slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
+
+      # - name: Deploy Docs Site
+      #   uses: blocklet/action-workflow@v1
+      #   with:
+      #     skip-deps: true
+      #     skip-bundle: false
+      #     skip-upload: true
+      #     skip-deploy: false
+      #     skip-release: true
+      #     deploy-app-did: zNKaCsDYZnQnbkaWkWPVees97oYND6ja8Y5a
+      #     deploy-mount-point: /docs
+      #     bundle-command: npm run bundle
+      #     working-directory: website/docs
+      #     server-endpoint: ${{ secrets.XMARK_NODE_ENDPOINT }}
+      #     server-access-key: ${{ secrets.XMARK_NODE_ACCESS_KEY }}
+      #     server-access-secret: ${{ secrets.XMARK_NODE_ACCESS_SECRET }}
+      #     slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
+
+      # - name: Deploy React Storybook
+      #   uses: blocklet/action-workflow@v1
+      #   with:
+      #     skip-deps: true
+      #     skip-bundle: false
+      #     skip-upload: true
+      #     skip-deploy: false
+      #     skip-release: true
+      #     deploy-app-did: zNKaCsDYZnQnbkaWkWPVees97oYND6ja8Y5a
+      #     deploy-mount-point: /playground/react
+      #     bundle-command: npm run bundle
+      #     working-directory: ux/react
+      #     server-endpoint: ${{ secrets.XMARK_NODE_ENDPOINT }}
+      #     server-access-key: ${{ secrets.XMARK_NODE_ACCESS_KEY }}
+      #     server-access-secret: ${{ secrets.XMARK_NODE_ACCESS_SECRET }}
+      #     slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Upload Playground React
         uses: blocklet/action-workflow@v1
         with:
+          deps-server-version: beta
           skip-deps: true
+          skip-bundle: false
           skip-upload: false
           skip-deploy: true
           skip-release: true
-          skip-bundle: true
-          working-directory: relay/server
+          bundle-command: yarn bundle
+          working-directory: playground/react
           store-endpoint: ${{ secrets.STORE_ENDPOINT_DEV }}
           store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_DEV }}
-          slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
-
-      - name: Sleep for 60 seconds
-        uses: juliangruber/sleep-action@v1
-        with:
-          time: "60s"
-
-      - name: Deploy Page Site
-        uses: blocklet/action-workflow@v1
-        with:
-          skip-deps: false
-          skip-bundle: false
-          skip-upload: true
-          skip-deploy: false
-          skip-release: true
-          deploy-app-did: zNKaCsDYZnQnbkaWkWPVees97oYND6ja8Y5a
-          deploy-mount-point: /
-          bundle-command: npm run bundle
-          working-directory: website/pages
-          server-endpoint: ${{ secrets.XMARK_NODE_ENDPOINT }}
-          server-access-key: ${{ secrets.XMARK_NODE_ACCESS_KEY }}
-          server-access-secret: ${{ secrets.XMARK_NODE_ACCESS_SECRET }}
-          slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
-
-      - name: Deploy Docs Site
-        uses: blocklet/action-workflow@v1
-        with:
-          skip-deps: true
-          skip-bundle: false
-          skip-upload: true
-          skip-deploy: false
-          skip-release: true
-          deploy-app-did: zNKaCsDYZnQnbkaWkWPVees97oYND6ja8Y5a
-          deploy-mount-point: /docs
-          bundle-command: npm run bundle
-          working-directory: website/docs
-          server-endpoint: ${{ secrets.XMARK_NODE_ENDPOINT }}
-          server-access-key: ${{ secrets.XMARK_NODE_ACCESS_KEY }}
-          server-access-secret: ${{ secrets.XMARK_NODE_ACCESS_SECRET }}
-          slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
-
-      - name: Deploy React Storybook
-        uses: blocklet/action-workflow@v1
-        with:
-          skip-deps: true
-          skip-bundle: false
-          skip-upload: true
-          skip-deploy: false
-          skip-release: true
-          deploy-app-did: zNKaCsDYZnQnbkaWkWPVees97oYND6ja8Y5a
-          deploy-mount-point: /playground/react
-          bundle-command: npm run bundle
-          working-directory: ux/react
-          server-endpoint: ${{ secrets.XMARK_NODE_ENDPOINT }}
-          server-access-key: ${{ secrets.XMARK_NODE_ACCESS_KEY }}
-          server-access-secret: ${{ secrets.XMARK_NODE_ACCESS_SECRET }}
-          slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
+          github-token: ${{ secrets.GIT_HUB_TOKEN }}

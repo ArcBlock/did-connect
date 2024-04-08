@@ -1,4 +1,6 @@
-NOW="$(date +'%B %d, %Y')"
+#!/usr/bin/env bash
+
+NOW="$(LC_ALL=en_US.UTF-8 date +'%B %d, %Y')"
 # RED="\033[1;31m"
 # GREEN="\033[0;32m"
 # YELLOW="\033[1;33m"
@@ -16,7 +18,7 @@ LATEST_HASH=`git log --pretty=format:'%h' -n 1`
 
 VERSION=version
 
-ADJUSTMENTS_MSG="${QUESTION_FLAG} ${CYAN}Now you can make adjustments to ${WHITE}CHANGELOG.md${CYAN}. Then press enter to continue."
+ADJUSTMENTS_MSG="${QUESTION_FLAG} ${CYAN}Now you can make adjustments to ${WHITE}CHANGELOG.md${CYAN} Then press enter to continue."
 
 if [ -f $VERSION ]; then
     BASE_STRING=`cat $VERSION`
@@ -35,8 +37,8 @@ if [ -f $VERSION ]; then
     fi
     echo -e "${NOTICE_FLAG} Will set new version to be ${WHITE}$INPUT_STRING"
     echo $INPUT_STRING > $VERSION
-    echo "## $INPUT_STRING ($NOW)" > tmpfile
-    echo "" >> tmpfile
+
+    echo -e "## $INPUT_STRING ($NOW)\n" > tmpfile
     git log --pretty=format:"- %s" "v$BASE_STRING"...HEAD >> tmpfile
     echo "" >> tmpfile
     echo "" >> tmpfile

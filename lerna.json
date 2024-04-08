@@ -3,9 +3,9 @@
   "npmClient": "yarn",
   "packages": [
     "core/*",
-    "website/*",
     "relay/*",
-    "ux/*"
+    "ux/*",
+    "playground/*"
   ],
   "command": {
     "publish": {
