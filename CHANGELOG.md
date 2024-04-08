@@ -1,3 +1,11 @@
+## 2.2.2 (April 09, 2024)
+
+- chore: update ci
+- chore: polish locales
+- chore: clean package name
+- feat: add playground react
+- chore(deps): update deps
+
 ## 2.2.1 (November 08, 2023)
 
 - chore: bump deps to latest
