@@ -13,6 +13,7 @@ import getWalletZhImg from '../assets/get_wallet_zh.png';
 import { useSessionContext } from '../libs/session';
 
 function ConnectItem({ title, description, result, onClick }) {
+  const { t } = useLocaleContext();
   return (
     <Box>
       <Typography variant="h6" component="h5" color="textPrimary">
@@ -23,12 +24,12 @@ function ConnectItem({ title, description, result, onClick }) {
           {description}
         </Typography>
       ) : null}
-      <ConnectButton size="large" onClick={onClick} />
+      <ConnectButton onClick={onClick} />
       {result ? (
         <Card sx={{ mt: 2 }} variant="outlined">
           <CardContent>
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-              Result
+              {t('result')}
             </Typography>
             {result}
           </CardContent>
@@ -73,13 +74,10 @@ InfoRow.propTypes = {
 };
 
 function Main() {
-  const { locale } = useLocaleContext();
+  const { locale, t } = useLocaleContext();
   const { connectApi } = useSessionContext();
   const getWalletImgUrl = locale === 'zh' ? getWalletZhImg : getWalletEnImg;
   const getWalletUrl = `https://www.didwallet.io/${locale === 'zh' ? 'zh' : 'en'}`;
-  const getExplorerUrl = (assetDidOrHash, type = 'txs') => {
-    return `https://explorer.abtnetwork.io/explorer/${type}/${assetDidOrHash}?host=${window.blocklet.CHAIN_HOST}`;
-  };
   const results = useReactive({
     'request-profile': null,
     'request-text-signature': null,
@@ -91,21 +89,34 @@ function Main() {
     'request-payment': null,
   });
 
+  const getExplorerUrl = (assetDidOrHash, type = 'txs') => {
+    return `https://explorer.abtnetwork.io/explorer/${type}/${assetDidOrHash}?host=${window.blocklet.CHAIN_HOST}`;
+  };
+
+  const getConnectMessage = (claimName) => {
+    return {
+      title: t(`claims.${claimName}.connect.title`),
+      scan: t(`claims.${claimName}.connect.scan`),
+    };
+  };
+
   const requestProfile = () => {
     const action = 'request-profile';
     results[action] = null;
     connectApi.open({
+      locale,
       action,
       onSuccess({ result }) {
         results[action] = (
           <>
             <Avatar variant="circle" src={result.avatar} did={result.did} size={60} />
-            <InfoRow name="FullName" value={result.fullName} />
-            <InfoRow name="Email" value={result.email} />
-            <InfoRow name="Phone" value={result.phone} />
+            <InfoRow name={t('claims.requestProfile.result.fullName')} value={result.fullName} />
+            <InfoRow name={t('claims.requestProfile.result.email')} value={result.email} />
+            <InfoRow name={t('claims.requestProfile.result.phone')} value={result.phone} />
           </>
         );
       },
+      messages: getConnectMessage('requestProfile'),
     });
   };
 
@@ -113,15 +124,17 @@ function Main() {
     const action = 'request-text-signature';
     results[action] = null;
     connectApi.open({
+      locale,
       action,
       onSuccess({ result }) {
         results[action] = (
           <>
-            <InfoRow name="Raw data" value={result.origin} />
-            <InfoRow name="Signature" value={result.sig} />
+            <InfoRow name={t('claims.requestTextSig.result.origin')} value={result.origin} />
+            <InfoRow name={t('claims.requestTextSig.result.signature')} value={result.sig} />
           </>
         );
       },
+      messages: getConnectMessage('requestTextSig'),
     });
   };
 
@@ -129,31 +142,35 @@ function Main() {
     const action = 'request-digest-signature';
     results[action] = null;
     connectApi.open({
+      locale,
       action,
       onSuccess({ result }) {
         results[action] = (
           <>
-            <InfoRow name="Raw data" value={result.origin} />
-            <InfoRow name="Digest data" value={result.digest} />
-            <InfoRow name="Signature" value={result.sig} />
+            <InfoRow name={t('claims.requestDigestSig.result.origin')} value={result.origin} />
+            <InfoRow name={t('claims.requestDigestSig.result.digest')} value={result.digest} />
+            <InfoRow name={t('claims.requestDigestSig.result.signature')} value={result.sig} />
           </>
         );
       },
+      messages: getConnectMessage('requestDigestSig'),
     });
   };
-  const requestTransationSignature = () => {
+  const requestTransactionSignature = () => {
     const action = 'request-transaction-signature';
     results[action] = null;
     connectApi.open({
+      locale,
       action,
       onSuccess({ result }) {
         results[action] = (
           <>
-            <InfoRow name="Transation" value={result.transaction} />
-            <InfoRow name="Signature" value={result.sig} />
+            <InfoRow name={t('claims.requestTransactionSig.result.transaction')} value={result.transaction} />
+            <InfoRow name={t('claims.requestTransactionSig.result.signature')} value={result.sig} />
           </>
         );
       },
+      messages: getConnectMessage('requestTransactionSig'),
     });
   };
 
@@ -161,6 +178,7 @@ function Main() {
     const action = 'request-nft';
     results[action] = null;
     connectApi.open({
+      locale,
       action,
       onSuccess({ result }) {
         results[action] = (
@@ -185,18 +203,20 @@ function Main() {
           </>
         );
       },
+      messages: getConnectMessage('requestNFT'),
     });
   };
   const requestPayment = () => {
     const action = 'request-payment';
     results[action] = null;
     connectApi.open({
+      locale,
       action,
       onSuccess({ result }) {
         results[action] = (
           <>
             <InfoRow
-              name="Transation Hash"
+              name={t('claims.requestPayment.result.hash')}
               value={
                 <Link
                   href={getExplorerUrl(result.hash)}
@@ -215,30 +235,34 @@ function Main() {
           </>
         );
       },
+      messages: getConnectMessage('requestPayment'),
     });
   };
   const multipleClaims = () => {
     const action = 'multiple-claims';
     results[action] = null;
     connectApi.open({
+      locale,
       action,
       onSuccess({ result }) {
         results[action] = (
           <>
-            <Typography variant="h6">Step 1</Typography>
+            <Typography variant="h6">{t('step1.title')}</Typography>
             <Box sx={{ pl: 1 }}>
-              <InfoRow name="Raw data" value={result[0].origin} />
-              <InfoRow name="Signature" value={result[0].sig} />
+              <InfoRow name={t('claims.multipleClaims.result.origin')} value={result[0].origin} />
+              <InfoRow name={t('claims.multipleClaims.result.signature')} value={result[0].sig} />
             </Box>
-            <Typography variant="h6">Step 2</Typography>
+
+            <Typography variant="h6">{t('step2.title')}</Typography>
             <Box sx={{ pl: 1 }}>
-              <InfoRow name="Raw data" value={result[1].origin} />
-              <InfoRow name="Digest data" value={result[1].digest} />
-              <InfoRow name="Signature" value={result[1].sig} />
+              <InfoRow name={t('claims.multipleClaims.result.origin')} value={result[1].origin} />
+              <InfoRow name={t('claims.multipleClaims.result.digest')} value={result[1].digest} />
+              <InfoRow name={t('claims.multipleClaims.result.signature')} value={result[1].sig} />
             </Box>
           </>
         );
       },
+      messages: getConnectMessage('multipleClaims'),
     });
   };
 
@@ -246,36 +270,38 @@ function Main() {
     const action = 'multiple-steps';
     results[action] = null;
     connectApi.open({
+      locale,
       action,
       onSuccess({ result }) {
         results[action] = (
           <>
             <Typography variant="h6">Step 1</Typography>
             <Box sx={{ pl: 1 }}>
-              <InfoRow name="Raw data" value={result[0].origin} />
-              <InfoRow name="Signature" value={result[0].sig} />
+              <InfoRow name={t('claims.multipleSteps.result.origin')} value={result[0].origin} />
+              <InfoRow name={t('claims.multipleSteps.result.signature')} value={result[0].sig} />
             </Box>
             <Typography variant="h6">Step 2</Typography>
             <Box sx={{ pl: 1 }}>
-              <InfoRow name="Raw data" value={result[1].origin} />
-              <InfoRow name="Digest data" value={result[1].digest} />
-              <InfoRow name="Signature" value={result[1].sig} />
+              <InfoRow name={t('claims.multipleSteps.result.origin')} value={result[1].origin} />
+              <InfoRow name={t('claims.multipleSteps.result.digest')} value={result[1].digest} />
+              <InfoRow name={t('claims.multipleSteps.result.signature')} value={result[1].sig} />
             </Box>
           </>
         );
       },
+      messages: getConnectMessage('multipleSteps'),
     });
   };
   return (
     <Layout>
       <Typography component="h3" variant="h4" className="section__header" color="textPrimary" gutterBottom>
-        Step 1{' '}
+        {t('step1.title')}{' '}
         <Typography component="small" color="text.secondary">
-          Prepare DID Wallet
+          {t('step1.prepareDIDWallet')}
         </Typography>
       </Typography>
       <Typography variant="body1">
-        Get DID Wallet in Here{' '}
+        {t('step1.getWalletFromHere')}{' '}
         <Link
           href={getWalletUrl}
           target="_blank"
@@ -312,9 +338,9 @@ function Main() {
       </Box>
 
       <Typography component="h3" variant="h4" color="text.primary" gutterBottom sx={{ mt: 2 }}>
-        Step 2{' '}
+        {t('step2.title')}{' '}
         <Typography component="small" color="text.secondary">
-          Enjoy The DID Connect Playground
+          {t('step2.enjoyPlayground')}
         </Typography>
       </Typography>
 
@@ -322,18 +348,33 @@ function Main() {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          gap: 3,
-          mb: 5,
+          gap: 5,
+          mb: 10,
         }}>
         <ConnectItem
-          title="Request Profile"
-          description="If the app need user name/email to function properly, you can request a profile from the user."
+          title={t('claims.requestProfile.title')}
+          description={t('claims.requestProfile.description')}
           onClick={requestProfile}
           result={results['request-profile']}
         />
         <ConnectItem
-          title="Request NFT"
-          description="Please purchase a Server Ownership NFT from launcher.staging.arcblock.io before click following button."
+          title={t('claims.requestNFT.title')}
+          description={
+            <>
+              {t('claims.requestNFT.description')}{' '}
+              <Link
+                href="https://playground.staging.arcblock.io"
+                target="_blank"
+                underline="hover"
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                }}>
+                https://playground.staging.arcblock.io <Icon icon={iconOpenInNewRounded} />
+              </Link>
+            </>
+          }
           onClick={requestNFT}
           result={results['request-nft']}
         />
@@ -342,38 +383,57 @@ function Main() {
           description="Please admin a passport vc from node-dev-1.arcblock.io before click following button."
         /> */}
         <ConnectItem
-          title="Request Text Signature"
-          description="In some cases, app may want user to sign some text to authorize the app to do something."
+          title={t('claims.requestTextSig.title')}
+          description={t('claims.requestTextSig.description')}
           onClick={requestTextSignature}
           result={results['request-text-signature']}
         />
         <ConnectItem
-          title="Request Digest Signature"
-          description="In some cases, when the data to be signed is too large to display in DID Wallet, the app shall request the Wallet to sign the digest of the data."
+          title={t('claims.requestDigestSig.title')}
+          description={t('claims.requestDigestSig.description')}
           onClick={requestDigestSignature}
           result={results['request-digest-signature']}
         />
         <ConnectItem
-          title="Request Transation Signature"
-          description="When the app needs user to sign some transaction that can be broadcast to arcblock chain."
-          onClick={requestTransationSignature}
+          title={t('claims.requestTransactionSig.title')}
+          description={t('claims.requestTransactionSig.description')}
+          onClick={requestTransactionSignature}
           result={results['request-transaction-signature']}
         />
         <ConnectItem
-          title="Request Payment"
-          description="When the app needs user to pay some token to get some service."
+          title={t('claims.requestPayment.title')}
+          description={
+            <>
+              {t('claims.requestPayment.description')}
+
+              <Box>
+                {t('claims.requestPayment.takeTokenFromHere')}{' '}
+                <Link
+                  href="https://faucet.abtnetwork.io"
+                  target="_blank"
+                  underline="hover"
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                  }}>
+                  https://faucet.abtnetwork.io <Icon icon={iconOpenInNewRounded} />
+                </Link>
+              </Box>
+            </>
+          }
           onClick={requestPayment}
           result={results['request-payment']}
         />
         <ConnectItem
-          title="Multiple Claims"
-          description="Request profile and NFT ownership in a single session."
+          title={t('claims.multipleClaims.title')}
+          description={t('claims.multipleClaims.description')}
           onClick={multipleClaims}
           result={results['multiple-claims']}
         />
         <ConnectItem
-          title="Multiple Steps"
-          description="Request profile and then present NFT ownership."
+          title={t('claims.multipleSteps.title')}
+          description={t('claims.multipleSteps.description')}
           onClick={multipleSteps}
           result={results['multiple-steps']}
         />

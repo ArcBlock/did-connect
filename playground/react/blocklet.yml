@@ -54,5 +54,7 @@ environments:
     default: https://beta.abtnetwork.io/api/
     secure: false
 capabilities: {}
-screenshots: []
+screenshots:
+  - 1-step_1.png
+  - 2-step_2.png
 components: []
