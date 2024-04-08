@@ -1,18 +1,21 @@
-name: react
-title: react
-description: A Blocklet DAPP blocklet
+name: did-connect-playground-react
+title: DID Connect Playground React
+description: A Blocklet show DID Connect Playground
 keywords:
   - blocklet
   - react
+  - did-connect
+  - playground
 group: dapp
 did: z2qa7dZjxsMMCXMCUG9NFDooAMPjzSE2XYsZ4
 main: api/index.js
 author:
-  name: zhanghan
-  email: lancelot_lewis@163.com
+  name: ArcBlock
+  email: blocklet@arcblock.io
+  url: https://github.com/blocklet
 repository:
   type: git
-  url: git+https://github.com/blocklet/create-blocklet.git
+  url: git+https://github.com/arcblock/did-connect.git
 specVersion: 1.1.1
 version: 0.1.0
 logo: logo.png
@@ -25,22 +28,22 @@ interfaces:
   - type: web
     name: publicUrl
     path: /
-    prefix: "*"
+    prefix: '*'
     port: BLOCKLET_PORT
     protocol: http
-community: ""
-documentation: ""
-homepage: ""
-license: ""
+community: ''
+documentation: ''
+homepage: ''
+license: ''
 payment:
   price: []
   share: []
 timeout:
   start: 60
 requirements:
-  server: ">=1.6.29"
-  os: "*"
-  cpu: "*"
+  server: '>=1.16.25'
+  os: '*'
+  cpu: '*'
 scripts:
   preStart: node api/hooks/pre-start.js
   dev: npm run start

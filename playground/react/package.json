@@ -1,5 +1,5 @@
 {
-  "name": "react",
+  "name": "@blocklet/playground-react",
   "version": "0.1.0",
   "scripts": {
     "dev": "blocklet dev",
@@ -9,7 +9,7 @@
     "clean": "node scripts/build-clean.js",
     "bundle": "npm run bundle:client && npm run bundle:api",
     "bundle:client": "vite build",
-    "bundle:api": "npm run clean && blocklet bundle --zip --create-release",
+    "bundle:api": "npm run clean && blocklet bundle --compact --create-release",
     "deploy": "npm run bundle && blocklet deploy .blocklet/bundle",
     "upload": "npm run bundle && blocklet upload .blocklet/release/blocklet.json",
     "bump-version": "zx --quiet scripts/bump-version.mjs"
