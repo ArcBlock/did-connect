@@ -61,7 +61,7 @@ export default flatten({
     },
     requestTransactionSig: {
       title: 'Request Transaction Signature',
-      description: 'When the app needs user to sign some transaction that can be broadcast to arcblock chain.',
+      description: 'When the app needs user to sign some transaction that can be broadcast to ArcBlock chain.',
       connect: {
         title: 'Request Transaction Signature',
         scan: 'Please sign a transaction to continue',
@@ -81,6 +81,7 @@ export default flatten({
       },
       result: {
         hash: 'Transaction Hash',
+        signature: 'Signature',
       },
     },
     multipleClaims: {

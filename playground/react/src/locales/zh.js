@@ -9,7 +9,7 @@ export default flatten({
   },
   step2: {
     title: '第二步',
-    enjoyPlayground: '享受 DID Connect 演示平台',
+    enjoyPlayground: '享受 DID Connect 游乐场',
   },
   claims: {
     requestProfile: {
@@ -61,7 +61,7 @@ export default flatten({
     },
     requestTransactionSig: {
       title: '请求交易签名',
-      description: '当应用需要用户签名一个可以广播到 Ark 链的交易时。',
+      description: '当应用需要用户签名一个可以广播到 ArcBlock 链的交易时。',
       connect: {
         title: '请求交易签名',
         scan: '请签名一个交易，以便验证交易的安全性。',
@@ -81,6 +81,7 @@ export default flatten({
       },
       result: {
         hash: '交易 hash',
+        signature: '签名结果',
       },
     },
     multipleClaims: {
