@@ -67,7 +67,7 @@ export default flatten({
         scan: '请签名一个交易，以便验证交易的安全性。',
       },
       result: {
-        transaction: '交易 hash',
+        hash: '交易 hash',
         signature: '签名结果',
       },
     },

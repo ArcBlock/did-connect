@@ -67,7 +67,7 @@ export default flatten({
         scan: 'Please sign a transaction to continue',
       },
       result: {
-        transaction: 'Transaction Hash',
+        hash: 'Transaction Hash',
         signature: 'Signature',
       },
     },

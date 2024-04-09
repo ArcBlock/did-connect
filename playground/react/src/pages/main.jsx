@@ -376,8 +376,8 @@ function Main() {
             results['request-transaction-signature'] ? (
               <>
                 <InfoRow
-                  name={t('claims.requestTransactionSig.result.transaction')}
-                  value={results['request-transaction-signature'].transaction}
+                  name={t('claims.requestTransactionSig.result.hash')}
+                  value={results['request-transaction-signature'].hash}
                 />
                 <InfoRow
                   name={t('claims.requestTransactionSig.result.signature')}
