@@ -1,5 +1,5 @@
 name: z2qa7dZjxsMMCXMCUG9NFDooAMPjzSE2XYsZ4
-title: DID Connect Playground React
+title: DID Connect Playground
 description: A Blocklet show DID Connect Playground
 keywords:
   - blocklet
@@ -17,7 +17,7 @@ repository:
   type: git
   url: git+https://github.com/arcblock/did-connect.git
 specVersion: 1.2.8
-version: 2.2.2
+version: 2.2.3
 logo: logo.png
 files:
   - dist

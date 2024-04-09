@@ -107,14 +107,7 @@ function Main() {
       locale,
       action,
       onSuccess({ result }) {
-        results[action] = (
-          <>
-            <Avatar variant="circle" src={result.avatar} did={result.did} size={60} />
-            <InfoRow name={t('claims.requestProfile.result.fullName')} value={result.fullName} />
-            <InfoRow name={t('claims.requestProfile.result.email')} value={result.email} />
-            <InfoRow name={t('claims.requestProfile.result.phone')} value={result.phone} />
-          </>
-        );
+        results[action] = result;
       },
       messages: getConnectMessage('requestProfile'),
     });
@@ -127,12 +120,7 @@ function Main() {
       locale,
       action,
       onSuccess({ result }) {
-        results[action] = (
-          <>
-            <InfoRow name={t('claims.requestTextSig.result.origin')} value={result.origin} />
-            <InfoRow name={t('claims.requestTextSig.result.signature')} value={result.sig} />
-          </>
-        );
+        results[action] = result;
       },
       messages: getConnectMessage('requestTextSig'),
     });
@@ -145,13 +133,7 @@ function Main() {
       locale,
       action,
       onSuccess({ result }) {
-        results[action] = (
-          <>
-            <InfoRow name={t('claims.requestDigestSig.result.origin')} value={result.origin} />
-            <InfoRow name={t('claims.requestDigestSig.result.digest')} value={result.digest} />
-            <InfoRow name={t('claims.requestDigestSig.result.signature')} value={result.sig} />
-          </>
-        );
+        results[action] = result;
       },
       messages: getConnectMessage('requestDigestSig'),
     });
@@ -163,12 +145,7 @@ function Main() {
       locale,
       action,
       onSuccess({ result }) {
-        results[action] = (
-          <>
-            <InfoRow name={t('claims.requestTransactionSig.result.transaction')} value={result.transaction} />
-            <InfoRow name={t('claims.requestTransactionSig.result.signature')} value={result.sig} />
-          </>
-        );
+        results[action] = result;
       },
       messages: getConnectMessage('requestTransactionSig'),
     });
@@ -181,27 +158,7 @@ function Main() {
       locale,
       action,
       onSuccess({ result }) {
-        results[action] = (
-          // eslint-disable-next-line react/jsx-no-useless-fragment
-          <>
-            <InfoRow
-              name="NFT"
-              value={
-                <Link
-                  href={getExplorerUrl(result.asset, 'assets')}
-                  target="_blank"
-                  underline="hover"
-                  sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                  }}>
-                  {result.asset} <Icon icon={iconOpenInNewRounded} />
-                </Link>
-              }
-            />
-          </>
-        );
+        results[action] = result;
       },
       messages: getConnectMessage('requestNFT'),
     });
@@ -213,27 +170,7 @@ function Main() {
       locale,
       action,
       onSuccess({ result }) {
-        results[action] = (
-          <>
-            <InfoRow
-              name={t('claims.requestPayment.result.hash')}
-              value={
-                <Link
-                  href={getExplorerUrl(result.hash)}
-                  target="_blank"
-                  underline="hover"
-                  sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                  }}>
-                  {result.hash} <Icon icon={iconOpenInNewRounded} />
-                </Link>
-              }
-            />
-            <InfoRow name="Signature" value={result.sig} />
-          </>
-        );
+        results[action] = result;
       },
       messages: getConnectMessage('requestPayment'),
     });
@@ -245,22 +182,7 @@ function Main() {
       locale,
       action,
       onSuccess({ result }) {
-        results[action] = (
-          <>
-            <Typography variant="h6">{t('step1.title')}</Typography>
-            <Box sx={{ pl: 1 }}>
-              <InfoRow name={t('claims.multipleClaims.result.origin')} value={result[0].origin} />
-              <InfoRow name={t('claims.multipleClaims.result.signature')} value={result[0].sig} />
-            </Box>
-
-            <Typography variant="h6">{t('step2.title')}</Typography>
-            <Box sx={{ pl: 1 }}>
-              <InfoRow name={t('claims.multipleClaims.result.origin')} value={result[1].origin} />
-              <InfoRow name={t('claims.multipleClaims.result.digest')} value={result[1].digest} />
-              <InfoRow name={t('claims.multipleClaims.result.signature')} value={result[1].sig} />
-            </Box>
-          </>
-        );
+        results[action] = result;
       },
       messages: getConnectMessage('multipleClaims'),
     });
@@ -273,28 +195,14 @@ function Main() {
       locale,
       action,
       onSuccess({ result }) {
-        results[action] = (
-          <>
-            <Typography variant="h6">Step 1</Typography>
-            <Box sx={{ pl: 1 }}>
-              <InfoRow name={t('claims.multipleSteps.result.origin')} value={result[0].origin} />
-              <InfoRow name={t('claims.multipleSteps.result.signature')} value={result[0].sig} />
-            </Box>
-            <Typography variant="h6">Step 2</Typography>
-            <Box sx={{ pl: 1 }}>
-              <InfoRow name={t('claims.multipleSteps.result.origin')} value={result[1].origin} />
-              <InfoRow name={t('claims.multipleSteps.result.digest')} value={result[1].digest} />
-              <InfoRow name={t('claims.multipleSteps.result.signature')} value={result[1].sig} />
-            </Box>
-          </>
-        );
+        results[action] = result;
       },
       messages: getConnectMessage('multipleSteps'),
     });
   };
   return (
     <Layout>
-      <Typography component="h3" variant="h4" className="section__header" color="textPrimary" gutterBottom>
+      <Typography component="h3" variant="h4" color="textPrimary" gutterBottom>
         {t('step1.title')}{' '}
         <Typography component="small" color="text.secondary">
           {t('step1.prepareDIDWallet')}
@@ -355,7 +263,24 @@ function Main() {
           title={t('claims.requestProfile.title')}
           description={t('claims.requestProfile.description')}
           onClick={requestProfile}
-          result={results['request-profile']}
+          result={
+            results['request-profile'] ? (
+              <>
+                <Avatar
+                  variant="circle"
+                  src={results['request-profile'].avatar}
+                  did={results['request-profile'].did}
+                  size={60}
+                />
+                <InfoRow
+                  name={t('claims.requestProfile.result.fullName')}
+                  value={results['request-profile'].fullName}
+                />
+                <InfoRow name={t('claims.requestProfile.result.email')} value={results['request-profile'].email} />
+                <InfoRow name={t('claims.requestProfile.result.phone')} value={results['request-profile'].phone} />
+              </>
+            ) : null
+          }
         />
         <ConnectItem
           title={t('claims.requestNFT.title')}
@@ -376,7 +301,26 @@ function Main() {
             </>
           }
           onClick={requestNFT}
-          result={results['request-nft']}
+          result={
+            results['request-nft'] ? (
+              <InfoRow
+                name="NFT"
+                value={
+                  <Link
+                    href={getExplorerUrl(results['request-nft'].asset, 'assets')}
+                    target="_blank"
+                    underline="hover"
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                    }}>
+                    {results['request-nft'].asset} <Icon icon={iconOpenInNewRounded} />
+                  </Link>
+                }
+              />
+            ) : null
+          }
         />
         {/* <ConnectItem
           title="Request Verifiable Credential"
@@ -386,19 +330,62 @@ function Main() {
           title={t('claims.requestTextSig.title')}
           description={t('claims.requestTextSig.description')}
           onClick={requestTextSignature}
-          result={results['request-text-signature']}
+          result={
+            results['request-text-signature'] ? (
+              <>
+                <InfoRow
+                  name={t('claims.requestTextSig.result.origin')}
+                  value={results['request-text-signature'].origin}
+                />
+                <InfoRow
+                  name={t('claims.requestTextSig.result.signature')}
+                  value={results['request-text-signature'].sig}
+                />
+              </>
+            ) : null
+          }
         />
         <ConnectItem
           title={t('claims.requestDigestSig.title')}
           description={t('claims.requestDigestSig.description')}
           onClick={requestDigestSignature}
-          result={results['request-digest-signature']}
+          result={
+            results['request-digest-signature'] ? (
+              <>
+                <InfoRow
+                  name={t('claims.requestDigestSig.result.origin')}
+                  value={results['request-digest-signature'].origin}
+                />
+                <InfoRow
+                  name={t('claims.requestDigestSig.result.digest')}
+                  value={results['request-digest-signature'].digest}
+                />
+                <InfoRow
+                  name={t('claims.requestDigestSig.result.signature')}
+                  value={results['request-digest-signature'].sig}
+                />
+              </>
+            ) : null
+          }
         />
         <ConnectItem
           title={t('claims.requestTransactionSig.title')}
           description={t('claims.requestTransactionSig.description')}
           onClick={requestTransactionSignature}
-          result={results['request-transaction-signature']}
+          result={
+            results['request-transaction-signature'] ? (
+              <>
+                <InfoRow
+                  name={t('claims.requestTransactionSig.result.hash')}
+                  value={results['request-transaction-signature'].hash}
+                />
+                <InfoRow
+                  name={t('claims.requestTransactionSig.result.signature')}
+                  value={results['request-transaction-signature'].sig}
+                />
+              </>
+            ) : null
+          }
         />
         <ConnectItem
           title={t('claims.requestPayment.title')}
@@ -423,19 +410,89 @@ function Main() {
             </>
           }
           onClick={requestPayment}
-          result={results['request-payment']}
+          result={
+            results['request-payment'] ? (
+              <>
+                <InfoRow
+                  name={t('claims.requestPayment.result.hash')}
+                  value={
+                    <Link
+                      href={getExplorerUrl(results['request-payment'].hash)}
+                      target="_blank"
+                      underline="hover"
+                      sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                      }}>
+                      {results['request-payment'].hash} <Icon icon={iconOpenInNewRounded} />
+                    </Link>
+                  }
+                />
+                <InfoRow name={t('claims.requestPayment.result.signature')} value={results['request-payment'].sig} />
+              </>
+            ) : null
+          }
         />
         <ConnectItem
           title={t('claims.multipleClaims.title')}
           description={t('claims.multipleClaims.description')}
           onClick={multipleClaims}
-          result={results['multiple-claims']}
+          result={
+            results['multiple-claims'] ? (
+              <>
+                <Typography variant="h6">{t('step1.title')}</Typography>
+                <Box sx={{ pl: 1 }}>
+                  <InfoRow
+                    name={t('claims.multipleClaims.result.origin')}
+                    value={results['multiple-claims'][0].origin}
+                  />
+                  <InfoRow
+                    name={t('claims.multipleClaims.result.signature')}
+                    value={results['multiple-claims'][0].sig}
+                  />
+                </Box>
+
+                <Typography variant="h6">{t('step2.title')}</Typography>
+                <Box sx={{ pl: 1 }}>
+                  <InfoRow
+                    name={t('claims.multipleClaims.result.origin')}
+                    value={results['multiple-claims'][1].origin}
+                  />
+                  <InfoRow
+                    name={t('claims.multipleClaims.result.digest')}
+                    value={results['multiple-claims'][1].digest}
+                  />
+                  <InfoRow
+                    name={t('claims.multipleClaims.result.signature')}
+                    value={results['multiple-claims'][1].sig}
+                  />
+                </Box>
+              </>
+            ) : null
+          }
         />
         <ConnectItem
           title={t('claims.multipleSteps.title')}
           description={t('claims.multipleSteps.description')}
           onClick={multipleSteps}
-          result={results['multiple-steps']}
+          result={
+            results['multiple-steps'] ? (
+              <>
+                <Typography variant="h6">Step 1</Typography>
+                <Box sx={{ pl: 1 }}>
+                  <InfoRow name={t('claims.multipleSteps.result.origin')} value={results['multiple-steps'][0].origin} />
+                  <InfoRow name={t('claims.multipleSteps.result.signature')} value={results['multiple-steps'][0].sig} />
+                </Box>
+                <Typography variant="h6">Step 2</Typography>
+                <Box sx={{ pl: 1 }}>
+                  <InfoRow name={t('claims.multipleSteps.result.origin')} value={results['multiple-steps'][1].origin} />
+                  <InfoRow name={t('claims.multipleSteps.result.digest')} value={results['multiple-steps'][1].digest} />
+                  <InfoRow name={t('claims.multipleSteps.result.signature')} value={results['multiple-steps'][1].sig} />
+                </Box>
+              </>
+            ) : null
+          }
         />
       </Box>
     </Layout>

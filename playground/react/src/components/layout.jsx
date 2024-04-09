@@ -7,11 +7,18 @@ import Footer from '@blocklet/ui-react/lib/Footer';
 export default function Layout({ children }) {
   return (
     <Box>
-      <Header fullWidth maxWidth={null} />
+      <Header maxWidth="unset" />
       <Container maxWidth="lg" my={3}>
         {children}
       </Container>
-      <Footer />
+      <Box
+        component={Footer}
+        sx={{
+          '&>div>.MuiContainer-root': {
+            maxWidth: 'unset',
+          },
+        }}
+      />
     </Box>
   );
 }
