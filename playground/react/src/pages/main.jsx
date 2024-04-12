@@ -110,6 +110,7 @@ function Main() {
         results[action] = result;
       },
       messages: getConnectMessage('requestProfile'),
+      forceConnected: false,
     });
   };
 
@@ -123,6 +124,7 @@ function Main() {
         results[action] = result;
       },
       messages: getConnectMessage('requestTextSig'),
+      forceConnected: false,
     });
   };
 
@@ -136,6 +138,7 @@ function Main() {
         results[action] = result;
       },
       messages: getConnectMessage('requestDigestSig'),
+      forceConnected: false,
     });
   };
   const requestTransactionSignature = () => {
@@ -148,6 +151,7 @@ function Main() {
         results[action] = result;
       },
       messages: getConnectMessage('requestTransactionSig'),
+      forceConnected: false,
     });
   };
 
@@ -161,6 +165,7 @@ function Main() {
         results[action] = result;
       },
       messages: getConnectMessage('requestNFT'),
+      forceConnected: false,
     });
   };
   const requestPayment = () => {
@@ -173,6 +178,7 @@ function Main() {
         results[action] = result;
       },
       messages: getConnectMessage('requestPayment'),
+      forceConnected: false,
     });
   };
   const multipleClaims = () => {
@@ -185,6 +191,7 @@ function Main() {
         results[action] = result;
       },
       messages: getConnectMessage('multipleClaims'),
+      forceConnected: false,
     });
   };
 
@@ -198,6 +205,7 @@ function Main() {
         results[action] = result;
       },
       messages: getConnectMessage('multipleSteps'),
+      forceConnected: false,
     });
   };
   return (
