@@ -1,3 +1,8 @@
+## 2.2.4 (April 12, 2024)
+
+- chore(deps): update deps
+- chore(playground): set forceconnected=false in all did-connect, make demo more simpler
+
 ## 2.2.3 (April 09, 2024)
 
 - fix(playground): footer should be fullwidth

@@ -49,15 +49,15 @@
   resolved "https://registry.yarnpkg.com/@antfu/utils/-/utils-0.7.7.tgz#26ea493a831b4f3a85475e7157be02fb4eab51fb"
   integrity sha512-gFPqTG7otEJ8uP6wrhDv6mqwGWYZKNvAcCq6u9hOj0c+IKCEsY4L1oC9trPq2SaWIzAfHvqfBDxF591JkMf+kg==
 
-"@arcblock/addon-storysource@^2.9.65":
-  version "2.9.65"
-  resolved "https://registry.yarnpkg.com/@arcblock/addon-storysource/-/addon-storysource-2.9.65.tgz#f39f24ff4440cec0f9e46d09f3660fe608dcb3ba"
-  integrity sha512-a1N+1zw0OzdZSEZMKxdriLMOFW96RBXQUAW932h4tJPA2xBi4GntGhja/S1cagmmVU8/BlkKADF6Z7ke6USLhw==
+"@arcblock/addon-storysource@^2.9.66":
+  version "2.9.66"
+  resolved "https://registry.yarnpkg.com/@arcblock/addon-storysource/-/addon-storysource-2.9.66.tgz#32f091b6cd47bf531c39f22a4c7bb25ac773d057"
+  integrity sha512-XmOyacGnWbYG2c9QS7hTfPe6it1XQD816mIBx66rUaEyuz2AJ+rdhXuWvbxtWKcCL/yhB83dQ3PwSXV9A7ZG1g==
 
-"@arcblock/bridge@^2.9.65":
-  version "2.9.65"
-  resolved "https://registry.yarnpkg.com/@arcblock/bridge/-/bridge-2.9.65.tgz#26d0557c875e733818e6f76017019ad8dbd66e07"
-  integrity sha512-OC96VkrIyvICtQWDYXQSQCvqH1wg09qacSl/FFCVwVjnCmjBTljvOP9xYLVcS2nUYJ96iAyD2W2qRGRX2kX+/g==
+"@arcblock/bridge@^2.9.66":
+  version "2.9.66"
+  resolved "https://registry.yarnpkg.com/@arcblock/bridge/-/bridge-2.9.66.tgz#a9085458ad1cb2c24ada3c29df39133edb37306d"
+  integrity sha512-IH+TRdbF24NMJoZQO2KLybi43rRKGD4WvkzvmDVkhXZI6VixI2wvRmIvM26Zv4cNktCHUH/aVkZkSX96B5OPkQ==
 
 "@arcblock/did-auth-storage-nedb@^1.7.1":
   version "1.7.1"
@@ -110,15 +110,15 @@
     semver "^7.3.8"
     tweetnacl-sealedbox-js "^1.2.0"
 
-"@arcblock/did-connect@^2.9.65":
-  version "2.9.65"
-  resolved "https://registry.yarnpkg.com/@arcblock/did-connect/-/did-connect-2.9.65.tgz#54dab92f967bb043451aa9db2c82b49063d51f5b"
-  integrity sha512-N0R1vkpJFAoieRHyfnJBEe3wfglvUBCoJntrbyHkne+aME8anG6ec1QZ4qh4NrIvMz8i4Wk8yQLIQxc2nUlH3w==
+"@arcblock/did-connect@^2.9.66":
+  version "2.9.66"
+  resolved "https://registry.yarnpkg.com/@arcblock/did-connect/-/did-connect-2.9.66.tgz#7443ca5225e41a83d39ddfd256bf0748076ef47d"
+  integrity sha512-z5xR1klbfg2KYn7CES3D+b8d6o7OlMWpIjA+IVfE+fEBH7tekNNR0JZu0CgX0q28SO2nzrQyFoZzCY01y1oEjA==
   dependencies:
-    "@arcblock/bridge" "^2.9.65"
-    "@arcblock/icons" "^2.9.65"
-    "@arcblock/react-hooks" "^2.9.65"
-    "@arcblock/ux" "^2.9.65"
+    "@arcblock/bridge" "^2.9.66"
+    "@arcblock/icons" "^2.9.66"
+    "@arcblock/react-hooks" "^2.9.66"
+    "@arcblock/ux" "^2.9.66"
     "@arcblock/ws" "^1.18.110"
     "@auth0/auth0-react" "^2.2.4"
     "@emotion/react" "^11.10.4"
@@ -299,10 +299,10 @@
     amp-message "~0.1.2"
     axon "^2.0.3"
 
-"@arcblock/icons@^2.9.65":
-  version "2.9.65"
-  resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.9.65.tgz#f5f63d79e2062fab40ea8fd9ee7c987ddb8c30a9"
-  integrity sha512-NUSDc2mE8ypfMGFPHWoDYSzt7MyfAbp/ceeCqCiboS/fyIfeL+RbbyXKbrs6Xic6ArJRAtcFI8fMrjIYWbaN2A==
+"@arcblock/icons@^2.9.66":
+  version "2.9.66"
+  resolved "https://registry.yarnpkg.com/@arcblock/icons/-/icons-2.9.66.tgz#0a4b6874061ca8d126d36335ae333231b9057b0d"
+  integrity sha512-d+sWlCx/0e/sPsAk0VgwzgIrzQ/msF2R+f4FICZE3SXbJ7LC9GzxxjOnxzBvkXWlIpHCeFaaSwmiGxY1BpbdRg==
 
 "@arcblock/jwt@1.18.113", "@arcblock/jwt@1.18.115", "@arcblock/jwt@^1.18.115":
   version "1.18.115"
@@ -316,19 +316,19 @@
     json-stable-stringify "^1.0.1"
     semver "^7.3.8"
 
-"@arcblock/nft-display@^2.9.65":
-  version "2.9.65"
-  resolved "https://registry.yarnpkg.com/@arcblock/nft-display/-/nft-display-2.9.65.tgz#0b64ef8e2b0d71c8f267ee4a2fa0e2013c9f896f"
-  integrity sha512-kq6IZRcDjVvznY6rSKY3apRiBhxBIeFPRJkz9/lkYyGtTeI9hMSgwdpfw5ogvspMz/BBJqm4zxteubCRKxf7ZQ==
+"@arcblock/nft-display@^2.9.66":
+  version "2.9.66"
+  resolved "https://registry.yarnpkg.com/@arcblock/nft-display/-/nft-display-2.9.66.tgz#70a1738d3658ad1bd4c439b0a6b9f2505e73d652"
+  integrity sha512-3/qj8zr+8PvoA9FVQNsZRhuo6Ds4W2FhBN7Na2UM7XcAqJB+uctEP3+Se+S2rm84g7yRXOr42ZyBmldl8XDVFg==
   dependencies:
     "@arcblock/did-motif" "^1.1.13"
     "@ocap/mcrypto" "^1.18.110"
     "@ocap/util" "^1.18.110"
 
-"@arcblock/react-hooks@^2.9.65":
-  version "2.9.65"
-  resolved "https://registry.yarnpkg.com/@arcblock/react-hooks/-/react-hooks-2.9.65.tgz#d476640f839a44decf62cd996a744049a4e91514"
-  integrity sha512-kPjzuxgMJd/NiorE/28KbUdbA9A9olfTSX8a1KrM+E1G8dcRPgwhue8gxXhYevJnNUwaAgbeGnqwR2dJbhbZqA==
+"@arcblock/react-hooks@^2.9.66":
+  version "2.9.66"
+  resolved "https://registry.yarnpkg.com/@arcblock/react-hooks/-/react-hooks-2.9.66.tgz#e235e31753588b52028574f76250801a0dbd9066"
+  integrity sha512-ErAVG+4HHvHF9oo57yQV8jXRkYt3qDjeFBXTlXFw1PIpNPwLr+SxyogQHL/yhMNsR3TkmOt0ofehAVGTvOo3gQ==
   dependencies:
     core-js "^3.25.5"
     event-target-shim "^5.0.1"
@@ -346,15 +346,15 @@
     lodash.isnull "^3.0.0"
     lodash.set "^4.3.2"
 
-"@arcblock/ux@^2.9.65":
-  version "2.9.65"
-  resolved "https://registry.yarnpkg.com/@arcblock/ux/-/ux-2.9.65.tgz#970904e2354e648d526704132245c728786632e7"
-  integrity sha512-rhSNHBI5fNfAJIAgzpT5h7UJBMPtE9WzLQZ/Oc/eBkyHdAz7QvPlIHEgiFxEDJZTbM4YKCqAMLG53luAm0qRQQ==
+"@arcblock/ux@^2.9.66":
+  version "2.9.66"
+  resolved "https://registry.yarnpkg.com/@arcblock/ux/-/ux-2.9.66.tgz#f472d55447b7a4d1b2277067e8b160f72c0479d1"
+  integrity sha512-BKf8TiX3gqoGarN9XEXehzHhGbPWUkagrHkvUfYYTJYfcVjtcBiKCkiB1EvDxltzgMkvQkAoNjqeKRdLBX43QQ==
   dependencies:
     "@arcblock/did-motif" "^1.1.13"
-    "@arcblock/icons" "^2.9.65"
-    "@arcblock/nft-display" "^2.9.65"
-    "@arcblock/react-hooks" "^2.9.65"
+    "@arcblock/icons" "^2.9.66"
+    "@arcblock/nft-display" "^2.9.66"
+    "@arcblock/react-hooks" "^2.9.66"
     "@babel/plugin-syntax-dynamic-import" "^7.8.3"
     "@emotion/react" "^11.10.4"
     "@emotion/styled" "^11.10.4"
@@ -1814,15 +1814,15 @@
     url-join "^4.0.1"
     wait-port "^1.1.0"
 
-"@blocklet/ui-react@^2.9.65":
-  version "2.9.65"
-  resolved "https://registry.yarnpkg.com/@blocklet/ui-react/-/ui-react-2.9.65.tgz#8ddcb3431cf6894e9d89f84771c0a4159b4ab47b"
-  integrity sha512-7522u4b0rHqNbcvtXf7Az7HM/15aHpqNLutdXmR3XMcAk7j/+LuXjbuU7ByAmUJD5cGOyzl1MPC0S7EwT6/A4g==
+"@blocklet/ui-react@^2.9.66":
+  version "2.9.66"
+  resolved "https://registry.yarnpkg.com/@blocklet/ui-react/-/ui-react-2.9.66.tgz#ee8f3d64390a2ad717562a6ae1988e852248a6be"
+  integrity sha512-Np2cf0fTPL2t9vCTdT1mnk3KbEfPOwD9LHMAgYdE5DIQbZvgJ6CCOnSiIXg0uuzJWxd/8Rb1w6V0JY3fDFzWqA==
   dependencies:
-    "@arcblock/bridge" "^2.9.65"
-    "@arcblock/did-connect" "^2.9.65"
-    "@arcblock/react-hooks" "^2.9.65"
-    "@arcblock/ux" "^2.9.65"
+    "@arcblock/bridge" "^2.9.66"
+    "@arcblock/did-connect" "^2.9.66"
+    "@arcblock/react-hooks" "^2.9.66"
+    "@arcblock/ux" "^2.9.66"
     "@blocklet/js-sdk" "1.16.25-beta-be3a37f4"
     "@emotion/react" "^11.10.4"
     "@emotion/styled" "^11.10.4"

@@ -59,10 +59,10 @@
     "rimraf": "^5.0.5"
   },
   "devDependencies": {
-    "@arcblock/did-connect": "^2.9.65",
+    "@arcblock/did-connect": "^2.9.66",
     "@arcblock/eslint-config": "^0.3.0",
-    "@arcblock/ux": "^2.9.65",
-    "@blocklet/ui-react": "^2.9.65",
+    "@arcblock/ux": "^2.9.66",
+    "@blocklet/ui-react": "^2.9.66",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@iconify-icons/material-symbols": "^1.2.58",
