@@ -1,8 +1,6 @@
 require('@blocklet/sdk/lib/error-handler');
 require('dotenv-flow').config();
 
-const Client = require('@ocap/client');
-
 const logger = require('../libs/logger');
 const { name } = require('../../package.json');
 
