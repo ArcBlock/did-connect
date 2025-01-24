@@ -1,3 +1,7 @@
+## 2.2.5 (January 23, 2025)
+
+- feat: remove declare on pre-start
+
 ## 2.2.4 (April 12, 2024)
 
 - chore(deps): update deps
