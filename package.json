@@ -59,7 +59,9 @@
     "@ocap/mcrypto": "^1.19.6",
     "@ocap/proto": "^1.19.6",
     "@ocap/util": "^1.19.6",
-    "@ocap/wallet": "^1.19.6"
+    "@ocap/wallet": "^1.19.6",
+    "eslint": "8.57.1",
+    "eslint-plugin-prettier": "4.2.1"
   },
   "dependencies": {
     "@types/node": "^18.11.4"
