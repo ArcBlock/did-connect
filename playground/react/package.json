@@ -1,6 +1,6 @@
 {
   "name": "@blocklet/playground-react",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "private": "true",
   "scripts": {
     "dev": "blocklet dev",
