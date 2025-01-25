@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { styled } from '@arcblock/ux/lib/Theme';
 import Box from '@mui/material/Box';

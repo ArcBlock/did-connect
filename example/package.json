@@ -19,16 +19,16 @@
     "@unocss/preset-uno": "^0.45.30",
     "@vitejs/plugin-vue": "^2.3.4",
     "unocss": "^0.45.30",
-    "vite": "^2.9.15",
-    "vite-plugin-blocklet": "^0.1.2"
+    "vite": "^5.4.10",
+    "vite-plugin-blocklet": "^0.9.17"
   },
   "dependencies": {
-    "@arcblock/did": "^1.18.115",
-    "@blocklet/sdk": "^1.16.25",
-    "@did-connect/storage-nedb": "^1.6.3",
+    "@arcblock/did": "^1.19.6",
+    "@blocklet/sdk": "^1.16.37",
+    "@did-connect/storage-nedb": "^2.2.5",
     "@did-connect/vue": "workspace:*",
-    "@ocap/client": "^1.18.115",
-    "@ocap/wallet": "^1.18.115",
+    "@ocap/client": "^1.19.6",
+    "@ocap/wallet": "^1.19.6",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

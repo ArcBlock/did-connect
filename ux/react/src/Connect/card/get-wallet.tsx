@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import { useRef } from 'react';
 import { styled } from '@arcblock/ux/lib/Theme';
 import Box, { BoxProps } from '@mui/material/Box';

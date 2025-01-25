@@ -325,7 +325,8 @@ export class Authenticator {
    * @returns Promise<boolean>
    */
   _verify(data: TWalletResponseSigned, locale: TLocaleCode = 'en', enforceTimestamp: boolean = true): Promise<JwtBody> {
-    return new Promise((resolve, reject) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
       debug('verify', data, locale);
 
       const pk = data.userPk;
@@ -340,7 +341,7 @@ export class Authenticator {
       if (!verify(info, pk)) {
         // NOTE: since the token can be invalid because of wallet-app clock not in sync
         // We should tell the user that if it's caused by clock
-        const isValidSig = verify(info, pk, { tolerance: 0, enforceTimestamp: false });
+        const isValidSig = await verify(info, pk, { tolerance: 0, enforceTimestamp: false });
         if (enforceTimestamp) {
           const error = isValidSig ? errors.timeInvalid[locale] : errors.tokenInvalid[locale];
           return reject(new Error(error));

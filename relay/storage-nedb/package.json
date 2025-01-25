@@ -14,7 +14,7 @@
     "wangshijun <shijun@arcblock.io> (https://ocap.arcblock.io)"
   ],
   "devDependencies": {
-    "@arcblock/eslint-config-ts": "0.2.4",
+    "@arcblock/eslint-config-ts": "^0.3.3",
     "eslint": "^8.26.0",
     "jest": "^28.1.3",
     "ts-jest": "^28.0.8",

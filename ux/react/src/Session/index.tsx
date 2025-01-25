@@ -132,6 +132,7 @@ export default function createSessionContext(
   const { getToken, setToken, removeToken } = storage;
 
   const clearSession = () => {
+    // @ts-expect-error
     const cookieOptions = getCookieOptions({ returnDomain: false });
     Cookie.remove('connected_did', cookieOptions);
     Cookie.remove('connected_pk', cookieOptions);
@@ -287,6 +288,7 @@ export default function createSessionContext(
 
     logout(done: any) {
       // 避免 disconnect 后自动连接
+      // @ts-expect-error
       const cookieOptions = getCookieOptions({ returnDomain: false });
       Cookie.remove('connected_wallet_os', cookieOptions);
       Cookie.remove('connected_app', cookieOptions);
@@ -298,6 +300,7 @@ export default function createSessionContext(
     // - https://github.com/ArcBlock/ux/issues/520
     // - https://github.com/ArcBlock/did-connect/issues/56
     switchDid(done: any) {
+      // @ts-expect-error
       const cookieOptions = getCookieOptions({ returnDomain: false });
       Cookie.remove('connected_did', cookieOptions);
       Cookie.remove('connected_pk', cookieOptions);

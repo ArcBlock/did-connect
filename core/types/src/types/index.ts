@@ -99,7 +99,7 @@ export interface TAuthPrincipalRequest {
   target?: string;
   targetType?: {
     hash: 'keccak' | 'sha3' | 'keccak_384' | 'sha3_384' | 'keccak_512' | 'sha3_512' | 'sha2';
-    key: 'ed25519' | 'secp256k1' | 'ethereum';
+    key: 'ed25519' | 'secp256k1' | 'ethereum' | 'passkey';
     role:
       | 'account'
       | 'node'
@@ -122,6 +122,8 @@ export interface TAuthPrincipalRequest {
       | 'factory'
       | 'rollup'
       | 'storage'
+      | 'profile'
+      | 'passkey'
       | 'any';
   };
   type: 'authPrincipal';

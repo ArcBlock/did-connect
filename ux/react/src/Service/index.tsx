@@ -4,6 +4,7 @@ export default function createService(baseURL: string, storage: any, timeout = 1
   const service = axios.create({ baseURL, timeout });
 
   service.interceptors.request.use(
+    // @ts-expect-error
     (config: AxiosRequestConfig) => {
       if (storage.engine === 'ls') {
         const token = storage.getToken();

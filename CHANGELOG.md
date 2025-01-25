@@ -1,3 +1,9 @@
+## 2.2.6 (January 25, 2025)
+
+- fix: fix dev error
+- fix(deps): fix lint error
+- chore(deps): update deps
+
 ## 2.2.5 (January 23, 2025)
 
 - feat: remove declare on pre-start
