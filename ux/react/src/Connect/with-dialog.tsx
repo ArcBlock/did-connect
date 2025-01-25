@@ -42,6 +42,7 @@ export default function withDialog(Component: any) {
     };
 
     return (
+      // @ts-expect-error
       <Dialog
         open={open}
         fullScreen={isFullScreen}

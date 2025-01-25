@@ -92,5 +92,7 @@ function Connect(props: TConnectProps): JSX.Element {
   );
 }
 
-export default withWebWalletSWKeeper(withDialog(Connect));
+// @ts-ignore
+const WrappedConnect: React.FC<any> = withWebWalletSWKeeper(withDialog(Connect));
+export default WrappedConnect;
 export { useSession, createSession };

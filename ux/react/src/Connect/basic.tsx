@@ -113,6 +113,7 @@ export default function BasicConnect({
   }, [session]); // eslint-disable-line
 
   const onGoWebWallet = (url: any) => {
+    // @ts-expect-error
     openWebWallet({ webWalletUrl, url, locale });
   };
 

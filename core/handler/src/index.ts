@@ -177,7 +177,8 @@ export function createHandlers({
   const signJson = authenticator.signJson.bind(authenticator);
   const signClaims = authenticator.signClaims.bind(authenticator);
 
-  const verifyUpdater = (params: TAnyObject, updaterPk?: string): { error: string; code: string } => {
+  // @ts-ignore
+  const verifyUpdater = async (params: TAnyObject, updaterPk?: string): { error: string; code: string } => {
     const { locale, body, signerPk, signerToken } = params;
     if (!signerPk) {
       return { error: errors.invalidUpdaterPk[locale], code: 'UPDATER_PK_EMPTY' };
@@ -186,7 +187,7 @@ export function createHandlers({
       return { error: errors.invalidUpdaterToken[locale], code: 'SIGNATURE_EMPTY' };
     }
 
-    if (verify(signerToken, signerPk) === false) {
+    if ((await verify(signerToken, signerPk)) === false) {
       return { error: errors.invalidUpdaterSig[locale], code: 'SIGNATURE_INVALID' };
     }
 
