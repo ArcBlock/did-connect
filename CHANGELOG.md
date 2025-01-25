@@ -1,3 +1,7 @@
+## 2.2.7 (January 25, 2025)
+
+- fix(playground): fix screenshot size
+
 ## 2.2.6 (January 25, 2025)
 
 - fix: fix dev error
