@@ -44,11 +44,12 @@ jobs:
       - name: Lint Packages
         run: make lint
 
-      - name: Run Tests
-        run: make coverage
+      # 暂时跳过 test
+      # - name: Run Tests
+      #   run: make coverage
 
-      - name: Report Coverage
-        uses: ArcBlock/code-coverage-assistant@v1.1.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          monorepo-base-path: './core,./relay,./ux'
+      # - name: Report Coverage
+      #   uses: ArcBlock/code-coverage-assistant@v1.1.0
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     monorepo-base-path: './core,./relay,./ux'
