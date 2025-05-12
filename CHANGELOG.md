@@ -1,3 +1,7 @@
+## 2.2.8 (May 12, 2025)
+
+- chore(deps): update deps
+
 ## 2.2.7 (January 25, 2025)
 
 - fix(playground): fix screenshot size

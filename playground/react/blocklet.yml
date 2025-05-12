@@ -17,7 +17,7 @@ repository:
   type: git
   url: git+https://github.com/arcblock/did-connect.git
 specVersion: 1.2.8
-version: 2.2.7
+version: 2.2.8
 logo: logo.png
 files:
   - dist
@@ -31,6 +31,7 @@ interfaces:
     prefix: '*'
     port: BLOCKLET_PORT
     protocol: http
+    proxyBehavior: service
 community: ''
 documentation: ''
 homepage: ''

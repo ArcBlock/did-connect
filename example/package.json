@@ -20,15 +20,15 @@
     "@vitejs/plugin-vue": "^2.3.4",
     "unocss": "^0.45.30",
     "vite": "^5.4.10",
-    "vite-plugin-blocklet": "^0.9.17"
+    "vite-plugin-blocklet": "^0.9.32"
   },
   "dependencies": {
-    "@arcblock/did": "^1.19.6",
-    "@blocklet/sdk": "^1.16.37",
-    "@did-connect/storage-nedb": "^2.2.5",
+    "@arcblock/did": "^1.20.8",
+    "@blocklet/sdk": "^1.16.43",
+    "@did-connect/storage-nedb": "^2.2.7",
     "@did-connect/vue": "workspace:*",
-    "@ocap/client": "^1.19.6",
-    "@ocap/wallet": "^1.19.6",
+    "@ocap/client": "^1.20.8",
+    "@ocap/wallet": "^1.20.8",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
