@@ -2,7 +2,7 @@
 
 > 本文档记录 passkey DID 策略中超出 did-connect 协议范围但对产品方向重要的讨论。
 > did-connect 协议层面的影响见 [06-passkey-strategy.md](./06-passkey-strategy.md)。
-> 链上实现方案见 [blockchain/planning/38-passkey-did-identity-layer.md](../../blockchain/planning/38-passkey-did-identity-layer.md)。
+> 链上实现方案见 [blockchain/planning/38-passkey-did-identity-layer.md](https://github.com/ArcBlock/blockchain/blob/master/planning/38-passkey-did-identity-layer.md)。
 
 ## 为什么需要链
 

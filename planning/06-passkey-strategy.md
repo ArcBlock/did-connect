@@ -1,7 +1,7 @@
 # Passkey 作为 DID 验证机制 — did-connect 协议影响
 
 > 本文档聚焦 Passkey 策略对 did-connect 协议和实现的影响。
-> 链上实现方案见 [blockchain/planning/38-passkey-did-identity-layer.md](../../blockchain/planning/38-passkey-did-identity-layer.md)。
+> 链上实现方案见 [blockchain/planning/38-passkey-did-identity-layer.md](https://github.com/ArcBlock/blockchain/blob/master/planning/38-passkey-did-identity-layer.md)。
 > 更广的产品/战略讨论见 [07-broader-vision.md](./07-broader-vision.md)。
 
 ## 核心方案
